@@ -22,5 +22,8 @@ class DatabaseSeeder extends Seeder
 
         // Run the RolesSeeder
         $this->call(RolesSeeder::class);
+
+        // Run the PermissionsSeeder
+        $this->call(PermissionsSeeder::class);
     }
 }
