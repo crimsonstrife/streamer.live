@@ -22,7 +22,7 @@ Route::middleware([
 Route::middleware([
     RoleMiddleware::class . ':Admin', // Admin role protection
 ])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin', [AdminController::class, 'index'])->name('panel.show');
 });
 
 Route::middleware([
