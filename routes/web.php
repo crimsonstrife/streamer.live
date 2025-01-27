@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ModeratorController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,5 +28,5 @@ Route::middleware([
 Route::middleware([
     RoleMiddleware::class . ':Moderator', // Moderator role protection
 ])->group(function () {
-    Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.panel');
+    Route::get('/moderation', [ModeratorController::class, 'index'])->name('moderation.panel');
 });
