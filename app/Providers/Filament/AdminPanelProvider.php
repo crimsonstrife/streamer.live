@@ -17,7 +17,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Spatie\Permission\Middlewares\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 class AdminPanelProvider extends PanelProvider
 {
