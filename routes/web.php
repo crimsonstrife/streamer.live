@@ -18,15 +18,3 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
-
-Route::middleware([
-    RoleMiddleware::class . ':Admin', // Admin role protection
-])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('panel.show');
-});
-
-Route::middleware([
-    RoleMiddleware::class . ':Moderator', // Moderator role protection
-])->group(function () {
-    Route::get('/moderation', [ModeratorController::class, 'index'])->name('moderation.panel');
-});
