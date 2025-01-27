@@ -30,9 +30,11 @@ class User extends Authenticatable implements FilamentUser
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
+        'first_name',
+        'last_name',
     ];
 
     /**
@@ -72,5 +74,46 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the user's name.
+     *
+     * This accessor method is meant to serve as a fallback accessor for packages that may expect a hardcoded `name` attribute.
+     * It acts as an alias for the display name attribute.
+     *
+     * @return string The user's name.
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->getDisplayNameAttribute();
+    }
+
+    /**
+     * Get the user's full name.
+     *
+     * This accessor concatenates the user's first name and last name,
+     * trims any surrounding whitespace, and returns the full name as a string.
+     *
+     * @return string The user's full name.
+     */
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
+    /**
+     * Get the display name attribute for the user.
+     *
+     * This method returns the user's display name, which is determined by the following order of precedence:
+     * 1. Username
+     * 2. Full name
+     * 3. Email
+     *
+     * @return string The display name of the user.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->username ?: $this->full_name ?: $this->email;
     }
 }
