@@ -73,12 +73,12 @@ class StreamerSetup extends Command
 
     private function createFirstAdmin()
     {
-        $name = $this->ask('Enter the admin name');
+        $username = $this->ask('Enter the admin username');
         $email = $this->ask('Enter the admin email');
         $password = $this->secret('Enter the admin password');
 
         $admin = User::create([
-            'name' => $name,
+            'username' => $username,
             'email' => $email,
             'password' => bcrypt($password),
         ]);
@@ -91,7 +91,7 @@ class StreamerSetup extends Command
         // Mark user as Filament admin
         $admin->update(['is_filament_admin' => true]);
 
-        $this->info("Admin user '{$name}' has been created successfully!");
+        $this->info("Admin user '{$username}' has been created successfully!");
     }
 
     private function updateEnv(array $data)
