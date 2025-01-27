@@ -83,7 +83,17 @@ class StreamerSetup extends Command
             'password' => bcrypt($password),
         ]);
 
+        // Assign the Admin role to the user
         $admin->assignRole('Admin');
+
+        // Assign the Moderator role to the user
+        $admin->assignRole('Moderator');
+
+        // Assign the Editor role to the user
+        $admin->assignRole('Editor');
+
+        // Assign the Viewer role to the user
+        $admin->assignRole('Viewer');
 
         // Mark user as verified
         $admin->markEmailAsVerified();
