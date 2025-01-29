@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -115,5 +117,25 @@ class User extends Authenticatable implements FilamentUser
     public function getDisplayNameAttribute(): string
     {
         return $this->username ?: $this->full_name ?: $this->email;
+    }
+
+    /**
+     * Get the support roles a user has.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function supporterRoles(): BelongsToMany
+    {
+        return $this->belongsToMany(SupporterRole::class, 'user_supporter_roles')->withTimestamps();
+    }
+
+    /**
+     * Get the collection of perks associated with the user.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function perks(): Collection
+    {
+        return $this->supporterRoles()->with('perks')->get()->pluck('perks')->flatten();
     }
 }
