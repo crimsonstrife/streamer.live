@@ -15,7 +15,8 @@
         "laravel/socialite": "^5.17",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.0",
-        "spatie/laravel-permission": "^6.10"
+        "spatie/laravel-permission": "^6.10",
+        "spatie/laravel-settings": "^3.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
