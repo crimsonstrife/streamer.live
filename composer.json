@@ -12,6 +12,7 @@
         "laravel/framework": "^11.31",
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.17",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.0",
         "spatie/laravel-permission": "^6.10"
