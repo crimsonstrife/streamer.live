@@ -1,0 +1,41 @@
+version = 1
+
+test_patterns = ["app/tests/**"]
+
+exclude_patterns = [
+  "app/vendor/**",
+  "app/node_modules/**",
+  "app/config/**",
+  "app/database/migrations/**",
+  "app/database/settings/**"
+]
+
+[[analyzers]]
+name = "javascript"
+
+  [analyzers.meta]
+  plugins = [
+    "react",
+    "vue",
+    "angularjs",
+    "angular"
+  ]
+  environment = [
+    "nodejs",
+    "jquery"
+  ]
+
+[[analyzers]]
+name = "php"
+
+  [analyzers.meta]
+  bootstrap_files = ["app/bootstrap/app.php"]
+
+[[transformers]]
+name = "php-cs-fixer"
+
+[[transformers]]
+name = "prettier"
+
+[[transformers]]
+name = "standardjs"
