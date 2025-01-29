@@ -35,4 +35,26 @@ return [
         ],
     ],
 
+    'twitch' => [
+        'client_id' => env('TWITCH_CLIENT_ID'),
+        'client_secret' => env('TWITCH_CLIENT_SECRET'),
+        'redirect' => env('TWITCH_REDIRECT_URI'),
+        'enabled' => !empty(env('TWITCH_CLIENT_ID')) && !empty(env('TWITCH_CLIENT_SECRET')),
+    ],
+
+    'patreon' => [
+        'client_id' => env('PATREON_CLIENT_ID'),
+        'client_secret' => env('PATREON_CLIENT_SECRET'),
+        'redirect' => env('PATREON_REDIRECT_URI'),
+        'enabled' => !empty(env('PATREON_CLIENT_ID')) && !empty(env('PATREON_CLIENT_SECRET')),
+    ],
+
+    'ko_fi' => [
+        'api_key' => env('KO_FI_API_KEY'),
+        'enabled' => !empty(env('KO_FI_API_KEY')),
+    ],
+    'fourthwall' => [
+        'api_key' => env('FOURTHWALL_API_KEY'),
+        'enabled' => !empty(env('FOURTHWALL_API_KEY')),
+    ],
 ];
