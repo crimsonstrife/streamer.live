@@ -22,7 +22,7 @@ class TwitchAuthController extends Controller
         // Fetch Twitch user ID from username
         $response = Http::withHeaders([
             'Client-ID' => env('TWITCH_CLIENT_ID'),
-            'Authorization' => 'Bearer ' . env('TWITCH_ACCESS_TOKEN')
+            'Authorization' => 'Bearer ' . env('TWITCH_CLIENT_SECRET')
         ])->get("https://api.twitch.tv/helix/users?login={$twitchUsername}");
 
         $twitchUser = $response->json()['data'][0] ?? null;
