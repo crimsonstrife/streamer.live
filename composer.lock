@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "18006c3772a92c264da600f8cb01d9a6",
+    "content-hash": "bcd0346b81b685d87464745d1183f532",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -5650,6 +5650,77 @@
                 }
             ],
             "time": "2024-04-27T21:32:50+00:00"
+        },
+        {
+            "name": "romanzipp/laravel-twitch",
+            "version": "4.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/romanzipp/Laravel-Twitch.git",
+                "reference": "23df5d2402abbd2ed13f9229e970ce22ed4c2620"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/romanzipp/Laravel-Twitch/zipball/23df5d2402abbd2ed13f9229e970ce22ed4c2620",
+                "reference": "23df5d2402abbd2ed13f9229e970ce22ed4c2620",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "firebase/php-jwt": "^6.2",
+                "guzzlehttp/guzzle": "^7.0",
+                "illuminate/cache": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/console": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/support": "^7.0|^8.0|^9.0|^10.0|^11.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "mockery/mockery": "^1.3.2",
+                "orchestra/testbench": "^3.8|^4.0|^5.0|^6.0",
+                "phpstan/phpstan": "^0.12.99|^1.0",
+                "phpunit/phpunit": "^8.0|^9.0",
+                "romanzipp/php-cs-fixer-config": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Twitch": "romanzipp\\Twitch\\Facades\\Twitch"
+                    },
+                    "providers": [
+                        "romanzipp\\Twitch\\Providers\\TwitchServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "romanzipp\\Twitch\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "romanzipp",
+                    "email": "ich@ich.wtf",
+                    "homepage": "https://ich.wtf"
+                }
+            ],
+            "description": "Twitch PHP Wrapper for Laravel",
+            "support": {
+                "issues": "https://github.com/romanzipp/Laravel-Twitch/issues",
+                "source": "https://github.com/romanzipp/Laravel-Twitch/tree/4.8.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/romanzipp",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-08-13T06:27:21+00:00"
         },
         {
             "name": "ryangjchandler/blade-capture-directive",
