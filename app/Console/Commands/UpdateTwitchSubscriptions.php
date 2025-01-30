@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use romanzipp\Twitch\Twitch;
+use romanzipp\Twitch\Enums\GrantType;
 
 class UpdateTwitchSubscriptions extends Command
 {
