@@ -114,4 +114,13 @@ class StreamerSetup extends Command
             ));
         }
     }
+
+    private function createEnv(array $data)
+    {
+        // get the env.example file and copy it to .env
+        copy(base_path('.env.example'), base_path('.env'));
+
+        // update the .env file with the provided data
+        $this->updateEnv($data);
+    }
 }
