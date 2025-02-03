@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -35,6 +35,18 @@ return new class () extends Migration {
             $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
             $table->foreign('tag_id')->references('id')->on('tags')->cascadeOnDelete();
         });
+
+        Schema::create('pages_tags', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('page_id');
+            $table->unsignedBigInteger('tag_id');
+            $table->timestamps();
+        });
+
+        Schema::table('pages_tags', function (Blueprint $table) {
+            $table->foreign('page_id')->references('id')->on('pages')->cascadeOnDelete();
+            $table->foreign('tag_id')->references('id')->on('tags')->cascadeOnDelete();
+        });
     }
 
     /**
@@ -47,6 +59,11 @@ return new class () extends Migration {
             $table->dropForeign(['tag_id']);
         });
         Schema::dropIfExists('post_tag');
+        Schema::table('page_tag', function (Blueprint $table) {
+            $table->dropForeign(['page_id']);
+            $table->dropForeign(['tag_id']);
+        });
+        Schema::dropIfExists('page_tag');
         Schema::dropIfExists('tags');
     }
 };
