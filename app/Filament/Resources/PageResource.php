@@ -77,7 +77,7 @@ class PageResource extends Resource
                 Tables\Columns\TextColumn::make('status')->sortable(),
                 Tables\Columns\IconColumn::make('is_protected')->boolean(),
                 Tables\Columns\TextColumn::make('published_at')->dateTime(),
-                Tables\Columns\TextColumn::make('created_by')->label('Author')->relationship('author', 'name')->sortable(),
+                Tables\Columns\TextColumn::make('created_by.name')->label('Author')->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
