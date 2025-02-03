@@ -24,26 +24,26 @@ return new class() extends Migration {
             $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
         });
 
-        Schema::create('post_tag', function (Blueprint $table) {
+        Schema::create('post_tags', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('tag_id');
             $table->timestamps();
         });
 
-        Schema::table('post_tag', function (Blueprint $table) {
+        Schema::table('post_tags', function (Blueprint $table) {
             $table->foreign('post_id')->references('id')->on('posts')->cascadeOnDelete();
             $table->foreign('tag_id')->references('id')->on('tags')->cascadeOnDelete();
         });
 
-        Schema::create('pages_tags', function (Blueprint $table) {
+        Schema::create('page_tags', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('page_id');
             $table->unsignedBigInteger('tag_id');
             $table->timestamps();
         });
 
-        Schema::table('pages_tags', function (Blueprint $table) {
+        Schema::table('page_tags', function (Blueprint $table) {
             $table->foreign('page_id')->references('id')->on('pages')->cascadeOnDelete();
             $table->foreign('tag_id')->references('id')->on('tags')->cascadeOnDelete();
         });
@@ -54,16 +54,16 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::table('post_tag', function (Blueprint $table) {
+        Schema::table('post_tags', function (Blueprint $table) {
             $table->dropForeign(['post_id']);
             $table->dropForeign(['tag_id']);
         });
-        Schema::dropIfExists('post_tag');
-        Schema::table('page_tag', function (Blueprint $table) {
+        Schema::dropIfExists('post_tags');
+        Schema::table('page_tags', function (Blueprint $table) {
             $table->dropForeign(['page_id']);
             $table->dropForeign(['tag_id']);
         });
-        Schema::dropIfExists('page_tag');
+        Schema::dropIfExists('page_tags');
         Schema::dropIfExists('tags');
     }
 };

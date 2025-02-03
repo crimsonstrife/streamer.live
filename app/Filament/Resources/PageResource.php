@@ -58,12 +58,12 @@ class PageResource extends Resource
                     ->relationship('tags', 'name'),
 
                 Forms\Components\Select::make('created_by')
-                    ->relationship('author', 'name')
+                    ->relationship('author', 'username')
                     ->disabled()
                     ->visibleOn('edit'),
 
                 Forms\Components\Select::make('updated_by')
-                    ->relationship('editor', 'name')
+                    ->relationship('editor', 'username')
                     ->disabled()
                     ->visibleOn('edit'),
             ]);
@@ -77,7 +77,7 @@ class PageResource extends Resource
                 Tables\Columns\TextColumn::make('status')->sortable(),
                 Tables\Columns\IconColumn::make('is_protected')->boolean(),
                 Tables\Columns\TextColumn::make('published_at')->dateTime(),
-                Tables\Columns\TextColumn::make('created_by.name')->label('Author')->sortable(),
+                Tables\Columns\TextColumn::make('created_by.username')->label('Author')->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')

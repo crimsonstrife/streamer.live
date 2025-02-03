@@ -25,9 +25,9 @@ class EditorRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
+            ->recordTitleAttribute('username')
             ->columns([
-                Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('username')->sortable(),
                 Tables\Columns\TextColumn::make('email')->sortable(),
             ])
             ->filters([
