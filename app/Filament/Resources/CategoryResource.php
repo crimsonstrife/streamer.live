@@ -23,7 +23,11 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')->required()->maxLength(255),
+                Forms\Components\TextInput::make('slug')->unique(Category::class, 'slug', ignoreRecord: true)->required(),
+                Forms\Components\Textarea::make('description')->nullable(),
+                Forms\Components\Select::make('parent_id')->relationship('parent', 'name')->nullable(),
+                Forms\Components\Select::make('type')->options(['post' => 'Post', 'page' => 'Page'])->required(),
             ]);
     }
 
@@ -31,7 +35,8 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('type')->sortable(),
             ])
             ->filters([
                 //

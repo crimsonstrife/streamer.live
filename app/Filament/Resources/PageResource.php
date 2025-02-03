@@ -23,7 +23,49 @@ class PageResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('title')
+                    ->required()
+                    ->maxLength(255),
+
+                Forms\Components\TextInput::make('slug')
+                    ->unique(Page::class, 'slug', ignoreRecord: true)
+                    ->required(),
+
+                Forms\Components\Textarea::make('excerpt')
+                    ->maxLength(500),
+
+                Forms\Components\RichEditor::make('content'),
+
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                    ])
+                    ->required(),
+
+                Forms\Components\Toggle::make('is_protected')
+                    ->label('Password Protect Page'),
+
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->visible(fn($get) => $get('is_protected')),
+
+                Forms\Components\DateTimePicker::make('published_at')
+                    ->label('Publication Date'),
+
+                Forms\Components\Select::make('tags')
+                    ->multiple()
+                    ->relationship('tags', 'name'),
+
+                Forms\Components\Select::make('created_by')
+                    ->relationship('author', 'name')
+                    ->disabled()
+                    ->visibleOn('edit'),
+
+                Forms\Components\Select::make('updated_by')
+                    ->relationship('editor', 'name')
+                    ->disabled()
+                    ->visibleOn('edit'),
             ]);
     }
 
@@ -31,10 +73,18 @@ class PageResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('status')->sortable(),
+                Tables\Columns\IconColumn::make('is_protected')->boolean(),
+                Tables\Columns\TextColumn::make('published_at')->dateTime(),
+                Tables\Columns\TextColumn::make('created_by')->label('Author')->relationship('author', 'name')->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -49,7 +99,9 @@ class PageResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'tags' => RelationManagers\TagsRelationManager::class,
+            'author' => RelationManagers\AuthorRelationManager::class,
+            'editor' => RelationManagers\EditorRelationManager::class,
         ];
     }
 
