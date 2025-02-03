@@ -48,7 +48,7 @@ class PageResource extends Resource
 
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->visible(fn($get) => $get('is_protected')),
+                    ->visible(fn ($get) => $get('is_protected')),
 
                 Forms\Components\DateTimePicker::make('published_at')
                     ->label('Publication Date'),
