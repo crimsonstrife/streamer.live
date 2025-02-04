@@ -56,7 +56,14 @@ class PageSeeder extends Seeder
             // Instantiate a new Page model
             $pageModel = new Page();
 
-            $pageModel->firstOrCreate(['slug' => $page['slug']], $page);
+            // Assign the page attributes
+            $pageModel->title = $page['title'];
+            $pageModel->slug = $page['slug'];
+            $pageModel->excerpt = $page['excerpt'];
+            $pageModel->content = $page['content'];
+            $pageModel->status = $page['status'];
+            $pageModel->is_protected = $page['is_protected'];
+            $pageModel->published_at = $page['published_at'];
 
             // Save the Page model
             $pageModel->save();
