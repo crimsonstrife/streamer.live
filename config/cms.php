@@ -2,5 +2,5 @@
 
 return [
     'home_page_slug' => env('CMS_HOME_PAGE_SLUG', 'home'),
-    'blog_page_slug' => env('CMS_BLOG_PAGE_SLUG', 'blog'),
+    'posts_page_slug' => env('CMS_POSTS_PAGE_SLUG', 'blog'),
 ];

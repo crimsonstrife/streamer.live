@@ -11,13 +11,13 @@
         @foreach($posts as $post)
             <div class="p-4 mt-6 bg-white rounded-lg shadow">
                 <h3 class="text-xl font-semibold">
-                    <a href="{{ url('/' . $category->slug . '/' . $post->slug) }}" class="text-blue-600 hover:underline">
+                    <a href="{{ route('blog.post', ['category' => $category->slug, 'postSlug' => $post->slug]) }}" class="text-blue-600 hover:underline">
                         {{ $post->title }}
                     </a>
                 </h3>
                 <p class="text-sm text-gray-500">Published on {{ $post->published_at->format('F j, Y') }}</p>
                 <p class="mt-2 text-gray-700">{{ $post->excerpt }}</p>
-                <a href="{{ url('/' . $category->slug . '/' . $post->slug) }}" class="text-blue-500 hover:underline">
+                <a href="{{ route('blog.post', ['category' => $category->slug, 'postSlug' => $post->slug]) }}" class="text-blue-500 hover:underline">
                     Read more →
                 </a>
             </div>
