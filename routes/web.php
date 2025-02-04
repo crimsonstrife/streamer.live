@@ -35,7 +35,9 @@ $blogSlug = $postsPage ? $postsPage->slug : 'blog';
 
 // Posts Index Page (Dynamic)
 Route::get("/{$blogSlug}", function () use ($postsPage) {
-    if (!$postsPage) abort(404);
+    if (!$postsPage) {
+        abort(404);
+    }
 
     $posts = Post::where('status', 'published')->orderBy('published_at', 'desc')->paginate(10);
 
