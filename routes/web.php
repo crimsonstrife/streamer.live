@@ -28,10 +28,15 @@ Route::get('/', function () {
     return $homePage ? view('pages.show', ['page' => $homePage]) : abort(404);
 })->name('home');
 
-// Blog Page (Dynamic)
+// Blog Index Page (Dynamic)
 Route::get('/blog', function () {
     $blogPage = Page::where('slug', config('cms.blog_page_slug'))->first();
-    return $blogPage ? view('pages.index', ['page' => $blogPage]) : abort(404);
+    $posts = Post::where('status', 'published')->orderBy('published_at', 'desc')->paginate(10);
+
+    return view('pages.blog', [
+        'page' => $blogPage,
+        'posts' => $posts,
+    ]);
 })->name('blog');
 
 // Dynamic Page Routing
