@@ -1,9 +1,14 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            {{ $page->title }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div class="container">
-        <h1>{{ $page->title }}</h1>
-        <p>{{ $page->excerpt }}</p>
-        <div>{!! $page->content !!}</div>
+    <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <p class="text-gray-600">{{ $page->excerpt }}</p>
+        <div class="prose max-w-none">
+            {!! $page->content !!}
+        </div>
     </div>
-@endsection
+</x-app-layout>

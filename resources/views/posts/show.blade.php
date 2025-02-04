@@ -1,10 +1,19 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            {{ $post->title }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div class="container">
-        <h1>{{ $post->title }}</h1>
-        <p>Category: <a href="{{ url('/' . $post->category->slug) }}">{{ $post->category->name }}</a></p>
-        <p>{{ $post->excerpt }}</p>
-        <div>{!! $post->content !!}</div>
+    <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <p class="text-gray-500">
+            Category: <a href="{{ url('/' . $post->category->slug) }}" class="text-blue-600 hover:underline">
+                {{ $post->category->name }}
+            </a>
+        </p>
+        <p class="text-gray-600">{{ $post->excerpt }}</p>
+        <div class="prose max-w-none">
+            {!! $post->content !!}
+        </div>
     </div>
-@endsection
+</x-app-layout>
