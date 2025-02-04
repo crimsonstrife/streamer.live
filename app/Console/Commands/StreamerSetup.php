@@ -49,7 +49,11 @@ class StreamerSetup extends Command
         $this->info('Creating your first admin user...');
         $this->createFirstAdmin();
 
-        // Step 5: Generate Application Key
+        // Step 5: Seed Posts, using the PostSeeder
+        $this->info('Seeding posts...');
+        $this->call('db:seed', ['--class' => 'PostSeeder']);
+
+        // Step 6: Generate Application Key
         $this->generateApplicationKey();
 
         $this->info('Setup complete! Your application is ready to use.');

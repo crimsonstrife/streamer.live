@@ -28,5 +28,11 @@ class DatabaseSeeder extends Seeder
 
         // Run the PageSeeder
         $this->call(PageSeeder::class);
+
+        // Run the CategorySeeder
+        $this->call(CategorySeeder::class);
+
+        // Run the TagSeeder
+        $this->call(TagSeeder::class);
     }
 }
