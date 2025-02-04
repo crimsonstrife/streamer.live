@@ -13,17 +13,31 @@
             {!! $page->content ?? '' !!}
         </div>
 
+        <!-- Categories -->
+        <div class="flex flex-wrap gap-3 my-6">
+            @foreach(App\Models\Category::where('type', 'post')->get() as $category)
+                <a href="{{ route('blog.category', ['categorySlug' => $category->slug]) }}" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                    {{ $category->name }}
+                </a>
+            @endforeach
+        </div>
+
         <!-- Posts -->
         @foreach($posts as $post)
             <div class="p-4 mt-6 bg-white rounded-lg shadow">
                 <h3 class="text-xl font-semibold">
-                    <a href="{{ url('/' . $post->category->slug . '/' . $post->slug) }}" class="text-blue-600 hover:underline">
+                    <a href="{{ route('blog.post', ['category' => $post->category->slug, 'postSlug' => $post->slug]) }}" class="text-blue-600 hover:underline">
                         {{ $post->title }}
                     </a>
                 </h3>
-                <p class="text-sm text-gray-500">Published on {{ $post->published_at->format('F j, Y') }}</p>
+                <p class="text-sm text-gray-500">
+                    Published on {{ $post->published_at->format('F j, Y') }} in
+                    <a href="{{ route('blog.category', ['categorySlug' => $post->category->slug]) }}" class="text-blue-600 hover:underline">
+                        {{ $post->category->name }}
+                    </a>
+                </p>
                 <p class="mt-2 text-gray-700">{{ $post->excerpt }}</p>
-                <a href="{{ url('/' . $post->category->slug . '/' . $post->slug) }}" class="text-blue-500 hover:underline">
+                <a href="{{ route('blog.post', ['category' => $post->category->slug, 'postSlug' => $post->slug]) }}" class="text-blue-500 hover:underline">
                     Read more →
                 </a>
             </div>

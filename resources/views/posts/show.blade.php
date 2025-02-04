@@ -6,11 +6,15 @@
     </x-slot>
 
     <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <p class="text-gray-500">
-            Category: <a href="{{ url('/' . $post->category->slug) }}" class="text-blue-600 hover:underline">
+        <nav class="mb-4 text-sm text-gray-500">
+            <a href="{{ route('blog') }}" class="text-blue-600 hover:underline">Blog</a> >
+            <a href="{{ route('blog.category', ['categorySlug' => $post->category->slug]) }}" class="text-blue-600 hover:underline">
                 {{ $post->category->name }}
-            </a>
-        </p>
+            </a> >
+            <span>{{ $post->title }}</span>
+        </nav>
+
+        <p class="text-gray-500">Published on {{ $post->published_at->format('F j, Y') }}</p>
         <p class="text-gray-600">{{ $post->excerpt }}</p>
         <div class="prose max-w-none">
             {!! $post->content !!}
