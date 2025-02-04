@@ -25,5 +25,8 @@ class DatabaseSeeder extends Seeder
 
         // Run the PermissionsSeeder
         $this->call(PermissionsSeeder::class);
+
+        // Run the PageSeeder
+        $this->call(PageSeeder::class);
     }
 }
