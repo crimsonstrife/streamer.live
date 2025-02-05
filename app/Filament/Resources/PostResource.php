@@ -40,7 +40,7 @@ class PostResource extends Resource
                     ->disk('public')
                     ->directory('posts')
                     ->preserveFilenames()
-                    ->getUploadedFileNameForStorageUsing(fn($file) => time() . '_' . $file->getClientOriginalName()),
+                    ->getUploadedFileNameForStorageUsing(fn ($file) => time() . '_' . $file->getClientOriginalName()),
             ]);
     }
 
