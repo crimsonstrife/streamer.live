@@ -2,9 +2,11 @@
     <p><strong>{{ $comment->user->username }}</strong> said:</p>
     <p>{{ $comment->content }}</p>
 
-    <button wire:click="setReply({{ $comment->id }})" class="text-sm text-blue-500">
-        {{ $parentId === $comment->id ? 'Cancel Reply' : 'Reply' }}
-    </button>
+    @auth
+        <button wire:click="setReply({{ $comment->id }})" class="text-sm text-blue-500">
+            {{ $parentId === $comment->id ? 'Cancel Reply' : 'Reply' }}
+        </button>
+    @endauth
 
     @if($parentId === $comment->id)
         <!-- Reply Form -->
