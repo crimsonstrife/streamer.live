@@ -7,7 +7,7 @@
 
     <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <nav class="mb-4 text-sm text-gray-500">
-            <a href="{{ route('blog') }}" class="text-blue-600 hover:underline">{{ config('cms.posts_page_slug', 'Blog') }}</a> >
+            <a href="{{ route('blog') }}" class="text-blue-600 hover:underline">{{ ucfirst(config('cms.posts_page_slug', 'Blog')) }}</a> >
             <a href="{{ route('blog.category', ['categorySlug' => $post->category->slug]) }}" class="text-blue-600 hover:underline">
                 {{ $post->category->name }}
             </a> >
