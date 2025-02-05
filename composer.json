@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.0",
         "patreon/patreon": "^1.0",
+        "ralphjsmit/laravel-seo": "^1.6",
         "romanzipp/laravel-twitch": "^4.8",
         "spatie/laravel-permission": "^6.10",
         "spatie/laravel-settings": "^3.4"
