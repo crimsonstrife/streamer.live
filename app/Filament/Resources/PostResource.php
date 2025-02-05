@@ -35,6 +35,12 @@ class PostResource extends Resource
                     ->required(),
                 Forms\Components\Select::make('tags')->multiple()->relationship('tags', 'name'),
                 Forms\Components\DateTimePicker::make('published_at')->label('Publication Date'),
+                Forms\Components\FileUpload::make('featured_image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('posts')
+                    ->preserveFilenames()
+                    ->getUploadedFileNameForStorageUsing(fn($file) => time() . '_' . $file->getClientOriginalName()),
             ]);
     }
 

@@ -14,6 +14,10 @@
             <span>{{ $post->title }}</span>
         </nav>
 
+        @if($post->getFirstMediaUrl('featured_image'))
+            <img src="{{ $post->getFirstMediaUrl('featured_image') }}" alt="{{ $post->title }}" class="w-full mb-4 rounded-lg shadow">
+        @endif
+
         <p class="text-gray-500">Published on {{ $post->published_at->format('F j, Y') }}</p>
         <p class="text-gray-600">{{ $post->excerpt }}</p>
         <div class="prose max-w-none">
