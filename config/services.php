@@ -46,7 +46,8 @@ return [
         'enabled' => !empty(env('KO_FI_API_KEY')),
     ],
     'fourthwall' => [
-        'api_key' => env('FOURTHWALL_API_KEY'),
-        'enabled' => !empty(env('FOURTHWALL_API_KEY')),
+        'store_id' => env('FOURTHWALL_STORE_ID'),
+        'storefront_token' => env('FOURTHWALL_STORE_TOKEN'),
+        'base_url' => env('FOURTHWALL_BASE_URL', 'https://storefront-api.fourthwall.com'),
     ],
 ];
