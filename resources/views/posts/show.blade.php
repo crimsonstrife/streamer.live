@@ -23,5 +23,12 @@
         <div class="prose max-w-none">
             {!! $post->content !!}
         </div>
+
+        <!-- Comments Section -->
+        <div class="mt-12">
+            <h3 class="text-lg font-semibold">Comments</h3>
+
+            @livewire('comments', ['post' => $post])
+        </div>
     </div>
 </x-app-layout>

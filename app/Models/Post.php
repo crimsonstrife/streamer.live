@@ -61,4 +61,9 @@ class Post extends Model implements HasMedia
     {
         $this->addMediaCollection('featured_image')->singleFile()->withResponsiveImages();
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id')->orderBy('created_at', 'desc');
+    }
 }
