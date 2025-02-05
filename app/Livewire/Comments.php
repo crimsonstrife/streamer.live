@@ -9,11 +9,17 @@ class Comments extends Component
 {
     public $post;
     public $comment;
-    public $parentId;
+    public $parentId = null; // Track which comment is being replied to
 
     public function mount($post)
     {
         $this->post = $post;
+    }
+
+    public function setReply($commentId)
+    {
+        // If clicking the same reply button again, cancel reply
+        $this->parentId = ($this->parentId === $commentId) ? null : $commentId;
     }
 
     public function addComment()
