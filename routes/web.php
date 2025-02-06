@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ModeratorController;
+use App\Http\Controllers\StoreController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,14 @@ Route::get('/', function () {
     $homePage = Page::where('slug', config('cms.home_page_slug'))->first();
     return $homePage ? view('pages.show', ['page' => $homePage]) : abort(404);
 })->name('home');
+
+// Store Routes
+Route::get('/store', [StoreController::class, 'index'])->name('store.index');
+Route::get('/store/collection/{slug}', [StoreController::class, 'showCollection'])->name('store.collection');
+Route::get('/store/product/{slug}', [StoreController::class, 'showProduct'])->name('store.product');
+Route::post('/store/cart/add', [StoreController::class, 'addToCart'])->name('store.cart.add');
+Route::post('/store/cart/remove', [StoreController::class, 'removeFromCart'])->name('store.cart.remove');
+Route::get('/store/cart', [StoreController::class, 'viewCart'])->name('store.cart');
 
 // Fetch the dynamic blog slug from the settings
 $postsPage = Page::where('slug', config('cms.posts_page_slug'))->first();
