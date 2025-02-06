@@ -1,0 +1,969 @@
+openapi: 3.1.0
+info:
+  title: Storefront APIs
+  version: v1.0
+  description: ''
+externalDocs:
+  description: OpenAPI documentation
+  url: https://docs.fourthwall.com
+servers:
+  - url: https://storefront-api.fourthwall.com
+    description: Generated server url
+paths:
+  /v1/products/{slug}:
+    get:
+      tags:
+        - Products
+      summary: Get a product by slug
+      operationId: getProduct
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - USD
+              - EUR
+              - CAD
+              - GBP
+              - AUD
+              - NZD
+              - SEK
+              - NOK
+              - DKK
+              - PLN
+              - INR
+              - JPY
+              - MYR
+              - SGD
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/com.fourthwall.app.headless.model.ProductV1
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/collections:
+    get:
+      tags:
+        - Collections
+      summary: Get all collections
+      description: Returns all collections
+      operationId: getCollections
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/com.fourthwall.app.headless.model.HeadlessPageResponseCom.fourthwall.app.headless.model.CollectionPublicV1
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/carts:
+    post:
+      tags:
+        - Carts
+      summary: Create cart
+      operationId: createCart
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - USD
+              - EUR
+              - CAD
+              - GBP
+              - AUD
+              - NZD
+              - SEK
+              - NOK
+              - DKK
+              - PLN
+              - INR
+              - JPY
+              - MYR
+              - SGD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/com.fourthwall.app.headless.HeadlessCart$Request
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/carts/{cartId}/remove:
+    post:
+      tags:
+        - Carts
+      summary: Remove from cart
+      operationId: removeFromCart
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - USD
+              - EUR
+              - CAD
+              - GBP
+              - AUD
+              - NZD
+              - SEK
+              - NOK
+              - DKK
+              - PLN
+              - INR
+              - JPY
+              - MYR
+              - SGD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/com.fourthwall.cart.usecase.CartRemoveFromCart$Request
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/carts/{cartId}/change:
+    post:
+      tags:
+        - Carts
+      summary: Change cart items quantity
+      operationId: changeCartItemsQuantity
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - USD
+              - EUR
+              - CAD
+              - GBP
+              - AUD
+              - NZD
+              - SEK
+              - NOK
+              - DKK
+              - PLN
+              - INR
+              - JPY
+              - MYR
+              - SGD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/com.fourthwall.cart.usecase.CartUpdateItemsQuantity$Request
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/carts/{cartId}/add:
+    post:
+      tags:
+        - Carts
+      summary: Add to cart
+      operationId: addToCart
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - USD
+              - EUR
+              - CAD
+              - GBP
+              - AUD
+              - NZD
+              - SEK
+              - NOK
+              - DKK
+              - PLN
+              - INR
+              - JPY
+              - MYR
+              - SGD
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/com.fourthwall.cart.usecase.CartAdd$Request'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/collections/{slug}:
+    get:
+      tags:
+        - Collections
+      summary: Get a collection
+      description: Returns a collection
+      operationId: getCollection
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/com.fourthwall.app.headless.model.CollectionPublicV1
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/collections/{slug}/products:
+    get:
+      tags:
+        - Collections
+      summary: Get products (offers) in a collection
+      description: Returns all products in the collection
+      operationId: getOffers
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - USD
+              - EUR
+              - CAD
+              - GBP
+              - AUD
+              - NZD
+              - SEK
+              - NOK
+              - DKK
+              - PLN
+              - INR
+              - JPY
+              - MYR
+              - SGD
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/com.fourthwall.app.headless.model.HeadlessPageResponseCom.fourthwall.app.headless.model.ProductV1
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+  /v1/carts/{cartId}:
+    get:
+      tags:
+        - Carts
+      summary: Get cart by id
+      operationId: getCart
+      parameters:
+        - name: storefront_token
+          in: query
+          schema:
+            example: ptkn_xxxxxxxxxxxxxxxxxx
+        - name: cartId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: currency
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - USD
+              - EUR
+              - CAD
+              - GBP
+              - AUD
+              - NZD
+              - SEK
+              - NOK
+              - DKK
+              - PLN
+              - INR
+              - JPY
+              - MYR
+              - SGD
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
+        '400':
+          description: Bad Request
+          content:
+            '*/*':
+              schema: {}
+components:
+  schemas:
+    com.fourthwall.app.headless.HeadlessCart$Request:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/com.fourthwall.app.headless.HeadlessCart$RequestItem
+      required:
+        - items
+    com.fourthwall.app.headless.HeadlessCart$RequestItem:
+      type: object
+      properties:
+        variantId:
+          type: string
+          format: uuid
+          example: 000009c2-0c75-0024-0000-09c20c750024
+        quantity:
+          type: integer
+          format: int32
+          example: 1
+          maximum: 1000
+          minimum: 0
+      required:
+        - quantity
+        - variantId
+    Money:
+      type: object
+      properties:
+        value:
+          type: number
+          example: 10
+          minimum: 0
+        currency:
+          type: string
+          example: USD
+      required:
+        - currency
+        - value
+    com.fourthwall.app.headless.model.CartProductVariantV1:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sku:
+          type: string
+        unitPrice:
+          $ref: '#/components/schemas/Money'
+        compareAtPrice:
+          $ref: '#/components/schemas/Money'
+        attributes:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes
+        stock:
+          oneOf:
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock$Limited
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock$Unlimited
+        weight:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Weight
+        dimensions:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Dimensions
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+        product:
+          $ref: '#/components/schemas/com.fourthwall.app.headless.model.ProductStubV1'
+      required:
+        - attributes
+        - dimensions
+        - id
+        - images
+        - name
+        - product
+        - sku
+        - stock
+        - unitPrice
+        - weight
+    com.fourthwall.app.headless.model.CartV1:
+      type: object
+      properties:
+        id:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/com.fourthwall.app.headless.model.CartV1$CartItemV1
+      required:
+        - id
+        - items
+    com.fourthwall.app.headless.model.CartV1$CartItemV1:
+      type: object
+      properties:
+        variant:
+          $ref: >-
+            #/components/schemas/com.fourthwall.app.headless.model.CartProductVariantV1
+        quantity:
+          type: integer
+          format: int32
+      required:
+        - quantity
+        - variant
+    com.fourthwall.app.headless.model.ProductStubV1:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+      required:
+        - id
+        - name
+        - slug
+    com.fourthwall.openapi.model.Image:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 00aa4abd-5778-4199-8161-0b49b2f212e5
+        url:
+          type: string
+          example: https://fourthwall.com/image.png
+        width:
+          type: integer
+          format: int32
+          example: 800
+        height:
+          type: integer
+          format: int32
+          example: 600
+      required:
+        - height
+        - id
+        - url
+        - width
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes:
+      type: object
+      properties:
+        description:
+          type: string
+          example: Black, L
+        color:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes$Color
+        size:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes$Size
+      required:
+        - description
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes$Color:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Black
+        swatch:
+          type: string
+          example: '#000000'
+      required:
+        - name
+        - swatch
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes$Size:
+      type: object
+      properties:
+        name:
+          type: string
+          example: L
+      required:
+        - name
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Dimensions:
+      type: object
+      properties:
+        length:
+          type: number
+          example: 1
+        width:
+          type: number
+          example: 2
+        height:
+          type: number
+          example: 3
+        unit:
+          type: string
+          example: cm
+      required:
+        - height
+        - length
+        - unit
+        - width
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock:
+      type: object
+      discriminator:
+        propertyName: type
+      properties:
+        type:
+          type: string
+      required:
+        - type
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock$Limited:
+      allOf:
+        - $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock
+        - type: object
+          properties:
+            inStock:
+              type: integer
+              format: int32
+              example: 5
+      required:
+        - inStock
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock$Unlimited:
+      allOf:
+        - $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Weight:
+      type: object
+      properties:
+        value:
+          type: number
+          example: 1
+        unit:
+          type: string
+          example: kg
+      required:
+        - unit
+        - value
+    com.fourthwall.cart.usecase.CartRemoveFromCart$Request:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/com.fourthwall.cart.usecase.CartRemoveFromCart$RequestItem
+      required:
+        - items
+    com.fourthwall.cart.usecase.CartRemoveFromCart$RequestItem:
+      type: object
+      properties:
+        variantId:
+          type: string
+          format: uuid
+          example: 000009c2-0c75-0024-0000-09c20c750024
+      required:
+        - variantId
+    com.fourthwall.cart.usecase.CartUpdateItemsQuantity$Request:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/com.fourthwall.cart.usecase.CartUpdateItemsQuantity$RequestItem
+      required:
+        - items
+    com.fourthwall.cart.usecase.CartUpdateItemsQuantity$RequestItem:
+      type: object
+      properties:
+        variantId:
+          type: string
+          format: uuid
+          example: 000009c2-0c75-0024-0000-09c20c750024
+        quantity:
+          type: integer
+          format: int32
+          example: 0
+          maximum: 1000
+          minimum: 0
+      required:
+        - quantity
+        - variantId
+    com.fourthwall.cart.usecase.CartAdd$Request:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/com.fourthwall.cart.usecase.CartAdd$RequestItem
+      required:
+        - items
+    com.fourthwall.cart.usecase.CartAdd$RequestItem:
+      type: object
+      properties:
+        variantId:
+          type: string
+          format: uuid
+          example: 000009c2-0c75-0024-0000-09c20c750024
+        quantity:
+          type: integer
+          format: int32
+          example: 1
+          maximum: 10000
+          minimum: 1
+        recStrategy:
+          type: string
+      required:
+        - quantity
+        - variantId
+    com.fourthwall.app.headless.model.ProductV1:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        state:
+          oneOf:
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferStateV1$Available
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferStateV1$SoldOut
+        access:
+          oneOf:
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1$Archived
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1$Hidden
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1$Public
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+        variants:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/com.fourthwall.app.headless.model.ProductVariantV1
+        createdAt:
+          type: string
+          format: date-time
+          example: '2020-08-13T09:05:36.939Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2020-08-13T09:05:36.939Z'
+      required:
+        - access
+        - createdAt
+        - description
+        - id
+        - images
+        - name
+        - slug
+        - state
+        - updatedAt
+        - variants
+    com.fourthwall.app.headless.model.ProductVariantV1:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        sku:
+          type: string
+        unitPrice:
+          $ref: '#/components/schemas/Money'
+        compareAtPrice:
+          $ref: '#/components/schemas/Money'
+        attributes:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes
+        stock:
+          oneOf:
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock$Limited
+            - $ref: >-
+                #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Stock$Unlimited
+        weight:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Weight
+        dimensions:
+          $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Dimensions
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+      required:
+        - attributes
+        - dimensions
+        - id
+        - images
+        - name
+        - sku
+        - stock
+        - unitPrice
+        - weight
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1:
+      type: object
+      discriminator:
+        propertyName: type
+      properties:
+        type:
+          type: string
+      required:
+        - type
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1$Archived:
+      allOf:
+        - $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1$Hidden:
+      allOf:
+        - $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1$Public:
+      allOf:
+        - $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferAccessV1
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferStateV1:
+      type: object
+      discriminator:
+        propertyName: type
+      properties:
+        type:
+          type: string
+      required:
+        - type
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferStateV1$Available:
+      allOf:
+        - $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferStateV1
+    com.fourthwall.openapi.model.OfferAbstractV1$OfferStateV1$SoldOut:
+      allOf:
+        - $ref: >-
+            #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferStateV1
+    com.fourthwall.app.headless.model.CollectionPublicV1:
+      type: object
+      properties:
+        id:
+          type: string
+          example: col_b1EVARkUTcCTSfspQaXr1Q
+        name:
+          type: string
+          example: My collection
+        slug:
+          type: string
+          example: my-collection
+        description:
+          type: string
+          example: My collection description
+      required:
+        - description
+        - id
+        - name
+        - slug
+    com.fourthwall.app.headless.model.HeadlessPageResponseCom.fourthwall.app.headless.model.CollectionPublicV1:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/com.fourthwall.app.headless.model.CollectionPublicV1
+        paging:
+          $ref: '#/components/schemas/com.fourthwall.support.paging.PageResult'
+      required:
+        - results
+    com.fourthwall.support.paging.PageResult:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        elementsSize:
+          type: integer
+          format: int32
+        elementsTotal:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        hasNextPage:
+          type: boolean
+      required:
+        - elementsSize
+        - elementsTotal
+        - hasNextPage
+        - pageNumber
+        - pageSize
+        - totalPages
+    com.fourthwall.app.headless.model.HeadlessPageResponseCom.fourthwall.app.headless.model.ProductV1:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/com.fourthwall.app.headless.model.ProductV1'
+        paging:
+          $ref: '#/components/schemas/com.fourthwall.support.paging.PageResult'
+      required:
+        - results
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
