@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Storefront APIs
   version: v1.0
-  description: ''
+  description: ""
 externalDocs:
   description: OpenAPI documentation
   url: https://docs.fourthwall.com
@@ -47,17 +47,17 @@ paths:
               - MYR
               - SGD
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.headless.model.ProductV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/collections:
     get:
@@ -84,17 +84,17 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.headless.model.HeadlessPageResponseCom.fourthwall.app.headless.model.CollectionPublicV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/carts:
     post:
@@ -135,16 +135,16 @@ paths:
                 #/components/schemas/com.fourthwall.app.headless.HeadlessCart$Request
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.app.headless.model.CartV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/carts/{cartId}/remove:
     post:
@@ -190,16 +190,16 @@ paths:
                 #/components/schemas/com.fourthwall.cart.usecase.CartRemoveFromCart$Request
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.app.headless.model.CartV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/carts/{cartId}/change:
     post:
@@ -245,16 +245,16 @@ paths:
                 #/components/schemas/com.fourthwall.cart.usecase.CartUpdateItemsQuantity$Request
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.app.headless.model.CartV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/carts/{cartId}/add:
     post:
@@ -296,19 +296,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/com.fourthwall.cart.usecase.CartAdd$Request'
+              $ref: "#/components/schemas/com.fourthwall.cart.usecase.CartAdd$Request"
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.app.headless.model.CartV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/collections/{slug}:
     get:
@@ -328,17 +328,17 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.headless.model.CollectionPublicV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/collections/{slug}/products:
     get:
@@ -390,17 +390,17 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.headless.model.HeadlessPageResponseCom.fourthwall.app.headless.model.ProductV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
   /v1/carts/{cartId}:
     get:
@@ -439,16 +439,16 @@ paths:
               - MYR
               - SGD
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.app.headless.model.CartV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.app.headless.model.CartV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
 components:
   schemas:
@@ -501,9 +501,9 @@ components:
         sku:
           type: string
         unitPrice:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         compareAtPrice:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         attributes:
           $ref: >-
             #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes
@@ -522,9 +522,9 @@ components:
         images:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+            $ref: "#/components/schemas/com.fourthwall.openapi.model.Image"
         product:
-          $ref: '#/components/schemas/com.fourthwall.app.headless.model.ProductStubV1'
+          $ref: "#/components/schemas/com.fourthwall.app.headless.model.ProductStubV1"
       required:
         - attributes
         - dimensions
@@ -618,7 +618,7 @@ components:
           example: Black
         swatch:
           type: string
-          example: '#000000'
+          example: "#000000"
       required:
         - name
         - swatch
@@ -788,7 +788,7 @@ components:
         images:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+            $ref: "#/components/schemas/com.fourthwall.openapi.model.Image"
         variants:
           type: array
           items:
@@ -797,11 +797,11 @@ components:
         createdAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         updatedAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
       required:
         - access
         - createdAt
@@ -823,9 +823,9 @@ components:
         sku:
           type: string
         unitPrice:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         compareAtPrice:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         attributes:
           $ref: >-
             #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes
@@ -844,7 +844,7 @@ components:
         images:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+            $ref: "#/components/schemas/com.fourthwall.openapi.model.Image"
       required:
         - attributes
         - dimensions
@@ -922,7 +922,7 @@ components:
             $ref: >-
               #/components/schemas/com.fourthwall.app.headless.model.CollectionPublicV1
         paging:
-          $ref: '#/components/schemas/com.fourthwall.support.paging.PageResult'
+          $ref: "#/components/schemas/com.fourthwall.support.paging.PageResult"
       required:
         - results
     com.fourthwall.support.paging.PageResult:
@@ -958,9 +958,9 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.app.headless.model.ProductV1'
+            $ref: "#/components/schemas/com.fourthwall.app.headless.model.ProductV1"
         paging:
-          $ref: '#/components/schemas/com.fourthwall.support.paging.PageResult'
+          $ref: "#/components/schemas/com.fourthwall.support.paging.PageResult"
       required:
         - results
   securitySchemes:
