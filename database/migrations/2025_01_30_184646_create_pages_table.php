@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,6 +19,10 @@ return new class () extends Migration {
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->boolean('is_protected')->default(false);
             $table->string('password')->nullable();
+            $table->boolean('is_home')->default(false);
+            $table->boolean('is_blog')->default(false);
+            $table->boolean('is_terms')->default(false);
+            $table->boolean('is_store')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

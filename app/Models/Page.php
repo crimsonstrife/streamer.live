@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Page extends Model implements HasMedia
 {
@@ -52,5 +53,10 @@ class Page extends Model implements HasMedia
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'page_tags');
+    }
+
+    public function blocks(): BelongsToMany
+    {
+        return $this->belongsToMany(Block::class)->withPivot('order')->orderBy('order');
     }
 }
