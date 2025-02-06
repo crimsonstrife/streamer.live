@@ -15,17 +15,12 @@
                                 <p class="text-gray-700">${{ number_format($item['unit_price']['value'], 2) }}</p>
                             </div>
                         </div>
-                        <form action="{{ route('store.cart.remove') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="variant_id" value="{{ $item['variant_id'] }}">
-                            <button type="submit" class="text-red-500 hover:underline">Remove</button>
-                        </form>
                     </div>
                 @endforeach
             </div>
 
             <div class="mt-6">
-                <a href="{{ $cart['checkout_url'] }}" class="px-6 py-2 text-white bg-green-500 rounded-lg">
+                <a href="{{ route('store.cart') }}" class="px-6 py-2 text-white bg-green-500 rounded-lg">
                     Proceed to Checkout
                 </a>
             </div>

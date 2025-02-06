@@ -16,23 +16,20 @@ class StoreController extends Controller
 
     public function index()
     {
-        $collections = $this->fourthwallService->getCollections();
+        // Fetch collections from API
+        $apiCollections = $this->fourthwallService->getCollections();
 
-        foreach ($collections['results'] as $collection) {
-            foreach ($this->fourthwallService->getProductsInCollection($collection['slug'])['results'] as $item) {
-                Product::updateOrCreate(
-                    ['external_url' => $item['url']], // Ensure uniqueness
-                    [
-                        'name' => $item['name'],
-                        'description' => $item['description'] ?? '',
-                        'price' => $item['variants'][0]['unitPrice']['value'] ?? 0,
-                        'image' => $item['images'][0]['url'] ?? null,
-                    ]
-                );
-            }
+        // Sync collections with local database
+        foreach ($apiCollections['results'] as $collection) {
+            ProductCollection::updateOrCreate(
+                ['slug' => $collection['slug']],
+                ['name' => $collection['name'], 'description' => $collection['description'] ?? '']
+            );
         }
 
+        $collections = ProductCollection::all();
         $products = Product::all();
+
         return view('store.index', compact('collections', 'products'));
     }
 
@@ -93,6 +90,7 @@ class StoreController extends Controller
 
         $cart = $this->fourthwallService->getCart($cartId);
 
-        return view('store.cart', compact('cart'));
+        // Redirect to checkout
+        return redirect()->away($cart['checkout_url']);
     }
 }
