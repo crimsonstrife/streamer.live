@@ -252,17 +252,17 @@ paths:
             default: 20
           example: 5
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.openapi.model.OpenApiPageResponseCom.fourthwall.openapi.model.DonationV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -286,16 +286,16 @@ paths:
             type: string
           example: 00aa4abd-5778-4199-8161-0b49b2f212e5
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.openapi.model.DonationV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.openapi.model.DonationV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -322,16 +322,16 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.DrawFinishedRequest
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -349,16 +349,16 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -380,17 +380,17 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.CreateGiveawayLinksV1Request
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.GiveawayLinksV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -405,17 +405,17 @@ paths:
           https://docs.fourthwall.com/open-api/#tag/Giveaway-links/operation/getAllGiveawayLinksPackages
       operationId: getAllGiveawayLinksPackages
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.GiveawayPackagesV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -437,17 +437,17 @@ paths:
             type: string
           example: 00aa4abd-5778-4199-8161-0b49b2f212e5
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.GiveawayLinksV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -483,28 +483,28 @@ paths:
           schema:
             type: string
             format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         - name: createdAt[lt]
           in: query
           required: false
           schema:
             type: string
             format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         - name: updatedAt[gt]
           in: query
           required: false
           schema:
             type: string
             format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         - name: updatedAt[lt]
           in: query
           required: false
           schema:
             type: string
             format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         - name: status
           in: query
           required: false
@@ -525,17 +525,17 @@ paths:
             uniqueItems: true
           example: CONFIRMED
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.openapi.model.OpenApiPageResponseCom.fourthwall.openapi.model.OrderV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -559,16 +559,16 @@ paths:
             type: string
           example: 00aa4abd-5778-4199-8161-0b49b2f212e5
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -589,16 +589,16 @@ paths:
             type: string
           example: D3XZFWPP
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -626,17 +626,17 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.OpenApiProductEndpoint$UpdateOfferAvailabilityV1Request
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferFullV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -670,17 +670,17 @@ paths:
             default: 20
           example: 5
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.openapi.model.OpenApiPageResponseCom.fourthwall.openapi.model.OfferAbstractV1$OfferFullV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -704,17 +704,17 @@ paths:
             type: string
           example: 00aa4abd-5778-4199-8161-0b49b2f212e5
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferFullV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -728,16 +728,16 @@ paths:
       description: Returns the current shop
       operationId: getCurrentShop
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.openapi.model.ShopV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.openapi.model.ShopV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth: []
@@ -750,17 +750,17 @@ paths:
       description: Returns the current shop contact info
       operationId: getCurrentShopContactInfo
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.ContactInfoV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth: []
@@ -780,17 +780,17 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.StreamingStartedRequest
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.StreamingStatusV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -809,17 +809,17 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.StreamingEndedRequest
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.StreamingStatusV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -831,17 +831,17 @@ paths:
       description: Returns streaming status for all services
       operationId: streamingStatus
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.StreamingStatusV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
@@ -863,16 +863,16 @@ paths:
             type: string
           example: ty_EdJvIXu3SEiXe_QkPavHSA
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/com.fourthwall.openapi.model.ThankYouV1'
-        '400':
+                $ref: "#/components/schemas/com.fourthwall.openapi.model.ThankYouV1"
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -896,24 +896,24 @@ paths:
             type: string
           example: giv_EdJvIXu3SEiXe_QkPavHSA
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.GiftPurchaseV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - basicAuth: []
   /open-api/v1.0/fulfillments:
     post:
       tags:
-        - 'BETA: Fulfillment'
+        - "BETA: Fulfillment"
       summary: Create a fulfillment for an order
       description: >-
         Creates a fulfillment with a shipment tracker for provided order items.
@@ -933,17 +933,17 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.FulfillmentRequest
         required: true
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.openapi.FulfillmentResponse
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -952,7 +952,7 @@ paths:
   /open-api/v1.0/fulfillments/{fulfillmentId}/shipping-labels:
     post:
       tags:
-        - 'BETA: Fulfillment'
+        - "BETA: Fulfillment"
       summary: Add shipping label to fulfillment
       description: >-
         Takes fulfillment_id, carrier name, tracking number and adds new
@@ -974,17 +974,17 @@ paths:
                 #/components/schemas/com.fourthwall.fulfillment.model.FulfillmentShippingLabel
         required: true
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.fulfillment.model.Fulfillment
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -993,7 +993,7 @@ paths:
   /open-api/v1.0/fulfillments/find-by-friendly-id-and-fulfillment-service:
     post:
       tags:
-        - 'BETA: Fulfillment'
+        - "BETA: Fulfillment"
       summary: Find fulfillments ids by friendly ids and fulfillment service
       description: Find fulfillments ids by friendly ids and fulfillment service
       operationId: findFulfillmentIdsByFriendlyIdAndFulfillmentService
@@ -1005,7 +1005,7 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.OpenApiFulfillmentEndpoint$FindFulfillmentIdsByFriendlyIdAndFulfillmentServiceRequest
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -1014,10 +1014,10 @@ paths:
                 items:
                   $ref: >-
                     #/components/schemas/com.fourthwall.app.fulfillment.adapter.FulfillmentByFriendlyIdResult
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1026,7 +1026,7 @@ paths:
   /open-api/v1.0/fulfillments/bulk/shipping-labels:
     post:
       tags:
-        - 'BETA: Fulfillment'
+        - "BETA: Fulfillment"
       summary: Bulk add shipping label to fulfillment
       description: >-
         Takes a list of fulfillment_id, carrier name, tracking number and adds
@@ -1041,17 +1041,17 @@ paths:
             $ref: >-
               #/components/schemas/com.fourthwall.app.openapi.OpenApiFulfillmentEndpoint$BulkSaveFulfillmentsShippingLabelsRequest
       responses:
-        '201':
+        "201":
           description: Created
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.openapi.OpenApiFulfillmentEndpoint$BulkSaveFulfillmentsShippingLabelsResponse
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1060,7 +1060,7 @@ paths:
   /open-api/v1.0/promotions:
     get:
       tags:
-        - 'BETA: Promotions'
+        - "BETA: Promotions"
       summary: Get all promotions
       description: Returns all promotions
       operationId: getPromotions
@@ -1082,17 +1082,17 @@ paths:
             default: 20
           example: 5
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.openapi.model.OpenApiPageResponseCom.fourthwall.openapi.model.promotions.PromotionV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1100,7 +1100,7 @@ paths:
         - basicAuth: []
     post:
       tags:
-        - 'BETA: Promotions'
+        - "BETA: Promotions"
       summary: Create a promotion
       description: Creates a promotion
       operationId: createPromotion
@@ -1123,7 +1123,7 @@ paths:
                     #/components/schemas/com.fourthwall.app.openapi.model.requests.promotions.OpenApiCreatePromotionRequest$Shop$Single
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
@@ -1139,10 +1139,10 @@ paths:
                       #/components/schemas/com.fourthwall.openapi.model.promotions.SingleMembershipsPromotionV1
                   - $ref: >-
                       #/components/schemas/com.fourthwall.openapi.model.promotions.SingleShopPromotionV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1151,7 +1151,7 @@ paths:
   /open-api/v1.0/webhooks/{webhookConfigurationId}:
     get:
       tags:
-        - 'BETA: Webhooks'
+        - "BETA: Webhooks"
       summary: Get a webhook
       description: Get a webhook
       operationId: getWebhookConfiguration
@@ -1162,21 +1162,21 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.WebhookConfigurationV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
     put:
       tags:
-        - 'BETA: Webhooks'
+        - "BETA: Webhooks"
       summary: Update a webhook
       description: Update a webhook
       operationId: updateWebhookConfiguration
@@ -1194,17 +1194,17 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.OpenApiWebhookConfigurationEndpoint$WebhookConfigurationUpdateRequest
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.WebhookConfigurationV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1212,7 +1212,7 @@ paths:
         - basicAuth: []
     delete:
       tags:
-        - 'BETA: Webhooks'
+        - "BETA: Webhooks"
       summary: Delete a webhook
       description: Delete a webhook
       operationId: deleteWebhookConfiguration
@@ -1223,12 +1223,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: OK
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1237,22 +1237,22 @@ paths:
   /open-api/v1.0/webhooks:
     get:
       tags:
-        - 'BETA: Webhooks'
+        - "BETA: Webhooks"
       summary: Get webhooks
       description: Get webhooks
       operationId: getWebhookConfigurations
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.app.openapi.model.OpenApiPageResponseCom.fourthwall.openapi.model.WebhookConfigurationV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1260,7 +1260,7 @@ paths:
         - basicAuth: []
     post:
       tags:
-        - 'BETA: Webhooks'
+        - "BETA: Webhooks"
       summary: Create a webhook
       description: Create a webhook
       operationId: createWebhookConfiguration
@@ -1272,17 +1272,17 @@ paths:
                 #/components/schemas/com.fourthwall.app.openapi.OpenApiWebhookConfigurationEndpoint$WebhookConfigurationCreateRequest
         required: true
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.WebhookConfigurationV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
       security:
         - oauth:
@@ -1291,22 +1291,22 @@ paths:
   /open-api/v1.0/webhooks-secret:
     get:
       tags:
-        - 'BETA: Webhooks'
+        - "BETA: Webhooks"
       summary: Get webhook secret
       description: Get webhook secret
       operationId: getWebhookSecret
       responses:
-        '200':
+        "200":
           description: OK
           content:
             application/json:
               schema:
                 $ref: >-
                   #/components/schemas/com.fourthwall.openapi.model.WebhookSecretV1
-        '400':
+        "400":
           description: Bad Request
           content:
-            '*/*':
+            "*/*":
               schema: {}
 components:
   schemas:
@@ -1559,7 +1559,7 @@ components:
         images:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+            $ref: "#/components/schemas/com.fourthwall.openapi.model.Image"
         variants:
           type: array
           items:
@@ -1568,11 +1568,11 @@ components:
         createdAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         updatedAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
       required:
         - access
         - createdAt
@@ -1623,7 +1623,7 @@ components:
           example: Black
         swatch:
           type: string
-          example: '#000000'
+          example: "#000000"
       required:
         - name
         - swatch
@@ -1668,7 +1668,7 @@ components:
           type: string
           example: WDEK-DRE200L
         unitPrice:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         attributes:
           $ref: >-
             #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes
@@ -1687,7 +1687,7 @@ components:
         images:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+            $ref: "#/components/schemas/com.fourthwall.openapi.model.Image"
       required:
         - attributes
         - dimensions
@@ -1837,9 +1837,9 @@ components:
       type: object
       properties:
         subtotal:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         total:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
       required:
         - subtotal
         - total
@@ -1857,7 +1857,7 @@ components:
         - status
     com.fourthwall.openapi.model.GiftDraftV1$Gift$Available:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift"
         - type: object
           properties:
             id:
@@ -1870,7 +1870,7 @@ components:
         - id
     com.fourthwall.openapi.model.GiftDraftV1$Gift$Cancelled:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift"
         - type: object
           properties:
             id:
@@ -1883,7 +1883,7 @@ components:
         - id
     com.fourthwall.openapi.model.GiftDraftV1$Gift$ChangedToPromotion:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift"
         - type: object
           properties:
             id:
@@ -1901,7 +1901,7 @@ components:
         - winner
     com.fourthwall.openapi.model.GiftDraftV1$Gift$Redeemed:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.GiftDraftV1$Gift"
         - type: object
           properties:
             id:
@@ -1933,7 +1933,7 @@ components:
         selectedAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         redeemUri:
           type: string
       required:
@@ -1955,7 +1955,7 @@ components:
           type: string
           example: My t-shirt description
         primaryImage:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.Image"
       required:
         - description
         - id
@@ -2179,7 +2179,7 @@ components:
         - type: object
           properties:
             money:
-              $ref: '#/components/schemas/Money'
+              $ref: "#/components/schemas/Money"
             freeShipping:
               type: boolean
       required:
@@ -2281,7 +2281,7 @@ components:
       type: object
       properties:
         minimumOrderValue:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
     com.fourthwall.app.openapi.model.requests.promotions.OpenApiPromotionSelectedProducts:
       type: object
       properties:
@@ -2579,7 +2579,7 @@ components:
       type: object
       properties:
         minimumOrderValue:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
     com.fourthwall.openapi.model.promotions.PromotionShopAppliesToV1:
       type: object
       discriminator:
@@ -2639,7 +2639,7 @@ components:
         - type: object
           properties:
             money:
-              $ref: '#/components/schemas/Money'
+              $ref: "#/components/schemas/Money"
             freeShipping:
               type: boolean
       required:
@@ -2877,7 +2877,7 @@ components:
             createdAt:
               type: string
               format: date-time
-              example: '2020-08-13T09:05:36.939Z'
+              example: "2020-08-13T09:05:36.939Z"
       required:
         - createdAt
         - id
@@ -2901,11 +2901,11 @@ components:
             createdAt:
               type: string
               format: date-time
-              example: '2020-08-13T09:05:36.939Z'
+              example: "2020-08-13T09:05:36.939Z"
             cancelledAt:
               type: string
               format: date-time
-              example: '2020-08-13T09:05:36.939Z'
+              example: "2020-08-13T09:05:36.939Z"
       required:
         - cancelledAt
         - createdAt
@@ -2930,11 +2930,11 @@ components:
             createdAt:
               type: string
               format: date-time
-              example: '2020-08-13T09:05:36.939Z'
+              example: "2020-08-13T09:05:36.939Z"
             redeemedAt:
               type: string
               format: date-time
-              example: '2020-08-13T09:05:36.939Z'
+              example: "2020-08-13T09:05:36.939Z"
       required:
         - createdAt
         - id
@@ -2963,9 +2963,9 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.app.openapi.FulfillmentItem'
+            $ref: "#/components/schemas/com.fourthwall.app.openapi.FulfillmentItem"
         shippingLabel:
-          $ref: '#/components/schemas/com.fourthwall.app.openapi.ShippingLabel'
+          $ref: "#/components/schemas/com.fourthwall.app.openapi.ShippingLabel"
       required:
         - items
         - orderId
@@ -3236,7 +3236,7 @@ components:
         result:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.fulfillment.model.Fulfillment'
+            $ref: "#/components/schemas/com.fourthwall.fulfillment.model.Fulfillment"
       required:
         - result
     com.fourthwall.app.openapi.model.OpenApiPageResponseCom.fourthwall.openapi.model.WebhookConfigurationV1:
@@ -3413,7 +3413,7 @@ components:
         domain:
           type: string
         location:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.AddressV1'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.AddressV1"
       required:
         - contactEmail
         - domain
@@ -3457,7 +3457,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1'
+            $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1"
       required:
         - results
     com.fourthwall.openapi.model.Address:
@@ -3508,7 +3508,7 @@ components:
           type: string
           example: My t-shirt description
         primaryImage:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.Image'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.Image"
         variant:
           $ref: >-
             #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$OfferVariantWithQuantityV1
@@ -3531,7 +3531,7 @@ components:
           type: string
           example: WDEK-DRE200L
         unitPrice:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         attributes:
           $ref: >-
             #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Attributes
@@ -3540,7 +3540,7 @@ components:
           format: int32
           example: 5
         price:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         weight:
           $ref: >-
             #/components/schemas/com.fourthwall.openapi.model.OfferAbstractV1$OfferVariantAbstractV1$Weight
@@ -3602,9 +3602,9 @@ components:
           $ref: >-
             #/components/schemas/com.fourthwall.openapi.model.OrderV1$OrderAmounts
         billing:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1$Billing'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1$Billing"
         shipping:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1$Shipping'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1$Shipping"
         offers:
           type: array
           items:
@@ -3623,11 +3623,11 @@ components:
         createdAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         updatedAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
       required:
         - amounts
         - checkoutId
@@ -3646,24 +3646,24 @@ components:
       type: object
       properties:
         address:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.Address'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.Address"
       required:
         - address
     com.fourthwall.openapi.model.OrderV1$OrderAmounts:
       type: object
       properties:
         subtotal:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         shipping:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         tax:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         donation:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         discount:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         total:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
       required:
         - discount
         - donation
@@ -3675,7 +3675,7 @@ components:
       type: object
       properties:
         address:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.Address'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.Address"
       required:
         - address
     com.fourthwall.openapi.model.OrderV1$Source:
@@ -3689,7 +3689,7 @@ components:
         - type
     com.fourthwall.openapi.model.OrderV1$Source$GiveawayLinks:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source"
         - type: object
           properties:
             giftId:
@@ -3699,13 +3699,13 @@ components:
         - giftId
     com.fourthwall.openapi.model.OrderV1$Source$Order:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source"
     com.fourthwall.openapi.model.OrderV1$Source$SamplesOrder:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source"
     com.fourthwall.openapi.model.OrderV1$Source$TwitchGiftRedemption:
       allOf:
-        - $ref: '#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source'
+        - $ref: "#/components/schemas/com.fourthwall.openapi.model.OrderV1$Source"
         - type: object
           properties:
             giftPurchaseId:
@@ -3736,7 +3736,7 @@ components:
         createdAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
       required:
         - createdAt
         - packageId
@@ -3795,15 +3795,15 @@ components:
       type: object
       properties:
         subtotal:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         tax:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         total:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         profit:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
         prepaidShipping:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
       required:
         - prepaidShipping
         - profit
@@ -3901,7 +3901,7 @@ components:
         selectedAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
       required:
         - selectedAt
     com.fourthwall.app.openapi.model.OpenApiPageResponseCom.fourthwall.openapi.model.DonationV1:
@@ -3910,7 +3910,7 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/com.fourthwall.openapi.model.DonationV1'
+            $ref: "#/components/schemas/com.fourthwall.openapi.model.DonationV1"
       required:
         - results
     com.fourthwall.openapi.model.DonationV1:
@@ -3940,15 +3940,15 @@ components:
           type: string
           example: Sample message
         amounts:
-          $ref: '#/components/schemas/com.fourthwall.openapi.model.DonationV1$Amounts'
+          $ref: "#/components/schemas/com.fourthwall.openapi.model.DonationV1$Amounts"
         createdAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
         updatedAt:
           type: string
           format: date-time
-          example: '2020-08-13T09:05:36.939Z'
+          example: "2020-08-13T09:05:36.939Z"
       required:
         - amounts
         - createdAt
@@ -3961,7 +3961,7 @@ components:
       type: object
       properties:
         total:
-          $ref: '#/components/schemas/Money'
+          $ref: "#/components/schemas/Money"
       required:
         - total
   securitySchemes:
