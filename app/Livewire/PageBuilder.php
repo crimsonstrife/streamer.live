@@ -14,6 +14,14 @@ class PageBuilder extends Component
     public $assignedBlocks = [];
     public $selectedBlockType = '';
 
+    protected $listeners = ['refreshComponent' => '$refresh'];
+
+    #[On('refreshComponent')]
+    public function refreshComponent()
+    {
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+    }
+
     public function mount($page)
     {
         $pageModel = new Page();
@@ -38,10 +46,14 @@ class PageBuilder extends Component
                 'content' => $blockData['content'],
             ]);
 
+            // Attach block to the page and ensure ordering
             $this->page->blocks()->attach($block->id, ['order' => count($this->assignedBlocks)]);
 
-            // Store only IDs, not objects
-            $this->assignedBlocks = $this->page->blocks()->pluck('blocks.id')->toArray();
+            // Reload full block objects to avoid passing IDs
+            $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+
+            // Force Livewire to refresh
+            $this->dispatch('refreshComponent');
 
             $this->selectedBlockType = ''; // Reset selection
         }
