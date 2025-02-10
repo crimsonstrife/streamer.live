@@ -1,6 +1,20 @@
 <div class="p-6 bg-white rounded-lg shadow">
     <h2 class="text-xl font-bold">{{ $page->title }} - Page Builder</h2>
 
+    <!-- Add Block Selection -->
+    <div class="mt-4">
+        <h3 class="text-lg font-semibold">Add a Block</h3>
+        <select wire:model="selectedBlockType" class="w-full p-2 border rounded">
+            <option value="">Select a Block Type</option>
+            @foreach($availableBlocks as $key => $block)
+                <option value="{{ $key }}">{{ $block['display_name'] }}</option>
+            @endforeach
+        </select>
+        <button wire:click="addBlock" class="px-4 py-2 mt-2 text-white bg-blue-500 rounded">Add Block</button>
+    </div>
+
+    <!-- Blocks List -->
+
     <div wire:sortable="updateBlockOrder" class="mt-4 space-y-4">
         @foreach ($assignedBlocks as $loopIndex => $block)
             <div wire:sortable.item="{{ $block['id'] }}" wire:key="block-{{ $block['id'] }}"

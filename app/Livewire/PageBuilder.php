@@ -32,7 +32,7 @@ class PageBuilder extends Component
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn ($block) => [
+            ->map(fn($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
@@ -70,7 +70,11 @@ class PageBuilder extends Component
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-        $this->assignedBlocks = array_diff($this->assignedBlocks, [$blockId]);
+
+        // Ensure we're working with IDs, not full block objects
+        $this->assignedBlocks = array_filter($this->assignedBlocks, function ($block) use ($blockId) {
+            return $block['id'] !== $blockId;
+        });
 
         // Force Livewire to refresh
         $this->dispatch('refreshComponent');
