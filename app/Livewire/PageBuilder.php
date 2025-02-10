@@ -32,7 +32,7 @@ class PageBuilder extends Component
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn($block) => [
+            ->map(fn ($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
