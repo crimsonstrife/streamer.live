@@ -11,40 +11,52 @@ class PageBuilder extends Component
     public $page;
     public $availableBlocks = [];
     public $assignedBlocks = [];
+    public $selectedBlockType = '';
 
     public function mount($page)
     {
         $pageModel = new Page();
         $this->page = $pageModel->findOrFail($page);
-        $this->availableBlocks = Block::all();
+        $this->availableBlocks = Block::nativeBlocks();
+        // Ensure assignedBlocks only stores IDs
         $this->assignedBlocks = $this->page->blocks()->pluck('blocks.id')->toArray();
     }
 
-    public function assignBlock($blockId)
+    public function addBlock()
     {
-        if (!in_array($blockId, $this->assignedBlocks)) {
-            $this->assignedBlocks[] = $blockId;
+        if ($this->selectedBlockType) {
+            $blockData = $this->availableBlocks[$this->selectedBlockType];
+
+            $block = (new Block())->create([
+                'name' => $blockData['name'],
+                'type' => $blockData['type'],
+                'content' => $blockData['content'],
+            ]);
+
+            $this->page->blocks()->attach($block->id, ['order' => count($this->assignedBlocks)]);
+
+            // Store only IDs, not objects
+            $this->assignedBlocks = $this->page->blocks()->pluck('blocks.id')->toArray();
+
+            $this->selectedBlockType = ''; // Reset selection
         }
     }
 
     public function removeBlock($blockId)
     {
+        $this->page->blocks()->detach($blockId);
         $this->assignedBlocks = array_diff($this->assignedBlocks, [$blockId]);
     }
 
     public function updateBlockOrder($orderedIds)
     {
         foreach ($orderedIds as $index => $id) {
-            $block = Block::find($id);
-            if ($block) {
-                $block->pages()->updateExistingPivot($this->page->id, ['order' => $index]);
-            }
+            $this->page->blocks()->updateExistingPivot($id, ['order' => $index]);
         }
     }
 
     public function save()
     {
-        $this->page->blocks()->sync($this->assignedBlocks);
         session()->flash('success', 'Page updated successfully!');
     }
 
@@ -52,7 +64,7 @@ class PageBuilder extends Component
     {
         return view('livewire.page-builder', [
             'availableBlocks' => $this->availableBlocks,
-            'assignedBlocks' => Block::whereIn('id', $this->assignedBlocks)->get(),
+            'assignedBlocks' => Block::whereIn('id', array_values($this->assignedBlocks))->get(), // Ensure flat array
             'blocks' => $this->page->blocks,
         ])->layout('layouts.app');
     }

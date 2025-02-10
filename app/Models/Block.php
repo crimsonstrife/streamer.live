@@ -17,4 +17,14 @@ class Block extends Model
     {
         return $this->belongsToMany(Page::class, 'page_block')->withPivot('order')->orderBy('page_block.order');
     }
+
+    public static function nativeBlocks()
+    {
+        return [
+            'text' => ['name' => 'Text Block', 'type' => 'text', 'content' => ['text' => '']],
+            'image' => ['name' => 'Image Block', 'type' => 'image', 'content' => ['url' => '']],
+            'embed' => ['name' => 'Embed Block', 'type' => 'embed', 'content' => ['embed_url' => '']],
+            'latest_posts' => ['name' => 'Latest Posts', 'type' => 'latest_posts', 'content' => []],
+        ];
+    }
 }
