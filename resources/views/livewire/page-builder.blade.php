@@ -7,7 +7,7 @@
         <select wire:model="selectedBlockType" class="w-full p-2 border rounded">
             <option value="">Select a Block Type</option>
             @foreach($availableBlocks as $key => $block)
-                <option value="{{ $key }}">{{ $block['name'] }}</option>
+                <option value="{{ $key }}">{{ $block['display_name'] }}</option>
             @endforeach
         </select>
         <button wire:click="addBlock" class="px-4 py-2 mt-2 text-white bg-blue-500 rounded">Add Block</button>

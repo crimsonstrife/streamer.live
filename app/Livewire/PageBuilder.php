@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Page;
 use App\Models\Block;
+use Illuminate\Support\Str;
 
 class PageBuilder extends Component
 {
@@ -19,7 +20,7 @@ class PageBuilder extends Component
         $this->page = $pageModel->findOrFail($page);
         $this->availableBlocks = Block::nativeBlocks();
         // Ensure assignedBlocks only stores IDs
-        $this->assignedBlocks = $this->page->blocks()->pluck('blocks.id')->toArray();
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
     }
 
     public function addBlock()
@@ -27,8 +28,11 @@ class PageBuilder extends Component
         if ($this->selectedBlockType) {
             $blockData = $this->availableBlocks[$this->selectedBlockType];
 
+            // Generate a unique block name by appending a timestamp
+            $uniqueName = Str::slug($blockData['name']) . '-' . now()->timestamp;
+
             $block = (new Block())->create([
-                'name' => $blockData['name'],
+                'name' => $uniqueName,
                 'type' => $blockData['type'],
                 'content' => $blockData['content'],
             ]);
@@ -64,7 +68,7 @@ class PageBuilder extends Component
     {
         return view('livewire.page-builder', [
             'availableBlocks' => $this->availableBlocks,
-            'assignedBlocks' => Block::whereIn('id', array_values($this->assignedBlocks))->get(), // Ensure flat array
+            'assignedBlocks' => $this->assignedBlocks,
             'blocks' => $this->page->blocks,
         ])->layout('layouts.app');
     }

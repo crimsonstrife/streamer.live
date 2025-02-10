@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -12,7 +12,8 @@ return new class () extends Migration {
     {
         Schema::create('blocks', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Allow reusable blocks to have a name
+            $table->string('name')->unique(); // Allow reusable blocks to have a name to reference
+            $table->string('display_name'); // Human-readable name for the block, e.g. "Text Block" does not need to be unique
             $table->string('type'); // Text, Image, Embed, etc.
             $table->json('content'); // Stores block data
             $table->timestamps();
