@@ -29,10 +29,11 @@ class PageBuilder extends Component
             $blockData = $this->availableBlocks[$this->selectedBlockType];
 
             // Generate a unique block name by appending a timestamp
-            $uniqueName = Str::slug($blockData['name']) . '-' . now()->timestamp;
+            $uniqueName = Str::slug($blockData['display_name']) . '-' . now()->timestamp;
 
             $block = (new Block())->create([
                 'name' => $uniqueName,
+                'display_name' => $blockData['display_name'],
                 'type' => $blockData['type'],
                 'content' => $blockData['content'],
             ]);
