@@ -14,7 +14,6 @@
     </div>
 
     <!-- Blocks List -->
-
     <div wire:sortable="updateBlockOrder" class="mt-4 space-y-4">
         @foreach ($assignedBlocks as $loopIndex => $block)
             <div wire:sortable.item="{{ $block['id'] }}" wire:key="block-{{ $block['id'] }}"

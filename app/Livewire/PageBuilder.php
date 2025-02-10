@@ -82,9 +82,15 @@ class PageBuilder extends Component
 
     public function updateBlockOrder($orderedIds)
     {
-        foreach ($orderedIds as $index => $id) {
-            $this->page->blocks()->updateExistingPivot($id, ['order' => $index]);
+        foreach ($orderedIds as $index => $blockId) {
+            $this->page->blocks()->updateExistingPivot($blockId, ['order' => $index]);
         }
+
+        // Reload blocks with updated order
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+
+        // Force Livewire to refresh
+        $this->dispatch('refreshComponent');
     }
 
     public function updateBlockContent($index, $field, $value)
