@@ -48,7 +48,7 @@ class PageResource extends Resource
 
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->visible(fn($get) => $get('is_protected')),
+                    ->visible(fn ($get) => $get('is_protected')),
 
                 Forms\Components\DateTimePicker::make('published_at')
                     ->label('Publication Date'),
@@ -89,7 +89,7 @@ class PageResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('Edit Blocks')
-                    ->url(fn(Page $record) => route('page.builder', ['page' => $record->id]))
+                    ->url(fn (Page $record) => route('page.builder', ['page' => $record->id]))
                     ->icon('heroicon-o-pencil')
                     ->openUrlInNewTab(),
             ])
