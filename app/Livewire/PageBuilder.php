@@ -78,6 +78,12 @@ class PageBuilder extends Component
 
         // Force Livewire to refresh
         $this->dispatch('refreshComponent');
+
+        // Delete the block from the database
+        Block::destroy($blockId);
+
+        // Flash a success message
+        session()->flash('success', 'Block removed successfully!');
     }
 
     public function updateBlockOrder($orderedIds)
