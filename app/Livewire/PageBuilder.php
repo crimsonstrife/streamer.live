@@ -12,11 +12,12 @@ class PageBuilder extends Component
     public $availableBlocks = [];
     public $assignedBlocks = [];
 
-    public function mount(Page $page)
+    public function mount($page)
     {
-        $this->page = $page;
+        $pageModel = new Page();
+        $this->page = $pageModel->findOrFail($page);
         $this->availableBlocks = Block::all();
-        $this->assignedBlocks = $page->blocks()->pluck('blocks.id')->toArray();
+        $this->assignedBlocks = $this->page->blocks()->pluck('blocks.id')->toArray();
     }
 
     public function assignBlock($blockId)
@@ -31,6 +32,16 @@ class PageBuilder extends Component
         $this->assignedBlocks = array_diff($this->assignedBlocks, [$blockId]);
     }
 
+    public function updateBlockOrder($orderedIds)
+    {
+        foreach ($orderedIds as $index => $id) {
+            $block = Block::find($id);
+            if ($block) {
+                $block->pages()->updateExistingPivot($this->page->id, ['order' => $index]);
+            }
+        }
+    }
+
     public function save()
     {
         $this->page->blocks()->sync($this->assignedBlocks);
@@ -42,6 +53,7 @@ class PageBuilder extends Component
         return view('livewire.page-builder', [
             'availableBlocks' => $this->availableBlocks,
             'assignedBlocks' => Block::whereIn('id', $this->assignedBlocks)->get(),
-        ]);
+            'blocks' => $this->page->blocks,
+        ])->layout('layouts.app');
     }
 }

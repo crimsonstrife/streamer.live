@@ -88,6 +88,10 @@ class PageResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Edit Blocks')
+                    ->url(fn(Page $record) => route('page.builder', ['page' => $record->id]))
+                    ->icon('heroicon-o-pencil')
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

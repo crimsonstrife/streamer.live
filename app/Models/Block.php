@@ -15,6 +15,6 @@ class Block extends Model
 
     public function pages(): BelongsToMany
     {
-        return $this->belongsToMany(Page::class);
+        return $this->belongsToMany(Page::class, 'page_block')->withPivot('order')->orderBy('page_block.order');
     }
 }

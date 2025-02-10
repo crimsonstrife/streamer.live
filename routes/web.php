@@ -9,6 +9,7 @@ use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ModeratorController;
 use App\Http\Controllers\StoreController;
+use App\Livewire\PageBuilder;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::get('/admin/pages/{page}', \App\Livewire\PageBuilder::class)->name('page.builder');
 });
 
 // Home Page (Dynamic)

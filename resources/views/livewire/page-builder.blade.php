@@ -1,29 +1,27 @@
 <div class="p-6 bg-white rounded-lg shadow">
-    <h2 class="text-xl font-bold">{{ $page->title }} - Page Builder</h2>
+    @if ($page)
+        <h2 class="text-xl font-bold">{{ $page->title }} - Page Builder</h2>
+    @endif
 
-    <!-- Available Blocks -->
-    <div class="mt-4">
-        <h3 class="text-lg font-semibold">Available Blocks</h3>
-        <div class="grid grid-cols-3 gap-2">
-            @foreach($availableBlocks as $block)
-                <button wire:click="assignBlock({{ $block->id }})" class="px-4 py-2 text-white bg-blue-500 rounded">
-                    {{ $block->name }}
-                </button>
-            @endforeach
-        </div>
-    </div>
+    <div wire:sortable="updateBlockOrder" class="mt-4 space-y-4">
+        @foreach ($blocks as $block)
+            <div wire:sortable.item="{{ $block->id }}" wire:key="block-{{ $block->id }}"
+                class="p-4 bg-gray-100 rounded shadow cursor-move">
+                <h3 class="text-lg font-semibold">{{ ucfirst($block->type) }} Block</h3>
 
-    <!-- Assigned Blocks -->
-    <div class="mt-6">
-        <h3 class="text-lg font-semibold">Assigned Blocks</h3>
-        <div class="space-y-4">
-            @foreach($assignedBlocks as $block)
-                <div class="p-4 bg-gray-100 rounded shadow">
-                    <h3 class="text-lg font-semibold">{{ $block->name }}</h3>
-                    <button wire:click="removeBlock({{ $block->id }})" class="text-red-500">Remove</button>
-                </div>
-            @endforeach
-        </div>
+                @if ($block->type === 'text')
+                    <textarea wire:model="blocks.{{ $loop->index }}.content.text" class="w-full p-2 border"></textarea>
+                @elseif($block->type === 'image')
+                    <input type="text" wire:model="blocks.{{ $loop->index }}.content.url" class="w-full p-2 border"
+                        placeholder="Image URL">
+                @elseif($block->type === 'embed')
+                    <input type="text" wire:model="blocks.{{ $loop->index }}.content.embed_url"
+                        class="w-full p-2 border" placeholder="Embed URL">
+                @endif
+
+                <button wire:click="removeBlock({{ $block->id }})" class="mt-2 text-red-500">Remove</button>
+            </div>
+        @endforeach
     </div>
 
     <button wire:click="save" class="px-4 py-2 mt-6 text-white bg-indigo-500 rounded">Save Page</button>

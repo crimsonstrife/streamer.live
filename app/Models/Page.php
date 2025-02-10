@@ -57,6 +57,6 @@ class Page extends Model implements HasMedia
 
     public function blocks(): BelongsToMany
     {
-        return $this->belongsToMany(Block::class)->withPivot('order')->orderBy('order');
+        return $this->belongsToMany(Block::class, 'page_block')->withPivot('order')->orderBy('page_block.order');
     }
 }
