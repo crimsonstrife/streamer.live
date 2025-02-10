@@ -27,8 +27,16 @@ class PageBuilder extends Component
         $pageModel = new Page();
         $this->page = $pageModel->findOrFail($page);
         $this->availableBlocks = Block::nativeBlocks();
-        // Ensure assignedBlocks only stores IDs
-        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+
+        // Store full block data, not just IDs
+        $this->assignedBlocks = $this->page->blocks()
+            ->orderBy('page_block.order')
+            ->get()
+            ->map(fn($block) => [
+                'id' => $block->id,
+                'type' => $block->type,
+                'content' => $block->content,
+            ])->toArray();
     }
 
     public function addBlock()
@@ -63,6 +71,9 @@ class PageBuilder extends Component
     {
         $this->page->blocks()->detach($blockId);
         $this->assignedBlocks = array_diff($this->assignedBlocks, [$blockId]);
+
+        // Force Livewire to refresh
+        $this->dispatch('refreshComponent');
     }
 
     public function updateBlockOrder($orderedIds)
@@ -72,8 +83,26 @@ class PageBuilder extends Component
         }
     }
 
+    public function updateBlockContent($index, $field, $value)
+    {
+        if (isset($this->assignedBlocks[$index])) {
+            $this->assignedBlocks[$index]['content'][$field] = $value;
+        }
+    }
+
     public function save()
     {
+        foreach ($this->assignedBlocks as $blockData) {
+            $block = Block::find($blockData['id']);
+            if ($block) {
+                $block->update(['content' => $blockData['content']]);
+            }
+        }
+
+        // Force Livewire to refresh
+        $this->dispatch('refreshComponent');
+
+        // Flash a success message
         session()->flash('success', 'Page updated successfully!');
     }
 
