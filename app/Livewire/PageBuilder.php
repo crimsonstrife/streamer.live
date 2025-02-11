@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Models\Page;
 use App\Models\Block;
 use Illuminate\Support\Str;
@@ -12,6 +13,7 @@ class PageBuilder extends Component
     public $page;
     public $availableBlocks = [];
     public $assignedBlocks = [];
+    public bool $showModal = false;
     public $selectedBlockType = '';
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -20,6 +22,17 @@ class PageBuilder extends Component
     public function refreshComponent()
     {
         $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+    }
+
+    public function openModal()
+    {
+        $this->showModal = true;
+    }
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->selectedBlockType = ''; // Reset selection
     }
 
     public function mount($page)
@@ -32,7 +45,7 @@ class PageBuilder extends Component
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn ($block) => [
+            ->map(fn($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
@@ -59,6 +72,8 @@ class PageBuilder extends Component
 
             // Reload full block objects to avoid passing IDs
             $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+
+            $this->closeModal(); // Close modal after adding a block
 
             // Force Livewire to refresh
             $this->dispatch('refreshComponent');
