@@ -7,6 +7,7 @@ const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    mode: 'jit',
     presets: [preset],
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
@@ -36,7 +37,22 @@ export default {
                     foreground: 'var(--color-accent-foreground)',
                 },
             },
+            backgroundOpacity: {
+                10: '0.1',
+                20: '0.2',
+                30: '0.3',
+                40: '0.4',
+                50: '0.5', // Ensure bg-opacity-50 is available
+                60: '0.6',
+                70: '0.7',
+                80: '0.8',
+                90: '0.9',
+            },
         },
+    },
+
+    corePlugins: {
+        preflight: false, // Disable Tailwind's reset to avoid conflicts with Bootstrap
     },
 
     plugins: [forms, typography],
