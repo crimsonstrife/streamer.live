@@ -7,6 +7,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/colors.css',
                 'resources/css/filament/admin/theme.css',
                 'resources/js/app.js',
                 'tailwind.config.js'],
