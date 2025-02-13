@@ -2,7 +2,7 @@ import 'tailwindcss'
 import defaultTheme from 'tailwindcss/defaultTheme'
 import forms from '@tailwindcss/forms'
 import typography from '@tailwindcss/typography'
-import preset from '../vendor/filament/filament/tailwind.config.preset'
+import preset from './vendor/filament/filament/tailwind.config.preset.js'
 const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
