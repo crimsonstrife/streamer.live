@@ -21,7 +21,6 @@
     display: none;
 }
 
-
 /* Fix common conflicts */
 .btn {
     @apply !rounded-md !shadow-sm !px-4 !py-2; /* Ensure Tailwind doesn't override Bootstrap buttons */
