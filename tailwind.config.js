@@ -46,7 +46,12 @@ export default {
         70: '0.7',
         80: '0.8',
         90: '0.9'
-      }
+      },
+      borderRadius: {
+        'md': '0.375rem',
+        'lg': '0.5rem',
+        'xl': '0.75rem',
+      },
     }
   },
 
