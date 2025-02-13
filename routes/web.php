@@ -26,6 +26,10 @@ Route::middleware([
     Route::get('/admin/pages/{page}', \App\Livewire\PageBuilder::class)->name('page.builder');
 });
 
+//Auth::routes();
+
+//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 // Home Page (Dynamic)
 Route::get('/', function () {
     $homePage = Page::where('slug', config('cms.home_page_slug'))->first();

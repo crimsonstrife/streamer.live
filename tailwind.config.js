@@ -7,8 +7,8 @@ const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  mode: 'jit',
   presets: [preset],
+  mode: 'jit',
   content: [
     './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     './vendor/laravel/jetstream/**/*.blade.php',
@@ -16,14 +16,13 @@ export default {
     './storage/framework/views/*.php',
     './resources/views/**/*.blade.php',
     './resources/**/*.blade.php',
-    './resources/**/*.js',
     './resources/**/*.vue',
     './resources/**/*.php',
     './app/Filament/**/*.php',
     './resources/views/filament/**/*.blade.php',
     './vendor/filament/**/*.blade.php'
   ],
-
+  prefix: 'tw-', // Prefix all Tailwind classes with 'tw-' to avoid conflicts with Bootstrap
   theme: {
     extend: {
       fontFamily: {
@@ -52,7 +51,7 @@ export default {
   },
 
   corePlugins: {
-    preflight: false // Disable Tailwind's reset to avoid conflicts with Bootstrap
+    preflight: false, // Disable Tailwind's reset to avoid conflicts with Bootstrap
   },
 
   plugins: [forms, typography]

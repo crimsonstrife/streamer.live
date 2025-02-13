@@ -6,6 +6,7 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@popperjs/core": "^2.11.6",
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/nesting": "^0.0.0-insiders.565cd3e",
         "@tailwindcss/postcss": "^4.0.6",
@@ -13,13 +14,15 @@
         "@tailwindcss/vite": "^4.0.6",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.4",
+        "bootstrap": "^5.2.3",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.0",
         "livewire-sortable": "^1.0.0",
         "postcss": "^8.5.2",
         "postcss-nesting": "^13.0.1",
+        "sass": "^1.56.1",
         "tailwindcss": "^4.0.6",
-        "vite": "^6.1"
+        "vite": "^6.1.0"
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
@@ -35,7 +38,6 @@
         "livewire-sortable": "^1.0.0",
         "postcss": "^8.5.2",
         "postcss-nesting": "^13.0.1",
-        "tailwindcss": "^4.0.6",
-        "vite": "^6.1"
+        "tailwindcss": "^4.0.6"
     }
 }
