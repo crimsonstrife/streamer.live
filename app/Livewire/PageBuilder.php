@@ -45,7 +45,7 @@ class PageBuilder extends Component
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn ($block) => [
+            ->map(fn($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
@@ -104,7 +104,7 @@ class PageBuilder extends Component
     public function updateBlockOrder($orderedIds)
     {
         foreach ($orderedIds as $index => $blockId) {
-            $this->page->blocks()->updateExistingPivot($blockId, ['order' => $index]);
+            $this->page->blocks()->syncWithoutDetaching([$id => ['order' => $index]]);
         }
 
         // Reload blocks with updated order

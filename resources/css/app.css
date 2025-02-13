@@ -185,3 +185,8 @@ body {
 .navbar {
     margin-bottom: 20px;
 }
+
+/* Fix for Bootstrap .collapse conflict */
+.collapse:not(.show) {
+    display: none !important;
+}

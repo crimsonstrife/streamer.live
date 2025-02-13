@@ -5,6 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        window.livewireToken = "{{ csrf_token() }}";
+    </script>
     {!! seo() !!}
 
     <!-- Fonts -->
@@ -51,6 +54,19 @@
 
     <!-- Livewire Sortable -->
     <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v1.x.x/dist/livewire-sortable.js"></script>
+
+    <script>
+        Livewire.on('csrfError', () => {
+            console.error('Livewire CSRF error detected!');
+        });
+
+        // Ensure Livewire requests always include the CSRF token
+        window.addEventListener('livewire:load', () => {
+            Livewire.hook('message.sent', (message, component) => {
+                message.payload.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').content;
+            });
+        });
+    </script>
 </body>
 
 </html>

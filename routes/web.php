@@ -23,7 +23,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-    Route::get('/admin/pages/{page}', \App\Livewire\PageBuilder::class)->name('page.builder');
+    Route::get('/admin/pages/{page}/builder', \App\Livewire\PageBuilder::class)->name('page.builder');
 });
 
 //Auth::routes();

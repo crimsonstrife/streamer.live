@@ -1,5 +1,5 @@
-@import "bootstrap/dist/css/bootstrap.min.css"; /* Load Bootstrap first */
 @import "tailwindcss";
-@import "../../colors.css";
 @import "../../../../vendor/awcodes/filament-tiptap-editor/resources/css/plugin.css";
+@import "bootstrap/dist/css/bootstrap.min.css"; /* Load Bootstrap first */
+@import "../../colors.css";
 @import "../../app.css"; /* Inherit app.css styles */
