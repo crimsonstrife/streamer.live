@@ -1,18 +1,5 @@
+@import "bootstrap/dist/css/bootstrap.min.css"; /* Load Bootstrap first */
 @import "tailwindcss";
 @import "../../colors.css";
 @import "../../../../vendor/awcodes/filament-tiptap-editor/resources/css/plugin.css";
-
-/* resources/css/filament/admin/theme.css */
-@layer base {
-    :root {
-        --color-accent: var(--color-zinc-800);
-        --color-accent-content: var(--color-zinc-800);
-        --color-accent-foreground: var(--color-white);
-    }
-
-    .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-zinc-800);
-    }
-}
+@import "../../app.css"; /* Inherit app.css styles */

@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [
     laravel({
       input: [
+        'node_modules/bootstrap/dist/css/bootstrap.min.css',
         'resources/css/app.css',
         'resources/css/colors.css',
         'resources/css/filament/admin/theme.css',
