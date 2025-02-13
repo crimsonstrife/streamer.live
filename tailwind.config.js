@@ -48,15 +48,15 @@ export default {
         90: '0.9'
       },
       borderRadius: {
-        'md': '0.375rem',
-        'lg': '0.5rem',
-        'xl': '0.75rem',
-      },
+        md: '0.375rem',
+        lg: '0.5rem',
+        xl: '0.75rem'
+      }
     }
   },
 
   corePlugins: {
-    preflight: false, // Disable Tailwind's reset to avoid conflicts with Bootstrap
+    preflight: false // Disable Tailwind's reset to avoid conflicts with Bootstrap
   },
 
   plugins: [forms, typography]
