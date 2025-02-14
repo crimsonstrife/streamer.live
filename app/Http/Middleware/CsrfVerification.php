@@ -17,7 +17,7 @@ class CsrfVerification extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        '/livewire/*',
+        //'/livewire/*',
         '/api/*', // Example: Exclude API routes
     ];
 
@@ -63,6 +63,6 @@ class CsrfVerification extends Middleware
      */
     protected function shouldPassThrough($request)
     {
-        return $request->is('livewire/*') || in_array($request->path(), $this->except);
+        return in_array($request->path(), $this->except);
     }
 }
