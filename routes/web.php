@@ -23,6 +23,14 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+});
+
+Route::middleware([
+    'web',
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
     Route::get('/admin/pages/{page}/builder', \App\Livewire\PageBuilder::class)->name('page.builder');
 });
 

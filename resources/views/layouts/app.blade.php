@@ -47,6 +47,16 @@
 
     @stack('modals')
 
+    <!-- Ensure Livewire has access to the CSRF token -->
+    <script>
+        window.csrfToken = '{{ csrf_token() }}';
+        if (typeof Livewire !== 'undefined') {
+            Livewire.on('csrf', () => {
+                Livewire.emit('setToken', '{{ csrf_token() }}');
+            });
+        }
+    </script>
+
     @livewireScripts
 
     <!-- Bootstrap JS Bundle (includes Popper) -->
@@ -63,7 +73,8 @@
         // Ensure Livewire requests always include the CSRF token
         window.addEventListener('livewire:load', () => {
             Livewire.hook('message.sent', (message, component) => {
-                message.payload.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').content;
+                message.payload.headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]')
+                    .content;
             });
         });
     </script>
