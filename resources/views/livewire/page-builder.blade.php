@@ -19,7 +19,7 @@
                             <select wire:model="selectedBlockType" class="form-control">
                                 <option value="">Select Block</option>
                                 @foreach ($availableBlocks as $block)
-                                    <option value="{{ $block['display_name'] }}">{{ $block['display_name'] }}</option>
+                                    <option value="{{ $block['type'] }}">{{ $block['display_name'] }}</option>
                                 @endforeach
                             </select>
                         </div>
