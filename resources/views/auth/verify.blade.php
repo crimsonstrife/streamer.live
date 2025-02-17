@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -18,11 +16,11 @@
                     {{ __('If you did not receive the email') }},
                     <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">
                         @csrf
-                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline">{{ __('click here to request another') }}</button>.
+                        <button type="submit" class="p-0 m-0 align-baseline btn btn-link">{{ __('click here to request another') }}</button>.
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
+</x-app-layout>
