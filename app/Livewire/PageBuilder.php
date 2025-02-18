@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 class PageBuilder extends Component
 {
     public $page;
+    public $blocks = [];
     public $availableBlocks = [];
     public $assignedBlocks = [];
     public bool $showModal = false;
@@ -50,6 +51,8 @@ class PageBuilder extends Component
                 'type' => $block->type,
                 'content' => $block->content,
             ])->toArray();
+
+        $this->blocks = $this->assignedBlocks; // Set $blocks from assignedBlocks
     }
 
     public function addBlock()
