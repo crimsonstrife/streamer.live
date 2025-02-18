@@ -38,80 +38,38 @@ class PageBuilder extends Component
 
     public function mount($page)
     {
-        $pageModel = new Page();
-        $this->page = $pageModel->findOrFail($page);
+        $this->page = Page::findOrFail($page);
         $this->availableBlocks = Block::nativeBlocks();
-
-        // Store full block data, not just IDs
-        $this->assignedBlocks = $this->page->blocks()
-            ->orderBy('page_block.order')
-            ->get()
-            ->map(fn ($block) => [
-                'id' => $block->id,
-                'type' => $block->type,
-                'content' => $block->content,
-            ])->toArray();
-
-        $this->blocks = $this->assignedBlocks; // Set $blocks from assignedBlocks
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
     }
 
     public function addBlock()
     {
         if ($this->selectedBlockType) {
             $blockData = $this->availableBlocks[$this->selectedBlockType];
-
-            // Generate a unique block name by appending a timestamp
             $uniqueName = Str::slug($blockData['display_name']) . '-' . now()->timestamp;
-
-            $block = (new Block())->create([
-                'name' => $uniqueName,
-                'display_name' => $blockData['display_name'],
-                'type' => $blockData['type'],
-                'content' => $blockData['content'],
-            ]);
-
-            // Attach block to the page and ensure ordering
+            $block = Block::create(['name' => $uniqueName, 'display_name' => $blockData['display_name'], 'type' => $blockData['type'], 'content' => $blockData['content']]);
             $this->page->blocks()->attach($block->id, ['order' => count($this->assignedBlocks)]);
-
-            // Reload full block objects to avoid passing IDs
-            $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
-
-            $this->closeModal(); // Close modal after adding a block
-
-            // Force Livewire to refresh
+            $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
+            $this->closeModal();
             $this->dispatch('refreshComponent');
-
-            $this->selectedBlockType = ''; // Reset selection
         }
     }
 
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-
-        // Ensure we're working with IDs, not full block objects
-        $this->assignedBlocks = array_filter($this->assignedBlocks, function ($block) use ($blockId) {
-            return $block['id'] !== $blockId;
-        });
-
-        // Force Livewire to refresh
-        $this->dispatch('refreshComponent');
-
-        // Delete the block from the database
+        $this->assignedBlocks = array_filter($this->assignedBlocks, fn($block) => $block['id'] !== $blockId);
         Block::destroy($blockId);
-
-        // Flash a success message
-        session()->flash('success', 'Block removed successfully!');
+        $this->dispatch('refreshComponent');
     }
 
     public function updateBlockOrder($orderedIds)
     {
         foreach ($orderedIds as $index => $block) {
-            $blockId = $block['value']; // Use 'value' from the incoming array
-            $this->page->blocks()->syncWithoutDetaching([$blockId => ['order' => $index]]);
+            $this->page->blocks()->syncWithoutDetaching([$block['value'] => ['order' => $index]]);
         }
-
-        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
         $this->dispatch('refreshComponent');
     }
 
@@ -125,16 +83,9 @@ class PageBuilder extends Component
     public function save()
     {
         foreach ($this->assignedBlocks as $blockData) {
-            $block = Block::find($blockData['id']);
-            if ($block) {
-                $block->update(['content' => $blockData['content']]);
-            }
+            Block::find($blockData['id'])?->update(['content' => $blockData['content']]);
         }
-
-        // Force Livewire to refresh
         $this->dispatch('refreshComponent');
-
-        // Flash a success message
         session()->flash('success', 'Page updated successfully!');
     }
 

@@ -1,0 +1,1 @@
+<input type="text" wire:model="blocks.{{ $index }}.content.url" class="form-control" placeholder="Image URL">

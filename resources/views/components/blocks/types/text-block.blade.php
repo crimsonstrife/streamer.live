@@ -1,0 +1,1 @@
+<textarea wire:model="blocks.{{ $index }}.content.text" class="form-control" placeholder="Enter text..."></textarea>
