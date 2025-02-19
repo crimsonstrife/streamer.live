@@ -11,7 +11,7 @@ use App\Http\Controllers\ModeratorController;
 use App\Http\Controllers\StoreController;
 use App\Livewire\PageBuilder;
 
-Route::get('/', function () {
+Route::get('/', static function () {
     return view('welcome');
 });
 
@@ -20,7 +20,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard', static function () {
         return view('dashboard');
     })->name('dashboard');
 });
@@ -82,7 +82,7 @@ Route::middleware([
  * Define a fallback route that will be executed when no other routes match.
  * This is useful for handling 404 errors and displaying a custom error page.
  */
-Route::fallback(function () {
+Route::fallback(static function () {
     \Log::error('Fallback route triggered', ['url' => request()->url()]);
     abort(404);
 });
@@ -92,9 +92,13 @@ Route::fallback(function () {
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Home Page (Dynamic)
-Route::get('/', function () {
-    $homePage = Page::where('slug', config('cms.home_page_slug'))->first();
-    return $homePage ? view('pages.show', ['page' => $homePage]) : abort(404);
+Route::get('/', static function () {
+    if (!app()->runningInConsole() && Schema::hasTable('pages')) {
+        $homePage = Page::where('slug', config('cms.home_page_slug'))->first();
+        return $homePage ? view('pages.show', ['page' => $homePage]) : abort(404);
+    }
+
+    return view('welcome'); // Default view if database isn't set up
 })->name('home');
 
 // Store Routes
@@ -105,39 +109,36 @@ Route::post('/store/cart/add', [StoreController::class, 'addToCart'])->name('sto
 Route::post('/store/cart/remove', [StoreController::class, 'removeFromCart'])->name('store.cart.remove');
 Route::get('/store/cart', [StoreController::class, 'viewCart'])->name('store.cart');
 
-// Fetch the dynamic blog slug from the settings
-$postsPage = Page::where('slug', config('cms.posts_page_slug'))->first();
-$blogSlug = $postsPage ? $postsPage->slug : 'blog';
+// Middleware-protected routes
+Route::middleware([\App\Http\Middleware\EnsureDatabaseReady::class])->group(function () {
+    // Fetch the dynamic blog slug from the settings
+    $postsPage = Page::where('slug', config('cms.posts_page_slug'))->first();
+    $blogSlug = $postsPage->slug ?? 'blog';
 
-// Posts Index Page (Dynamic)
-Route::get("/{$blogSlug}", function () use ($postsPage) {
-    if (!$postsPage) {
-        abort(404);
-    }
+    // Blog Page (Dynamic)
+    Route::get("/{$blogSlug}", static function () {
+        $postsPage = Page::where('slug', config('cms.posts_page_slug'))->first();
+        $posts = Post::where('status', 'published')->orderBy('published_at', 'desc')->paginate(10);
+        return view('pages.blog', compact('postsPage', 'posts'));
+    })->name('blog');
 
-    $posts = Post::where('status', 'published')->orderBy('published_at', 'desc')->paginate(10);
+    // Category Routing: /{$blogSlug}/{category}
+    Route::get("/{$blogSlug}/{categorySlug}", static function ($categorySlug) {
+        $category = Category::where('slug', $categorySlug)->firstOrFail();
+        $posts = Post::where('category_id', $category->id)->where('status', 'published')->orderBy('published_at', 'desc')->paginate(10);
+        return view('categories.show', compact('category', 'posts'));
+    })->where('categorySlug', '^[a-z0-9-]+$')->name('blog.category');
 
-    return view('pages.blog', compact('postsPage', 'posts'));
-})->name('blog');
+    // Post Routing: /{$blogSlug}/{category}/{postSlug}
+    Route::get("/{$blogSlug}/{category}/{postSlug}", static function ($category, $postSlug) {
+        $category = Category::where('slug', $category)->firstOrFail();
+        $post = Post::where('slug', $postSlug)->where('category_id', $category->id)->firstOrFail();
+        return view('posts.show', compact('post'));
+    })->where(['category' => '^[a-z0-9-]+$', 'postSlug' => '^[a-z0-9-]+$'])->name('blog.post');
 
-// Category Routing: /{blogSlug}/{category}
-Route::get("/{$blogSlug}/{categorySlug}", function ($categorySlug) {
-    $category = Category::where('slug', $categorySlug)->firstOrFail();
-    $posts = Post::where('category_id', $category->id)->where('status', 'published')->orderBy('published_at', 'desc')->paginate(10);
-
-    return view('categories.show', compact('category', 'posts'));
-})->where('categorySlug', '^[a-z0-9-]+$')->name('blog.category');
-
-// Post Routing: /{blogSlug}/{category}/{postSlug}
-Route::get("/{$blogSlug}/{category}/{postSlug}", function ($category, $postSlug) {
-    $category = Category::where('slug', $category)->firstOrFail();
-    $post = Post::where('slug', $postSlug)->where('category_id', $category->id)->firstOrFail();
-
-    return view('posts.show', compact('post'));
-})->where(['category' => '^[a-z0-9-]+$', 'postSlug' => '^[a-z0-9-]+$'])->name('blog.post');
-
-// Dynamic Page Routing for other pages (Fallback)
-Route::get('/{slug}', function ($slug) {
-    $page = Page::where('slug', $slug)->firstOrFail();
-    return view('pages.show', compact('page'));
-})->where('slug', '^[a-z0-9-]+$')->name('page.show');
+    // Dynamic Page Routing for other pages
+    Route::get('/{slug}', static function ($slug) {
+        $page = Page::where('slug', $slug)->firstOrFail();
+        return view('pages.show', compact('page'));
+    })->where('slug', '^[a-z0-9-]+$')->name('page.show');
+});
