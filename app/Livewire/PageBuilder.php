@@ -25,12 +25,18 @@ class PageBuilder extends Component
         $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
     }
 
+    #[On('reloadPage')]
+    public function reloadPage()
+    {
+        $this->dispatch('refreshComponent')->self();
+    }
+
     private function refreshBlocks()
     {
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn ($block) => [
+            ->map(fn($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
@@ -83,16 +89,22 @@ class PageBuilder extends Component
             // Reset state
             $this->closeModal();
             $this->selectedBlockType = '';
+
+            // Force Livewire to reload page completely
+            $this->dispatch('reloadPage');
         }
     }
 
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-        $this->assignedBlocks = array_filter($this->assignedBlocks, fn ($block) => $block['id'] !== $blockId);
+        $this->assignedBlocks = array_filter($this->assignedBlocks, fn($block) => $block['id'] !== $blockId);
         Block::destroy($blockId);
 
         $this->dispatch('refreshComponent');
+
+        // Force Livewire to reload page completely
+        $this->dispatch('reloadPage');
     }
 
     public function updateBlockOrder($orderedIds)
@@ -114,6 +126,9 @@ class PageBuilder extends Component
 
         // Force Livewire to refresh
         $this->dispatch('refreshComponent');
+
+        // Force Livewire to reload page completely
+        $this->dispatch('reloadPage');
     }
 
     public function updateBlockContent($index, $field, $value)
@@ -142,6 +157,9 @@ class PageBuilder extends Component
 
         // Flash a success message
         session()->flash('success', 'Page updated successfully!');
+
+        // Force Livewire to reload page completely
+        $this->dispatch('reloadPage');
     }
 
     public function render()
