@@ -22,7 +22,30 @@ class PageBuilder extends Component
     #[On('refreshComponent')]
     public function refreshComponent()
     {
-        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+        $this->assignedBlocks = $this->page->blocks()
+            ->orderBy('page_block.order')
+            ->get()
+            ->map(fn($block) => [
+                'id' => $block->id,
+                'type' => $block->type,
+                'content' => $block->content,
+            ])
+            ->toArray();
+
+        $this->dispatch('refreshComponent'); // Dispatch refresh event
+    }
+
+    private function refreshBlocks()
+    {
+        $this->assignedBlocks = $this->page->blocks()
+            ->orderBy('page_block.order')
+            ->get()
+            ->map(fn($block) => [
+                'id' => $block->id,
+                'type' => $block->type,
+                'content' => $block->content,
+            ])
+            ->toArray();
     }
 
     public function openModal()
@@ -64,16 +87,21 @@ class PageBuilder extends Component
             $block = Block::create(['name' => $uniqueName, 'display_name' => $blockData['display_name'], 'type' => $blockData['type'], 'content' => $blockData['content']]);
             $this->page->blocks()->attach($block->id, ['order' => count($this->assignedBlocks)]);
             $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
-            $this->closeModal();
+
             $this->dispatch('refreshComponent');
+
+            // Reset state
+            $this->closeModal();
+            $this->selectedBlockType = '';
         }
     }
 
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-        $this->assignedBlocks = array_filter($this->assignedBlocks, fn ($block) => $block['id'] !== $blockId);
+        $this->assignedBlocks = array_filter($this->assignedBlocks, fn($block) => $block['id'] !== $blockId);
         Block::destroy($blockId);
+
         $this->dispatch('refreshComponent');
     }
 
@@ -83,6 +111,7 @@ class PageBuilder extends Component
             $this->page->blocks()->syncWithoutDetaching([$block['value'] => ['order' => $index]]);
         }
         $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
+
         $this->dispatch('refreshComponent');
     }
 
@@ -91,6 +120,8 @@ class PageBuilder extends Component
         if (isset($this->assignedBlocks[$index])) {
             $this->assignedBlocks[$index]['content'][$field] = $value;
         }
+
+        $this->dispatch('refreshComponent');
     }
 
     public function save()
@@ -98,6 +129,7 @@ class PageBuilder extends Component
         foreach ($this->assignedBlocks as $blockData) {
             Block::find($blockData['id'])?->update(['content' => $blockData['content']]);
         }
+
         $this->dispatch('refreshComponent');
         session()->flash('success', 'Page updated successfully!');
     }

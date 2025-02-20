@@ -35,10 +35,15 @@
     @endif
 
     <!-- Blocks List -->
-    <div wire:sortable="updateBlockOrder" class="mt-4 space-y-4">
+    <div wire:sortable="updateBlockOrder" wire:poll class="mt-4 space-y-4">
         @foreach ($blocks as $index => $block)
-            <x-blocks.block :block="$block" :index="$index" wire:key="block-{{ $block['id'] }}" />
-        @endforeach
+        <x-blocks.block
+            :block="$block"
+            :index="$index"
+            wire:key="block-{{ $block['id'] }}"
+            wire:sortable.item="{{ $block['id'] }}"
+        />
+    @endforeach
     </div>
 
     <button type="button" wire:click="save" class="px-4 py-2 mt-6 rounded btn-bd-primary">Save Page</button>
