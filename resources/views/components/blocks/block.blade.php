@@ -1,8 +1,10 @@
-<div class="p-4 mb-2 border rounded shadow bg-light d-flex flex-column" wire:sortable.item="{{ $block['id'] }}" wire:key="block-{{ $block['id'] }}">
-    <div class="mb-2 d-flex justify-content-between align-items-center">
+<div wire:sortable.item="{{ $block['id'] ?? Str::uuid() }}" class="p-4 mb-2 border rounded shadow bg-light d-flex flex-column">
+    <div wire:sortable.handle class="mb-2 cursor-move d-flex justify-content-between align-items-center">
         <h4 class="mb-0 h6">{{ ucfirst($block['display_name']) }}</h4>
         <span class="cursor-move handle text-muted" wire:sortable.handle>&#x2630;</span>
     </div>
+
+
 
     @if ($block['type'] === 'text')
         <x-blocks.types.text-block :block="$block" :index="$index" />

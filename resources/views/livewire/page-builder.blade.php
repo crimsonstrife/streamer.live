@@ -37,14 +37,40 @@
     <!-- Blocks List -->
     <div wire:sortable="updateBlockOrder" wire:poll class="mt-4 space-y-4">
         @foreach ($blocks as $index => $block)
-        <x-blocks.block
-            :block="$block"
-            :index="$index"
-            wire:key="block-{{ $block['id'] }}"
-            wire:sortable.item="{{ $block['id'] }}"
-        />
-    @endforeach
+            <x-blocks.block :block="$block" :index="$index" wire:key="block-{{ $block['id'] ?? Str::uuid() }}"
+                wire:sortable.item="{{ $block['id'] }}" />
+        @endforeach
     </div>
 
     <button type="button" wire:click="save" class="px-4 py-2 mt-6 rounded btn-bd-primary">Save Page</button>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let sortableContainer = document.querySelector("[wire\\:sortable]");
+
+        if (sortableContainer && typeof Sortable !== "undefined") {
+            new Sortable(sortableContainer, {
+                handle: ".handle",
+                animation: 150,
+                onEnd: function(evt) {
+                    let orderedIds = [...sortableContainer.children].map(el => ({
+                        value: el.getAttribute("wire:sortable.item")
+                    }));
+
+                    // Prevent sending empty or duplicate order
+                    if (orderedIds.length > 0) {
+                        console.log("Dragging stopped. New order:", orderedIds); // Debugging
+                        if (typeof Livewire !== "undefined" && typeof Livewire.emit ===
+                            "function") {
+                            Livewire.emit("updateBlockOrder", orderedIds);
+                        } else {
+                            console.error("Livewire is not defined or emit function is missing.");
+                        }
+                    }
+                }
+            });
+        } else {
+            console.error("SortableJS not found or sortable container is missing.");
+        }
+    });
+</script>

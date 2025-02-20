@@ -107,11 +107,22 @@ class PageBuilder extends Component
 
     public function updateBlockOrder($orderedIds)
     {
-        foreach ($orderedIds as $index => $block) {
-            $this->page->blocks()->syncWithoutDetaching([$block['value'] => ['order' => $index]]);
-        }
-        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
+        foreach ($orderedIds as $index => $blockData) {
+            $blockId = is_array($blockData) ? $blockData['value'] : $blockData;
 
+            // Ensure block ID is numeric before using it
+            if (!is_numeric($blockId)) {
+                \Log::error("Invalid block ID:", $blockId);
+                continue;
+            }
+
+            $this->page->blocks()->syncWithoutDetaching([$blockId => ['order' => $index]]);
+        }
+
+        // Refresh assigned blocks
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
+
+        // Force Livewire to refresh
         $this->dispatch('refreshComponent');
     }
 
@@ -139,7 +150,7 @@ class PageBuilder extends Component
         return view('livewire.page-builder', [
             'availableBlocks' => $this->availableBlocks,
             'assignedBlocks' => $this->assignedBlocks,
-            'blocks' => $this->page->blocks,
+            'blocks' => $this->page->blocks()->orderBy('page_block.order')->get(),
         ])->layout('layouts.app');
     }
 }
