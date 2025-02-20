@@ -25,7 +25,7 @@ class Block extends Model
             'text' => ['name' => self::generateUniqueName('Text Block'), 'display_name' => 'Text Block', 'type' => 'text', 'content' => ['text' => '']],
             'image' => ['name' => self::generateUniqueName('Image Block'), 'display_name' => 'Image Block', 'type' => 'image', 'content' => ['url' => '']],
             'embed' => ['name' => self::generateUniqueName('Embed Block'), 'display_name' => 'Embed Block', 'type' => 'embed', 'content' => ['embed_url' => '']],
-            'latest_posts' => ['name' => self::generateUniqueName('Latest Posts Block'), 'display_name' => 'Latest Posts', 'type' => 'latest_posts', 'content' => []],
+            'latest_posts' => ['name' => self::generateUniqueName('Latest Posts Block'), 'display_name' => 'Latest Posts', 'type' => 'latest_posts', 'content' => ['limit' => 5], /* Default: Show 5 posts */],
         ];
     }
 
