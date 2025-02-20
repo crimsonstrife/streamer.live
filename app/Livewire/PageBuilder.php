@@ -22,17 +22,7 @@ class PageBuilder extends Component
     #[On('refreshComponent')]
     public function refreshComponent()
     {
-        $this->assignedBlocks = $this->page->blocks()
-            ->orderBy('page_block.order')
-            ->get()
-            ->map(fn($block) => [
-                'id' => $block->id,
-                'type' => $block->type,
-                'content' => $block->content,
-            ])
-            ->toArray();
-
-        $this->dispatch('refreshComponent'); // Dispatch refresh event
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
     }
 
     private function refreshBlocks()
@@ -138,10 +128,19 @@ class PageBuilder extends Component
     public function save()
     {
         foreach ($this->assignedBlocks as $blockData) {
-            Block::find($blockData['id'])?->update(['content' => $blockData['content']]);
+            $block = Block::find($blockData['id']);
+            if ($block) {
+                $block->update(['content' => $blockData['content']]);
+            }
         }
 
+        // Force Livewire to refresh and re-render
+        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
+
+        // Dispatch the refresh event
         $this->dispatch('refreshComponent');
+
+        // Flash a success message
         session()->flash('success', 'Page updated successfully!');
     }
 
@@ -149,7 +148,7 @@ class PageBuilder extends Component
     {
         return view('livewire.page-builder', [
             'availableBlocks' => $this->availableBlocks,
-            'assignedBlocks' => $this->assignedBlocks,
+            'assignedBlocks' => $this->page->blocks()->orderBy('page_block.order')->get()->toArray(),
             'blocks' => $this->page->blocks()->orderBy('page_block.order')->get(),
         ])->layout('layouts.app');
     }

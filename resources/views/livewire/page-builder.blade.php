@@ -35,7 +35,7 @@
     @endif
 
     <!-- Blocks List -->
-    <div wire:sortable="updateBlockOrder" wire:poll class="mt-4 space-y-4">
+    <div wire:sortable="updateBlockOrder" wire:poll.keep-alive class="mt-4 space-y-4">
         @foreach ($blocks as $index => $block)
             <x-blocks.block :block="$block" :index="$index" wire:key="block-{{ $block['id'] ?? Str::uuid() }}"
                 wire:sortable.item="{{ $block['id'] }}" />
