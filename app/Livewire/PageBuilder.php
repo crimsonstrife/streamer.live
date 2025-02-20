@@ -41,6 +41,19 @@ class PageBuilder extends Component
         $this->page = Page::findOrFail($page);
         $this->availableBlocks = Block::nativeBlocks();
         $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
+
+        $this->blocks = $this->page->blocks()
+            ->orderBy('page_block.order')
+            ->get()
+            ->map(function ($block) {
+                return [
+                    'id' => $block->id,
+                    'type' => $block->type,
+                    'name' => $block->name,
+                    'display_name' => $block->display_name,
+                    'content' => $block->content ?? [],
+                ];
+            })->toArray();
     }
 
     public function addBlock()
@@ -59,7 +72,7 @@ class PageBuilder extends Component
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-        $this->assignedBlocks = array_filter($this->assignedBlocks, fn ($block) => $block['id'] !== $blockId);
+        $this->assignedBlocks = array_filter($this->assignedBlocks, fn($block) => $block['id'] !== $blockId);
         Block::destroy($blockId);
         $this->dispatch('refreshComponent');
     }

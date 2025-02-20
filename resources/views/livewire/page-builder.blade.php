@@ -2,7 +2,7 @@
     <h2 class="text-xl font-bold">{{ $page->title }} - Page Builder</h2>
 
     <!-- Open Modal Button -->
-    <button type="button" wire:click="openModal" class="px-4 py-2 btn-bd-primary rounded">+ Add Block</button>
+    <button type="button" wire:click="openModal" class="px-4 py-2 rounded btn-bd-primary">+ Add Block</button>
 
     <!-- Modal -->
     @if ($showModal)
@@ -24,7 +24,8 @@
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-bd-secondary btn-secondary" wire:click="closeModal">Cancel</button>
+                            <button type="button" class="btn btn-bd-secondary btn-secondary"
+                                wire:click="closeModal">Cancel</button>
                             <button type="submit" class="btn btn-bd-primary btn-primary">Add Block</button>
                         </div>
                     </div>
@@ -36,13 +37,9 @@
     <!-- Blocks List -->
     <div wire:sortable="updateBlockOrder" class="mt-4 space-y-4">
         @foreach ($blocks as $index => $block)
-            <x-blocks.block
-                :block="$block"
-                :index="$index"
-                wire:key="block-{{ $block['id'] }}"
-            />
+            <x-blocks.block :block="$block" :index="$index" wire:key="block-{{ $block['id'] }}" />
         @endforeach
     </div>
 
-    <button type="button" wire:click="save" class="px-4 py-2 mt-6 btn-bd-primary rounded">Save Page</button>
+    <button type="button" wire:click="save" class="px-4 py-2 mt-6 rounded btn-bd-primary">Save Page</button>
 </div>
