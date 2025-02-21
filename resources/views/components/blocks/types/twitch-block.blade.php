@@ -16,14 +16,14 @@
     @if (!empty($block['content']['channel']))
         <div class="mt-3">
             <iframe
-                src="https://player.twitch.tv/?channel={{ $block['content']['channel'] }}&parent={{ request()->getHost() }}"
-                height="400" width="100%" allowfullscreen>
+                src="https://embed.twitch.tv/?allowfullscreen=true&channel={{ $block['content']['channel'] }}&layout=video&parent={{ request()->getHost() }}"
+                height="400" width="100%" allow="autoplay; fullscreen" scrolling="no" allowfullscreen sandbox="allow-modals allow-scripts allow-same-origin allow-popups allow popups-to-escape-sandbox allow-storage-access-by-user-activation">
             </iframe>
 
             @if ($block['content']['chat'])
                 <iframe
                     src="https://www.twitch.tv/embed/{{ $block['content']['channel'] }}/chat?parent={{ request()->getHost() }}"
-                    height="300" width="100%">
+                    height="300" width="100%" id="chat_embed">
                 </iframe>
             @endif
         </div>
