@@ -16,6 +16,7 @@ class PageBuilder extends Component
     public $assignedBlocks = [];
     public bool $showModal = false;
     public $selectedBlockType = '';
+    public $isPreviewMode = false; // Track preview mode
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -36,12 +37,17 @@ class PageBuilder extends Component
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn ($block) => [
+            ->map(fn($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
             ])
             ->toArray();
+    }
+
+    public function togglePreview()
+    {
+        $this->isPreviewMode = !$this->isPreviewMode;
     }
 
     public function openModal()
@@ -79,10 +85,19 @@ class PageBuilder extends Component
     {
         if ($this->selectedBlockType) {
             $blockData = $this->availableBlocks[$this->selectedBlockType];
+
+            // Generate unique name
             $uniqueName = Str::slug($blockData['display_name']) . '-' . now()->timestamp;
+
+            // Create a new block
             $block = Block::create(['name' => $uniqueName, 'display_name' => $blockData['display_name'], 'type' => $blockData['type'], 'content' => $blockData['content']]);
-            $this->page->blocks()->attach($block->id, ['order' => count($this->assignedBlocks)]);
-            $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
+
+
+            // Attach block to page
+            $this->page->blocks()->attach($block->id, ['order' => count($this->blocks)]);
+
+            // Reload blocks
+            $this->blocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
 
             $this->dispatch('refreshComponent');
 
@@ -98,7 +113,7 @@ class PageBuilder extends Component
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-        $this->assignedBlocks = array_filter($this->assignedBlocks, fn ($block) => $block['id'] !== $blockId);
+        $this->assignedBlocks = array_filter($this->assignedBlocks, fn($block) => $block['id'] !== $blockId);
         Block::destroy($blockId);
 
         $this->dispatch('refreshComponent');
@@ -109,32 +124,21 @@ class PageBuilder extends Component
 
     public function updateBlockOrder($orderedIds)
     {
-        foreach ($orderedIds as $index => $blockData) {
-            $blockId = is_array($blockData) ? $blockData['value'] : $blockData;
-
-            // Ensure block ID is numeric before using it
-            if (!is_numeric($blockId)) {
-                \Log::error("Invalid block ID:", $blockId);
-                continue;
-            }
-
+        foreach ($orderedIds as $index => $block) {
+            $blockId = is_array($block) ? $block['id'] : $block->id;
             $this->page->blocks()->syncWithoutDetaching([$blockId => ['order' => $index]]);
         }
 
-        // Refresh assigned blocks
-        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get();
-
-        // Force Livewire to refresh
+        $this->blocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
         $this->dispatch('refreshComponent');
-
-        // Force Livewire to reload page completely
-        $this->dispatch('reloadPage');
     }
 
     public function updateBlockContent($index, $field, $value)
     {
-        if (isset($this->assignedBlocks[$index])) {
-            $this->assignedBlocks[$index]['content'][$field] = $value;
+        if (isset($this->blocks[$index])) {
+            $this->blocks[$index]['content'][$field] = $value;
+            $block = Block::find($this->blocks[$index]['id']);
+            $block->update(['content' => $this->blocks[$index]['content']]);
         }
 
         $this->dispatch('refreshComponent');
@@ -142,24 +146,15 @@ class PageBuilder extends Component
 
     public function save()
     {
-        foreach ($this->assignedBlocks as $blockData) {
+        foreach ($this->blocks as $blockData) {
             $block = Block::find($blockData['id']);
             if ($block) {
                 $block->update(['content' => $blockData['content']]);
             }
         }
 
-        // Force Livewire to refresh and re-render
-        $this->assignedBlocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
-
-        // Dispatch the refresh event
-        $this->dispatch('refreshComponent');
-
-        // Flash a success message
         session()->flash('success', 'Page updated successfully!');
-
-        // Force Livewire to reload page completely
-        $this->dispatch('reloadPage');
+        $this->dispatch('refreshComponent');
     }
 
     public function render()
@@ -168,6 +163,7 @@ class PageBuilder extends Component
             'availableBlocks' => $this->availableBlocks,
             'assignedBlocks' => $this->page->blocks()->orderBy('page_block.order')->get()->toArray(),
             'blocks' => $this->page->blocks()->orderBy('page_block.order')->get(),
+            'isPreviewMode' => $this->isPreviewMode,
         ])->layout('layouts.app');
     }
 }

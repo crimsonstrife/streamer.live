@@ -1,5 +1,5 @@
 @php
-    $blockType = 'components.blocks.types.' . str_replace('_', '-', $block->type) . '-block';
+    $blockType = 'components.blocks.types.' . str_replace('_', '-', $block['type']) . '-block';
 @endphp
 
 @if ($isEditing && $block['id'])
@@ -17,6 +17,7 @@
     @include($blockType, [
         'block' => $block,
         'isEditing' => $isEditing ?? false,
+        'isPreview' => $isPreview ?? false,
         'index' => $index ?? null,
     ])
 @else
