@@ -12,6 +12,7 @@ class PageBuilder extends Component
 {
     public $page;
     public $blocks = [];
+    public $unsavedBlocks = []; // Holds changes before saving
     public $availableBlocks = [];
     public $assignedBlocks = [];
     public bool $showModal = false;
@@ -79,6 +80,9 @@ class PageBuilder extends Component
                     'content' => $block->content ?? [],
                 ];
             })->toArray();
+
+        // Initialize unsavedBlocks with the latest data
+        $this->unsavedBlocks = $this->blocks;
     }
 
     public function addBlock()
@@ -135,23 +139,23 @@ class PageBuilder extends Component
 
     public function updateBlockContent($index, $field, $value)
     {
-        if (isset($this->blocks[$index])) {
-            $this->blocks[$index]['content'][$field] = $value;
-            $block = Block::find($this->blocks[$index]['id']);
-            $block->update(['content' => $this->blocks[$index]['content']]);
+        if (isset($this->unsavedBlocks[$index])) {
+            $this->unsavedBlocks[$index]['content'][$field] = $value;
         }
-
-        $this->dispatch('refreshComponent');
     }
 
     public function save()
     {
-        foreach ($this->blocks as $blockData) {
+        foreach ($this->unsavedBlocks as $blockData) {
             $block = Block::find($blockData['id']);
             if ($block) {
                 $block->update(['content' => $blockData['content']]);
             }
         }
+
+        // Sync database blocks with latest data
+        $this->blocks = $this->page->blocks()->orderBy('page_block.order')->get()->toArray();
+        $this->unsavedBlocks = $this->blocks;
 
         session()->flash('success', 'Page updated successfully!');
         $this->dispatch('refreshComponent');
@@ -162,7 +166,7 @@ class PageBuilder extends Component
         return view('livewire.page-builder', [
             'availableBlocks' => $this->availableBlocks,
             'assignedBlocks' => $this->page->blocks()->orderBy('page_block.order')->get()->toArray(),
-            'blocks' => $this->page->blocks()->orderBy('page_block.order')->get(),
+            'blocks' => $this->unsavedBlocks, // Use unsavedBlocks to show changes live
             'isPreviewMode' => $this->isPreviewMode,
         ])->layout('layouts.app');
     }
