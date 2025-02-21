@@ -14,6 +14,8 @@
         <x-blocks.types.embed-block :block="$block" :index="$index" />
     @elseif ($block['type'] === 'latest_posts')
         <x-blocks.types.latest-posts-block :block="$block" />
+    @elseif ($block['type'] === 'twitch')
+        <x-blocks.types.twitch-block :block="$block" :index="$index" />
     @else
         <p class="text-danger">Block type view not found.</p>
     @endif
