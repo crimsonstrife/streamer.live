@@ -37,7 +37,7 @@ class PageBuilder extends Component
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn($block) => [
+            ->map(fn ($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
@@ -113,7 +113,7 @@ class PageBuilder extends Component
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-        $this->assignedBlocks = array_filter($this->assignedBlocks, fn($block) => $block['id'] !== $blockId);
+        $this->assignedBlocks = array_filter($this->assignedBlocks, fn ($block) => $block['id'] !== $blockId);
         Block::destroy($blockId);
 
         $this->dispatch('refreshComponent');
