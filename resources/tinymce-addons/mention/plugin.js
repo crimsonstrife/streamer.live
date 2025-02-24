@@ -5,11 +5,11 @@
 
   // CommonJS
   if (typeof exports === 'object' && typeof module !== 'undefined') {
-    module.exports = f(require('jquery'))
+    module.exports = f(require('jquery'), require('dompurify'))
 
     // RequireJS
   } else if (typeof define === 'function' && define.amd) {
-    define(['jquery'], f)
+    define(['jquery', 'dompurify'], f)
 
     // <script>
   } else {
@@ -24,9 +24,9 @@
       g = this
     }
 
-    f(g.jQuery)
+    f(g.jQuery, g.DOMPurify)
   }
-})(function ($) {
+})(function ($, DOMPurify) {
   'use strict'
 
   const AutoComplete = function (ed, options) {
@@ -328,14 +328,15 @@
       $.each(items, function (i, item) {
         const $element = $(_this.render(item, i))
 
-        $element.html(
+        const sanitizedHtml = DOMPurify.sanitize(
           $element
             .html()
             .replace(
               $element.text(),
               _this.highlighter($element.text())
             )
-        )
+        );
+        $element.html(sanitizedHtml);
 
         $.each(items[i], function (key, val) {
           $element.attr('data-' + key, val)
