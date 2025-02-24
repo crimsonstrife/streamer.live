@@ -335,8 +335,8 @@
               $element.text(),
               _this.highlighter($element.text())
             )
-        );
-        $element.html(sanitizedHtml);
+        )
+        $element.html(sanitizedHtml)
 
         $.each(items[i], function (key, val) {
           $element.attr('data-' + key, val)
