@@ -91,7 +91,10 @@
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan filament:upgrade"
+            "@php artisan filament:upgrade",
+            "@php artisan tinymce:publish --ansi",
+            "npm update",
+            "@php artisan jquery:publish --ansi"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
