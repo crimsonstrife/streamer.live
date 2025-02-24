@@ -27,6 +27,7 @@ class Block extends Model
             'embed' => ['name' => self::generateUniqueName('Embed Block'), 'display_name' => 'Embed Block', 'type' => 'embed', 'content' => ['embed_url' => '']],
             'latest_posts' => ['name' => self::generateUniqueName('Latest Posts Block'), 'display_name' => 'Latest Posts', 'type' => 'latest_posts', 'content' => ['limit' => 5], /* Default: Show 5 posts */],
             'twitch' => ['name' => self::generateUniqueName('Twitch Embed'), 'display_name' => 'Twitch Block', 'type' => 'twitch', 'content' => ['channel' => '', 'chat' => false]],
+            'wysiwyg' => ['name' => self::generateUniqueName('WYSIWYG Block'), 'display_name' => 'HTML Block', 'type' => 'wysiwyg', 'content' => ['text' => '']],
         ];
     }
 

@@ -33,12 +33,26 @@ class PageBuilder extends Component
         $this->dispatch('refreshComponent')->self();
     }
 
+    #[On('updateWysiwygContent')]
+    public function updateWysiwygContent($editorId, $content)
+    {
+        // Extract block index from editor ID
+        $index = str_replace("wysiwyg-editor-", "", $editorId);
+
+        if (isset($this->blocks[$index])) {
+            $this->blocks[$index]['content']['html'] = $content;
+        }
+
+        // Force refresh
+        $this->dispatch('refreshComponent');
+    }
+
     private function refreshBlocks()
     {
         $this->assignedBlocks = $this->page->blocks()
             ->orderBy('page_block.order')
             ->get()
-            ->map(fn ($block) => [
+            ->map(fn($block) => [
                 'id' => $block->id,
                 'type' => $block->type,
                 'content' => $block->content,
@@ -117,7 +131,7 @@ class PageBuilder extends Component
     public function removeBlock($blockId)
     {
         $this->page->blocks()->detach($blockId);
-        $this->assignedBlocks = array_filter($this->assignedBlocks, fn ($block) => $block['id'] !== $blockId);
+        $this->assignedBlocks = array_filter($this->assignedBlocks, fn($block) => $block['id'] !== $blockId);
         Block::destroy($blockId);
 
         $this->dispatch('refreshComponent');
