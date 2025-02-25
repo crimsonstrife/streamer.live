@@ -1,16 +1,8 @@
 <div class="p-6 bg-white rounded-lg shadow">
     <h2 class="text-xl font-bold">{{ $page->title }} - Page Builder</h2>
 
-    <div class="mb-4 d-flex justify-content-between align-items-center">
-        <button type="button" wire:click="openModal" class="btn btn-primary">+ Add Block</button>
+    <button type="button" wire:click="openModal" class="px-4 py-2 rounded btn-bd-primary">+ Add Block</button>
 
-        <button type="button" wire:click="togglePreview" class="btn btn-outline-secondary">
-            {{ $isPreviewMode ? 'Edit Mode' : 'Preview Mode' }}
-        </button>
-    </div>
-
-    <!-- Modal -->
-    <!-- Modal -->
     @if ($showModal)
         <div class="modal fade show" style="display: block;" aria-modal="true">
             <div class="modal-dialog">
@@ -29,8 +21,8 @@
                             </select>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" wire:click="closeModal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Add Block</button>
+                            <button type="button" class="btn btn-bd-secondary btn-secondary" wire:click="closeModal">Cancel</button>
+                            <button type="submit" class="btn btn-bd-primary btn-primary">Add Block</button>
                         </div>
                     </div>
                 </form>
@@ -38,43 +30,28 @@
         </div>
     @endif
 
-    <!-- Blocks List -->
-    <div wire:sortable="updateBlockOrder" wire:poll.keep-alive class="mt-4 space-y-4">
+    <div wire:sortable="updateBlockOrder" class="mt-4 space-y-4">
         @foreach ($blocks as $index => $block)
-            <x-blocks.block :block="$block" :index="$index" :isEditing="true" :isPreview="$isPreviewMode" wire:key="block-{{ $block['id'] ?? Str::uuid() }}"
-                wire:sortable.item="{{ $block['id'] }}" />
+            <x-blocks.block
+                :block="$block"
+                :index="$index"
+                :isEditing="true"
+                :isPreview="$isPreviewMode"
+                wire:key="block-{{ $block['id'] ?? Str::uuid() }}"
+            />
         @endforeach
     </div>
 
     <button type="button" wire:click="save" class="px-4 py-2 mt-6 rounded btn-bd-primary">Save Page</button>
 </div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let sortableContainer = document.querySelector("[wire\\:sortable]");
-
-        if (sortableContainer && typeof Sortable !== "undefined") {
-            new Sortable(sortableContainer, {
-                handle: ".handle",
-                animation: 150,
-                onEnd: function(evt) {
-                    let orderedIds = [...sortableContainer.children].map(el => ({
-                        value: el.getAttribute("wire:sortable.item")
-                    }));
-
-                    // Prevent sending empty or duplicate order
-                    if (orderedIds.length > 0) {
-                        console.log("Dragging stopped. New order:", orderedIds); // Debugging
-                        if (typeof Livewire !== "undefined" && typeof Livewire.emit ===
-                            "function") {
-                            Livewire.emit("updateBlockOrder", orderedIds);
-                        } else {
-                            console.error("Livewire is not defined or emit function is missing.");
-                        }
-                    }
-                }
-            });
-        } else {
-            console.error("SortableJS not found or sortable container is missing.");
-        }
+    document.addEventListener("livewire:load", function () {
+        Livewire.hook('message.processed', (message, component) => {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.remove();
+                tinymce.init({ selector: 'textarea.wysiwyg' });
+            }
+        });
     });
 </script>

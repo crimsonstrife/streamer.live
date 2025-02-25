@@ -1,5 +1,7 @@
 @php
     $blockType = 'components.blocks.types.' . str_replace('_', '-', $block['type']) . '-block';
+    $isEditing = $isEditing ?? false;
+    $isPreview = $isPreview ?? false;
 @endphp
 
 @if ($isEditing && $block['id'])
@@ -9,8 +11,8 @@
             <h4 class="mb-0 h6">{{ ucfirst($block['display_name']) }}</h4>
             <span class="cursor-move handle text-muted" wire:sortable.handle>&#x2630;</span>
         </div>
-    @else
-        <div class="p-3">
+@else
+    <div class="p-3">
 @endif
 
 @if (view()->exists($blockType))
@@ -21,7 +23,7 @@
         'index' => $index ?? null,
     ])
 @else
-    <p class="text-danger">Block type "{{ $block->type }}" view not found.</p>
+    <p class="text-danger">Block type "{{ $block['type'] }}" view not found.</p>
 @endif
 
 @if ($isEditing && $block['id'])
