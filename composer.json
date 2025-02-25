@@ -9,7 +9,7 @@
         "php": "^8.2",
         "awcodes/filament-tiptap-editor": "^3.5",
         "bepsvpt/secure-headers": "^9.0",
-        "blade-ui-kit/blade-ui-kit": "^0.6.4",
+        "blade-ui-kit/blade-ui-kit": "^0.7.0",
         "calebporzio/sushi": "^2.5",
         "cocur/slugify": "^4.6",
         "doctrine/dbal": "^4.2",
