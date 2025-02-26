@@ -22,6 +22,7 @@
         "filament/spatie-laravel-media-library-plugin": "^3.2",
         "filament/spatie-laravel-settings-plugin": "^3.2",
         "filament/widgets": "^3.2",
+        "indracollective/laravel-revisor-filament": "^0.0.1",
         "kalnoy/nestedset": "^6.0",
         "laravel/framework": "^11.31",
         "laravel/jetstream": "^5.3",

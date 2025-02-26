@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7c2b32e0ebb7e0ad9ca4cfe0cbf7e6bc",
+    "content-hash": "ed5b5826b4aea040f7976d925871304a",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -3036,6 +3036,173 @@
                 "source": "https://github.com/vinkla/hashids/tree/5.0.2"
             },
             "time": "2023-02-23T15:00:54+00:00"
+        },
+        {
+            "name": "indracollective/laravel-revisor",
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/indracollective/laravel-revisor.git",
+                "reference": "c40dcf33bce573d872f9738e1864c76a6f072f53"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/indracollective/laravel-revisor/zipball/c40dcf33bce573d872f9738e1864c76a6f072f53",
+                "reference": "c40dcf33bce573d872f9738e1864c76a6f072f53",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^11.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "barryvdh/laravel-ide-helper": "^3.1",
+                "irazasyed/docgen": "^0.2.0",
+                "larastan/larastan": "^2.9",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.1.1||^7.10.0",
+                "orchestra/testbench": "^9.0.0||^8.22.0",
+                "pestphp/pest": "^2.34",
+                "pestphp/pest-plugin-arch": "^2.7",
+                "pestphp/pest-plugin-laravel": "^2.3",
+                "phpstan/extension-installer": "^1.3",
+                "phpstan/phpstan-deprecation-rules": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Revisor": "Indra\\Revisor\\Facades\\Revisor"
+                    },
+                    "providers": [
+                        "Indra\\Revisor\\RevisorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Indra\\Revisor\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shea Dawson",
+                    "email": "shea@livesource.co.nz",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Draft, publish and revise Laravel Eloquent Models",
+            "homepage": "https://github.com/indracollective/laravel-revisor",
+            "keywords": [
+                "Indra",
+                "collective",
+                "draft",
+                "eloquent",
+                "laravel",
+                "laravel-revisor",
+                "model",
+                "publish",
+                "revise",
+                "versions"
+            ],
+            "support": {
+                "issues": "https://github.com/indracollective/laravel-revisor/issues",
+                "source": "https://github.com/indracollective/laravel-revisor/tree/1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Indra",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-24T22:57:16+00:00"
+        },
+        {
+            "name": "indracollective/laravel-revisor-filament",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/indracollective/laravel-revisor-filament.git",
+                "reference": "e5be626bf02340af3005c104f1c22133578455da"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/indracollective/laravel-revisor-filament/zipball/e5be626bf02340af3005c104f1c22133578455da",
+                "reference": "e5be626bf02340af3005c104f1c22133578455da",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "illuminate/contracts": "^11.0",
+                "indracollective/laravel-revisor": "^1.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "barryvdh/laravel-ide-helper": "^3.1",
+                "larastan/larastan": "^2.9",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.1.1||^7.10.0",
+                "orchestra/testbench": "^9.0.0",
+                "pestphp/pest": "^2.34",
+                "pestphp/pest-plugin-arch": "^2.7",
+                "pestphp/pest-plugin-laravel": "^2.3",
+                "pestphp/pest-plugin-livewire": "^2.1",
+                "phpstan/extension-installer": "^1.3",
+                "phpstan/phpstan-deprecation-rules": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "RevisorFilament": "Indra\\RevisorFilament\\Facades\\RevisorFilament"
+                    },
+                    "providers": [
+                        "Indra\\RevisorFilament\\RevisorFilamentServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Indra\\RevisorFilament\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shea Dawson",
+                    "email": "shea@indracollective.dev",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Robust Draft, Publishing & Versioning for Laravel Filament Resources",
+            "homepage": "https://github.com/indracollective/laravel-revisor-filament",
+            "keywords": [
+                "indracollective",
+                "laravel",
+                "laravel-revisor-filament"
+            ],
+            "support": {
+                "issues": "https://github.com/indracollective/laravel-revisor-filament/issues",
+                "source": "https://github.com/indracollective/laravel-revisor-filament"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/indracollective",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-10-29T00:25:36+00:00"
         },
         {
             "name": "kalnoy/nestedset",
