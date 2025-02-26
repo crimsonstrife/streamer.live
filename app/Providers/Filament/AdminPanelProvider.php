@@ -61,6 +61,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentFabricatorPlugin::make(),
+                \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
             ]);
     }
 }
