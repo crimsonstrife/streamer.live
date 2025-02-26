@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
+use Stephenjude\FilamentDebugger\DebuggerPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -61,6 +62,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentFabricatorPlugin::make(),
+                DebuggerPlugin::make(),
                 \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
             ]);
     }

@@ -46,6 +46,7 @@
         "spatie/laravel-settings": "^3.4",
         "spatie/laravel-sluggable": "^3.7",
         "spatie/schema-org": "^3.23",
+        "stephenjude/filament-debugger": "^4.0",
         "symfony/polyfill-php83": "^1.31",
         "theiconic/name-parser": "^1.2",
         "tinymce/tinymce": "^7.6",
