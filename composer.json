@@ -46,7 +46,8 @@
         "symfony/polyfill-php83": "^1.31",
         "theiconic/name-parser": "^1.2",
         "tinymce/tinymce": "^7.6",
-        "xetaio/xetaravel-mentions": "^11.0"
+        "xetaio/xetaravel-mentions": "^11.0",
+        "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",
