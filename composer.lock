@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "06c0e24c49116d00040b037f0e4cba91",
+    "content-hash": "d100b168d6b9b3dd743b7cba45989707",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -71,6 +71,89 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.2.29"
             },
             "time": "2025-02-25T05:18:46+00:00"
+        },
+        {
+            "name": "asosick/filament-layout-manager",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/asosick/filament-layout-manager.git",
+                "reference": "dd465b65cc1d235dace9506ee58ffc1ad478549b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/asosick/filament-layout-manager/zipball/dd465b65cc1d235dace9506ee58ffc1ad478549b",
+                "reference": "dd465b65cc1d235dace9506ee58ffc1ad478549b",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "livewire/livewire": "^3.5",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.9",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^8.0",
+                "pestphp/pest": "^2.1",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FilamentLayoutManager": "Asosick\\FilamentLayoutManager\\FilamentLayoutManager"
+                    },
+                    "providers": [
+                        "Asosick\\FilamentLayoutManager\\FilamentLayoutManagerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Asosick\\FilamentLayoutManager\\": "src/",
+                    "Asosick\\FilamentLayoutManager\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "August",
+                    "email": "august@sosick.ca",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Allow users to create & customize their own FilamentPHP pages composed of Livewire components",
+            "homepage": "https://github.com/asosick/filament-layout-manager",
+            "keywords": [
+                "asosick",
+                "filament",
+                "filament-layout-manager",
+                "filamentphp",
+                "laravel",
+                "livewire",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/asosick/filament-layout-manager/issues",
+                "source": "https://github.com/asosick/filament-layout-manager"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/asosick",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-06T19:22:32+00:00"
         },
         {
             "name": "awcodes/filament-tiptap-editor",
