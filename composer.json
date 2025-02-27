@@ -11,6 +11,7 @@
         "asmit/filament-mention": "^1.0",
         "asosick/filament-layout-manager": "^1.1",
         "bezhansalleh/filament-shield": "^3.3",
+        "brickx/maintenance-switch": "^1.0",
         "filament/filament": "^3.3",
         "filament/spatie-laravel-media-library-plugin": "^3.3",
         "filament/spatie-laravel-settings-plugin": "^3.3",

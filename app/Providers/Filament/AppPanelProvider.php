@@ -90,6 +90,7 @@ class AppPanelProvider extends PanelProvider
                 \ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin::make(),
                 \Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
+                \Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin::make(),
             ]);
 
         if (Features::hasApiFeatures()) {
