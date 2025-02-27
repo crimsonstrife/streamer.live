@@ -91,6 +91,8 @@ class AppPanelProvider extends PanelProvider
                 \Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
                 \Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin::make(),
+                \Filament\SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
+                \TomatoPHP\FilamentMenus\FilamentMenusPlugin::make(),
                 \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make(),
                 \TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin::make()
                     ->allowSiteSettings()
