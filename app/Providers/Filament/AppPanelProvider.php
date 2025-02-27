@@ -38,8 +38,8 @@ class AppPanelProvider extends PanelProvider
     {
         $panel
             ->default()
-            ->id('app')
-            ->path('app')
+            ->id('admin')
+            ->path('admin')
             ->login()
             ->registration()
             ->passwordReset()
@@ -52,7 +52,7 @@ class AppPanelProvider extends PanelProvider
                 MenuItem::make()
                     ->label('Profile')
                     ->icon('heroicon-o-user-circle')
-                    ->url(fn () => $this->shouldRegisterMenuItem()
+                    ->url(fn() => $this->shouldRegisterMenuItem()
                         ? url(EditProfile::getUrl())
                         : url($panel->getPath())),
             ])
@@ -95,7 +95,7 @@ class AppPanelProvider extends PanelProvider
                 MenuItem::make()
                     ->label('API Tokens')
                     ->icon('heroicon-o-key')
-                    ->url(fn () => $this->shouldRegisterMenuItem()
+                    ->url(fn() => $this->shouldRegisterMenuItem()
                         ? url(ApiTokens::getUrl())
                         : url($panel->getPath())),
             ]);
@@ -108,9 +108,9 @@ class AppPanelProvider extends PanelProvider
                 ->tenantProfile(EditTeam::class)
                 ->userMenuItems([
                     MenuItem::make()
-                        ->label(fn () => __('Team Settings'))
+                        ->label(fn() => __('Team Settings'))
                         ->icon('heroicon-o-cog-6-tooth')
-                        ->url(fn () => $this->shouldRegisterMenuItem()
+                        ->url(fn() => $this->shouldRegisterMenuItem()
                             ? url(EditTeam::getUrl())
                             : url($panel->getPath())),
                 ]);
