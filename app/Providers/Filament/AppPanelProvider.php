@@ -92,6 +92,10 @@ class AppPanelProvider extends PanelProvider
                     ->shouldRegisterNavigation(false),
                 \Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin::make(),
                 \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make(),
+                \TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin::make()
+                    ->allowSiteSettings()
+                    ->allowShield()
+                    ->allowSocialMenuSettings(),
             ]);
 
         if (Features::hasApiFeatures()) {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "461dcee31cf894c75e9686af6bef123b",
+    "content-hash": "4cfcf583e4f4a8982d3c065789cb6643",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -12921,6 +12921,84 @@
                 }
             ],
             "time": "2024-09-17T16:51:09+00:00"
+        },
+        {
+            "name": "tomatophp/filament-settings-hub",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tomatophp/filament-settings-hub.git",
+                "reference": "5a34d39f768d901dd728f2228a5a9e305b13696c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tomatophp/filament-settings-hub/zipball/5a34d39f768d901dd728f2228a5a9e305b13696c",
+                "reference": "5a34d39f768d901dd728f2228a5a9e305b13696c",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.3",
+                "filament/notifications": "^3.3",
+                "filament/spatie-laravel-settings-plugin": "^3.3",
+                "php": "^8.2|^8.3|^8.4",
+                "spatie/laravel-sitemap": "^7.3",
+                "tomatophp/console-helpers": "^1.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.21",
+                "livewire/livewire": "^2.10|^3.0",
+                "nunomaduro/larastan": "^3.1",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^3.7",
+                "pestphp/pest-plugin-laravel": "^3.1",
+                "pestphp/pest-plugin-livewire": "^3.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "TomatoPHP\\FilamentSettingsHub\\FilamentSettingsHubServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TomatoPHP\\FilamentSettingsHub\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fady Mondy",
+                    "email": "info@3x1.io"
+                }
+            ],
+            "description": "Manage your Filament app settings with GUI and helpers",
+            "keywords": [
+                "Settings",
+                "filament",
+                "laravel",
+                "php",
+                "spatie-integrations",
+                "tomatophp"
+            ],
+            "support": {
+                "issues": "https://github.com/tomatophp/filament-settings-hub/issues",
+                "source": "https://github.com/tomatophp/filament-settings-hub/tree/v2.0.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/3x1io",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-02-26T03:03:24+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
