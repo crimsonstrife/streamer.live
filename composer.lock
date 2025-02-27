@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7af6b16f4fd771560049a237b4330b0",
+    "content-hash": "646f4c3b882d08af3a3555ec60a7dee2",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -2487,6 +2487,64 @@
                 }
             ],
             "time": "2025-02-25T19:08:20+00:00"
+        },
+        {
+            "name": "guava/tutorials",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GuavaCZ/tutorials.git",
+                "reference": "f4cda5c63caa1e89a1d22a23fbd80f3e5095f23b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GuavaCZ/tutorials/zipball/f4cda5c63caa1e89a1d22a23fbd80f3e5095f23b",
+                "reference": "f4cda5c63caa1e89a1d22a23fbd80f3e5095f23b",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0.0",
+                "livewire/livewire": "^3.0",
+                "spatie/laravel-package-tools": "^1.15"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.11",
+                "orchestra/testbench": "^8.0|^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Guava\\Tutorials\\TutorialsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Guava\\Tutorials\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lukas Frey",
+                    "email": "lukas.frey@guava.cz"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/GuavaCZ/tutorials/issues",
+                "source": "https://github.com/GuavaCZ/tutorials/tree/1.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/GuavaCZ",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-09-11T07:38:06+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
