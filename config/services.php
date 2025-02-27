@@ -35,19 +35,4 @@ return [
         ],
     ],
 
-    'patreon' => [
-        'client_id' => env('PATREON_CLIENT_ID'),
-        'client_secret' => env('PATREON_CLIENT_SECRET'),
-        'redirect' => env('PATREON_REDIRECT_URI'),
-    ],
-
-    'ko_fi' => [
-        'api_key' => env('KO_FI_API_KEY'),
-        'enabled' => !empty(env('KO_FI_API_KEY')),
-    ],
-    'fourthwall' => [
-        'store_id' => env('FOURTHWALL_STORE_ID'),
-        'storefront_token' => env('FOURTHWALL_STORE_TOKEN'),
-        'base_url' => env('FOURTHWALL_BASE_URL', 'https://storefront-api.fourthwall.com'),
-    ],
 ];
