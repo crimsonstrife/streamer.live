@@ -31,6 +31,7 @@
         "livewire/livewire": "^3.0",
         "parallax/filament-comments": "^1.4",
         "pxlrbt/filament-activity-log": "^1.1",
+        "schmeits/filament-character-counter": "^1.3",
         "shipu/web-installer": "^1.0",
         "shuvroroy/filament-spatie-laravel-health": "^2.3",
         "solution-forest/filament-access-management": "^2.2",
