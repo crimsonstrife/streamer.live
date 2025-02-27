@@ -48,6 +48,7 @@
         "stephenjude/filament-debugger": "^4.0",
         "stephenjude/filament-feature-flags": "^2.1",
         "stephenjude/filament-jetstream": "^0.0.15",
+        "tapp/filament-auditing": "^3.0",
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
