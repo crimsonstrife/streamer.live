@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "67477db5d16f9b9a0c1d7ef9cdec8a1a",
+    "content-hash": "12cdb4de6cc6aa5902097e281f0ffab6",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -2463,6 +2463,84 @@
                 }
             ],
             "time": "2023-10-12T05:21:21+00:00"
+        },
+        {
+            "name": "gerenuk/filament-banhammer",
+            "version": "v1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Gerenuk-LTD/filament-banhammer.git",
+                "reference": "05dc8c98079016df3d3faba280c18be337adbd3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Gerenuk-LTD/filament-banhammer/zipball/05dc8c98079016df3d3faba280c18be337adbd3f",
+                "reference": "05dc8c98079016df3d3faba280c18be337adbd3f",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.2",
+                "mchev/banhammer": "^2.3",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "larastan/larastan": "^2.9",
+                "laravel/pint": "^1.14",
+                "nunomaduro/collision": "^8.1.1||^7.10.0",
+                "orchestra/testbench": "^9.0.0||^8.22.0",
+                "pestphp/pest": "^2.34",
+                "pestphp/pest-plugin-arch": "^2.7",
+                "pestphp/pest-plugin-laravel": "^2.3",
+                "phpstan/extension-installer": "^1.3",
+                "phpstan/phpstan-deprecation-rules": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.3",
+                "spatie/laravel-ray": "^1.35"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Gerenuk\\FilamentBanhammer\\FilamentBanhammerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Gerenuk\\FilamentBanhammer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kieran Proctor",
+                    "email": "kieran.lee.proctor@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This package adds model banning functionality to filament",
+            "homepage": "https://github.com/gerenuk-ltd/filament-banhammer",
+            "keywords": [
+                "Gerenuk",
+                "banhammer",
+                "filament",
+                "filament-banhammer",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/Gerenuk-LTD/filament-banhammer/issues",
+                "source": "https://github.com/Gerenuk-LTD/filament-banhammer/tree/v1.1.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Gerenuk",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-06-03T19:55:43+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -5406,6 +5484,74 @@
                 "source": "https://github.com/Masterminds/html5-php/tree/2.9.0"
             },
             "time": "2024-03-31T07:05:07+00:00"
+        },
+        {
+            "name": "mchev/banhammer",
+            "version": "v2.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mchev/banhammer.git",
+                "reference": "5a792d0d0dde6751c829c89a9331bcad7bdbd344"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mchev/banhammer/zipball/5a792d0d0dde6751c829c89a9331bcad7bdbd344",
+                "reference": "5a792d0d0dde6751c829c89a9331bcad7bdbd344",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7.0|^8.0|^9.0",
+                "phpunit/phpunit": "^9.5|^10.5|^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Mchev\\Banhammer\\BanhammerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mchev\\Banhammer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mchev",
+                    "email": "martin@pegase.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Banhammer for Laravel allows you to ban any Model by key and by IP.",
+            "homepage": "https://github.com/mchev/banhammer",
+            "keywords": [
+                "IP",
+                "ban",
+                "bannable",
+                "bans-for-laravel",
+                "country",
+                "laravel",
+                "mchev"
+            ],
+            "support": {
+                "issues": "https://github.com/mchev/banhammer/issues",
+                "source": "https://github.com/mchev/banhammer/tree/v2.3.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/mchev",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-09-20T18:16:07+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",

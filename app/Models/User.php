@@ -10,10 +10,12 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Mchev\Banhammer\Traits\Bannable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasAvatar
 {
+    use Bannable;
     use HasApiTokens;
     use HasRoles;
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -63,6 +65,16 @@ class User extends Authenticatable implements HasAvatar
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->profile_photo_url;
+    }
+
+    /**
+     * Get the title attribute for the Filament Banhammer.
+     *
+     * @return string
+     */
+    public function getFilamentBanhammerTitleAttribute()
+    {
+        return $this->name;
     }
 
     /**

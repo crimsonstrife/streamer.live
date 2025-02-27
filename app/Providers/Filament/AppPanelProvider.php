@@ -98,6 +98,7 @@ class AppPanelProvider extends PanelProvider
                     ->allowSiteSettings()
                     ->allowShield()
                     ->allowSocialMenuSettings(),
+                \Gerenuk\FilamentBanhammer\FilamentBanhammerPlugin::make(),
             ]);
 
         if (Features::hasApiFeatures()) {
