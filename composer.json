@@ -53,6 +53,7 @@
         "stephenjude/filament-feature-flags": "^2.1",
         "stephenjude/filament-jetstream": "^0.0.15",
         "tapp/filament-auditing": "^3.0",
+        "tomatophp/filament-media-manager": "^1.1",
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {

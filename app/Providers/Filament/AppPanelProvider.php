@@ -91,6 +91,7 @@ class AppPanelProvider extends PanelProvider
                 \Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
                 \Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin::make(),
+                \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make(),
             ]);
 
         if (Features::hasApiFeatures()) {
