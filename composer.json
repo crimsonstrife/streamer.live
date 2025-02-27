@@ -15,6 +15,7 @@
         "filament/spatie-laravel-media-library-plugin": "^3.3",
         "filament/spatie-laravel-settings-plugin": "^3.3",
         "filament/spatie-laravel-tags-plugin": "^3.3",
+        "guava/calendar": "^1.13",
         "ibrahim-bougaoua/filaprogress": "^0.1.0",
         "indracollective/laravel-revisor-filament": "^0.0.1",
         "joaopaulolndev/filament-edit-profile": "^1.0",
