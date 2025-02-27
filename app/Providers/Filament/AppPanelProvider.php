@@ -28,6 +28,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Event;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 use Laravel\Fortify\Fortify;
 use Laravel\Jetstream\Features;
 use Laravel\Jetstream\Jetstream;
@@ -49,12 +50,10 @@ class AppPanelProvider extends PanelProvider
                 'primary' => Color::Gray,
             ])
             ->userMenuItems([
-                MenuItem::make()
-                    ->label('Profile')
+                'profile' => MenuItem::make()
+                    ->label(fn() => auth()->user()->name)
                     ->icon('heroicon-o-user-circle')
-                    ->url(fn () => $this->shouldRegisterMenuItem()
-                        ? url(EditProfile::getUrl())
-                        : url($panel->getPath())),
+                    ->url(fn(): string => EditProfilePage::getUrl()),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -88,6 +87,9 @@ class AppPanelProvider extends PanelProvider
                 \Z3d0X\FilamentFabricator\FilamentFabricatorPlugin::make(),
                 \Stephenjude\FilamentBlog\BlogPlugin::make(),
                 \Stephenjude\FilamentDebugger\DebuggerPlugin::make(),
+                \ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin::make(),
+                \Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin::make()
+                    ->shouldRegisterNavigation(false),
             ]);
 
         if (Features::hasApiFeatures()) {
@@ -95,7 +97,7 @@ class AppPanelProvider extends PanelProvider
                 MenuItem::make()
                     ->label('API Tokens')
                     ->icon('heroicon-o-key')
-                    ->url(fn () => $this->shouldRegisterMenuItem()
+                    ->url(fn() => $this->shouldRegisterMenuItem()
                         ? url(ApiTokens::getUrl())
                         : url($panel->getPath())),
             ]);
@@ -108,9 +110,9 @@ class AppPanelProvider extends PanelProvider
                 ->tenantProfile(EditTeam::class)
                 ->userMenuItems([
                     MenuItem::make()
-                        ->label(fn () => __('Team Settings'))
+                        ->label(fn() => __('Team Settings'))
                         ->icon('heroicon-o-cog-6-tooth')
-                        ->url(fn () => $this->shouldRegisterMenuItem()
+                        ->url(fn() => $this->shouldRegisterMenuItem()
                             ? url(EditTeam::getUrl())
                             : url($panel->getPath())),
                 ]);
