@@ -17,11 +17,7 @@ use Laravel\Jetstream\Http\Controllers\TeamInvitationController;
 
 Route::get('/', fn() => view('welcome'));
 
-Route::redirect('/login', '/admin/login')->name('login');
-
-Route::redirect('/register', '/admin/register')->name('register');
-
-Route::redirect('/dashboard', '/admin')->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
