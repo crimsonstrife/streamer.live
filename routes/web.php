@@ -22,7 +22,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     });
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
