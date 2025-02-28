@@ -93,7 +93,7 @@ class CartController extends Controller
     {
         $cart = Session::get('cart', []);
 
-        $updatedCart = collect($cart)->reject(fn($item) => $item['variant_id'] === $variantId)->values()->all();
+        $updatedCart = collect($cart)->reject(fn ($item) => $item['variant_id'] === $variantId)->values()->all();
 
         Session::put('cart', $updatedCart);
 
