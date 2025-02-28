@@ -1,9 +1,15 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
-    "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "name": "crimsonstrife/streamer",
+    "type": "application",
+    "description": "A Laravel-based webapp for hosting content creator fan sites, aimed a streamers and their community building. Built with Laravel, Livewire, and Filament.",
+    "keywords": ["laravel", "livewire", "filament", "streamer", "streaming", "fan site", "community", "content creator"],
+    "authors": [
+        {
+            "name": "Patrick Barnhardt (crimsonstrife)",
+            "email": "contact@patrickbarhardt.info"
+        }
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
