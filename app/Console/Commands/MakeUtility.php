@@ -25,7 +25,8 @@ class MakeUtility extends GeneratorCommand
      *
      * @return string
      */
-    protected function getStub() {
+    protected function getStub()
+    {
         return app_path('Console/Commands/stubs/make-utility.stub');
     }
 
@@ -35,7 +36,8 @@ class MakeUtility extends GeneratorCommand
      * @param string $rootNamespace
      * @return string
      */
-    protected function getDefaultNamespace($rootNamespace) {
+    protected function getDefaultNamespace($rootNamespace)
+    {
         return $rootNamespace . '\Utilities';
     }
 
