@@ -47,16 +47,11 @@ class MakeService extends GeneratorCommand
      *
      * @param string $stub
      * @param string $name
-     * @return string
+     * @return void
      */
-    protected function replaceClass($stub, $name): string
+    protected function replaceClass($stub, $name): void
     {
         $stub = parent::replaceClass($stub, $name);
-
-        //trim to get the class name. For example, App\Utilities\DummyService will be DummyService
-        $name = class_basename($name);
-
-        return str_replace('{{ class }}', $name, $stub);
     }
 
     /**
