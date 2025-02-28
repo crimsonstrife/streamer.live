@@ -58,6 +58,7 @@
         "tomatophp/filament-media-manager": "^1.1",
         "tomatophp/filament-menus": "^1.0",
         "tomatophp/filament-settings-hub": "^2.0",
+        "tomatophp/filament-seo": "^1.0.5",
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
@@ -80,6 +81,12 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
+        }
+    },
+    "repositories": {
+        "tomatophp/filament-seo": {
+            "type": "vcs",
+            "url": "https://github.com/crimsonstrife/filament-seo"
         }
     },
     "scripts": {
