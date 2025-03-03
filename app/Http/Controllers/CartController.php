@@ -143,7 +143,7 @@ class CartController extends Controller
 
         $cartCurrency = 'USD'; // Adjust as needed
         $checkoutDomain = config('services.fourthwall.storefront_url');
-        $checkoutUrl = "{$checkoutDomain}?cartCurrency={$cartCurrency}&cartId={$cartId}";
+        $checkoutUrl = $this->fourthwallService->getCheckoutUrl($cartId, 'USD');
 
         return redirect()->away($checkoutUrl);
     }
