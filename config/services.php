@@ -39,6 +39,7 @@ return [
         'base_url' => env('FOURTHWALL_BASE_URL', 'https://storefront-api.fourthwall.com'),
         'storefront_token' => env('FOURTHWALL_STOREFRONT_TOKEN'),
         'storefront_url' => env('FOURTHWALL_STOREFRONT_URL', 'https://storefront.fourthwall.com'),
+        'verify' => env('FOURTHWALL_VERIFY', true),
     ],
 
 ];

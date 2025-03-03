@@ -12,7 +12,7 @@
             <p class="text-center text-muted">{{ __('No products available in this collection.') }}</p>
         @else
             <div class="row">
-                @foreach ($products as $product)
+                @foreach ($products['results'] as $product)
                     @php
                         $name = $product['name'] ?? __('Unnamed Product');
                         $productSlug = $product['slug'] ?? null;

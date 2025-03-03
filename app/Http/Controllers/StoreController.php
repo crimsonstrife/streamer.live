@@ -18,55 +18,43 @@ class StoreController extends Controller
     public function index()
     {
         $collections = $this->fourthwallService->getCollections();
+
         return view('store.index', compact('collections'));
     }
 
     public function showCollection($slug)
     {
-        $storefrontToken = config('services.fourthwall.storefront_token');
-
         // Fetch collection details
-        $collectionResponse = Http::withOptions(['verify' => false])
-            ->get("https://storefront-api.fourthwall.com/v1/collections/{$slug}", [
-                'storefront_token' => $storefrontToken
-            ]);
+        $collectionResponse = $this->fourthwallService->getCollection($slug);
 
-        if ($collectionResponse->failed()) {
+        if (!$collectionResponse) {
             abort(404, "Collection not found.");
         }
 
-        $collection = $collectionResponse->json();
+        $collection = $collectionResponse;
 
         // Fetch products for this collection
-        $productsResponse = Http::withOptions(['verify' => false])
-            ->get("https://storefront-api.fourthwall.com/v1/collections/{$slug}/products", [
-                'storefront_token' => $storefrontToken
-            ]);
+        $productsResponse = $this->fourthwallService->getCollectionProducts($slug);
 
-        if ($productsResponse->failed()) {
-            abort(404, "Unable to fetch products for this collection.");
+        if (!$productsResponse) {
+            abort(404, "Products not found.");
         }
 
-        $products = $productsResponse->json('results') ?? [];
+        $products = $productsResponse;
 
-        return view('store.collection', compact('products', 'collection'));
+        return view('store.collection', compact('collection', 'products'));
     }
 
     public function showProduct($slug)
     {
-        $storefrontToken = config('services.fourthwall.storefront_token');
-
         // Fetch product details
-        $productResponse = Http::withOptions(['verify' => false])
-            ->get("https://storefront-api.fourthwall.com/v1/products/{$slug}", [
-                'storefront_token' => $storefrontToken
-            ]);
+        $productResponse = $this->fourthwallService->getProduct($slug);
 
-        if ($productResponse->failed()) {
+        if (!$productResponse) {
             abort(404, "Product not found.");
         }
 
-        $product = $productResponse->json();
+        $product = $productResponse;
 
         // Extract first variant price (if available)
         $price = null;
@@ -77,29 +65,43 @@ class StoreController extends Controller
             ];
         }
 
-        return view('store.product', compact('product', 'price'));
+        // Extract first variant ID (if available)
+        $variantId = null;
+        if (!empty($product['variants']) && isset($product['variants'][0]['id'])) {
+            $variantId = $product['variants'][0]['id'];
+        }
+
+        // Render product view
+        return view('store.product', compact('product', 'price', 'variantId'));
     }
 
     public function viewCart()
     {
+        // Get cart ID from session
         $cartId = session()->get('cart_id');
 
+        // If no cart exists, redirect to store index
         if (!$cartId) {
             return redirect()->route('store.index')->with('error', 'Your cart is empty.');
         }
 
+        // Fetch cart details
         $cart = $this->fourthwallService->getCart($cartId);
+
         return view('store.cart', compact('cart'));
     }
 
     public function checkout()
     {
+        // Get cart ID from session
         $cartId = session()->get('cart_id');
 
+        // If no cart exists, redirect to store index
         if (!$cartId) {
             return redirect()->route('store.index')->with('error', 'Your cart is empty.');
         }
 
-        return redirect()->away($this->fourthwallService->redirectToCheckout($cartId));
+        // Redirect to checkout page
+        return $this->fourthwallService->redirectToCheckout($cartId);
     }
 }
