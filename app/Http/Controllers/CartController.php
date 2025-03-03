@@ -30,11 +30,11 @@ class CartController extends Controller
         // Fetch cart details from Fourthwall API
         $cartResponse = $this->fourthwallService->getCart($cartId);
 
-        if ($cartResponse->failed()) {
+        if (!$cartResponse) {
             return view('store.cart', ['cart' => []]);
         }
 
-        $cart = $cartResponse->json();
+        $cart = $cartResponse;
 
         return view('store.cart', ['cart' => $cart]);
     }

@@ -169,7 +169,7 @@ class FourthwallService
         ];
 
         // Create a new cart
-        return $createCartResponse = $this->postRequest("v1/carts", $itemArray, $params);
+        return $createCartResponse = $this->postRequest("v1/carts", $params, $itemArray);
     }
 
     /**
@@ -196,7 +196,7 @@ class FourthwallService
         ];
 
         // Add items to the cart
-        return $this->postRequest("v1/carts/{$cartId}/add", $itemArray, $params);
+        return $this->postRequest("v1/carts/{$cartId}/add", $params, $itemArray);
     }
 
     /**
@@ -215,7 +215,7 @@ class FourthwallService
             ],
         ];
 
-        return $this->postRequest("v1/carts/{$cartId}/remove", $itemArray, []);
+        return $this->postRequest("v1/carts/{$cartId}/remove", [], $itemArray);
     }
 
     /**
@@ -230,7 +230,7 @@ class FourthwallService
             'items' => $items,
         ];
 
-        return $this->postRequest("v1/carts/{$cartId}/change", $itemArray, []);
+        return $this->postRequest("v1/carts/{$cartId}/change", [], $itemArray);
     }
 
     /**
