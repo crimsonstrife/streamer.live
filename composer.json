@@ -18,7 +18,7 @@
         "asosick/filament-layout-manager": "^1.1",
         "bezhansalleh/filament-shield": "^3.3",
         "bepsvpt/secure-headers": "*",
-        "blade-ui-kit/blade-ui-kit": "^0.6.3",
+        "blade-ui-kit/blade-ui-kit": "^0.7.0",
         "brickx/maintenance-switch": "^1.0",
         "calebporzio/sushi": "^2.5",
         "cocur/slugify": "^4.6",

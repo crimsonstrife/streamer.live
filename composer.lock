@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81d478f6a10a7dca9ae5291c882967cc",
+    "content-hash": "65c002eb9992e8ca3889101a74a46e56",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -1611,23 +1611,23 @@
         },
         {
             "name": "blade-ui-kit/blade-ui-kit",
-            "version": "0.6.4",
+            "version": "0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blade-ui-kit/blade-ui-kit.git",
-                "reference": "ea7efd8b2ad613fa4441a51f1312d71153c27b22"
+                "reference": "3d6034f5425ea41e54a75130555befd1dfec7690"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blade-ui-kit/blade-ui-kit/zipball/ea7efd8b2ad613fa4441a51f1312d71153c27b22",
-                "reference": "ea7efd8b2ad613fa4441a51f1312d71153c27b22",
+                "url": "https://api.github.com/repos/blade-ui-kit/blade-ui-kit/zipball/3d6034f5425ea41e54a75130555befd1dfec7690",
+                "reference": "3d6034f5425ea41e54a75130555befd1dfec7690",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "illuminate/filesystem": "^10.0|^11.0",
-                "illuminate/support": "^10.0|^11.0",
-                "illuminate/view": "^10.0|^11.0",
+                "illuminate/filesystem": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/view": "^10.0|^11.0|^12.0",
                 "nesbot/carbon": "^2.38|^3.0",
                 "php": "^8.1"
             },
@@ -1636,8 +1636,8 @@
                 "league/commonmark": "^1.4|^2.0",
                 "livewire/livewire": "^3.0",
                 "lorisleiva/cron-translator": "^0.1.1|^0.4",
-                "orchestra/testbench": "^8.0|^9.0",
-                "orchestra/testbench-dusk": "^8.0|^9.0",
+                "orchestra/testbench": "^8.0|^9.0|^10.0",
+                "orchestra/testbench-dusk": "^8.0|^9.0|^10.0",
                 "pestphp/pest": "^2.34|^3.0",
                 "phpunit/phpunit": "^10.5|^11.0"
             },
@@ -1685,7 +1685,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-02T13:32:27+00:00"
+            "time": "2025-02-19T08:32:44+00:00"
         },
         {
             "name": "brick/math",
