@@ -32,13 +32,37 @@ class FourthwallService
      *
      * @return mixed The response from the API.
      */
-    private function request(string $method, string $endpoint, array $params = [])
+    private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = [])
     {
-        $params['storefront_token'] = $this->storefrontToken;
+        // Check if the query parameters are not empty
+        if (!empty($queryParams)) {
+            //if not empty, check if the storefront token is set
+            if ($this->storefrontToken) {
+                //if set, add the storefront token to the query parameters
+                $queryParams['storefront_token'] = $this->storefrontToken;
+            } else {
+                //if not set, throw an exception
+                throw new \Exception('Storefront token is required for this request.');
+            }
+        } else {
+            //if empty, check if the storefront token is set
+            if ($this->storefrontToken) {
+                //if set, add the storefront token to the query parameters
+                $queryParams = ['storefront_token' => $this->storefrontToken];
+            } else {
+                //if not set, throw an exception
+                throw new \Exception('Storefront token is required for this request.');
+            }
+        }
+
+        $url = "{$this->baseUrl}/{$endpoint}?" . http_build_query($queryParams, '', '&');
 
         return Http::withOptions([
             'verify' => $this->verify,
-        ])->{$method}("{$this->baseUrl}/{$endpoint}", $params)->json();
+        ])
+            ->withQueryParameters($queryParams)
+            ->{$method}($url, $method === 'get' ? [] : $bodyParams) // Only send body for non-GET requests
+            ->json();
     }
 
     /**
@@ -51,20 +75,21 @@ class FourthwallService
      */
     private function getRequest(string $endpoint, array $queryParams = [])
     {
-        return $this->request('get', $endpoint, $queryParams);
+        return $this->request('get', $endpoint, $queryParams, []);
     }
 
     /**
      * Make a POST request to the Fourthwall API
      *
      * @param string $endpoint The endpoint to make the request to.
+     * @param array $bodyParams The body parameters to include in the request.
      * @param array $queryParams The query parameters to include in the request.
      *
      * @return mixed The response from the API.
      */
-    private function postRequest(string $endpoint, array $queryParams = [])
+    private function postRequest(string $endpoint, array $queryParams = [], array $bodyParams)
     {
-        return $this->request('post', $endpoint, $queryParams);
+        return $this->request('post', $endpoint, $queryParams, $bodyParams);
     }
 
     /**
@@ -130,6 +155,10 @@ class FourthwallService
      */
     public function createCart(string $variantId, int $quantity = 1, string $currency = 'USD')
     {
+        $params = [
+            'currency' => $currency,
+        ];
+
         $itemArray = [
             'items' => [
                 [
@@ -140,7 +169,7 @@ class FourthwallService
         ];
 
         // Create a new cart
-        return $createCartResponse = $this->postRequest("v1/carts/?currency={$currency}", $itemArray);
+        return $createCartResponse = $this->postRequest("v1/carts", $itemArray, $params);
     }
 
     /**
@@ -153,6 +182,10 @@ class FourthwallService
      */
     public function addToCart(string $cartId, string $variantId, int $quantity = 1, string $currency = 'USD')
     {
+        $params = [
+            'currency' => $currency,
+        ];
+
         $itemArray = [
             'items' => [
                 [
@@ -163,7 +196,7 @@ class FourthwallService
         ];
 
         // Add items to the cart
-        return $this->postRequest("v1/carts/{$cartId}/add/?currency={$currency}", $itemArray);
+        return $this->postRequest("v1/carts/{$cartId}/add", $itemArray, $params);
     }
 
     /**
@@ -174,9 +207,15 @@ class FourthwallService
      */
     public function removeFromCart(string $cartId, string $variantId)
     {
-        return $this->postRequest("v1/carts/{$cartId}/remove", [
-            'items' => [['variantId' => $variantId]],
-        ]);
+        $itemArray = [
+            'items' => [
+                [
+                    'variantId' => $variantId,
+                ],
+            ],
+        ];
+
+        return $this->postRequest("v1/carts/{$cartId}/remove", $itemArray, []);
     }
 
     /**
@@ -187,9 +226,11 @@ class FourthwallService
      */
     public function updateCart(string $cartId, array $items)
     {
-        return $this->postRequest("v1/carts/{$cartId}/change", [
+        $itemArray = [
             'items' => $items,
-        ]);
+        ];
+
+        return $this->postRequest("v1/carts/{$cartId}/change", $itemArray, []);
     }
 
     /**
