@@ -34,7 +34,7 @@ class CartController extends Controller
             return view('store.cart', ['cart' => []]);
         }
 
-        $cart = $cartResponse;
+        $cart = $cartResponse ?? [];
 
         return view('store.cart', ['cart' => $cart]);
     }

@@ -8,8 +8,7 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="p-6 overflow-hidden bg-white shadow-xl sm:rounded-lg">
-
-                @if (session('cart') && count(session('cart')) > 0)
+                @if (($cart) && count($cart['items']) > 0)
                     <form action="{{ route('store.cart.update') }}" method="POST">
                         @csrf
                         <table class="w-full border border-collapse border-gray-300 table-auto">
@@ -24,16 +23,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (session('cart') as $variantId => $item)
+                                @foreach ($cart['items'] as $variantId => $item)
                                     <tr>
                                         <td class="flex items-center px-4 py-2 border border-gray-300">
-                                            <img src="{{ $item['image'] ?? asset('images/default-product.png') }}"
-                                                alt="{{ $item['name'] }}" class="object-cover w-16 h-16 mr-4 rounded">
-                                            {{ $item['name'] }}
+                                            <img src="{{ $item['variant']['image'] ?? asset('images/default-product.png') }}"
+                                                alt="{{ $item['variant']['name'] }}" class="object-cover w-16 h-16 mr-4 rounded">
+                                            {{ $item['variant']['name'] }}
                                         </td>
-                                        <td class="px-4 py-2 border border-gray-300">{{ $item['variant_name'] }}</td>
+                                        <td class="px-4 py-2 border border-gray-300">{{ $item['variant']['name'] }}</td>
                                         <td class="px-4 py-2 border border-gray-300">
-                                            {{ number_format($item['price'], 2) }} {{ $item['currency'] }}
+                                            {{ number_format($item['variant']['unitPrice']['value'], 2) }} {{ $item['variant']['unitPrice']['currency'] }}
                                         </td>
                                         <td class="px-4 py-2 border border-gray-300">
                                             <input type="number" name="cart[{{ $variantId }}][quantity]"
@@ -41,7 +40,7 @@
                                                 class="w-16 text-center border border-gray-300 rounded">
                                         </td>
                                         <td class="px-4 py-2 border border-gray-300">
-                                            {{ number_format($item['quantity'] * $item['price'], 2) }} {{ $item['currency'] }}
+                                            {{ number_format($item['quantity'] * $item['variant']['unitPrice']['value'], 2) }} {{ $item['variant']['unitPrice']['currency'] }}
                                         </td>
                                         <td class="px-4 py-2 border border-gray-300">
                                             <a href="{{ route('store.cart.remove', $variantId) }}"
