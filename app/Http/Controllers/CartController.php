@@ -133,7 +133,7 @@ class CartController extends Controller
     /**
      * Proceed to checkout by creating a cart in Fourthwall and redirecting to checkout.
      */
-    public function checkout()
+    public function checkout(Request $request)
     {
         $cartId = session()->get('fourthwall_cart_id');
 
@@ -142,7 +142,7 @@ class CartController extends Controller
         }
 
         $cartCurrency = 'USD'; // Adjust as needed
-        $checkoutDomain = 'https://yourstore.fourthwall.com/checkout/';
+        $checkoutDomain = config('services.fourthwall.storefront_url');
         $checkoutUrl = "{$checkoutDomain}?cartCurrency={$cartCurrency}&cartId={$cartId}";
 
         return redirect()->away($checkoutUrl);

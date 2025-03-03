@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="p-6 overflow-hidden bg-white shadow-xl sm:rounded-lg">
-                @if (($cart) && count($cart['items']) > 0)
+                @if ($cart && count($cart['items']) > 0)
                     <form action="{{ route('store.cart.update') }}" method="POST">
                         @csrf
                         <table class="w-full border border-collapse border-gray-300 table-auto">
@@ -23,16 +23,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($cart['items'] as $variantId => $item)
+                                @foreach ($cart['items'] as $item)
+                                    @php
+                                        $variantId = $item['variant']['id'];
+                                    @endphp
                                     <tr>
                                         <td class="flex items-center px-4 py-2 border border-gray-300">
-                                            <img src="{{ $item['variant']['image'] ?? asset('images/default-product.png') }}"
-                                                alt="{{ $item['variant']['name'] }}" class="object-cover w-16 h-16 mr-4 rounded">
+                                            <img src="{{ $item['variant']['images'][0]['url'] ?? asset('images/default-product.png') }}"
+                                                alt="{{ $item['variant']['name'] }}"
+                                                class="object-cover w-16 h-16 mr-4 rounded">
                                             {{ $item['variant']['name'] }}
                                         </td>
                                         <td class="px-4 py-2 border border-gray-300">{{ $item['variant']['name'] }}</td>
                                         <td class="px-4 py-2 border border-gray-300">
-                                            {{ number_format($item['variant']['unitPrice']['value'], 2) }} {{ $item['variant']['unitPrice']['currency'] }}
+                                            {{ number_format($item['variant']['unitPrice']['value'], 2) }}
+                                            {{ $item['variant']['unitPrice']['currency'] }}
                                         </td>
                                         <td class="px-4 py-2 border border-gray-300">
                                             <input type="number" name="cart[{{ $variantId }}][quantity]"
@@ -40,7 +45,8 @@
                                                 class="w-16 text-center border border-gray-300 rounded">
                                         </td>
                                         <td class="px-4 py-2 border border-gray-300">
-                                            {{ number_format($item['quantity'] * $item['variant']['unitPrice']['value'], 2) }} {{ $item['variant']['unitPrice']['currency'] }}
+                                            {{ number_format($item['quantity'] * $item['variant']['unitPrice']['value'], 2) }}
+                                            {{ $item['variant']['unitPrice']['currency'] }}
                                         </td>
                                         <td class="px-4 py-2 border border-gray-300">
                                             <a href="{{ route('store.cart.remove', $variantId) }}"
@@ -58,14 +64,16 @@
                             <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded">
                                 Update Cart
                             </button>
-                            <a href="{{ route('store.cart.checkout') }}" class="px-4 py-2 text-white bg-green-500 rounded">
+                            <a href="{{ route('store.cart.checkout') }}"
+                                class="px-4 py-2 text-white bg-green-500 rounded">
                                 Proceed to Checkout
                             </a>
                         </div>
                     </form>
                 @else
                     <p class="text-gray-500">Your cart is empty.</p>
-                    <a href="{{ route('store.index') }}" class="inline-block px-4 py-2 mt-4 text-white bg-blue-500 rounded">
+                    <a href="{{ route('store.index') }}"
+                        class="inline-block px-4 py-2 mt-4 text-white bg-blue-500 rounded">
                         Go to Store
                     </a>
                 @endif
