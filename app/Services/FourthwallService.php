@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class FourthwallService
 {
@@ -106,7 +108,15 @@ class FourthwallService
      */
     public function getCheckoutUrl(string $cartId, string $currency = 'USD')
     {
-        return $this->storefrontUrl . "checkout/?cartCurrency={$currency}&cartId={$cartId}";
+        // Check if the storefront url is set and ends with a slash
+        if (substr($this->storefrontUrl, -1) !== '/') {
+            //if not, add a slash to the end of the storefront url
+            $url = $this->storefrontUrl . "/checkout/?cartCurrency={$currency}&cartId={$cartId}";
+        } else {
+            $url = $this->storefrontUrl . "checkout/?cartCurrency={$currency}&cartId={$cartId}";
+        }
+
+        return $url;
     }
 
     /**

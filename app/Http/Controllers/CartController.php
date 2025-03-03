@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\FourthwallService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Session;
 
 class CartController extends Controller
 {
@@ -133,7 +132,7 @@ class CartController extends Controller
     /**
      * Proceed to checkout by creating a cart in Fourthwall and redirecting to checkout.
      */
-    public function checkout(Request $request)
+    public function checkout(FourthwallService $fourthwallService)
     {
         $cartId = session()->get('fourthwall_cart_id');
 
@@ -142,9 +141,13 @@ class CartController extends Controller
         }
 
         $cartCurrency = 'USD'; // Adjust as needed
-        $checkoutDomain = config('services.fourthwall.storefront_url');
-        $checkoutUrl = $this->fourthwallService->getCheckoutUrl($cartId, 'USD');
+        $checkoutUrl = $fourthwallService->getCheckoutUrl($cartId, $cartCurrency);
 
-        return redirect()->away($checkoutUrl);
+        // Store checkout URL in session for the view
+        session()->put('checkout_url', $checkoutUrl);
+        // Store the cart currency in session for the view
+        session()->put('cart_currency', $cartCurrency);
+
+        return $this->fourthwallService->redirectToCheckout($cartId, $cartCurrency);
     }
 }
