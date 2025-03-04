@@ -49,6 +49,7 @@ class AppPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Gray,
             ])
+            ->theme(asset('css/filament/admin/theme.css'))
             ->userMenuItems([
                 'profile' => MenuItem::make()
                     ->label(fn() => auth()->user()->name)
