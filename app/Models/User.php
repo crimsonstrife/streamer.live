@@ -31,9 +31,27 @@ class User extends Authenticatable implements HasAvatar
      * @var array<int, string>
      */
     protected $fillable = [
+        'username',
+        'first_name',
+        'last_name',
+        'display_name',
         'name',
         'email',
         'password',
+        'birthdate',
+        'pronouns',
+        'location',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'birthdate' => 'date',
+        'email_verified_at' => 'datetime',
+        'pronouns' => 'string',
     ];
 
     /**
@@ -74,7 +92,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getFilamentBanhammerTitleAttribute()
     {
-        return $this->name;
+        return $this->getDisplayNameAttribute();
     }
 
     /**
@@ -88,5 +106,55 @@ class User extends Authenticatable implements HasAvatar
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the user's full name.
+     *
+     * @return string|null The user's full name.
+     */
+    public function getFullNameAttribute(): string|null
+    {
+        return "{$this->first_name} {$this->last_name}" ?? null;
+    }
+
+    /**
+     * Get the user's display name.
+     *
+     * @return string The user's display name.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->display_name ?? $this->username;
+    }
+
+    /**
+     * Get the user's name.
+     *
+     * @return string The user's name.
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->getFullNameAttribute() ?? $this->display_name ?? $this->username;
+    }
+
+    /**
+     * Get the user's first name.
+     *
+     * @return string|null The first name of the user.
+     */
+    public function getFirstNameAttribute(): string|null
+    {
+        return $this->first_name ?? null;
+    }
+
+    /**
+     * Get the user's last name.
+     *
+     * @return string|null The user's last name.
+     */
+    public function getLastNameAttribute(): string|null
+    {
+        return $this->last_name ?? null;
     }
 }

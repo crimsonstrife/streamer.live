@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('username')->unique()->after('id');
-            $table->string('first_name')->after('username');
-            $table->string('last_name')->after('first_name');
-            $table->string('display_name')->after('last_name');
+            $table->string('first_name')->nullable()->after('username');
+            $table->string('last_name')->nullable()->after('first_name');
+            $table->string('display_name')->nullable()->after('last_name');
             $table->dropColumn('name');
         });
     }
