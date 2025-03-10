@@ -1,7 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'bootstrap/dist/css/bootstrap.css';
 
-[x-cloak] {
-    display: none;
+body {
+    font-family: 'Arial', sans-serif;
 }
