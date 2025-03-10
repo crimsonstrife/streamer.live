@@ -1,65 +1,64 @@
 <x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
-
-        <x-validation-errors class="mb-4" />
-
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
-
-            <div>
-                <x-label for="username" value="{{ __('Username') }}" />
-                <x-input id="username" class="block w-full mt-1" type="text" name="username" :value="old('username')" required autofocus autocomplete="username" />
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="p-4 shadow-lg card w-100" style="max-width: 500px;">
+            <!-- Logo -->
+            <div class="mb-4 text-center">
+                <x-authentication-card-logo />
             </div>
 
-            <div class="mt-4">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block w-full mt-1" type="email" name="email" :value="old('email')" required autocomplete="email" />
-            </div>
+            <!-- Validation Errors -->
+            <x-validation-errors class="alert alert-danger" />
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block w-full mt-1" type="password" name="password" required autocomplete="new-password" />
-            </div>
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
 
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" class="block w-full mt-1" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
-
-            <div class="mt-4">
-                <x-label for="birthdate" value="{{ __('Birthdate') }}" />
-                <x-input id="birthdate" class="block w-full mt-1" type="date" name="birthdate" :value="old('birthdate')" required />
-            </div>
-
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-                <div class="mt-4">
-                    <x-label for="terms">
-                        <div class="flex items-center">
-                            <x-checkbox name="terms" id="terms" required />
-
-                            <div class="ms-2">
-                                {!! __('I agree to the :terms_of_service and :privacy_policy', [
-                                        'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">'.__('Terms of Service').'</a>',
-                                        'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">'.__('Privacy Policy').'</a>',
-                                ]) !!}
-                            </div>
-                        </div>
-                    </x-label>
+                <div class="mb-3">
+                    <label for="username" class="form-label">{{ __('Username') }}</label>
+                    <input id="username" type="text" name="username" class="form-control" value="{{ old('username') }}" required autofocus autocomplete="username">
                 </div>
-            @endif
 
-            <div class="flex items-center justify-end mt-4">
-                <a class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
+                <div class="mb-3">
+                    <label for="email" class="form-label">{{ __('Email') }}</label>
+                    <input id="email" type="email" name="email" class="form-control" value="{{ old('email') }}" required autocomplete="email">
+                </div>
 
-                <x-button class="ms-4">
-                    {{ __('Register') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
+                <div class="mb-3">
+                    <label for="password" class="form-label">{{ __('Password') }}</label>
+                    <input id="password" type="password" name="password" class="form-control" required autocomplete="new-password">
+                </div>
+
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
+                    <input id="password_confirmation" type="password" name="password_confirmation" class="form-control" required autocomplete="new-password">
+                </div>
+
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">{{ __('Birthdate') }}</label>
+                    <input id="birthdate" type="date" name="birthdate" class="form-control" value="{{ old('birthdate') }}" required>
+                </div>
+
+                @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                        <label class="form-check-label" for="terms">
+                            {!! __('I agree to the :terms_of_service and :privacy_policy', [
+                                'terms_of_service' => '<a target="_blank" href="'.route('terms.show').'" class="text-decoration-none">'.__('Terms of Service').'</a>',
+                                'privacy_policy' => '<a target="_blank" href="'.route('policy.show').'" class="text-decoration-none">'.__('Privacy Policy').'</a>',
+                            ]) !!}
+                        </label>
+                    </div>
+                @endif
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="text-decoration-none" href="{{ route('login') }}">
+                        {{ __('Already registered?') }}
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        {{ __('Register') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </x-guest-layout>
