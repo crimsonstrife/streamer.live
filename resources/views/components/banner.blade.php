@@ -8,18 +8,29 @@
         'alert-success': style === 'success',
         'alert-danger': style === 'danger',
         'alert-warning': style === 'warning',
-        'alert-secondary': style !== 'success' && style !== 'danger' && style !== 'warning'
-    }"
+        'alert-secondary': !['success', 'danger', 'warning'].includes(style)
+     }"
      role="alert">
 
+    <!-- Icon Section -->
     <span class="me-2">
-        <i x-show="style === 'success'" class="bi bi-check-circle-fill"></i>
-        <i x-show="style === 'danger'" class="bi bi-exclamation-circle-fill"></i>
-        <i x-show="style === 'warning'" class="bi bi-exclamation-triangle-fill"></i>
-        <i x-show="style !== 'success' && style !== 'danger' && style !== 'warning'" class="bi bi-info-circle-fill"></i>
+        <template x-if="style === 'success'">
+            <i class="bi bi-check-circle-fill"></i>
+        </template>
+        <template x-if="style === 'danger'">
+            <i class="bi bi-exclamation-circle-fill"></i>
+        </template>
+        <template x-if="style === 'warning'">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </template>
+        <template x-if="!['success', 'danger', 'warning'].includes(style)">
+            <i class="bi bi-info-circle-fill"></i>
+        </template>
     </span>
 
+    <!-- Message Text -->
     <span x-text="message"></span>
 
+    <!-- Close Button -->
     <button type="button" class="btn-close ms-auto" x-on:click="show = false" aria-label="Close"></button>
 </div>

@@ -1,83 +1,85 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+        <h2 class="text-xl fw-semibold text-dark">
             Shopping Cart
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="p-6 overflow-hidden bg-white shadow-xl sm:rounded-lg">
-                @if ($cart && count($cart['items']) > 0)
-                    <form action="{{ route('store.cart.update') }}" method="POST">
-                        @csrf
-                        <table class="w-full border border-collapse border-gray-300 table-auto">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="px-4 py-2 border border-gray-300">Product</th>
-                                    <th class="px-4 py-2 border border-gray-300">Variant</th>
-                                    <th class="px-4 py-2 border border-gray-300">Price</th>
-                                    <th class="px-4 py-2 border border-gray-300">Quantity</th>
-                                    <th class="px-4 py-2 border border-gray-300">Total</th>
-                                    <th class="px-4 py-2 border border-gray-300">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($cart['items'] as $item)
-                                    @php
-                                        $variantId = $item['variant']['id'];
-                                    @endphp
+    <div class="py-4">
+        <div class="container">
+            <div class="shadow-sm card">
+                <div class="card-body">
+                    @if ($cart && count($cart['items']) > 0)
+                        <form action="{{ route('store.cart.update') }}" method="POST">
+                            @csrf
+                            <table class="table align-middle table-bordered">
+                                <thead class="table-light">
                                     <tr>
-                                        <td class="flex items-center px-4 py-2 border border-gray-300">
-                                            <img src="{{ $item['variant']['images'][0]['url'] ?? asset('images/default-product.png') }}"
-                                                alt="{{ $item['variant']['name'] }}"
-                                                class="object-cover w-16 h-16 mr-4 rounded">
-                                            {{ $item['variant']['name'] }}
-                                        </td>
-                                        <td class="px-4 py-2 border border-gray-300">{{ $item['variant']['name'] }}</td>
-                                        <td class="px-4 py-2 border border-gray-300">
-                                            {{ number_format($item['variant']['unitPrice']['value'], 2) }}
-                                            {{ $item['variant']['unitPrice']['currency'] }}
-                                        </td>
-                                        <td class="px-4 py-2 border border-gray-300">
-                                            <input type="number" name="cart[{{ $variantId }}][quantity]"
-                                                value="{{ $item['quantity'] }}" min="1"
-                                                class="w-16 text-center border border-gray-300 rounded">
-                                        </td>
-                                        <td class="px-4 py-2 border border-gray-300">
-                                            {{ number_format($item['quantity'] * $item['variant']['unitPrice']['value'], 2) }}
-                                            {{ $item['variant']['unitPrice']['currency'] }}
-                                        </td>
-                                        <td class="px-4 py-2 border border-gray-300">
-                                            <a href="{{ route('store.cart.remove', $variantId) }}"
-                                                class="px-3 py-1 text-white bg-red-500 rounded">Remove</a>
-                                        </td>
+                                        <th>Product</th>
+                                        <th>Variant</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($cart['items'] as $item)
+                                        @php
+                                            $variantId = $item['variant']['id'];
+                                        @endphp
+                                        <tr>
+                                            <td class="d-flex align-items-center">
+                                                <img src="{{ $item['variant']['images'][0]['url'] ?? asset('images/default-product.png') }}"
+                                                    alt="{{ $item['variant']['name'] }}"
+                                                    class="rounded me-3" width="60" height="60">
+                                                {{ $item['variant']['name'] }}
+                                            </td>
+                                            <td>{{ $item['variant']['name'] }}</td>
+                                            <td>
+                                                {{ number_format($item['variant']['unitPrice']['value'], 2) }}
+                                                {{ $item['variant']['unitPrice']['currency'] }}
+                                            </td>
+                                            <td>
+                                                <input type="number" name="cart[{{ $variantId }}][quantity]"
+                                                    value="{{ $item['quantity'] }}" min="1"
+                                                    class="text-center form-control w-50">
+                                            </td>
+                                            <td>
+                                                {{ number_format($item['quantity'] * $item['variant']['unitPrice']['value'], 2) }}
+                                                {{ $item['variant']['unitPrice']['currency'] }}
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('store.cart.remove', $variantId) }}" class="btn btn-danger btn-sm">
+                                                    <i class="bi bi-trash"></i> Remove
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
 
-                        <div class="flex justify-between mt-6">
-                            <a href="{{ route('store.index') }}" class="px-4 py-2 text-white bg-gray-500 rounded">
-                                Continue Shopping
-                            </a>
-                            <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded">
-                                Update Cart
-                            </button>
-                            <a href="{{ route('store.cart.checkout') }}"
-                                class="px-4 py-2 text-white bg-green-500 rounded">
-                                Proceed to Checkout
+                            <div class="mt-4 d-flex justify-content-between">
+                                <a href="{{ route('store.index') }}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Continue Shopping
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-arrow-repeat"></i> Update Cart
+                                </button>
+                                <a href="{{ route('store.cart.checkout') }}" class="btn btn-success">
+                                    <i class="bi bi-bag-check"></i> Proceed to Checkout
+                                </a>
+                            </div>
+                        </form>
+                    @else
+                        <p class="text-center text-muted fs-5">Your cart is empty.</p>
+                        <div class="text-center">
+                            <a href="{{ route('store.index') }}" class="btn btn-primary">
+                                <i class="bi bi-shop"></i> Go to Store
                             </a>
                         </div>
-                    </form>
-                @else
-                    <p class="text-gray-500">Your cart is empty.</p>
-                    <a href="{{ route('store.index') }}"
-                        class="inline-block px-4 py-2 mt-4 text-white bg-blue-500 rounded">
-                        Go to Store
-                    </a>
-                @endif
-
+                    @endif
+                </div>
             </div>
         </div>
     </div>

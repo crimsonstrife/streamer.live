@@ -1,17 +1,20 @@
 @props(['id' => null, 'maxWidth' => null])
 
 <x-modal :id="$id" :maxWidth="$maxWidth" {{ $attributes }}>
-    <div class="px-6 py-4">
-        <div class="text-lg font-medium text-gray-900 dark:text-gray-100">
+    <div class="modal-header">
+        <h5 class="modal-title">
             {{ $title }}
-        </div>
-
-        <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-            {{ $content }}
-        </div>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
-    <div class="flex flex-row justify-end px-6 py-4 bg-gray-100 dark:bg-gray-800 text-end">
+    <div class="modal-body">
+        <p class="text-muted">
+            {{ $content }}
+        </p>
+    </div>
+
+    <div class="modal-footer">
         {{ $footer }}
     </div>
 </x-modal>

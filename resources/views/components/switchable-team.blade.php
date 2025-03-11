@@ -1,21 +1,16 @@
-@props(['team', 'component' => 'dropdown-link'])
+@props(['team', 'component' => 'dropdown-item'])
 
-<form method="POST" action="{{ route('current-team.update') }}" x-data>
+<form method="POST" action="{{ route('current-team.update') }}" x-data class="d-inline">
     @method('PUT')
     @csrf
 
     <!-- Hidden Team ID -->
     <input type="hidden" name="team_id" value="{{ $team->id }}">
 
-    <x-dynamic-component :component="$component" href="#" x-on:click.prevent="$root.submit();">
-        <div class="flex items-center">
-            @if (Auth::user()->isCurrentTeam($team))
-                <svg class="me-2 size-5 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            @endif
-
-            <div class="truncate">{{ $team->name }}</div>
-        </div>
+    <x-dynamic-component :component="$component" href="#" x-on:click.prevent="$root.submit();" class="d-flex align-items-center">
+        @if (Auth::user()->isCurrentTeam($team))
+            <i class="bi bi-check-circle text-success me-2"></i>
+        @endif
+        <span class="text-truncate">{{ $team->name }}</span>
     </x-dynamic-component>
 </form>
