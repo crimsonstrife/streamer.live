@@ -1,3 +1,132 @@
 @import "../../../../vendor/filament/filament/resources/css/theme.css";
 
 @config 'tailwind.config.js';
+
+.fi-body {
+    @apply bg-gray-50 dark:bg-gray-900;
+}
+
+.fi-layout {
+    @apply bg-gray-50 dark:bg-gray-900;
+}
+
+.fi-sidebar-open {
+    @apply sm:w-1/3 md:w-1/4 lg:w-1/5 xl:w-60;
+}
+
+.fi-sidebar-header {
+    @apply px-3;
+}
+
+.fi-sidebar-header .fi-icon-btn svg {
+    @apply w-4 h-4;
+}
+
+.fi-sidebar-nav {
+    @apply gap-6 px-3 pt-4 pb-8 bg-gray-50 dark:bg-gray-900;
+}
+
+.fi-ta-content {
+    @apply p-6;
+}
+
+.fi-user-menu {
+    display: none !important;
+}
+
+.fi-sidebar-nav-groups {
+    @apply mx-0;
+}
+
+.fi-sidebar-group-label {
+    @apply text-xs font-medium text-gray-400;
+}
+
+.fi-sidebar-group-button {
+    @apply flex-row-reverse gap-x-1;
+}
+
+.fi-sidebar-group-button .fi-icon-btn svg {
+    @apply w-4 h-4
+}
+
+.fi-sidebar-header {
+    @apply shadow-none bg-gray-50 dark:bg-gray-900 ring-0;
+}
+
+.fi-wi {
+    @apply p-6;
+}
+
+.fi-header {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+
+.fi-header .shrink-0 {
+    @apply sm:mt-0;
+}
+
+.fi-header .fi-breadcrumbs {
+    @apply hidden;
+}
+
+.fi-header .fi-header-heading {
+    @apply hidden;
+}
+
+.fi-header .fi-ac {
+    @apply px-6;
+}
+
+
+.fi-main-ctn {
+    @apply min-h-full mt-2 mb-2 ml-2 mr-2 overflow-hidden bg-white border border-gray-100 shadow-sm dark:bg-gray-800 rtl:sm:mr-0 rtl:ml-2 sm:ml-0 rtl:md:ml-4 md:mr-4 md:mt-4 md:mb-4 dark:border-gray-700 rounded-2xl;
+}
+
+.fi-sidebar-item svg {
+    @apply w-5 h-5 text-sm;
+}
+
+.fi-sidebar-item a {
+    @apply px-3 py-1.5 hover:bg-white;
+}
+
+.fi-sidebar-item span {
+    @apply text-xs font-normal text-gray-800 dark:text-gray-200;
+}
+
+.fi-sidebar-item-active svg {
+    @apply w-5 h-5 text-sm text-primary-500;
+}
+
+.fi-sidebar-item-active a {
+    @apply px-3 py-1.5 bg-white shadow-sm hover:bg-white;
+}
+
+
+.fi-sidebar-item-active span {
+    @apply text-xs font-medium text-gray-800 dark:text-gray-200;
+}
+
+.fi-main{
+    @apply max-w-full;
+    padding: 0 !important;
+}
+
+.fi-main > section {
+    @apply px-0 py-0 gap-y-0;
+}
+
+
+.fi-page > section > div {
+    @apply px-6;
+}
+
+.fi-global-search {
+    @apply w-full;
+}
+
+.fi-global-search-field .fi-input-wrp {
+    @apply w-full;
+}
