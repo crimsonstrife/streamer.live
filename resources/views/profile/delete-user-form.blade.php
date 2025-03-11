@@ -1,53 +1,61 @@
-<x-action-section>
-    <x-slot name="title">
-        {{ __('Delete Account') }}
-    </x-slot>
-
-    <x-slot name="description">
-        {{ __('Permanently delete your account.') }}
-    </x-slot>
-
-    <x-slot name="content">
-        <div class="max-w-xl text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+<div>
+    <div class="shadow-sm card border-danger">
+        <div class="text-white card-header bg-danger">
+            {{ __('Delete Account') }}
         </div>
 
-        <div class="mt-5">
-            <x-danger-button wire:click="confirmUserDeletion" wire:loading.attr="disabled">
-                {{ __('Delete Account') }}
-            </x-danger-button>
-        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+            </p>
 
-        <!-- Delete User Confirmation Modal -->
-        <x-dialog-modal wire:model.live="confirmingUserDeletion">
-            <x-slot name="title">
-                {{ __('Delete Account') }}
-            </x-slot>
-
-            <x-slot name="content">
-                {{ __('Are you sure you want to delete your account? Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-
-                <div class="mt-4" x-data="{}" x-on:confirming-delete-user.window="setTimeout(() => $refs.password.focus(), 250)">
-                    <x-input type="password" class="mt-1 block w-3/4"
-                                autocomplete="current-password"
-                                placeholder="{{ __('Password') }}"
-                                x-ref="password"
-                                wire:model="password"
-                                wire:keydown.enter="deleteUser" />
-
-                    <x-input-error for="password" class="mt-2" />
-                </div>
-            </x-slot>
-
-            <x-slot name="footer">
-                <x-secondary-button wire:click="$toggle('confirmingUserDeletion')" wire:loading.attr="disabled">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
-
-                <x-danger-button class="ms-3" wire:click="deleteUser" wire:loading.attr="disabled">
+            <div class="mt-4">
+                <button class="btn btn-danger" wire:click="confirmUserDeletion" wire:loading.attr="disabled">
                     {{ __('Delete Account') }}
-                </x-danger-button>
-            </x-slot>
-        </x-dialog-modal>
-    </x-slot>
-</x-action-section>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete User Confirmation Modal -->
+    <div wire:ignore.self class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="text-white modal-header bg-danger">
+                    <h5 class="modal-title" id="deleteUserModalLabel">{{ __('Delete Account') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>
+                        {{ __('Are you sure you want to delete your account? Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                    </p>
+
+                    <div class="mt-3">
+                        <label for="password" class="form-label">{{ __('Password') }}</label>
+                        <input type="password" class="form-control" id="password" wire:model="password" autocomplete="current-password" placeholder="{{ __('Enter your password') }}">
+                        <x-input-error for="password" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="button" class="btn btn-danger" wire:click="deleteUser" wire:loading.attr="disabled">
+                        {{ __('Delete Account') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+        Livewire.on('confirmingUserDeletion', () => {
+            var deleteUserModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+            deleteUserModal.show();
+        });
+    </script>
+    @endpush
+</div>

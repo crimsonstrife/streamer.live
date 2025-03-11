@@ -1,45 +1,68 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
+        <div class="container mt-4">
+            <h2 class="fw-semibold fs-4 text-dark">
+                {{ __('Profile') }}
+            </h2>
+        </div>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-            @if (Laravel\Fortify\Features::canUpdateProfileInformation())
-                @livewire('profile.update-profile-information-form')
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                @if (Laravel\Fortify\Features::canUpdateProfileInformation())
+                    <div class="mb-4 shadow-sm card">
+                        <div class="text-white card-header bg-primary">
+                            {{ __('Update Profile Information') }}
+                        </div>
+                        <div class="card-body">
+                            @livewire('profile.update-profile-information-form')
+                        </div>
+                    </div>
+                @endif
 
-                <x-section-border />
-            @endif
+                @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()))
+                    <div class="mb-4 shadow-sm card">
+                        <div class="card-header bg-warning text-dark">
+                            {{ __('Update Password') }}
+                        </div>
+                        <div class="card-body">
+                            @livewire('profile.update-password-form')
+                        </div>
+                    </div>
+                @endif
 
-            @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::updatePasswords()))
-                <div class="mt-10 sm:mt-0">
-                    @livewire('profile.update-password-form')
+                @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
+                    <div class="mb-4 shadow-sm card">
+                        <div class="text-white card-header bg-info">
+                            {{ __('Two-Factor Authentication') }}
+                        </div>
+                        <div class="card-body">
+                            @livewire('profile.two-factor-authentication-form')
+                        </div>
+                    </div>
+                @endif
+
+                <div class="mb-4 shadow-sm card">
+                    <div class="text-white card-header bg-secondary">
+                        {{ __('Logout Other Browser Sessions') }}
+                    </div>
+                    <div class="card-body">
+                        @livewire('profile.logout-other-browser-sessions-form')
+                    </div>
                 </div>
 
-                <x-section-border />
-            @endif
-
-            @if (Laravel\Fortify\Features::canManageTwoFactorAuthentication())
-                <div class="mt-10 sm:mt-0">
-                    @livewire('profile.two-factor-authentication-form')
-                </div>
-
-                <x-section-border />
-            @endif
-
-            <div class="mt-10 sm:mt-0">
-                @livewire('profile.logout-other-browser-sessions-form')
+                @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
+                    <div class="mb-4 shadow-sm card">
+                        <div class="text-white card-header bg-danger">
+                            {{ __('Delete Account') }}
+                        </div>
+                        <div class="card-body">
+                            @livewire('profile.delete-user-form')
+                        </div>
+                    </div>
+                @endif
             </div>
-
-            @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
-                <x-section-border />
-
-                <div class="mt-10 sm:mt-0">
-                    @livewire('profile.delete-user-form')
-                </div>
-            @endif
         </div>
     </div>
 </x-app-layout>
