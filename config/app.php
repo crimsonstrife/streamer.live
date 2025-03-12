@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Soft deletes
+    |--------------------------------------------------------------------------
+    |
+    | Disable this if you want threads and posts to be permanently removed from
+    | your database when they're deleted. Note that by default, the option
+    | to hard delete threads and posts exists regardless of this setting.
+    |
+    */
+
+    'soft_deletes' => true,
+
 ];
