@@ -27,7 +27,7 @@
         @if (isset($header))
             <header class="bg-white shadow-sm">
                 <div class="container py-3">
-                    <h1 class="h5 mb-0">{{ $header }}</h1>
+                    <h1 class="mb-0 h5">{{ $header }}</h1>
                 </div>
             </header>
         @endif
