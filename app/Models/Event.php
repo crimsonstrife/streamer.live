@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\BaseModel as Model;
 use Guava\Calendar\Contracts\Eventable;
 use Guava\Calendar\ValueObjects\Event as EventModel;
-use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model implements Eventable
 {
