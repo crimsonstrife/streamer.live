@@ -23,33 +23,33 @@ final class Sort extends Enum
     /**
      * Represents sorting by the highest score, which is the sum of likes and dislikes.
      */
-    const TOP = 'top';
+    public const TOP = 'top';
 
     /**
      * Represents a 'newest' sorting option.
      */
-    const NEWEST = 'newest';
+    public const NEWEST = 'newest';
 
     /**
      * Represents a 'oldest' sorting option.
      */
-    const OLDEST = 'oldest';
+    public const OLDEST = 'oldest';
 
     /**
      * Represents sorting by the highest ratio of likes to dislikes.
      */
-    const CONTROVERSIAL = 'controversial';
+    public const CONTROVERSIAL = 'controversial';
 
     /**
      * Represents sorting by the most replies, which is the count of comments that are replies to the comment.
      * This is only applicable to comments.
      */
-    const REPLIES = 'replies';
+    public const REPLIES = 'replies';
 
     /**
      * Represents a 'popular' sorting option.
      */
-    const POPULAR = 'popular';
+    public const POPULAR = 'popular';
 
     /**
      * Get the default value for the enum.

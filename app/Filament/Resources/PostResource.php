@@ -54,7 +54,7 @@ class PostResource extends Resource
                         Forms\Components\TextInput::make('slug')
                             ->label(__('filament-blog::filament-blog.slug'))
                             ->required()
-                            ->unique(Post::class, 'slug', fn($record) => $record),
+                            ->unique(Post::class, 'slug', fn ($record) => $record),
 
                         Forms\Components\Textarea::make('excerpt')
                             ->label(__('filament-blog::filament-blog.excerpt'))
@@ -111,12 +111,12 @@ class PostResource extends Resource
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')
                             ->label(__('filament-blog::filament-blog.created_at'))
-                            ->content(fn(
+                            ->content(fn (
                                 ?Post $record
                             ): string => $record ? $record->created_at->diffForHumans() : '-'),
                         Forms\Components\Placeholder::make('updated_at')
                             ->label(__('filament-blog::filament-blog.last_modified_at'))
-                            ->content(fn(
+                            ->content(fn (
                                 ?Post $record
                             ): string => $record ? $record->updated_at->diffForHumans() : '-'),
                     ])
@@ -156,19 +156,19 @@ class PostResource extends Resource
                 Tables\Filters\Filter::make('published_at')
                     ->form([
                         Forms\Components\DatePicker::make('published_from')
-                            ->placeholder(fn($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
+                            ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
                         Forms\Components\DatePicker::make('published_until')
-                            ->placeholder(fn($state): string => now()->format('M d, Y')),
+                            ->placeholder(fn ($state): string => now()->format('M d, Y')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
                                 $data['published_from'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('published_at', '>=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('published_at', '>=', $date),
                             )
                             ->when(
                                 $data['published_until'],
-                                fn(Builder $query, $date): Builder => $query->whereDate('published_at', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('published_at', '<=', $date),
                             );
                     }),
             ]);

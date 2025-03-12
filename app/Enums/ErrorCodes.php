@@ -42,33 +42,33 @@ use Laravel\Passport\Exceptions\OAuthServerException;
  */
 final class ErrorCodes extends Enum
 {
-    const SASQUATCH = ModelNotFoundException::class;
-    const SENTINEL = AuthenticationException::class;
-    const LIGHTHOUSE = HttpException::class;
-    const GUARDIAN = AuthorizationException::class;
-    const ZEPHYR = ValidationException::class;
-    const OASIS = ServiceUnavailableHttpException::class;
-    const ALCHEMY = HttpResponseException::class;
-    const STAMPEDE = TooManyRequestsHttpException::class;
+    public const SASQUATCH = ModelNotFoundException::class;
+    public const SENTINEL = AuthenticationException::class;
+    public const LIGHTHOUSE = HttpException::class;
+    public const GUARDIAN = AuthorizationException::class;
+    public const ZEPHYR = ValidationException::class;
+    public const OASIS = ServiceUnavailableHttpException::class;
+    public const ALCHEMY = HttpResponseException::class;
+    public const STAMPEDE = TooManyRequestsHttpException::class;
     //const SNAIL = RequestTimeoutHttpException::class;
-    const LYNX = TokenMismatchException::class;
-    const VAULT = QueryException::class;
-    const LOST = NotFoundHttpException::class;
-    const GATEKEEPER = MethodNotAllowedHttpException::class;
-    const HARMONY = ConflictHttpException::class;
-    const WEASEL = GoneHttpException::class;
-    const RULER = LengthRequiredHttpException::class;
-    const SANCTUARY = PreconditionFailedHttpException::class;
-    const SAGE = PreconditionRequiredHttpException::class;
-    const TELESCOPE = UnauthorizedException::class;
-    const GHOST = RoleDoesNotExist::class;
-    const PHOENIX = RoleAlreadyExists::class;
-    const WRAITH = PermissionDoesNotExist::class;
-    const SPECTER = PermissionAlreadyExists::class;
-    const TOWER = GuardDoesNotMatch::class;
-    const SIREN = MissingScopeException::class;
-    const PELICAN = OAuthServerException::class;
-    const MYSTIC = Exception::class;
+    public const LYNX = TokenMismatchException::class;
+    public const VAULT = QueryException::class;
+    public const LOST = NotFoundHttpException::class;
+    public const GATEKEEPER = MethodNotAllowedHttpException::class;
+    public const HARMONY = ConflictHttpException::class;
+    public const WEASEL = GoneHttpException::class;
+    public const RULER = LengthRequiredHttpException::class;
+    public const SANCTUARY = PreconditionFailedHttpException::class;
+    public const SAGE = PreconditionRequiredHttpException::class;
+    public const TELESCOPE = UnauthorizedException::class;
+    public const GHOST = RoleDoesNotExist::class;
+    public const PHOENIX = RoleAlreadyExists::class;
+    public const WRAITH = PermissionDoesNotExist::class;
+    public const SPECTER = PermissionAlreadyExists::class;
+    public const TOWER = GuardDoesNotMatch::class;
+    public const SIREN = MissingScopeException::class;
+    public const PELICAN = OAuthServerException::class;
+    public const MYSTIC = Exception::class;
 
     /**
      * Get the error details as an array.
