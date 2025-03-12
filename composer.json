@@ -16,8 +16,8 @@
         "a21ns1g4ts/filament-short-url": "^0.1.5",
         "asmit/filament-mention": "^1.0",
         "asosick/filament-layout-manager": "^1.1",
-        "bezhansalleh/filament-shield": "^3.3",
         "bepsvpt/secure-headers": "*",
+        "bezhansalleh/filament-shield": "^3.3",
         "blade-ui-kit/blade-ui-kit": "^0.7.0",
         "brickx/maintenance-switch": "^1.0",
         "calebporzio/sushi": "^2.5",
@@ -57,6 +57,7 @@
         "laravel/ui": "^4.5",
         "livewire/livewire": "^3.0",
         "mchev/banhammer": "^2.3",
+        "mews/purifier": "^3.4",
         "nesbot/carbon": "^3.8",
         "nickurt/laravel-akismet": "^2.0",
         "parallax/filament-comments": "^1.4",
@@ -95,8 +96,8 @@
         "tapp/filament-auditing": "^3.0",
         "tomatophp/filament-media-manager": "^1.1",
         "tomatophp/filament-menus": "^1.0",
-        "tomatophp/filament-settings-hub": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
+        "tomatophp/filament-settings-hub": "^2.0",
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
