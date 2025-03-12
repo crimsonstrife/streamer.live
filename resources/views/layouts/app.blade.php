@@ -19,7 +19,6 @@
     </head>
     <body class="bg-light">
     <x-banner />
-
     <div class="min-vh-100 d-flex flex-column">
         @livewire('navigation-menu')
 
