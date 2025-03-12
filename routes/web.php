@@ -20,9 +20,6 @@ use Laravel\Jetstream\Http\Controllers\TeamInvitationController;
 
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
     Route::get('/store', [StoreController::class, 'index'])->name('store.index');
     Route::get('/store/collection/{slug}', [StoreController::class, 'showCollection'])->name('store.collection');
     Route::get('/store/product/{slug}', [StoreController::class, 'showProduct'])->name('store.product');
@@ -35,7 +32,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     });
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
