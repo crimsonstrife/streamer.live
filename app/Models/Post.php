@@ -124,7 +124,7 @@ class Post extends BasePost implements CommentableContract
 
     public function bannerUrl(): Attribute
     {
-        return Attribute::get(fn() => $this->banner ? asset(Storage::url($this->banner)) : '');
+        return Attribute::get(fn () => $this->banner ? asset(Storage::url($this->banner)) : '');
     }
 
     public function scopePublished(Builder $query)

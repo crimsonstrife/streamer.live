@@ -11,7 +11,8 @@ class UserData extends Data implements Wireable
         public ?string $name,
         public ?string $email = null,
         public ?string $photo = null,
-    ) {}
+    ) {
+    }
 
     public function toLivewire(): array
     {

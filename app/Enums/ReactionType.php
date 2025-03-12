@@ -28,57 +28,57 @@ final class ReactionType extends Enum
     /**
      * Represents a 'like' reaction.
      */
-    const LIKE = 'like';
+    public const LIKE = 'like';
 
     /**
      * Represents a 'dislike' reaction.
      */
-    const DISLIKE = 'dislike';
+    public const DISLIKE = 'dislike';
 
     /**
      * Represents a 'love' reaction.
      */
-    const LOVE = 'love';
+    public const LOVE = 'love';
 
     /**
      * Represents a 'haha' reaction.
      */
-    const HAHA = 'haha';
+    public const HAHA = 'haha';
 
     /**
      * Represents a 'wow' reaction.
      */
-    const WOW = 'wow';
+    public const WOW = 'wow';
 
     /**
      * Represents a 'sad' reaction.
      */
-    const SAD = 'sad';
+    public const SAD = 'sad';
 
     /**
      * Represents an 'angry' reaction.
      */
-    const ANGRY = 'angry';
+    public const ANGRY = 'angry';
 
     /**
      * Represents a 'thankful' reaction.
      */
-    const THANKFUL = 'thankful';
+    public const THANKFUL = 'thankful';
 
     /**
      * Represents a 'support' reaction.
      */
-    const SUPPORT = 'support';
+    public const SUPPORT = 'support';
 
     /**
      * Represents a 'care' reaction.
      */
-    const CARE = 'care';
+    public const CARE = 'care';
 
     /**
      * Represents a 'celebrate' reaction.
      */
-    const CELEBRATE = 'celebrate';
+    public const CELEBRATE = 'celebrate';
 
     /**
      * Get all possible values of the enum.
