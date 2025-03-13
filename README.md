@@ -6,40 +6,40 @@
 
 ## About Streamer.live – The All-in-One Streaming Companion
 
-Streamer.live is a comprehensive, customizable platform designed to enhance the streaming experience by integrating Twitch, Discord, and community engagement tools. It offers automation, analytics, and content management features to help content creators manage their streams, interact with their audience, and streamline their online presence.  I developed the application for my own use after being tired of the limitations of other platforms.
+Streamer.live is a comprehensive, customizable platform designed to enhance the streaming experience by integrating Twitch, Discord, and community engagement tools. It offers automation, analytics, and content management features to help content creators manage their streams, interact with their audience, and streamline their online presence. I developed the application for my own use after being tired of the limitations of other platforms.
 
 ## 🎯 Features
 
-- 🔴 **Twitch & Discord Integration**
-  - **Twitch Embeds** - Use blocks to embed your stream and chat on pages.
-  - **Live Banner** - Customizable site banner that notifies visitors when you're live.
-  - **Twitch Stream Monitoring** – Detects when you go live and retrieves stream details such as title, category, and game.
-  - **Discord Bot Integration** – Automatically posts a customizable notification in a designated Discord channel when you go live..
-  - **Role-Based Mentions** – Assign roles to specific categories, ensuring the right audience is notified..
-  - **Custom Go-Live Messages** – Personalize the announcement message per game/category.
-- 🖥️ **Website & CMS Features**
-  - **Dynamic Page Builder** – Easily create and manage pages with drag-and-drop content blocks.
-  - **WYSIWYG Editor** – Format and edit content with a user-friendly interface.
-  - **SEO & Slug Management** – Optimize URLs, categories, and metadata for better visibility.
-- 🎮 **Community Engagement**
-  - **Blog System** - Use posts and categories to create a custom blog.
-  - **Commenting System** – Engage with posts via a structured comment system.
-  - **Thread Locking** – Prevent further replies to specific discussions when needed.
-- 🛍️ **Store & Merch**
-  - **Fourthwall API Integration** – Syncs with Fourthwall for seamless merch listings. (other vendors may come in future)
-  - **Dynamic Product Pages** – Showcases product collections, individual items, and external checkout links.
-- 🛡️ **Security & Moderation**
-  - **IP Whitelisting & Blacklisting** – Control access dynamically through the admin panel.
-  - **Spam & Bot Protection** – Integrated with Akismet and StopForumSpam to filter out spam interactions.
-  - **Ban System** - Ban problematic user accounts rather than IP blacklisting.
-  - **Moderation Panel** - Give your community Moderators access to their own panel to assist you.
+-   🔴 **Twitch & Discord Integration**
+    -   **Twitch Embeds** - Use blocks to embed your stream and chat on pages.
+    -   **Live Banner** - Customizable site banner that notifies visitors when you're live.
+    -   **Twitch Stream Monitoring** – Detects when you go live and retrieves stream details such as title, category, and game.
+    -   **Discord Bot Integration** – Automatically posts a customizable notification in a designated Discord channel when you go live..
+    -   **Role-Based Mentions** – Assign roles to specific categories, ensuring the right audience is notified..
+    -   **Custom Go-Live Messages** – Personalize the announcement message per game/category.
+-   🖥️ **Website & CMS Features**
+    -   **Dynamic Page Builder** – Easily create and manage pages with drag-and-drop content blocks.
+    -   **WYSIWYG Editor** – Format and edit content with a user-friendly interface.
+    -   **SEO & Slug Management** – Optimize URLs, categories, and metadata for better visibility.
+-   🎮 **Community Engagement**
+    -   **Blog System** - Use posts and categories to create a custom blog.
+    -   **Commenting System** – Engage with posts via a structured comment system.
+    -   **Thread Locking** – Prevent further replies to specific discussions when needed.
+-   🛍️ **Store & Merch**
+    -   **Fourthwall API Integration** – Syncs with Fourthwall for seamless merch listings. (other vendors may come in future)
+    -   **Dynamic Product Pages** – Showcases product collections, individual items, and external checkout links.
+-   🛡️ **Security & Moderation**
+    -   **IP Whitelisting & Blacklisting** – Control access dynamically through the admin panel.
+    -   **Spam & Bot Protection** – Integrated with Akismet and StopForumSpam to filter out spam interactions.
+    -   **Ban System** - Ban problematic user accounts rather than IP blacklisting.
+    -   **Moderation Panel** - Give your community Moderators access to their own panel to assist you.
 
 ## Why Use Streamer.live?
 
-- **Automate Community Notifications** – No more manually posting go-live messages!
-- **Fully Customizable** – Tailor everything from stream alerts to website content.
-- **Grow Your Brand** – Keep your audience engaged across multiple platforms.
-- **Expand Over Time** – Built for scalability, allowing you to integrate new tools as needed.
+-   **Automate Community Notifications** – No more manually posting go-live messages!
+-   **Fully Customizable** – Tailor everything from stream alerts to website content.
+-   **Grow Your Brand** – Keep your audience engaged across multiple platforms.
+-   **Expand Over Time** – Built for scalability, allowing you to integrate new tools as needed.
 
 ## 💾 Installation & Setup
 
@@ -49,15 +49,15 @@ For now, Streamer.live is in active development and will soon support easy deplo
 
 ## 🛠️ Tech Stack
 
-- Laravel 11 (Backend)
-- Filament (Admin Panel & CMS Management)
-- Bootstrap & jQuery (Frontend UI)
-- Livewire & Alpine.js (Dynamic UI Components)
-- Twitch API (Stream Monitoring)
-- Discord API (Bot Integration)
-- TinyMCE (WYSIWYG Editor)
-- Fourthwall API (Merch Integration)
-- Akismet & StopForumSpam (Spam Protection)
+-   Laravel 11 (Backend)
+-   Filament (Admin Panel & CMS Management)
+-   Bootstrap & jQuery (Frontend UI)
+-   Livewire & Alpine.js (Dynamic UI Components)
+-   Twitch API (Stream Monitoring)
+-   Discord API (Bot Integration)
+-   TinyMCE (WYSIWYG Editor)
+-   Fourthwall API (Merch Integration)
+-   Akismet & StopForumSpam (Spam Protection)
 
 ## 📌 Roadmap
 
@@ -75,11 +75,11 @@ I welcome contributions! If you’d like to contribute:
 
 ## 📬 Contact & Community
 
-- Website: (coming soon)
-- Twitch: [@CrimsonStrife](https://twitch.tv/crimsonstrife)
-- Discord: [Join my community!](https://discord.gg/GXnhpTCQTT)
-- Twitter/X: [@imcrimsonstrife](https://twitter.com/imcrimsonstrife)
-- Bluesky: [@crimsonstrife.live](https://bsky.app/profile/crimsonstrife.live)
+-   Website: (coming soon)
+-   Twitch: [@CrimsonStrife](https://twitch.tv/crimsonstrife)
+-   Discord: [Join my community!](https://discord.gg/GXnhpTCQTT)
+-   Twitter/X: [@imcrimsonstrife](https://twitter.com/imcrimsonstrife)
+-   Bluesky: [@crimsonstrife.live](https://bsky.app/profile/crimsonstrife.live)
 
 💡 Got feature suggestions? Found a bug? Open an issue or join the Discord!
 
