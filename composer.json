@@ -39,6 +39,7 @@
         "guava/calendar": "^1.13",
         "guava/tutorials": "^1.1",
         "ibrahim-bougaoua/filaprogress": "^0.1.0",
+        "illuminate/support": "*",
         "indracollective/laravel-revisor-filament": "^0.0.1",
         "joaopaulolndev/filament-edit-profile": "^1.0",
         "kalnoy/nestedset": "^6.0",
