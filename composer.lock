@@ -7941,24 +7941,24 @@
         },
         {
             "name": "mchev/banhammer",
-            "version": "v2.3.2",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mchev/banhammer.git",
-                "reference": "5a792d0d0dde6751c829c89a9331bcad7bdbd344"
+                "reference": "a57318822959036639bc1b7929be7d24ba376457"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mchev/banhammer/zipball/5a792d0d0dde6751c829c89a9331bcad7bdbd344",
-                "reference": "5a792d0d0dde6751c829c89a9331bcad7bdbd344",
+                "url": "https://api.github.com/repos/mchev/banhammer/zipball/a57318822959036639bc1b7929be7d24ba376457",
+                "reference": "a57318822959036639bc1b7929be7d24ba376457",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.0"
             },
             "require-dev": {
-                "orchestra/testbench": "^7.0|^8.0|^9.0",
-                "phpunit/phpunit": "^9.5|^10.5|^11.0"
+                "orchestra/testbench": "^7.0|^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^9.6|^10.5|^11.5.3"
             },
             "type": "library",
             "extra": {
@@ -7997,7 +7997,7 @@
             ],
             "support": {
                 "issues": "https://github.com/mchev/banhammer/issues",
-                "source": "https://github.com/mchev/banhammer/tree/v2.3.2"
+                "source": "https://github.com/mchev/banhammer/tree/v2.4.0"
             },
             "funding": [
                 {
@@ -8005,7 +8005,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-09-20T18:16:07+00:00"
+            "time": "2025-03-17T13:49:24+00:00"
         },
         {
             "name": "mews/purifier",
