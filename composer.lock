@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "44c8f18c2a43ac2a0fde1816f2462fb4",
+    "content-hash": "b93a4509d393fbf16777e9667ebd265e",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -15120,21 +15120,21 @@
         },
         {
             "name": "stephenjude/filament-feature-flags",
-            "version": "2.1.3",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stephenjude/filament-feature-flags.git",
-                "reference": "cc36b73f02cfea60fe980800d85a269ca276be26"
+                "reference": "5ac82a3ebf72376949e545f31b0b007d103ab938"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stephenjude/filament-feature-flags/zipball/cc36b73f02cfea60fe980800d85a269ca276be26",
-                "reference": "cc36b73f02cfea60fe980800d85a269ca276be26",
+                "url": "https://api.github.com/repos/stephenjude/filament-feature-flags/zipball/5ac82a3ebf72376949e545f31b0b007d103ab938",
+                "reference": "5ac82a3ebf72376949e545f31b0b007d103ab938",
                 "shasum": ""
             },
             "require": {
                 "filament/filament": "^3.0",
-                "illuminate/contracts": "^10.0|^11.0",
+                "illuminate/contracts": "^10.0|^11.0|^12.0",
                 "laravel/pennant": "^1.10",
                 "php": "^8.2",
                 "spatie/laravel-package-tools": "^1.14.0"
@@ -15142,11 +15142,11 @@
             "require-dev": {
                 "laravel/pint": "^1.0",
                 "nunomaduro/collision": "^7.8",
-                "orchestra/testbench": "^8.8",
-                "pestphp/pest": "^2.20",
-                "pestphp/pest-plugin-arch": "^2.0",
-                "pestphp/pest-plugin-laravel": "^2.0",
-                "pestphp/pest-plugin-livewire": "^2.1"
+                "orchestra/testbench": "^8.8|^10.0",
+                "pestphp/pest": "^2.20|^3.7",
+                "pestphp/pest-plugin-arch": "^2.0|^3.0",
+                "pestphp/pest-plugin-laravel": "^2.0|^3.1",
+                "pestphp/pest-plugin-livewire": "^2.1|^3.0"
             },
             "type": "library",
             "extra": {
@@ -15182,9 +15182,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stephenjude/filament-feature-flags/issues",
-                "source": "https://github.com/stephenjude/filament-feature-flags/tree/2.1.3"
+                "source": "https://github.com/stephenjude/filament-feature-flags/tree/3.0.0"
             },
-            "time": "2025-01-27T20:53:52+00:00"
+            "time": "2025-03-07T16:20:49+00:00"
         },
         {
             "name": "stephenjude/filament-jetstream",
