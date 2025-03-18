@@ -31,7 +31,11 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
     });
     Route::get('/store/checkout/external', function () {
-        return redirect()->away(session('checkout_url', route('store.index')));
+        if ($url = session('checkout_url')) {
+            return redirect()->away($url);
+        } else {
+            return redirect()->route('store.index')->with('error', 'External checkout is not available.');
+        }
     })->name('store.checkout.external');
 });
 
