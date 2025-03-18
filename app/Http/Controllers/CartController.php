@@ -2,34 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\FourthwallService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use App\Models\ProductVariant;
 
 class CartController extends Controller
 {
-    protected FourthwallService $fourthwallService;
-
-    public function __construct(FourthwallService $fourthwallService)
-    {
-        $this->fourthwallService = $fourthwallService;
-    }
-
     /**
      * Show the cart page.
      */
     public function showCart()
     {
-        $cartId = session()->get('fourthwall_cart_id');
+        $cart = session()->get('cart', []);
 
-        if (!$cartId) {
-            return view('store.cart', ['cart' => []]);
-        }
-
-        // Fetch cart details from Fourthwall API
-        $cartResponse = $this->fourthwallService->getCart($cartId);
-
-        return view('store.cart', ['cart' => $cartResponse ?? []]);
+        return view('store.cart', compact('cart'));
     }
 
     /**
@@ -37,31 +23,35 @@ class CartController extends Controller
      */
     public function addToCart(Request $request)
     {
-        $cartId = session()->get('fourthwall_cart_id');
         $variantId = $request->input('variant_id');
-        $quantity = $request->input('quantity', 1);
+        $quantity = max(1, (int) $request->input('quantity', 1));
 
-        // Find the variant from the database
+        // Find the variant from the local database
         $variant = ProductVariant::where('provider_id', $variantId)->first();
 
         if (!$variant) {
             return redirect()->back()->with('error', 'Variant not found.');
         }
 
-        // If no cart exists, create a new one
-        if (!$cartId) {
-            $createCartResponse = $this->fourthwallService->createCart($variant->provider_id, $quantity);
+        // Get the current cart from session
+        $cart = session()->get('cart', []);
 
-            if (!$createCartResponse) {
-                return redirect()->back()->with('error', 'Failed to add product to cart.');
-            }
-
-            // Store cart ID in session
-            session()->put('fourthwall_cart_id', $createCartResponse['id']);
+        // If the item already exists in the cart, update the quantity
+        if (isset($cart[$variantId])) {
+            $cart[$variantId]['quantity'] += $quantity;
         } else {
-            // If cart exists, add item to it
-            $this->fourthwallService->addToCart($cartId, $variant->provider_id, $quantity);
+            // Add new item to cart
+            $cart[$variantId] = [
+                'name' => $variant->name,
+                'price' => $variant->price,
+                'currency' => $variant->currency,
+                'quantity' => $quantity,
+                'image' => $variant->product->images->first()->local_path ?? null,
+            ];
         }
+
+        // Store updated cart in session
+        session()->put('cart', $cart);
 
         return redirect()->route('store.cart.show')->with('success', 'Product added to cart!');
     }
@@ -71,21 +61,16 @@ class CartController extends Controller
      */
     public function updateCart(Request $request)
     {
-        $cartId = session()->get('fourthwall_cart_id');
-
-        if (!$cartId) {
-            return redirect()->route('store.cart.show')->with('error', 'No active cart found.');
-        }
-
-        $updatedItems = [];
+        $cart = session()->get('cart', []);
 
         foreach ($request->input('cart', []) as $variantId => $details) {
-            $quantity = max(1, intval($details['quantity']));
-            $updatedItems[] = ['variantId' => $variantId, 'quantity' => $quantity];
+            if (isset($cart[$variantId])) {
+                $cart[$variantId]['quantity'] = max(1, (int) $details['quantity']);
+            }
         }
 
-        // Send update request to Fourthwall API
-        $this->fourthwallService->updateCart($cartId, $updatedItems);
+        // Store updated cart in session
+        session()->put('cart', $cart);
 
         return redirect()->route('store.cart.show')->with('success', 'Cart updated successfully.');
     }
@@ -95,29 +80,32 @@ class CartController extends Controller
      */
     public function removeFromCart($variantId)
     {
-        $cartId = session()->get('fourthwall_cart_id');
+        $cart = session()->get('cart', []);
 
-        if (!$cartId) {
-            return back()->with('error', 'No active cart found.');
+        if (isset($cart[$variantId])) {
+            unset($cart[$variantId]);
         }
 
-        // Send delete request to Fourthwall API
-        $this->fourthwallService->removeFromCart($cartId, $variantId);
+        // Store updated cart in session
+        session()->put('cart', $cart);
 
         return back()->with('success', 'Item removed from cart.');
     }
 
     /**
-     * Proceed to checkout.
+     * Proceed to checkout (Redirect to External Checkout).
      */
     public function checkout()
     {
-        $cartId = session()->get('fourthwall_cart_id');
+        $cart = session()->get('cart', []);
 
-        if (!$cartId) {
+        if (empty($cart)) {
             return redirect()->route('store.cart.show')->with('error', 'Your cart is empty.');
         }
 
-        return $this->fourthwallService->redirectToCheckout($cartId);
+        // Generate checkout URL for external processing
+        $checkoutUrl = route('store.cart.checkout');
+
+        return redirect($checkoutUrl);
     }
 }
