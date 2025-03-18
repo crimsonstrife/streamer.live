@@ -148,7 +148,8 @@ function stepComponent({
       return path.trim();
     },
     findElement: function(name) {
-      return document.querySelector(selector.replace(/\./g, "\\$&")) ?? document.querySelector(selector);
+      const escapedSelector = selector.replace(/\\/g, "\\\\").replace(/\./g, "\\$&");
+      return document.querySelector(escapedSelector) ?? document.querySelector(selector);
     },
     elementPath: function(element = null, options = {}) {
       element = element || this.target;
