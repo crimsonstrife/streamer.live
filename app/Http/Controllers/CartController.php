@@ -103,9 +103,11 @@ class CartController extends Controller
             return redirect()->route('store.cart.show')->with('error', 'Your cart is empty.');
         }
 
-        // Generate checkout URL for external processing
-        $checkoutUrl = route('store.cart.checkout');
+        // Here, we should generate an external checkout URL (modify as needed)
+        $checkoutUrl = "https://checkout.example.com"; // Replace this with actual logic
 
-        return redirect($checkoutUrl);
+        session()->put('checkout_url', $checkoutUrl);
+
+        return redirect()->route('store.checkout.external');
     }
 }

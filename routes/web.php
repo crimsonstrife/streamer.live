@@ -30,9 +30,12 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::get('/remove/{variantId}', [CartController::class, 'removeFromCart'])->name('remove');
         Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
     });
+    Route::get('/store/checkout/external', function () {
+        return redirect()->away(session('checkout_url', route('store.index')));
+    })->name('store.checkout.external');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
