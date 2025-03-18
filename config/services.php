@@ -42,4 +42,9 @@ return [
         'verify' => env('FOURTHWALL_VERIFY', true),
     ],
 
+    'twitch' => [
+        'enabled' => env('TWITCH_ENABLED', false),
+        'client_id' => env('TWITCH_CLIENT_ID'),
+        'client_secret' => env('TWITCH_CLIENT_SECRET'),
+    ],
 ];

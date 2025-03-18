@@ -12,6 +12,11 @@ class TwitchService
 
     public function __construct()
     {
+        if (!config('services.twitch.enabled', false)) {
+            \Log::warning('Twitch service is disabled via config.');
+            return;
+        }
+
         $this->clientId = config('services.twitch.client_id');
         $this->clientSecret = config('services.twitch.client_secret');
         $this->authenticate();
@@ -19,6 +24,12 @@ class TwitchService
 
     private function authenticate()
     {
+        // Check if Twitch credentials are configured
+        if (empty($this->clientId) || empty($this->clientSecret) || $this->clientId === 'your-client-id' || $this->clientSecret === 'your-client-secret') {
+            \Log::warning('Twitch authentication skipped: Missing client ID or secret.');
+            return; // Prevent further execution
+        }
+
         $response = Http::post('https://id.twitch.tv/oauth2/token', [
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
