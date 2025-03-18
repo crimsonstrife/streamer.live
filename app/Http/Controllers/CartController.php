@@ -95,17 +95,18 @@ class CartController extends Controller
     /**
      * Proceed to checkout (Redirect to External Checkout).
      */
-    public function checkout()
+    public function checkout(FourthwallService $fourthwallService)
     {
-        $cart = session()->get('cart', []);
+        $cartId = session()->get('fourthwall_cart_id');
 
-        if (empty($cart)) {
+        if (!$cartId) {
             return redirect()->route('store.cart.show')->with('error', 'Your cart is empty.');
         }
 
-        // Here, we should generate an external checkout URL (modify as needed)
-        $checkoutUrl = "https://checkout.example.com"; // Replace this with actual logic
+        // Generate checkout URL using FourthwallService
+        $checkoutUrl = $fourthwallService->getCheckoutUrl($cartId);
 
+        // Store checkout URL in session
         session()->put('checkout_url', $checkoutUrl);
 
         return redirect()->route('store.checkout.external');

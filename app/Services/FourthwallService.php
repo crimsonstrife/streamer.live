@@ -32,6 +32,11 @@ class FourthwallService
         $this->verify = config('services.fourthwall.verify', true);
     }
 
+
+    /** ===========================
+     *  PRODUCT & COLLECTION SYNCING
+     *  =========================== */
+
     /**
      * Sync collections and products from Fourthwall API in chunks.
      */
@@ -63,11 +68,9 @@ class FourthwallService
 
                     $this->syncProducts($collection);
                 }
-                // Free up memory after processing each chunk
-                gc_collect_cycles();
+                gc_collect_cycles(); // Free up memory
             });
     }
-
 
     /**
      * Sync products for a given collection in chunks.
@@ -101,7 +104,7 @@ class FourthwallService
                                 [
                                     'product_id' => $product->id,
                                     'name' => $variantData['name'],
-                                    'price' => $variantData['unitPrice']['value'], // Adjust as needed
+                                    'price' => $variantData['unitPrice']['value'],
                                     'currency' => $variantData['unitPrice']['currency']
                                 ]
                             );
@@ -116,13 +119,15 @@ class FourthwallService
                         }
                     }
                 }
-                // Unset productData after processing it
                 unset($productData);
             }
-            // Clear memory for the batch
             gc_collect_cycles();
         }
     }
+
+    /** ===========================
+     *  IMAGE PROCESSING
+     *  =========================== */
 
     /**
      * Store an image locally and update the database.
@@ -147,109 +152,119 @@ class FourthwallService
                 'product_id' => $product->id,
                 'variant_id' => $variant?->id,
                 'url' => $imageData['url'],
-                'local_path' => str_replace('public/', '', $localPath), // Store relative path
+                'local_path' => str_replace('public/', '', $localPath),
                 'width' => $imageData['width'],
                 'height' => $imageData['height'],
             ]
         );
     }
 
+    /** ===========================
+     *  CART OPERATIONS
+     *  =========================== */
+
     /**
-     * Makes an HTTP request to the specified endpoint.
+     * Creates a new cart with a single item.
      */
-    private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = [])
+    public function createCart(string $variantId, int $quantity = 1, string $currency = 'USD')
     {
-        // Check if the query parameters are not empty
-        if (!empty($queryParams)) {
-            //if not empty, check if the storefront token is set
-            if ($this->storefrontToken) {
-                //if set, add the storefront token to the query parameters
-                $queryParams['storefront_token'] = $this->storefrontToken;
-            } else {
-                //if not set, throw an exception
-                throw new \Exception('Storefront token is required for this request.');
-            }
-        } else {
-            //if empty, check if the storefront token is set
-            if ($this->storefrontToken) {
-                //if set, add the storefront token to the query parameters
-                $queryParams = ['storefront_token' => $this->storefrontToken];
-            } else {
-                //if not set, throw an exception
-                throw new \Exception('Storefront token is required for this request.');
-            }
-        }
+        $params = ['currency' => $currency];
 
-        $url = "{$this->baseUrl}/{$endpoint}?" . http_build_query($queryParams, '', '&');
+        $body = [
+            'items' => [
+                [
+                    'variantId' => $variantId,
+                    'quantity' => $quantity,
+                ],
+            ],
+        ];
 
-        return Http::withOptions(['verify' => $this->verify])
-            ->withQueryParameters($queryParams)
-            ->{$method}($url, $method === 'get' ? [] : $bodyParams)
-            ->json();
+        return $this->postRequest('v1/carts', $params, $body);
     }
 
     /**
-     * Make a GET request to the Fourthwall API.
+     * Adds an item to an existing cart.
      */
-    private function getRequest(string $endpoint, array $queryParams = [])
+    public function addToCart(string $cartId, string $variantId, int $quantity = 1)
     {
-        return $this->request('get', $endpoint, $queryParams, []);
+        $body = [
+            'items' => [
+                [
+                    'variantId' => $variantId,
+                    'quantity' => $quantity,
+                ],
+            ],
+        ];
+
+        return $this->postRequest("v1/carts/{$cartId}/add", [], $body);
     }
 
     /**
-     * Make a POST request to the Fourthwall API.
+     * Updates items in the cart.
      */
-    private function postRequest(string $endpoint, array $queryParams = [], array $bodyParams)
+    public function updateCart(string $cartId, array $items)
     {
-        return $this->request('post', $endpoint, $queryParams, $bodyParams);
+        $body = ['items' => $items];
+
+        return $this->postRequest("v1/carts/{$cartId}/change", [], $body);
     }
 
     /**
-     * Fetch a single product.
+     * Removes an item from the cart.
      */
-    public function getProduct(string $slug)
+    public function removeFromCart(string $cartId, string $variantId)
     {
-        return $this->getRequest("v1/products/{$slug}");
+        $body = [
+            'items' => [
+                ['variantId' => $variantId],
+            ],
+        ];
+
+        return $this->postRequest("v1/carts/{$cartId}/remove", [], $body);
     }
 
     /**
-     * Retrieve a list of collections.
+     * Retrieves cart details based on cart ID.
      */
-    public function getCollections()
+    public function getCart(string $cartId)
     {
-        return $this->getRequest('v1/collections');
+        return $this->getRequest("v1/carts/{$cartId}");
     }
 
     /**
-     * Retrieves a collection based on the provided slug.
-     */
-    public function getCollection(string $slug)
-    {
-        return $this->getRequest("v1/collections/{$slug}");
-    }
-
-    /**
-     * Retrieves the products from a collection.
-     */
-    public function getCollectionProducts(string $slug)
-    {
-        return $this->getRequest("v1/collections/{$slug}/products");
-    }
-
-    /**
-     * Generate checkout URL.
+     * Generates the checkout URL for an existing cart.
      */
     public function getCheckoutUrl(string $cartId, string $currency = 'USD')
     {
         return "{$this->storefrontUrl}/checkout/?cartCurrency={$currency}&cartId={$cartId}";
     }
 
-    /**
-     * Sync the products from Fourthwall API.
-     */
-    public function syncAllData()
+    /** ===========================
+     *  HELPER METHODS
+     *  =========================== */
+
+    private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = [])
     {
-        $this->syncCollectionsAndProducts();
-        Log::info("Fourthwall products and collections synced successfully.");
+        if ($this->storefrontToken) {
+            $queryParams['storefront_token'] = $this->storefrontToken;
+        } else {
+            throw new \Exception('Storefront token is required for this request.');
+        }
+
+        $url = "{$this->baseUrl}/{$endpoint}?" . http_build_query($queryParams, '', '&');
+
+        return Http::withOptions(['verify' => $this->verify])
+            ->{$method}($url, $method === 'get' ? [] : $bodyParams)
+            ->json();
+    }
+
+    private function getRequest(string $endpoint, array $queryParams = [])
+    {
+        return $this->request('get', $endpoint, $queryParams, []);
+    }
+
+    private function postRequest(string $endpoint, array $queryParams = [], array $bodyParams)
+    {
+        return $this->request('post', $endpoint, $queryParams, $bodyParams);
     }
 }
