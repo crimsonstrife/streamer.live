@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\FourthwallService;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
+use App\Models\Collection;
+use App\Models\Product;
 
 class StoreController extends Controller
 {
@@ -15,93 +16,39 @@ class StoreController extends Controller
         $this->fourthwallService = $fourthwallService;
     }
 
+    /**
+     * Show the store homepage with all collections.
+     */
     public function index()
     {
-        $collections = $this->fourthwallService->getCollections();
+        // Fetch collections from the database instead of API
+        $collections = Collection::all();
 
         return view('store.index', compact('collections'));
     }
 
+    /**
+     * Show a specific collection and its products.
+     */
     public function showCollection($slug)
     {
-        // Fetch collection details
-        $collectionResponse = $this->fourthwallService->getCollection($slug);
+        // Find collection in the database
+        $collection = Collection::where('slug', $slug)->firstOrFail();
 
-        if (!$collectionResponse) {
-            abort(404, "Collection not found.");
-        }
-
-        $collection = $collectionResponse;
-
-        // Fetch products for this collection
-        $productsResponse = $this->fourthwallService->getCollectionProducts($slug);
-
-        if (!$productsResponse) {
-            abort(404, "Products not found.");
-        }
-
-        $products = $productsResponse;
+        // Get products associated with this collection
+        $products = $collection->products()->with('images', 'variants')->get();
 
         return view('store.collection', compact('collection', 'products'));
     }
 
+    /**
+     * Show a specific product page.
+     */
     public function showProduct($slug)
     {
-        // Fetch product details
-        $productResponse = $this->fourthwallService->getProduct($slug);
+        // Find product in the database
+        $product = Product::where('slug', $slug)->with('images', 'variants')->firstOrFail();
 
-        if (!$productResponse) {
-            abort(404, "Product not found.");
-        }
-
-        $product = $productResponse;
-
-        // Extract first variant price (if available)
-        $price = null;
-        if (!empty($product['variants']) && isset($product['variants'][0]['unitPrice']['value'])) {
-            $price = [
-                'value' => $product['variants'][0]['unitPrice']['value'],
-                'currency' => $product['variants'][0]['unitPrice']['currency']
-            ];
-        }
-
-        // Extract first variant ID (if available)
-        $variantId = null;
-        if (!empty($product['variants']) && isset($product['variants'][0]['id'])) {
-            $variantId = $product['variants'][0]['id'];
-        }
-
-        // Render product view
-        return view('store.product', compact('product', 'price', 'variantId'));
-    }
-
-    public function viewCart()
-    {
-        // Get cart ID from session
-        $cartId = session()->get('cart_id');
-
-        // If no cart exists, redirect to store index
-        if (!$cartId) {
-            return redirect()->route('store.index')->with('error', 'Your cart is empty.');
-        }
-
-        // Fetch cart details
-        $cart = $this->fourthwallService->getCart($cartId);
-
-        return view('store.cart', compact('cart'));
-    }
-
-    public function checkout()
-    {
-        // Get cart ID from session
-        $cartId = session()->get('cart_id');
-
-        // If no cart exists, redirect to store index
-        if (!$cartId) {
-            return redirect()->route('store.index')->with('error', 'Your cart is empty.');
-        }
-
-        // Redirect to checkout page
-        return $this->fourthwallService->redirectToCheckout($cartId);
+        return view('store.product', compact('product'));
     }
 }
