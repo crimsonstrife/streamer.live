@@ -25,7 +25,13 @@ class TwitchService
             'grant_type' => 'client_credentials',
         ]);
 
-        $this->accessToken = $response->json()['access_token'];
+        $json = $response->json();
+
+        if (!isset($json['access_token'])) {
+            throw new \Exception('Failed to retrieve Twitch access token: ' . json_encode($json));
+        }
+
+        $this->accessToken = $json['access_token'];
     }
 
     public function getStreamStatus($username)
