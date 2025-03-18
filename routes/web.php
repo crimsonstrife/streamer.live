@@ -28,7 +28,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::post('/add', [CartController::class, 'addToCart'])->name('add');
         Route::post('/update', [CartController::class, 'updateCart'])->name('update');
         Route::get('/remove/{variantId}', [CartController::class, 'removeFromCart'])->name('remove');
-        Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
+        Route::get('/checkout', [CartController::class, 'redirectToCheckout'])->name('checkout');
     });
     Route::get('/store/checkout/external', function () {
         if ($url = session('checkout_url')) {
@@ -39,7 +39,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     })->name('store.checkout.external');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])

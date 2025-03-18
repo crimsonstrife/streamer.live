@@ -95,7 +95,7 @@ class CartController extends Controller
     /**
      * Proceed to checkout (Redirect to External Checkout).
      */
-    public function checkout(FourthwallService $fourthwallService)
+    public function redirectToCheckout(FourthwallService $fourthwallService)
     {
         $cartId = session()->get('fourthwall_cart_id');
 
