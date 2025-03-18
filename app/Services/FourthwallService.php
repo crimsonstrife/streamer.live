@@ -2,9 +2,16 @@
 
 namespace App\Services;
 
+use App\Jobs\ProcessProductImage;
+use App\Models\Collection;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\ProductImage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\LazyCollection;
 
 class FourthwallService
 {
@@ -26,13 +33,129 @@ class FourthwallService
     }
 
     /**
-     * Makes an HTTP request to the specified endpoint using the given method and parameters.
-     *
-     * @param string $method The HTTP method to use for the request (e.g., 'GET', 'POST').
-     * @param string $endpoint The API endpoint to send the request to.
-     * @param array $params Optional parameters to include in the request.
-     *
-     * @return mixed The response from the API.
+     * Sync collections and products from Fourthwall API in chunks.
+     */
+    public function syncCollectionsAndProducts()
+    {
+        $collectionsResponse = $this->getRequest('v1/collections');
+
+        if (!isset($collectionsResponse['results'])) {
+            Log::error("Failed to fetch collections from Fourthwall.");
+            return;
+        }
+
+        // Use a lazy collection to iterate without loading everything at once
+        LazyCollection::make(function () use ($collectionsResponse) {
+            foreach ($collectionsResponse['results'] as $collectionData) {
+                yield $collectionData;
+            }
+        })->chunk(10)
+            ->each(function ($collectionChunk) {
+                foreach ($collectionChunk as $collectionData) {
+                    $collection = Collection::updateOrCreate(
+                        ['provider_id' => $collectionData['id']],
+                        [
+                            'name' => $collectionData['name'],
+                            'slug' => $collectionData['slug'],
+                            'description' => $collectionData['description'] ?? null
+                        ]
+                    );
+
+                    $this->syncProducts($collection);
+                }
+                // Free up memory after processing each chunk
+                gc_collect_cycles();
+            });
+    }
+
+
+    /**
+     * Sync products for a given collection in chunks.
+     */
+    public function syncProducts(Collection $collection)
+    {
+        $productsResponse = $this->getRequest("v1/collections/{$collection->slug}/products");
+
+        if (!isset($productsResponse['results'])) {
+            Log::error("No products found for collection: " . $collection->name);
+            return;
+        }
+
+        foreach (array_chunk($productsResponse['results'], 5) as $productBatch) {
+            foreach ($productBatch as $productData) {
+                $product = Product::updateOrCreate(
+                    ['provider_id' => $productData['id']],
+                    [
+                        'collection_id' => $collection->id,
+                        'name' => $productData['name'],
+                        'slug' => $productData['slug'],
+                        'description' => $productData['description'] ?? null
+                    ]
+                );
+
+                if (!empty($productData['variants'])) {
+                    foreach (array_chunk($productData['variants'], 5) as $variantBatch) {
+                        foreach ($variantBatch as $variantData) {
+                            ProductVariant::updateOrCreate(
+                                ['provider_id' => $variantData['id']],
+                                [
+                                    'product_id' => $product->id,
+                                    'name' => $variantData['name'],
+                                    'price' => $variantData['unitPrice']['value'], // Adjust as needed
+                                    'currency' => $variantData['unitPrice']['currency']
+                                ]
+                            );
+                        }
+                    }
+                }
+
+                if (!empty($productData['images'])) {
+                    foreach (array_chunk($productData['images'], 3) as $imageBatch) {
+                        foreach ($imageBatch as $imageData) {
+                            ProcessProductImage::dispatch($product, $imageData);
+                        }
+                    }
+                }
+                // Unset productData after processing it
+                unset($productData);
+            }
+            // Clear memory for the batch
+            gc_collect_cycles();
+        }
+    }
+
+    /**
+     * Store an image locally and update the database.
+     */
+    public function storeImage(Product $product, ?ProductVariant $variant, array $imageData)
+    {
+        $filename = basename($imageData['url']);
+        $localPath = "products/{$product->provider_id}/{$filename}";
+
+        $response = Http::withOptions(['verify' => $this->verify])->get($imageData['url']);
+
+        if ($response->successful()) {
+            Storage::disk('public')->put($localPath, $response->body());
+        } else {
+            Log::error("Failed to download image: " . $imageData['url']);
+            return;
+        }
+
+        ProductImage::updateOrCreate(
+            ['provider_id' => $imageData['id']],
+            [
+                'product_id' => $product->id,
+                'variant_id' => $variant?->id,
+                'url' => $imageData['url'],
+                'local_path' => str_replace('public/', '', $localPath), // Store relative path
+                'width' => $imageData['width'],
+                'height' => $imageData['height'],
+            ]
+        );
+    }
+
+    /**
+     * Makes an HTTP request to the specified endpoint.
      */
     private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = [])
     {
@@ -59,21 +182,14 @@ class FourthwallService
 
         $url = "{$this->baseUrl}/{$endpoint}?" . http_build_query($queryParams, '', '&');
 
-        return Http::withOptions([
-            'verify' => $this->verify,
-        ])
+        return Http::withOptions(['verify' => $this->verify])
             ->withQueryParameters($queryParams)
-            ->{$method}($url, $method === 'get' ? [] : $bodyParams) // Only send body for non-GET requests
+            ->{$method}($url, $method === 'get' ? [] : $bodyParams)
             ->json();
     }
 
     /**
-     * Make a GET request to the Fourthwall API
-     *
-     * @param string $endpoint The endpoint to make the request to.
-     * @param array $queryParams The query parameters to include in the request.
-     *
-     * @return mixed The response from the API.
+     * Make a GET request to the Fourthwall API.
      */
     private function getRequest(string $endpoint, array $queryParams = [])
     {
@@ -81,13 +197,7 @@ class FourthwallService
     }
 
     /**
-     * Make a POST request to the Fourthwall API
-     *
-     * @param string $endpoint The endpoint to make the request to.
-     * @param array $bodyParams The body parameters to include in the request.
-     * @param array $queryParams The query parameters to include in the request.
-     *
-     * @return mixed The response from the API.
+     * Make a POST request to the Fourthwall API.
      */
     private function postRequest(string $endpoint, array $queryParams = [], array $bodyParams)
     {
@@ -95,37 +205,11 @@ class FourthwallService
     }
 
     /**
-     * Fetch a single product
-     *
+     * Fetch a single product.
      */
     public function getProduct(string $slug)
     {
         return $this->getRequest("v1/products/{$slug}");
-    }
-
-    /**
-     * Generate checkout URL
-     */
-    public function getCheckoutUrl(string $cartId, string $currency = 'USD')
-    {
-        // Check if the storefront url is set and ends with a slash
-        if (substr($this->storefrontUrl, -1) !== '/') {
-            //if not, add a slash to the end of the storefront url
-            $url = $this->storefrontUrl . "/checkout/?cartCurrency={$currency}&cartId={$cartId}";
-        } else {
-            $url = $this->storefrontUrl . "checkout/?cartCurrency={$currency}&cartId={$cartId}";
-        }
-
-        return $url;
-    }
-
-    /**
-     * Retrieves the list of products.
-     *
-     */
-    public function getProducts()
-    {
-        return $this->getRequest('v1/products');
     }
 
     /**
@@ -138,8 +222,6 @@ class FourthwallService
 
     /**
      * Retrieves a collection based on the provided slug.
-     *
-     * @param string $slug The slug identifier for the collection.
      */
     public function getCollection(string $slug)
     {
@@ -147,9 +229,7 @@ class FourthwallService
     }
 
     /**
-     * Retrieves the products from a collection based on the provided slug.
-     *
-     * @param string $slug The slug identifier for the collection.
+     * Retrieves the products from a collection.
      */
     public function getCollectionProducts(string $slug)
     {
@@ -157,117 +237,19 @@ class FourthwallService
     }
 
     /**
-     * Adds items to a new cart.
-     *
-     * @param string $variantId The ID of the variant to be added to the cart.
-     * @param int $quantity The quantity of the item to be added to the cart, default is 1.
-     * @param string $currency The currency code for the transaction. Default is 'USD'.
+     * Generate checkout URL.
      */
-    public function createCart(string $variantId, int $quantity = 1, string $currency = 'USD')
+    public function getCheckoutUrl(string $cartId, string $currency = 'USD')
     {
-        $params = [
-            'currency' => $currency,
-        ];
-
-        $itemArray = [
-            'items' => [
-                [
-                    'variantId' => $variantId,
-                    'quantity' => $quantity,
-                ],
-            ],
-        ];
-
-        // Create a new cart
-        return $createCartResponse = $this->postRequest("v1/carts", $params, $itemArray);
+        return "{$this->storefrontUrl}/checkout/?cartCurrency={$currency}&cartId={$cartId}";
     }
 
     /**
-     * Adds items to the cart.
-     *
-     * @param string $cartId The ID of the cart.
-     * @param string $variantId The ID of the variant to be added to the cart.
-     * @param int $quantity The quantity of the item to be added to the cart, default is 1.
-     * @param string $currency The currency code for the transaction. Default is 'USD'.
+     * Sync the products from Fourthwall API.
      */
-    public function addToCart(string $cartId, string $variantId, int $quantity = 1, string $currency = 'USD')
+    public function syncAllData()
     {
-        $params = [
-            'currency' => $currency,
-        ];
-
-        $itemArray = [
-            'items' => [
-                [
-                    'variantId' => $variantId,
-                    'quantity' => $quantity,
-                ],
-            ],
-        ];
-
-        // Add items to the cart
-        return $this->postRequest("v1/carts/{$cartId}/add", $params, $itemArray);
-    }
-
-    /**
-     * Removes an item from the cart.
-     *
-     * @param string $cartId The ID of the cart.
-     * @param string $variantId The ID of the variant to be removed from the cart.
-     */
-    public function removeFromCart(string $cartId, string $variantId)
-    {
-        $itemArray = [
-            'items' => [
-                [
-                    'variantId' => $variantId,
-                ],
-            ],
-        ];
-
-        return $this->postRequest("v1/carts/{$cartId}/remove", [], $itemArray);
-    }
-
-    /**
-     * Updates the cart with the provided items.
-     * @param array $items The items to be updated in the cart.
-     *
-     * @return mixed The response from the API.
-     */
-    public function updateCart(string $cartId, array $items)
-    {
-        $itemArray = [
-            'items' => $items,
-        ];
-
-        return $this->postRequest("v1/carts/{$cartId}/change", [], $itemArray);
-    }
-
-    /**
-     * Retrieve the cart details based on the provided cart ID.
-     *
-     * @param string $cartId The unique identifier of the cart.
-     * @return mixed The cart details or null if not found.
-     */
-    public function getCart(string $cartId)
-    {
-        return $this->getRequest("v1/carts/{$cartId}");
-    }
-
-
-    /**
-     * Redirects the user to the checkout page.
-     *
-     * @param string $cartId The ID of the cart to be checked out.
-     * @param string $currency The currency to be used for the checkout. Default is 'USD'.
-     * @return \Illuminate\Http\RedirectResponse The redirect response to the checkout page.
-     */
-    public function redirectToCheckout(string $cartId, string $currency = 'USD')
-    {
-        // Generate the checkout URL
-        $checkoutUrl = $this->getCheckoutUrl($cartId, $currency);
-
-        // Redirect the user to the checkout page
-        return redirect($checkoutUrl);
+        $this->syncCollectionsAndProducts();
+        Log::info("Fourthwall products and collections synced successfully.");
     }
 }
