@@ -90,7 +90,9 @@ class FourthwallService
                         throw new \Exception("Failed to sync products for collection: {$collection->name}");
                     }
                 }
-                gc_collect_cycles($this->enableGC); // Free up memory
+                if ($this->enableGC) {
+                    gc_collect_cycles();
+                }
             });
 
         Log::info("All collections and products synced successfully.");
@@ -155,7 +157,9 @@ class FourthwallService
                 }
                 unset($productData);
             }
-            gc_collect_cycles($this->enableGC);
+            if ($this->enableGC) {
+                gc_collect_cycles();
+            }
         }
     }
 
