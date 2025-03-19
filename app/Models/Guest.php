@@ -13,6 +13,40 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property string|null $name
+ * @property string|null $email
+ * @property string|null $ip_address
+ * @property string|null $user_agent
+ * @property bool $is_spammer
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int|null $deleted_by
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reaction> $reactions
+ * @property-read int|null $reactions_count
+ * @method static Builder<static>|Guest createOrUpdate(\App\Data\GuestData $data)
+ * @method static Builder<static>|Guest newModelQuery()
+ * @method static Builder<static>|Guest newQuery()
+ * @method static Builder<static>|Guest onlyTrashed()
+ * @method static Builder<static>|Guest query()
+ * @method static Builder<static>|Guest whereCreatedAt($value)
+ * @method static Builder<static>|Guest whereDeletedAt($value)
+ * @method static Builder<static>|Guest whereDeletedBy($value)
+ * @method static Builder<static>|Guest whereEmail($value)
+ * @method static Builder<static>|Guest whereId($value)
+ * @method static Builder<static>|Guest whereIpAddress($value)
+ * @method static Builder<static>|Guest whereIsSpammer($value)
+ * @method static Builder<static>|Guest whereName($value)
+ * @method static Builder<static>|Guest whereUpdatedAt($value)
+ * @method static Builder<static>|Guest whereUserAgent($value)
+ * @method static Builder<static>|Guest withTrashed()
+ * @method static Builder<static>|Guest withoutTrashed()
+ * @mixin \Eloquent
+ */
 class Guest extends Authenticatable implements CommenterContract
 {
     use SoftDeletes;
