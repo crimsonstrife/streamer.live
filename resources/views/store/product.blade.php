@@ -6,7 +6,7 @@
             <img src="{{ asset('storage/' . $product->images->first()->local_path) }}" alt="{{ $product->name }} Image"
                 class="w-full max-w-md rounded">
         @else
-            <img src="{{ asset('images/default-product.png') }}" alt="Default Image" class="w-full max-w-md rounded">
+            <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="Default Image" class="w-full max-w-md rounded">
         @endif
 
         <p class="mt-4">{{ $product->description }}</p>
