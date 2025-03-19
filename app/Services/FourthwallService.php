@@ -190,7 +190,7 @@ class FourthwallService
                 'product_id' => $product->id,
                 'variant_id' => $variant?->id,
                 'url' => $imageData['url'],
-                'local_path' => str_replace('public/', '', $localPath),
+                'local_path' => $this->getLocalImagePath($localPath),
                 'width' => $imageData['width'],
                 'height' => $imageData['height'],
             ]
@@ -339,5 +339,17 @@ class FourthwallService
     private function postRequest(string $endpoint, array $queryParams = [], array $bodyParams)
     {
         return $this->request('post', $endpoint, $queryParams, $bodyParams);
+    }
+
+    /**
+     * Generate a local image path based on the storage disk configuration.
+     *
+     * @param  string  $localPath
+     * @return string
+     */
+    protected function getLocalImagePath(string $localPath): string
+    {
+        // Using Laravel's Storage helper to generate the URL based on 'public' disk configuration.
+        return Storage::url($localPath);
     }
 }
