@@ -22,6 +22,11 @@ class Product extends BaseModel
         'external_url'
     ];
 
+    protected $casts = [
+        'price' => 'float',
+        'compare_at_price' => 'float'
+    ];
+
     /**
      * Get the collections this product belongs to.
      */

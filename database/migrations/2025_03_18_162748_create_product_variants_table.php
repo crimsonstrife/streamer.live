@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -16,7 +16,7 @@ return new class () extends Migration {
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('sku')->nullable(); // SKU (Stock Keeping Unit)
-            $table->integer('price'); // Store in cents
+            $table->float('price');
             $table->integer('compare_at_price')->nullable();
             $table->string('stock_status')->nullable(); // e.g., "inStock"
             $table->integer('stock_count')->default(0);

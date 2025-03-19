@@ -25,6 +25,11 @@ class ProductVariant extends BaseModel
         'dimension_unit'
     ];
 
+    protected $casts = [
+        'price' => 'float',
+        'compare_at_price' => 'float',
+    ];
+
     /**
      * Get the product that this variant belongs to.
      */
