@@ -18,7 +18,7 @@
                     @php
                         $image = $product->images->isNotEmpty()
                             ? asset('storage/' . $product->images->first()->local_path)
-                            : asset('images/default-product.png');
+                            : asset(config('fourthwall.default_product_image'));
                     @endphp
                     <div class="mb-4 col-md-4">
                         <div class="shadow-sm card">

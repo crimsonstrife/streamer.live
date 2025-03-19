@@ -17,7 +17,21 @@
                         <div class="shadow-sm card">
                             <div class="card-body">
                                 <h5 class="card-title">{{$collection['name'] ?? 'Collection'}}</h5>
-                                <p class="card-text text-muted">{!! html_entity_decode($collection['description'] ?? __('No description available.')) !!}</p>
+                                <!-- Image of first product in collection -->
+                                @if ($collection->products->isNotEmpty())
+                                    @php
+                                        $image = $collection->products->first()->images->isNotEmpty()
+                                            ? asset('storage/' . $collection->products->first()->images->first()->local_path)
+                                            : asset(config('fourthwall.default_product_image'));
+                                    @endphp
+                                    <img src="{{ $image }}" class="card-img-top" alt="{{ $collection->products->first()->name }} Image">
+                                @else
+                                    <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="Default Image" class="w-full max-w-md rounded">
+                                @endif
+                                <p class="card-text text-muted">{{ $collection->description ?? __('No description available.') }}</p>
+                                <!-- Products Count -->
+                                <p class="card-text text-muted">{{ $collection->products->count() }} {{ __('Products') }}</p>
+                                <!-- View Collection Button -->
                                 <a href="{{ route('store.collection', ['slug' => $collection->slug]) }}" class="btn btn-primary">
                                     View Collection
                                 </a>
