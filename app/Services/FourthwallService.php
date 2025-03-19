@@ -68,7 +68,7 @@ class FourthwallService
             foreach ($collectionsResponse['results'] as $collectionData) {
                 yield $collectionData;
             }
-        })->chunk($collectionsChunkSize)
+        })->chunk($this->collectionsChunkSize)
             ->each(function ($collectionChunk) {
                 foreach ($collectionChunk as $collectionData) {
                     $collection = Collection::updateOrCreate(
@@ -90,7 +90,7 @@ class FourthwallService
                         throw new \Exception("Failed to sync products for collection: {$collection->name}");
                     }
                 }
-                gc_collect_cycles($enableGC); // Free up memory
+                gc_collect_cycles($this->$enableGC); // Free up memory
             });
 
         Log::info("All collections and products synced successfully.");
@@ -118,7 +118,7 @@ class FourthwallService
             throw new \Exception("No products returned for collection: {$collection->name}");
         }
 
-        foreach (array_chunk($productsResponse['results'], $productsChunkSize) as $productBatch) {
+        foreach (array_chunk($productsResponse['results'], $this->$productsChunkSize) as $productBatch) {
             foreach ($productBatch as $productData) {
                 $product = Product::updateOrCreate(
                     ['provider_id' => $productData['id']],
@@ -131,7 +131,7 @@ class FourthwallService
                 );
 
                 if (!empty($productData['variants'])) {
-                    foreach (array_chunk($productData['variants'], $productsChunkSize) as $variantBatch) {
+                    foreach (array_chunk($productData['variants'], $this->$productsChunkSize) as $variantBatch) {
                         foreach ($variantBatch as $variantData) {
                             ProductVariant::updateOrCreate(
                                 ['provider_id' => $variantData['id']],
@@ -155,7 +155,7 @@ class FourthwallService
                 }
                 unset($productData);
             }
-            gc_collect_cycles($enableGC);
+            gc_collect_cycles($this->$enableGC);
         }
     }
 
