@@ -19,6 +19,9 @@ class FourthwallService
     protected string $storefrontToken;
     protected string $storefrontUrl;
     protected bool $verify;
+    protected bool $enableGC;
+    protected int $collectionsChunkSize;
+    protected int $productsChunkSize;
 
     /**
      * FourthwallService constructor.
@@ -30,6 +33,9 @@ class FourthwallService
         $this->storefrontToken = config('services.fourthwall.storefront_token');
         $this->storefrontUrl = config('services.fourthwall.storefront_url', 'https://storefront.fourthwall.com');
         $this->verify = config('services.fourthwall.verify', true);
+        $this->enableGC = config('fourthwall.enable_gc', true);
+        $this->collectionsChunkSize = config('fourthwall.chunk_size.collections', 10);
+        $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);
     }
 
 
@@ -62,7 +68,7 @@ class FourthwallService
             foreach ($collectionsResponse['results'] as $collectionData) {
                 yield $collectionData;
             }
-        })->chunk(10)
+        })->chunk($collectionsChunkSize)
             ->each(function ($collectionChunk) {
                 foreach ($collectionChunk as $collectionData) {
                     $collection = Collection::updateOrCreate(
@@ -84,7 +90,7 @@ class FourthwallService
                         throw new \Exception("Failed to sync products for collection: {$collection->name}");
                     }
                 }
-                gc_collect_cycles(); // Free up memory
+                gc_collect_cycles($enableGC); // Free up memory
             });
 
         Log::info("All collections and products synced successfully.");
@@ -112,7 +118,7 @@ class FourthwallService
             throw new \Exception("No products returned for collection: {$collection->name}");
         }
 
-        foreach (array_chunk($productsResponse['results'], 5) as $productBatch) {
+        foreach (array_chunk($productsResponse['results'], $productsChunkSize) as $productBatch) {
             foreach ($productBatch as $productData) {
                 $product = Product::updateOrCreate(
                     ['provider_id' => $productData['id']],
@@ -125,7 +131,7 @@ class FourthwallService
                 );
 
                 if (!empty($productData['variants'])) {
-                    foreach (array_chunk($productData['variants'], 5) as $variantBatch) {
+                    foreach (array_chunk($productData['variants'], $productsChunkSize) as $variantBatch) {
                         foreach ($variantBatch as $variantData) {
                             ProductVariant::updateOrCreate(
                                 ['provider_id' => $variantData['id']],
@@ -149,7 +155,7 @@ class FourthwallService
                 }
                 unset($productData);
             }
-            gc_collect_cycles();
+            gc_collect_cycles($enableGC);
         }
     }
 
