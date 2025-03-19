@@ -93,6 +93,6 @@ class ProductVariant extends BaseModel
 
     public function getNameAttribute()
     {
-        return html_entity_decode($this->name);
+        return html_entity_decode($this->attributes['name']);
     }
 }

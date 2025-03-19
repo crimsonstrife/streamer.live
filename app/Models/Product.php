@@ -103,11 +103,11 @@ class Product extends BaseModel
 
     public function getNameAttribute()
     {
-        return html_entity_decode($this->name);
+        return html_entity_decode($this->attributes['name']);
     }
 
     public function getDescriptionAttribute()
     {
-        return html_entity_decode($this->description);
+        return html_entity_decode($this->attributes['description']);
     }
 }
