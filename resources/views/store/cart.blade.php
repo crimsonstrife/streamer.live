@@ -31,10 +31,10 @@
                                         @endphp
                                         <tr>
                                             <td class="d-flex align-items-center">
-                                                <img src="{{ $image }}" alt="{!! html_entity_decode($item->variant->name) !!} Image" class="rounded me-3" width="60" height="60">
+                                                <img src="{{ $image }}" alt="{{ $item->variant->name }} Image" class="rounded me-3" width="60" height="60">
                                                 {{ $item->variant->name }}
                                             </td>
-                                            <td>{!! html_entity_decode($item->variant->name) !!}</td>
+                                            <td>{{ $item->variant->name }}</td>
                                             <td>
                                                 {{ number_format($item->variant->price, 2) }} USD
                                             </td>

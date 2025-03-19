@@ -16,7 +16,7 @@
                     <div class="mb-4 col-md-4">
                         <div class="shadow-sm card">
                             <div class="card-body">
-                                <h5 class="card-title">{!! html_entity_decode($collection['name']) !!}</h5>
+                                <h5 class="card-title">{{$collection['name'] ?? 'Collection'}}</h5>
                                 <p class="card-text text-muted">{!! html_entity_decode($collection['description'] ?? __('No description available.')) !!}</p>
                                 <a href="{{ route('store.collection', ['slug' => $collection->slug]) }}" class="btn btn-primary">
                                     View Collection

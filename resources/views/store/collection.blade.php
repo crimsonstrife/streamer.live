@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold leading-tight">
-            {!! html_entity_decode($collection['name']) !!}
+            {{$collection['name'] ?? 'Collection'}}
         </h2>
     </x-slot>
 
     <div class="container py-6">
         <h3 class="mb-4 text-lg font-semibold">
-            {{ __('Products in ') }}{!! html_entity_decode($collection['name']) ?? 'this collection' !!}
+            {{ __('Products in ') }}{{$collection['name'] ?? 'this collection'}}
         </h3>
 
         @if ($collection->products->isEmpty())

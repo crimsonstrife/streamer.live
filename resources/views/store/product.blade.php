@@ -1,9 +1,9 @@
 <x-app-layout>
     <div class="container py-6">
-        <h1 class="text-2xl font-bold">{!! html_entity_decode($product->name) !!}</h1>
+        <h1 class="text-2xl font-bold">{{ $product->name }}</h1>
 
         @if ($product->images->isNotEmpty())
-            <img src="{{ asset('storage/' . $product->images->first()->local_path) }}" alt="{!! html_entity_decode($product->name) !!} Image"
+            <img src="{{ asset('storage/' . $product->images->first()->local_path) }}" alt="{{ $product->name }} Image"
                 class="w-full max-w-md rounded">
         @else
             <img src="{{ asset('images/default-product.png') }}" alt="Default Image" class="w-full max-w-md rounded">
