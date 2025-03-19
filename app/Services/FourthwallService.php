@@ -39,6 +39,8 @@ class FourthwallService
 
     /**
      * Sync collections and products from Fourthwall API in chunks.
+     *
+     * @throws \Exception If an error occurs during syncing.
      */
     public function syncCollectionsAndProducts()
     {
@@ -46,7 +48,13 @@ class FourthwallService
 
         if (!isset($collectionsResponse['results'])) {
             Log::error("Failed to fetch collections from Fourthwall.");
-            return;
+            throw new \Exception("API request for collections failed.");
+        }
+
+        // Ensure at least one collection is retrieved
+        if (empty($collectionsResponse['results'])) {
+            Log::warning("No collections found from API.");
+            throw new \Exception("No collections returned from API.");
         }
 
         // Use a lazy collection to iterate without loading everything at once
@@ -66,10 +74,20 @@ class FourthwallService
                         ]
                     );
 
-                    $this->syncProducts($collection);
+                    Log::info("Synced collection: {$collection->name}");
+
+                    // Attempt to sync products for this collection
+                    try {
+                        $this->syncProducts($collection);
+                    } catch (\Exception $e) {
+                        Log::error("Error syncing products for collection {$collection->name}: " . $e->getMessage());
+                        throw new \Exception("Failed to sync products for collection: {$collection->name}");
+                    }
                 }
                 gc_collect_cycles(); // Free up memory
             });
+
+        Log::info("All collections and products synced successfully.");
     }
 
     /**

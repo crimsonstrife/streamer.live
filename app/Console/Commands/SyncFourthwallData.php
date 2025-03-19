@@ -28,12 +28,11 @@ class SyncFourthwallData extends Command
         try {
             // This method will handle syncing collections and products efficiently
             $fourthwallService->syncCollectionsAndProducts();
+            $this->info('Sync completed successfully.');
         } catch (\Exception $e) {
             Log::error('Error during sync: ' . $e->getMessage());
             $this->error('An error occurred during sync. Check logs for details.');
             return;
         }
-
-        $this->info('Sync completed successfully.');
     }
 }
