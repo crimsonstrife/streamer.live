@@ -33,7 +33,8 @@ class StoreController extends Controller
     public function showCollection($slug)
     {
         // Find collection in the database
-        $collection = Collection::where('slug', $slug)->firstOrFail();
+        $collection = Collection::where('slug', $slug)
+            ->firstOrFail();
 
         // Get products associated with this collection
         $products = $collection->products()->with('images', 'variants')->get();
@@ -46,8 +47,10 @@ class StoreController extends Controller
      */
     public function showProduct($slug)
     {
-        // Find product in the database
-        $product = Product::where('slug', $slug)->with('images', 'variants')->firstOrFail();
+        // Retrieve the product using the slug and eager load the relations
+        $product = Product::where('slug', $slug)
+            ->with('images', 'variants')
+            ->firstOrFail();
 
         return view('store.product', compact('product'));
     }

@@ -90,4 +90,9 @@ class ProductVariant extends BaseModel
     {
         return $this->hasMany(ProductImage::class, 'variant_id');
     }
+
+    public function getNameAttribute()
+    {
+        return html_entity_decode($this->attributes['name']);
+    }
 }
