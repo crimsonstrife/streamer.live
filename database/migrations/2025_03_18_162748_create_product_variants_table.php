@@ -16,8 +16,8 @@ return new class () extends Migration {
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('sku')->nullable(); // SKU (Stock Keeping Unit)
-            $table->decimal('price', 10, 2);
-            $table->decimal('compare_at_price', 10, 2)->nullable();
+            $table->unsignedDecimal('price', 10, 2);
+            $table->unsignedDecimal('compare_at_price', 10, 2)->nullable();
             $table->string('stock_status')->nullable(); // e.g., "inStock"
             $table->integer('stock_count')->default(0);
             $table->integer('weight')->nullable();
