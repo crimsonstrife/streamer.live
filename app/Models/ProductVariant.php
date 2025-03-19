@@ -26,8 +26,8 @@ class ProductVariant extends BaseModel
     ];
 
     protected $casts = [
-        'price' => 'float',
-        'compare_at_price' => 'float',
+        'price' => 'decimal:2',
+        'compare_at_price' => 'decimal:2',
     ];
 
     /**

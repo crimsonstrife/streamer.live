@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,7 +20,7 @@ return new class () extends Migration {
             $table->string('state')->nullable(); // Product state (e.g., active, inactive)
             $table->string('access')->nullable(); // Access type (e.g., public, private)
             $table->decimal('price', 10, 2);
-            $table->integer('compare_at_price')->nullable(); // Original price before discounts
+            $table->decimal('compare_at_price', 10, 2)->nullable(); // Original price before discounts
             $table->string('external_url')->nullable(); // Checkout link
             $table->timestamps();
         });
