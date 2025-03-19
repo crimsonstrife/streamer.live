@@ -19,7 +19,7 @@ return new class () extends Migration {
             $table->text('description')->nullable();
             $table->string('state')->nullable(); // Product state (e.g., active, inactive)
             $table->string('access')->nullable(); // Access type (e.g., public, private)
-            $table->float('price');
+            $table->decimal('price', 10, 2);
             $table->integer('compare_at_price')->nullable(); // Original price before discounts
             $table->string('external_url')->nullable(); // Checkout link
             $table->timestamps();
