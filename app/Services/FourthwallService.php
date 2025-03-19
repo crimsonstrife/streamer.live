@@ -92,6 +92,10 @@ class FourthwallService
 
     /**
      * Sync products for a given collection in chunks.
+     *
+     * @param Collection $collection The collection to sync products for.
+     *
+     * @throws \Exception If an error occurs during syncing.
      */
     public function syncProducts(Collection $collection)
     {
@@ -99,7 +103,13 @@ class FourthwallService
 
         if (!isset($productsResponse['results'])) {
             Log::error("No products found for collection: " . $collection->name);
-            return;
+            throw new \Exception("API request for products failed.");
+        }
+
+        // Ensure at least one product is retrieved
+        if (empty($productsResponse['results'])) {
+            Log::warning("No products found for collection: " . $collection->name);
+            throw new \Exception("No products returned for collection: {$collection->name}");
         }
 
         foreach (array_chunk($productsResponse['results'], 5) as $productBatch) {
@@ -108,9 +118,9 @@ class FourthwallService
                     ['provider_id' => $productData['id']],
                     [
                         'collection_id' => $collection->id,
-                        'name' => $productData['name'],
+                        'name' => html_entity_decode($productData['name']),
                         'slug' => $productData['slug'],
-                        'description' => $productData['description'] ?? null
+                        'description' => html_entity_decode($productData['description'] ?? ''),
                     ]
                 );
 
@@ -121,7 +131,7 @@ class FourthwallService
                                 ['provider_id' => $variantData['id']],
                                 [
                                     'product_id' => $product->id,
-                                    'name' => $variantData['name'],
+                                    'name' => html_entity_decode($variantData['name']),
                                     'price' => $variantData['unitPrice']['value'],
                                     'currency' => $variantData['unitPrice']['currency']
                                 ]
