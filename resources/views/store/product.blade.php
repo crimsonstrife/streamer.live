@@ -9,7 +9,7 @@
             <img src="{{ asset('images/default-product.png') }}" alt="Default Image" class="w-full max-w-md rounded">
         @endif
 
-        <p class="mt-4">{!! html_entity_decode($product->description) !!}</p>
+        <p class="mt-4">{{ $product->description }}</p>
 
         @if ($product->variants->isNotEmpty())
             <form method="POST" action="{{ route('store.cart.add') }}">
@@ -20,7 +20,7 @@
                 <select name="variant_id" id="variant" class="mt-2 form-control">
                     @foreach ($product->variants as $variant)
                         <option value="{{ $variant->id }}">
-                            {!! html_entity_decode($variant->name) !!} - {{ number_format($variant->price, 2) }} USD
+                            {{ $variant->name }} - {{ number_format($variant->price, 2) }} USD
                         </option>
                     @endforeach
                 </select>

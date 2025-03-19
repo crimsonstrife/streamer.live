@@ -100,4 +100,14 @@ class Product extends BaseModel
         $image = $this->images()->first();
         return $image ? Storage::url($image->local_path ?? $image->url) : '/default-image.jpg';
     }
+
+    public function getNameAttribute()
+    {
+        return html_entity_decode($this->name);
+    }
+
+    public function getDescriptionAttribute()
+    {
+        return html_entity_decode($this->description);
+    }
 }

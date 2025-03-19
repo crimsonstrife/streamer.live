@@ -7,7 +7,7 @@
 
     <div class="container py-6">
         <h3 class="mb-4 text-lg font-semibold">
-            {{ __('Products in ') }}{{$collection['name'] ?? 'this collection'}}
+            {{ __('Products in ') }}{{$collection->name ?? 'this collection'}}
         </h3>
 
         @if ($collection->products->isEmpty())
@@ -22,9 +22,9 @@
                     @endphp
                     <div class="mb-4 col-md-4">
                         <div class="shadow-sm card">
-                            <img src="{{ $image }}" class="card-img-top" alt="{!! html_entity_decode($product->name) !!} Image">
+                            <img src="{{ $image }}" class="card-img-top" alt="{{ $product->name }} Image">
                             <div class="card-body">
-                                <h5 class="card-title">{!! html_entity_decode($product->name) !!}</h5>
+                                <h5 class="card-title">{{ $product->name }}</h5>
                                 <p class="card-text text-muted">
                                     {{ number_format($product->price, 2) }} USD
                                 </p>

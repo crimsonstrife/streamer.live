@@ -48,4 +48,14 @@ class Collection extends BaseModel
     {
         return $this->belongsToMany(Product::class, 'collection_products');
     }
+
+    public function getNameAttribute()
+    {
+        return html_entity_decode($this->name);
+    }
+
+    public function getDescriptionAttribute()
+    {
+        return html_entity_decode($this->description);
+    }
 }
