@@ -18,7 +18,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if ($this->app->isLocal()) {
+            $this->app->register(App\Providers\HorizonServiceProvider::class);
+            $this->app->register(App\Providers\JetstreamServiceProvider::class);
+            $this->app->register(App\Providers\TelescopeServiceProvider::class);
+            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        }
     }
 
     /**
@@ -35,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
         app(FilamentManager::class)->getPanel('admin')->resources(
             array_filter(
                 app(FilamentManager::class)->getPanel('admin')->getResources(),
-                fn ($resource) => $resource !== PackagePostResource::class
+                fn($resource) => $resource !== PackagePostResource::class
             )
         );
 
