@@ -8,6 +8,7 @@ use App\Traits\HasOwnerAvatar;
 use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Query\Builder;
 
 class Message extends Model
@@ -47,10 +48,10 @@ class Message extends Model
         return $this->morphTo();
     }
 
-    /** @return HasMany<Reaction> */
-    public function reactions(): HasMany
+    /** @return MorphMany<Reaction> */
+    public function reactions(): MorphMany
     {
-        return $this->hasMany(M::reactionClass(), 'comment_id');
+        return $this->morphMany(M::reactionClass(), 'reactable');
     }
 
     public function ownerReactions(): HasMany
