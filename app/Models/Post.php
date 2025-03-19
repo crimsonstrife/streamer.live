@@ -18,7 +18,7 @@ use Spatie\Sluggable\SlugOptions;
 use Spatie\Tags\HasTags;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int|null $blog_author_id

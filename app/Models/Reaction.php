@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Class Reaction
- * 
+ *
  * This class represents a reaction model that can be associated with various entities in the application.
  * It supports polymorphic relationships for the owner and the re-actable entities.
  *

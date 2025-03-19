@@ -7,7 +7,7 @@ use Guava\Calendar\Contracts\Eventable;
 use Guava\Calendar\ValueObjects\Event as EventModel;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $created_at

@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
         app(FilamentManager::class)->getPanel('admin')->resources(
             array_filter(
                 app(FilamentManager::class)->getPanel('admin')->getResources(),
-                fn($resource) => $resource !== PackagePostResource::class
+                fn ($resource) => $resource !== PackagePostResource::class
             )
         );
 
