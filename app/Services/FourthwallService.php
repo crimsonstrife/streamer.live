@@ -273,24 +273,59 @@ class FourthwallService
 
     private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = [])
     {
-        if ($this->storefrontToken) {
-            $queryParams['storefront_token'] = $this->storefrontToken;
+        // Check if the query parameters are not empty
+        if (!empty($queryParams)) {
+            //if not empty, check if the storefront token is set
+            if ($this->storefrontToken) {
+                //if set, add the storefront token to the query parameters
+                $queryParams['storefront_token'] = $this->storefrontToken;
+            } else {
+                //if not set, throw an exception
+                throw new \Exception('Storefront token is required for this request.');
+            }
         } else {
-            throw new \Exception('Storefront token is required for this request.');
+            //if empty, check if the storefront token is set
+            if ($this->storefrontToken) {
+                //if set, add the storefront token to the query parameters
+                $queryParams = ['storefront_token' => $this->storefrontToken];
+            } else {
+                //if not set, throw an exception
+                throw new \Exception('Storefront token is required for this request.');
+            }
         }
 
         $url = "{$this->baseUrl}/{$endpoint}?" . http_build_query($queryParams, '', '&');
 
-        return Http::withOptions(['verify' => $this->verify])
-            ->{$method}($url, $method === 'get' ? [] : $bodyParams)
+        return Http::withOptions([
+            'verify' => $this->verify,
+        ])
+            ->withQueryParameters($queryParams)
+            ->{$method}($url, $method === 'get' ? [] : $bodyParams) // Only send body for non-GET requests
             ->json();
     }
 
+    /**
+     * Make a GET request to the Fourthwall API
+     *
+     * @param string $endpoint The endpoint to make the request to.
+     * @param array $queryParams The query parameters to include in the request.
+     *
+     * @return mixed The response from the API.
+     */
     private function getRequest(string $endpoint, array $queryParams = [])
     {
         return $this->request('get', $endpoint, $queryParams, []);
     }
 
+    /**
+     * Make a POST request to the Fourthwall API
+     *
+     * @param string $endpoint The endpoint to make the request to.
+     * @param array $bodyParams The body parameters to include in the request.
+     * @param array $queryParams The query parameters to include in the request.
+     *
+     * @return mixed The response from the API.
+     */
     private function postRequest(string $endpoint, array $queryParams = [], array $bodyParams)
     {
         return $this->request('post', $endpoint, $queryParams, $bodyParams);
