@@ -91,7 +91,7 @@ final class Currency extends Enum
                 self::INR => '₹',
                 self::JPY => '¥',
                 self::MYR => 'RM',
-                default => throw new Exception('Unexpected match value'),
+                default => throw new Exception('Unexpected currency value: ' . $currencyEnum->value),
             };
         }
         return match ($currencyEnum) {
