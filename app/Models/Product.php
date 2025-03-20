@@ -113,6 +113,6 @@ class Product extends BaseModel
 
     public function getPriceAttribute(): string
     {
-        return number_format($this->attributes['price'],2,'.', ',');
+        return number_format($this->attributes['price'], 2, '.', ',');
     }
 }

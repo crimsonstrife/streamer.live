@@ -98,6 +98,6 @@ class ProductVariant extends BaseModel
 
     public function getPriceAttribute()
     {
-        return number_format($this->attributes['price'],2,'.', ',');
+        return number_format($this->attributes['price'], 2, '.', ',');
     }
 }
