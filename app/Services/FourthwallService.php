@@ -122,24 +122,30 @@ class FourthwallService
 
         foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
             foreach ($productBatch as $productData) {
+                Log::info("Syncing product: {$productData['name']} for collection: {$collection->name}");
                 $product = Product::updateOrCreate(
                     ['provider_id' => $productData['id']],
                     [
                         'collection_id' => $collection->id,
-                        'name' => html_entity_decode($productData['name']),
+                        'name' => $productData['name'],
                         'slug' => $productData['slug'],
-                        'description' => html_entity_decode($productData['description'] ?? ''),
+                        'description' => $productData['description'] ?? '',
                     ]
                 );
+
+                // Ensure product is linked to the collection (pivot table)
+                $product->collections()->syncWithoutDetaching([$collection->id]);
+                Log::info("Attached product: {$product->name} to collection: {$collection->name}");
 
                 if (!empty($productData['variants'])) {
                     foreach (array_chunk($productData['variants'], $this->productsChunkSize) as $variantBatch) {
                         foreach ($variantBatch as $variantData) {
+                            Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
                             ProductVariant::updateOrCreate(
                                 ['provider_id' => $variantData['id']],
                                 [
                                     'product_id' => $product->id,
-                                    'name' => html_entity_decode($variantData['name']),
+                                    'name' => $variantData['name'],
                                     'price' => $variantData['unitPrice']['value'],
                                     'currency' => $variantData['unitPrice']['currency']
                                 ]
@@ -148,10 +154,21 @@ class FourthwallService
                     }
                 }
 
+                // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
+                $product->update(['price' => $product->variants->min('price')]);
+                Log::info("Updated price for product: {$product->name}");
+
+                // Dispatch image processing for the product
                 if (!empty($productData['images'])) {
                     foreach (array_chunk($productData['images'], 3) as $imageBatch) {
                         foreach ($imageBatch as $imageData) {
-                            ProcessProductImage::dispatch($product, $imageData);
+                            Log::info("Dispatching image processing for product: {$product->name}");
+                            ProcessProductImage::dispatchSync($product, $imageData);
+                        }
+                        unset($imageData);
+
+                        if ($this->enableGC) {
+                            gc_collect_cycles();
                         }
                     }
                 }

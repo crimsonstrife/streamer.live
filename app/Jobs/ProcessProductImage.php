@@ -24,6 +24,8 @@ class ProcessProductImage implements ShouldQueue
     {
         $this->product = $product;
         $this->imageData = $imageData;
+
+        logger()->info("Job dispatched for product {$this->product->id}");
     }
 
     public function handle(FourthwallService $fourthwallService)
