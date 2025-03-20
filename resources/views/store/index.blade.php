@@ -21,7 +21,7 @@
                                 @if ($collection->products->isNotEmpty())
                                     @php
                                         $image = $collection->products->first()->images->isNotEmpty()
-                                            ? asset('storage/' . $collection->products->first()->images->first()->local_path)
+                                            ? asset($collection->products->first()->images->first()->local_path)
                                             : asset(config('fourthwall.default_product_image'));
                                     @endphp
                                     <img src="{{ $image }}" class="card-img-top" alt="{{ $collection->products->first()->name }} Image">

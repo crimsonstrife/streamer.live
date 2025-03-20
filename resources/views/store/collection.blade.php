@@ -17,7 +17,7 @@
                 @foreach ($collection->products as $product)
                     @php
                         $image = $product->images->isNotEmpty()
-                            ? asset('storage/' . $product->images->first()->local_path)
+                            ? asset($product->images->first()->local_path)
                             : asset(config('fourthwall.default_product_image'));
                     @endphp
                     <div class="mb-4 col-md-4">

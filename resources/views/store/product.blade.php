@@ -3,7 +3,7 @@
         <h1 class="text-2xl font-bold">{{ $product->name }}</h1>
 
         @if ($product->images->isNotEmpty())
-            <img src="{{ asset('storage/' . $product->images->first()->local_path) }}" alt="{{ $product->name }} Image"
+            <img src="{{ asset($product->images->first()->local_path) }}" alt="{{ $product->name }} Image"
                 class="w-full max-w-md rounded">
         @else
             <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="Default Image" class="w-full max-w-md rounded">

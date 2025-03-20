@@ -27,7 +27,7 @@
                                     @foreach ($cart['items'] as $item)
                                         @php
                                             $variantId = $item->variant->id;
-                                            $image = $item->variant->images->isNotEmpty() ? asset('storage/' . $item->variant->images->first()->local_path) : asset('images/default-product.png');
+                                            $image = $item->variant->images->isNotEmpty() ? asset($item->variant->images->first()->local_path) : asset(config('fourthwall.default_product_image'));
                                         @endphp
                                         <tr>
                                             <td class="d-flex align-items-center">
