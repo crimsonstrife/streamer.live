@@ -20,7 +20,7 @@
                 <select name="variant_id" id="variant" class="mt-2 form-control">
                     @foreach ($product->variants as $variant)
                         <option value="{{ $variant->id }}">
-                            {{ $variant->name }} - {{ number_format($variant->price, 2) }} USD
+                            {{ $variant->name }} - {{ $variant->formatted_price }}
                         </option>
                     @endforeach
                 </select>
