@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\MoneyValueCast;
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -64,8 +65,8 @@ class Product extends BaseModel
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
-        'compare_at_price' => 'decimal:2'
+        'price' => MoneyValueCast::class,
+        'compare_at_price' => MoneyValueCast::class,
     ];
 
     /**
@@ -111,8 +112,13 @@ class Product extends BaseModel
         return html_entity_decode($this->attributes['description']);
     }
 
-    public function getPriceAttribute(): string
+    public function getFormattedPriceAttribute(): string
     {
-        return number_format($this->attributes['price'], 2, '.', ',');
+        return $this->price ? $this->price->formatted() : 'N/A';
+    }
+
+    public function getSymbolPriceAttribute(): string
+    {
+        return $this->price ? $this->price->symbolFormatted() : 'N/A';
     }
 }
