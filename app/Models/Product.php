@@ -110,4 +110,9 @@ class Product extends BaseModel
     {
         return html_entity_decode($this->attributes['description']);
     }
+
+    public function getPriceAttribute(): string
+    {
+        return number_format($this->attributes['price'],2,'.', ',');
+    }
 }

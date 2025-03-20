@@ -26,7 +26,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{ $product->name }}</h5>
                                 <p class="card-text text-muted">
-                                    {{ number_format($product->price, 2) }} USD
+                                    {{ $product->price, 2 }} USD
                                 </p>
                                 <a href="{{ route('store.product', ['slug' => $product->slug]) }}"
                                     class="btn btn-primary">

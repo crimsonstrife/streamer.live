@@ -36,7 +36,7 @@
                                             </td>
                                             <td>{{ $item->variant->name }}</td>
                                             <td>
-                                                {{ number_format($item->variant->price, 2) }} USD
+                                                {{ $item->variant->price }} USD
                                             </td>
                                             <td>
                                                 <input type="number" name="cart[{{ $variantId }}][quantity]"
