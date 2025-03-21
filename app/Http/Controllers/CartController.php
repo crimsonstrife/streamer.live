@@ -42,6 +42,8 @@ class CartController extends Controller
             return redirect()->route('store.index')->with('error', 'Could not load cart. Please try again.');
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             Log::error('Cart session not found: '.$e->getMessage());
+
+            return back()->with('error', 'Cart not found: '.$e->getMessage());
         }
     }
 
@@ -118,6 +120,8 @@ class CartController extends Controller
             return redirect()->route('store.cart.show')->with('error', 'An error occurred while updating the cart.');
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             Log::error('Cart session not found: '.$e->getMessage());
+
+            return back()->with('error', 'Cart not found: '.$e->getMessage());
         }
     }
 
@@ -142,6 +146,8 @@ class CartController extends Controller
             return back()->with('error', 'An error occurred while removing the item.');
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             Log::error('Cart session not found: '.$e->getMessage());
+
+            return back()->with('error', 'Cart not found: '.$e->getMessage());
         }
     }
 
@@ -170,6 +176,8 @@ class CartController extends Controller
             return redirect()->route('store.cart.show')->with('error', 'An error occurred while processing checkout.');
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             Log::error('Cart session not found: '.$e->getMessage());
+
+            return back()->with('error', 'Cart not found: '.$e->getMessage());
         }
     }
 }

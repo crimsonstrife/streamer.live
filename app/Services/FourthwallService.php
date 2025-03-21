@@ -314,9 +314,9 @@ class FourthwallService
                 // if not set, throw an exception
                 throw new \RuntimeException('Storefront token is required for this request.');
             }
-        } else if ($this->storefrontToken) {
+        } elseif ($this->storefrontToken) {
             // if set, add the storefront token to the query parameters
-            $queryParams = ['storefront_token' => $this->storefrontToken];
+            $queryParams['storefront_token'] = $this->storefrontToken;
         } else {
             // if not set, throw an exception
             throw new \RuntimeException('Storefront token is required for this request.');
