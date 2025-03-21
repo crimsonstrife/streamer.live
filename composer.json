@@ -21,7 +21,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "a21ns1g4ts/filament-short-url": "^0.1.5",
         "asmit/filament-mention": "^1.0",
         "asosick/filament-layout-manager": "^1.1",
