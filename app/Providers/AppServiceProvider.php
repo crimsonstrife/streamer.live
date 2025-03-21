@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Utilities\CartHelper;
 use Illuminate\Support\ServiceProvider;
 use Filament\FilamentManager;
 use Spatie\Health\Facades\Health;
@@ -21,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->isLocal()) {
             // Register additional local services
         }
+
+        $this->app->singleton(CartHelper::class, function () {
+            return new CartHelper();
+        });
     }
 
     /**

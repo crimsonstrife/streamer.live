@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProductVariant;
 use App\Services\FourthwallService;
+use App\Utilities\CartHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
@@ -13,6 +14,7 @@ use Psr\Container\NotFoundExceptionInterface;
 class CartController extends Controller
 {
     protected FourthwallService $fourthwallService;
+    protected CartHelper $cartHelper;
 
     public function __construct(FourthwallService $fourthwallService)
     {
@@ -25,7 +27,7 @@ class CartController extends Controller
     public function showCart()
     {
         try {
-            $cartId = session()->get('fourthwall_cart_id');
+            $cartId = $this->cartHelper->getCartId();
 
             // If no cart exists, return an empty cart
             if (! $cartId) {
@@ -66,7 +68,7 @@ class CartController extends Controller
                 return redirect()->back()->with('error', 'Variant not found.');
             }
 
-            $cartId = session()->get('fourthwall_cart_id');
+            $cartId = $this->cartHelper->getCartId();
 
             // If no cart exists, create one
             if (! $cartId) {
@@ -77,8 +79,7 @@ class CartController extends Controller
                 }
 
                 // Store the newly created cart ID in session
-                $cartId = $createCartResponse['id'];
-                session()->put('fourthwall_cart_id', $cartId);
+                $this->cartHelper->setCartId($createCartResponse['id']);
             } else {
                 // If a cart exists, add item to it
                 $addItemResponse = $this->fourthwallService->addToCart($cartId, $variant->provider_id, $quantity);
@@ -102,7 +103,7 @@ class CartController extends Controller
     public function updateCart(Request $request): ?\Illuminate\Http\RedirectResponse
     {
         try {
-            $cartId = session()->get('fourthwall_cart_id');
+            $cartId = $this->cartHelper->getCartId();
 
             if (! $cartId) {
                 return redirect()->route('store.cart.show')->with('error', 'No active cart found.');
@@ -140,7 +141,7 @@ class CartController extends Controller
     public function removeFromCart($variantId): ?\Illuminate\Http\RedirectResponse
     {
         try {
-            $cartId = session()->get('fourthwall_cart_id');
+            $cartId = $this->cartHelper->getCartId();
 
             if (! $cartId) {
                 return back()->with('error', 'No active cart found.');
@@ -171,7 +172,7 @@ class CartController extends Controller
     public function redirectToCheckout(): ?\Illuminate\Http\RedirectResponse
     {
         try {
-            $cartId = session()->get('fourthwall_cart_id');
+            $cartId = $this->cartHelper->getCartId();
 
             if (! $cartId) {
                 return redirect()->route('store.cart.show')->with('error', 'Your cart is empty.');
