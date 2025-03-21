@@ -75,13 +75,9 @@ class CartController extends Controller
                 return $response['id'] ?? null;
             });
 
-            // If no cart exists, create one
+            // If no cart exists, and one cannot be created, return an error
             if (! $cartId) {
-                // New cart helper logic here:
-                $this->cartHelper->getOrCreateCartId(function () use ($variant, $quantity) {
-                    $response = $this->fourthwallService->createCart($variant->provider_id, $quantity);
-                    return $response['id'] ?? null;
-                });
+                    return redirect()->back()->with('error', 'Variant not found.');
             } else {
                 // If a cart exists, add item to it
                 $addItemResponse = $this->fourthwallService->addToCart($cartId, $variant->provider_id, $quantity);
