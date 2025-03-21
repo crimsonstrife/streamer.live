@@ -61,4 +61,26 @@ class CartHelper
     {
         Session::forget(self::CART_SESSION_KEY);
     }
+
+    /**
+     * Get or create the current cart ID.
+     *
+     * @param callable $onCreate Closure to call if cart creation is needed.
+     * @return string|null
+     */
+    public function getOrCreateCartId(callable $onCreate): ?string
+    {
+        if ($this->hasCartId()) {
+            return $this->getCartId();
+        }
+
+        $newCartId = $onCreate();
+
+        if ($newCartId) {
+            $this->setCartId($newCartId);
+            return $newCartId;
+        }
+
+        return null;
+    }
 }

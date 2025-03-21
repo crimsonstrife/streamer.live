@@ -19,6 +19,7 @@ class CartController extends Controller
     public function __construct(FourthwallService $fourthwallService)
     {
         $this->fourthwallService = $fourthwallService;
+        $this->cartHelper = app(CartHelper::class);
     }
 
     /**
@@ -68,18 +69,19 @@ class CartController extends Controller
                 return redirect()->back()->with('error', 'Variant not found.');
             }
 
-            $cartId = $this->cartHelper->getCartId();
+            // New cart helper logic here:
+            $cartId = $this->cartHelper->getOrCreateCartId(function () use ($variant, $quantity) {
+                $response = $this->fourthwallService->createCart($variant->provider_id, $quantity);
+                return $response['id'] ?? null;
+            });
 
             // If no cart exists, create one
             if (! $cartId) {
-                $createCartResponse = $this->fourthwallService->createCart($variant->provider_id, $quantity);
-
-                if (! $createCartResponse || ! isset($createCartResponse['id'])) {
-                    return redirect()->back()->with('error', 'Failed to create a new cart.');
-                }
-
-                // Store the newly created cart ID in session
-                $this->cartHelper->setCartId($createCartResponse['id']);
+                // New cart helper logic here:
+                $this->cartHelper->getOrCreateCartId(function () use ($variant, $quantity) {
+                    $response = $this->fourthwallService->createCart($variant->provider_id, $quantity);
+                    return $response['id'] ?? null;
+                });
             } else {
                 // If a cart exists, add item to it
                 $addItemResponse = $this->fourthwallService->addToCart($cartId, $variant->provider_id, $quantity);
@@ -92,7 +94,6 @@ class CartController extends Controller
             return redirect()->route('store.cart.show')->with('success', 'Product added to cart!');
         } catch (\Exception $e) {
             Log::error('Failed to add product to cart: '.$e->getMessage());
-
             return redirect()->back()->with('error', 'An error occurred while adding the product to the cart.');
         }
     }
