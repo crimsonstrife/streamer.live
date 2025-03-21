@@ -9,7 +9,7 @@
             <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="Default Image" class="w-full max-w-md rounded">
         @endif
 
-        <p class="mt-4">{{ $product->description }}</p>
+        <p class="mt-4">{{ htmlspecialchars_decode($product->description) }}</p>
 
         @if ($product->variants->isNotEmpty())
             <form method="POST" action="{{ route('store.cart.add') }}">

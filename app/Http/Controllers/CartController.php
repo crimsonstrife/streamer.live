@@ -33,9 +33,13 @@ class CartController extends Controller
             }
 
             // Fetch cart details from Fourthwall API
-            $cart = $this->fourthwallService->getCart($cartId);
+            $cartResponse = $this->fourthwallService->getCart($cartId);
 
-            return view('store.cart', compact('cart'));
+            if (!$cartResponse) {
+                return view('store.cart', ['cart' => []]);
+            }
+
+            return view('store.cart', ['cart' => $cartResponse]);
         } catch (\Exception $e) {
             Log::error('Cart session retrieval failed: '.$e->getMessage());
 
@@ -111,7 +115,12 @@ class CartController extends Controller
                 $updatedItems[] = ['variantId' => $variantId, 'quantity' => $quantity];
             }
 
-            $this->fourthwallService->updateCart($cartId, $updatedItems);
+            // Send update request to Fourthwall API
+            $updateResponse = $this->fourthwallService->updateCart($cartId, $updatedItems);
+
+            if (!$updateResponse) {
+                return redirect()->route('store.cart.show')->with('error', 'Failed to update cart.');
+            }
 
             return redirect()->route('store.cart.show')->with('success', 'Cart updated successfully.');
         } catch (\Exception $e) {
@@ -137,7 +146,12 @@ class CartController extends Controller
                 return back()->with('error', 'No active cart found.');
             }
 
-            $this->fourthwallService->removeFromCart($cartId, $variantId);
+            // Send delete request to Fourthwall API
+            $removeResponse = $this->fourthwallService->removeFromCart($cartId, $variantId);
+
+            if (!$removeResponse) {
+                return back()->with('error', 'Failed to remove item from cart.');
+            }
 
             return back()->with('success', 'Item removed from cart.');
         } catch (\Exception $e) {
@@ -164,10 +178,13 @@ class CartController extends Controller
             }
 
             // Generate checkout URL using FourthwallService
-            $checkoutUrl = $this->fourthwallService->getCheckoutUrl($cartId);
+            $cartCurrency = 'USD'; // Adjust as needed
+            $checkoutUrl = $this->fourthwallService->getCheckoutUrl($cartId, $cartCurrency);
 
-            // Store checkout URL in session
+            // Store checkout URL in session for the view
             session()->put('checkout_url', $checkoutUrl);
+            // Store the cart currency in session for the view
+            session()->put('cart_currency', $cartCurrency);
 
             return redirect()->route('store.checkout.external');
         } catch (\Exception $e) {

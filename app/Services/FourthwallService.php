@@ -296,7 +296,15 @@ class FourthwallService
      */
     public function getCheckoutUrl(string $cartId, string $currency = 'USD'): string
     {
-        return "{$this->storefrontUrl}/checkout/?cartCurrency={$currency}&cartId={$cartId}";
+        // Check if the storefront url is set and ends with a slash
+        if (! str_ends_with($this->storefrontUrl, '/')) {
+            // if not, add a slash to the end of the storefront url
+            $url = $this->storefrontUrl."/checkout/?cartCurrency={$currency}&cartId={$cartId}";
+        } else {
+            $url = $this->storefrontUrl."checkout/?cartCurrency={$currency}&cartId={$cartId}";
+        }
+
+        return $url;
     }
 
     /** ===========================

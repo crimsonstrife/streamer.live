@@ -92,6 +92,11 @@ class ProductVariant extends BaseModel
         return $this->hasMany(ProductImage::class, 'variant_id');
     }
 
+    public function getNameAttribute(): string
+    {
+        return html_entity_decode($this->attributes['name']);
+    }
+
     public function getFormattedPriceAttribute(): string
     {
         return $this->price ? $this->price->formatted() : 'N/A';
