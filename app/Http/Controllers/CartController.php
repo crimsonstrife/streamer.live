@@ -77,7 +77,7 @@ class CartController extends Controller
 
             // If no cart exists, and one cannot be created, return an error
             if (! $cartId) {
-                    return redirect()->back()->with('error', 'Variant not found.');
+                return redirect()->back()->with('error', 'Variant not found.');
             } else {
                 // If a cart exists, add item to it
                 $addItemResponse = $this->fourthwallService->addToCart($cartId, $variant->provider_id, $quantity);
