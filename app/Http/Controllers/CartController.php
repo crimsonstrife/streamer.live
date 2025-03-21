@@ -16,10 +16,10 @@ class CartController extends Controller
     protected FourthwallService $fourthwallService;
     protected CartHelper $cartHelper;
 
-    public function __construct(FourthwallService $fourthwallService)
+    public function __construct(FourthwallService $fourthwallService, CartHelper $cartHelper)
     {
         $this->fourthwallService = $fourthwallService;
-        $this->cartHelper = app(CartHelper::class);
+        $this->cartHelper = $cartHelper;
     }
 
     /**
