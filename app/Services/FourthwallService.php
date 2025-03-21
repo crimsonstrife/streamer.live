@@ -5,22 +5,28 @@ namespace App\Services;
 use App\Jobs\ProcessProductImage;
 use App\Models\Collection;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\ProductImage;
+use App\Models\ProductVariant;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
 
 class FourthwallService
 {
     protected string $baseUrl;
+
     protected string $storefrontToken;
+
     protected string $storefrontUrl;
+
     protected bool $verify;
+
     protected bool $enableGC;
+
     protected int $collectionsChunkSize;
+
     protected int $productsChunkSize;
 
     /**
@@ -38,7 +44,6 @@ class FourthwallService
         $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);
     }
 
-
     /** ===========================
      *  PRODUCT & COLLECTION SYNCING
      *  =========================== */
@@ -46,25 +51,25 @@ class FourthwallService
     /**
      * Sync collections and products from Fourthwall API in chunks.
      *
-     * @throws \Exception If an error occurs during syncing.
+     * @throws Exception If an error occurs during syncing.
      */
-    public function syncCollectionsAndProducts()
+    public function syncCollectionsAndProducts(): void
     {
         $collectionsResponse = $this->getRequest('v1/collections');
 
-        if (!isset($collectionsResponse['results'])) {
-            Log::error("Failed to fetch collections from Fourthwall.");
-            throw new \Exception("API request for collections failed.");
+        if (! isset($collectionsResponse['results'])) {
+            Log::error('Failed to fetch collections from Fourthwall.');
+            throw new \RuntimeException('API request for collections failed.');
         }
 
         // Ensure at least one collection is retrieved
         if (empty($collectionsResponse['results'])) {
-            Log::warning("No collections found from API.");
-            throw new \Exception("No collections returned from API.");
+            Log::warning('No collections found from API.');
+            throw new \RuntimeException('No collections returned from API.');
         }
 
         // Use a lazy collection to iterate without loading everything at once
-        LazyCollection::make(function () use ($collectionsResponse) {
+        LazyCollection::make(static function () use ($collectionsResponse) {
             foreach ($collectionsResponse['results'] as $collectionData) {
                 yield $collectionData;
             }
@@ -76,7 +81,7 @@ class FourthwallService
                         [
                             'name' => $collectionData['name'],
                             'slug' => $collectionData['slug'],
-                            'description' => $collectionData['description'] ?? null
+                            'description' => $collectionData['description'] ?? null,
                         ]
                     );
 
@@ -85,9 +90,9 @@ class FourthwallService
                     // Attempt to sync products for this collection
                     try {
                         $this->syncProducts($collection);
-                    } catch (\Exception $e) {
-                        Log::error("Error syncing products for collection {$collection->name}: " . $e->getMessage());
-                        throw new \Exception("Failed to sync products for collection: {$collection->name}");
+                    } catch (Exception $e) {
+                        Log::error("Error syncing products for collection {$collection->name}: ".$e->getMessage());
+                        throw new \RuntimeException("Failed to sync products for collection: {$collection->name}");
                     }
                 }
                 if ($this->enableGC) {
@@ -95,29 +100,29 @@ class FourthwallService
                 }
             });
 
-        Log::info("All collections and products synced successfully.");
+        Log::info('All collections and products synced successfully.');
     }
 
     /**
      * Sync products for a given collection in chunks.
      *
-     * @param Collection $collection The collection to sync products for.
+     * @param  Collection  $collection  The collection to sync products for.
      *
-     * @throws \Exception If an error occurs during syncing.
+     * @throws Exception If an error occurs during syncing.
      */
-    public function syncProducts(Collection $collection)
+    public function syncProducts(Collection $collection): void
     {
         $productsResponse = $this->getRequest("v1/collections/{$collection->slug}/products");
 
-        if (!isset($productsResponse['results'])) {
-            Log::error("No products found for collection: " . $collection->name);
-            throw new \Exception("API request for products failed.");
+        if (! isset($productsResponse['results'])) {
+            Log::error('No products found for collection: '.$collection->name);
+            throw new \RuntimeException('API request for products failed.');
         }
 
         // Ensure at least one product is retrieved
         if (empty($productsResponse['results'])) {
-            Log::warning("No products found for collection: " . $collection->name);
-            throw new \Exception("No products returned for collection: {$collection->name}");
+            Log::warning('No products found for collection: '.$collection->name);
+            throw new \RuntimeException("No products returned for collection: {$collection->name}");
         }
 
         foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
@@ -137,7 +142,7 @@ class FourthwallService
                 $product->collections()->syncWithoutDetaching([$collection->id]);
                 Log::info("Attached product: {$product->name} to collection: {$collection->name}");
 
-                if (!empty($productData['variants'])) {
+                if (! empty($productData['variants'])) {
                     foreach (array_chunk($productData['variants'], $this->productsChunkSize) as $variantBatch) {
                         foreach ($variantBatch as $variantData) {
                             Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
@@ -147,7 +152,7 @@ class FourthwallService
                                     'product_id' => $product->id,
                                     'name' => $variantData['name'],
                                     'price' => $variantData['unitPrice']['value'],
-                                    'currency' => $variantData['unitPrice']['currency']
+                                    'currency' => $variantData['unitPrice']['currency'],
                                 ]
                             );
                         }
@@ -159,13 +164,12 @@ class FourthwallService
                 Log::info("Updated price for product: {$product->name}");
 
                 // Dispatch image processing for the product
-                if (!empty($productData['images'])) {
+                if (! empty($productData['images'])) {
                     foreach (array_chunk($productData['images'], 3) as $imageBatch) {
                         foreach ($imageBatch as $imageData) {
                             Log::info("Dispatching image processing for product: {$product->name}");
                             ProcessProductImage::dispatchSync($product, $imageData);
                         }
-                        unset($imageData);
 
                         if ($this->enableGC) {
                             gc_collect_cycles();
@@ -187,7 +191,7 @@ class FourthwallService
     /**
      * Store an image locally and update the database.
      */
-    public function storeImage(Product $product, ?ProductVariant $variant, array $imageData)
+    public function storeImage(Product $product, ?ProductVariant $variant, array $imageData): void
     {
         $filename = basename($imageData['url']);
         $localPath = "products/{$product->provider_id}/{$filename}";
@@ -197,7 +201,8 @@ class FourthwallService
         if ($response->successful()) {
             Storage::disk('public')->put($localPath, $response->body());
         } else {
-            Log::error("Failed to download image: " . $imageData['url']);
+            Log::error('Failed to download image: '.$imageData['url']);
+
             return;
         }
 
@@ -289,7 +294,7 @@ class FourthwallService
     /**
      * Generates the checkout URL for an existing cart.
      */
-    public function getCheckoutUrl(string $cartId, string $currency = 'USD')
+    public function getCheckoutUrl(string $cartId, string $currency = 'USD'): string
     {
         return "{$this->storefrontUrl}/checkout/?cartCurrency={$currency}&cartId={$cartId}";
     }
@@ -297,31 +302,30 @@ class FourthwallService
     /** ===========================
      *  HELPER METHODS
      *  =========================== */
-
     private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = [])
     {
         // Check if the query parameters are not empty
-        if (!empty($queryParams)) {
-            //if not empty, check if the storefront token is set
+        if (! empty($queryParams)) {
+            // if not empty, check if the storefront token is set
             if ($this->storefrontToken) {
-                //if set, add the storefront token to the query parameters
+                // if set, add the storefront token to the query parameters
                 $queryParams['storefront_token'] = $this->storefrontToken;
             } else {
-                //if not set, throw an exception
-                throw new \Exception('Storefront token is required for this request.');
+                // if not set, throw an exception
+                throw new \RuntimeException('Storefront token is required for this request.');
             }
         } else {
-            //if empty, check if the storefront token is set
+            // if empty, check if the storefront token is set
             if ($this->storefrontToken) {
-                //if set, add the storefront token to the query parameters
+                // if set, add the storefront token to the query parameters
                 $queryParams = ['storefront_token' => $this->storefrontToken];
             } else {
-                //if not set, throw an exception
-                throw new \Exception('Storefront token is required for this request.');
+                // if not set, throw an exception
+                throw new \RuntimeException('Storefront token is required for this request.');
             }
         }
 
-        $url = "{$this->baseUrl}/{$endpoint}?" . http_build_query($queryParams, '', '&');
+        $url = "{$this->baseUrl}/{$endpoint}?".http_build_query($queryParams, '', '&');
 
         return Http::withOptions([
             'verify' => $this->verify,
@@ -334,12 +338,11 @@ class FourthwallService
     /**
      * Make a GET request to the Fourthwall API
      *
-     * @param string $endpoint The endpoint to make the request to.
-     * @param array $queryParams The query parameters to include in the request.
-     *
+     * @param  string  $endpoint  The endpoint to make the request to.
+     * @param  array  $queryParams  The query parameters to include in the request.
      * @return mixed The response from the API.
      */
-    private function getRequest(string $endpoint, array $queryParams = [])
+    private function getRequest(string $endpoint, array $queryParams = []): mixed
     {
         return $this->request('get', $endpoint, $queryParams, []);
     }
@@ -347,26 +350,22 @@ class FourthwallService
     /**
      * Make a POST request to the Fourthwall API
      *
-     * @param string $endpoint The endpoint to make the request to.
-     * @param array $bodyParams The body parameters to include in the request.
-     * @param array $queryParams The query parameters to include in the request.
-     *
+     * @param  string  $endpoint  The endpoint to make the request to.
+     * @param  array  $bodyParams  The body parameters to include in the request.
+     * @param  array  $queryParams  The query parameters to include in the request.
      * @return mixed The response from the API.
      */
-    private function postRequest(string $endpoint, array $queryParams = [], array $bodyParams)
+    private function postRequest(string $endpoint, array $queryParams, array $bodyParams): mixed
     {
         return $this->request('post', $endpoint, $queryParams, $bodyParams);
     }
 
     /**
      * Generate a local image path based on the storage disk configuration.
-     *
-     * @param  string  $localPath
-     * @return string
      */
     protected function getLocalImagePath(string $localPath): string
     {
-        // Using Laravel's Storage helper to generate the URL based on 'public' disk configuration.
+        // Using Laravel Storage helper to generate the URL based on 'public' disk configuration.
         return Storage::url($localPath);
     }
 }

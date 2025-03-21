@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductVariant;
+use App\Services\FourthwallService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use App\Models\ProductVariant;
-use App\Services\FourthwallService;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class CartController extends Controller
 {
@@ -26,7 +28,7 @@ class CartController extends Controller
             $cartId = session()->get('fourthwall_cart_id');
 
             // If no cart exists, return an empty cart
-            if (!$cartId) {
+            if (! $cartId) {
                 return view('store.cart', ['cart' => []]);
             }
 
@@ -35,15 +37,18 @@ class CartController extends Controller
 
             return view('store.cart', compact('cart'));
         } catch (\Exception $e) {
-            Log::error('Cart session retrieval failed: ' . $e->getMessage());
+            Log::error('Cart session retrieval failed: '.$e->getMessage());
+
             return redirect()->route('store.index')->with('error', 'Could not load cart. Please try again.');
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            Log::error('Cart session not found: '.$e->getMessage());
         }
     }
 
     /**
      * Add product to the cart.
      */
-    public function addToCart(Request $request)
+    public function addToCart(Request $request): ?\Illuminate\Http\RedirectResponse
     {
         try {
             $variantId = $request->input('variant_id');
@@ -51,17 +56,17 @@ class CartController extends Controller
 
             $variant = ProductVariant::where('provider_id', $variantId)->first();
 
-            if (!$variant) {
+            if (! $variant) {
                 return redirect()->back()->with('error', 'Variant not found.');
             }
 
             $cartId = session()->get('fourthwall_cart_id');
 
             // If no cart exists, create one
-            if (!$cartId) {
+            if (! $cartId) {
                 $createCartResponse = $this->fourthwallService->createCart($variant->provider_id, $quantity);
 
-                if (!$createCartResponse || !isset($createCartResponse['id'])) {
+                if (! $createCartResponse || ! isset($createCartResponse['id'])) {
                     return redirect()->back()->with('error', 'Failed to create a new cart.');
                 }
 
@@ -72,14 +77,15 @@ class CartController extends Controller
                 // If a cart exists, add item to it
                 $addItemResponse = $this->fourthwallService->addToCart($cartId, $variant->provider_id, $quantity);
 
-                if (!$addItemResponse) {
+                if (! $addItemResponse) {
                     return redirect()->back()->with('error', 'Failed to add product to cart.');
                 }
             }
 
             return redirect()->route('store.cart.show')->with('success', 'Product added to cart!');
         } catch (\Exception $e) {
-            Log::error('Failed to add product to cart: ' . $e->getMessage());
+            Log::error('Failed to add product to cart: '.$e->getMessage());
+
             return redirect()->back()->with('error', 'An error occurred while adding the product to the cart.');
         }
     }
@@ -87,19 +93,19 @@ class CartController extends Controller
     /**
      * Update the cart quantities.
      */
-    public function updateCart(Request $request)
+    public function updateCart(Request $request): ?\Illuminate\Http\RedirectResponse
     {
         try {
             $cartId = session()->get('fourthwall_cart_id');
 
-            if (!$cartId) {
+            if (! $cartId) {
                 return redirect()->route('store.cart.show')->with('error', 'No active cart found.');
             }
 
             $updatedItems = [];
 
             foreach ($request->input('cart', []) as $variantId => $details) {
-                $quantity = max(1, intval($details['quantity']));
+                $quantity = max(1, (int) $details['quantity']);
                 $updatedItems[] = ['variantId' => $variantId, 'quantity' => $quantity];
             }
 
@@ -107,20 +113,23 @@ class CartController extends Controller
 
             return redirect()->route('store.cart.show')->with('success', 'Cart updated successfully.');
         } catch (\Exception $e) {
-            Log::error('Failed to update cart: ' . $e->getMessage());
+            Log::error('Failed to update cart: '.$e->getMessage());
+
             return redirect()->route('store.cart.show')->with('error', 'An error occurred while updating the cart.');
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            Log::error('Cart session not found: '.$e->getMessage());
         }
     }
 
     /**
      * Remove an item from the cart.
      */
-    public function removeFromCart($variantId)
+    public function removeFromCart($variantId): ?\Illuminate\Http\RedirectResponse
     {
         try {
             $cartId = session()->get('fourthwall_cart_id');
 
-            if (!$cartId) {
+            if (! $cartId) {
                 return back()->with('error', 'No active cart found.');
             }
 
@@ -128,20 +137,23 @@ class CartController extends Controller
 
             return back()->with('success', 'Item removed from cart.');
         } catch (\Exception $e) {
-            Log::error('Failed to remove item from cart: ' . $e->getMessage());
+            Log::error('Failed to remove item from cart: '.$e->getMessage());
+
             return back()->with('error', 'An error occurred while removing the item.');
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            Log::error('Cart session not found: '.$e->getMessage());
         }
     }
 
     /**
      * Proceed to checkout.
      */
-    public function redirectToCheckout()
+    public function redirectToCheckout(): ?\Illuminate\Http\RedirectResponse
     {
         try {
             $cartId = session()->get('fourthwall_cart_id');
 
-            if (!$cartId) {
+            if (! $cartId) {
                 return redirect()->route('store.cart.show')->with('error', 'Your cart is empty.');
             }
 
@@ -153,8 +165,11 @@ class CartController extends Controller
 
             return redirect()->route('store.checkout.external');
         } catch (\Exception $e) {
-            Log::error('Checkout failed: ' . $e->getMessage());
+            Log::error('Checkout failed: '.$e->getMessage());
+
             return redirect()->route('store.cart.show')->with('error', 'An error occurred while processing checkout.');
+        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+            Log::error('Cart session not found: '.$e->getMessage());
         }
     }
 }
