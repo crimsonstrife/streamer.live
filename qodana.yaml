@@ -4,3 +4,9 @@ profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
+    path:
+exclude:
+  - name: All
+    paths:
+      - public\js\filament\filament\echo.js
+      - public\js\asosick\filament-layout-manager\filament-layout-manager-scripts.js

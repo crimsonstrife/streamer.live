@@ -13,7 +13,6 @@ class TwitchService
     public function __construct()
     {
         if (!config('services.twitch.enabled', false)) {
-            \Log::warning('Twitch service is disabled via config.');
             return;
         }
 

@@ -18,7 +18,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if ($this->app->isLocal()) {
+            // Register additional local services
+        }
     }
 
     /**

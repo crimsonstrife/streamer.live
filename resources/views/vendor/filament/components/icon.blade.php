@@ -5,7 +5,8 @@
 ])
 
 @php
-    $icon = ($alias ? \Filament\Support\Facades\FilamentIcon::resolve($alias) : null) ?: ($icon ?? $slot);
+    $resolvedAlias = $alias ? \Filament\Support\Facades\FilamentIcon::resolve($alias) : null;
+    $resolvedIcon = $resolvedAlias ?: ($icon ?? $slot);
 @endphp
 
 @if ($icon instanceof \Illuminate\Contracts\Support\Htmlable)
@@ -19,7 +20,7 @@
                 ->merge(['src' => $icon])
                 ->class($class)
         }}
-    />
+     alt="{{ $resolvedAlias }}"/>
 @else
     @svg(
         $icon,

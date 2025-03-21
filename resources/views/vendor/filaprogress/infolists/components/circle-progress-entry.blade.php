@@ -3,8 +3,8 @@
         $total = $getState()['total'];
         $progress = $getState()['progress'];
         $progress = $total > 0 ? ($progress / $total) * 100 : 0;
-    
-        if($progress == 100){
+
+        if($progress === 100){
             $progressColor = '#2980b9';
         } else if($progress > 50){
             $progressColor = '#27ae60';
@@ -12,11 +12,11 @@
             $progressColor = '#f39c12';
         } else {
             $progressColor = '#e74c3c';
-        }    
-        
-        $displayProgress = $progress == 100 ? number_format($progress, 0) : number_format($progress, 2);
+        }
+
+        $displayProgress = $progress === 100 ? number_format($progress, 0) : number_format($progress, 2);
     @endphp
-    
+
     <div class="progress-circle" style="
         background: conic-gradient(
             {{ $progressColor }} {{ $displayProgress * 3.6 }}deg,
@@ -26,7 +26,7 @@
             <small>{{ $displayProgress }}%</small>
         @endif
     </div>
-    
+
     <style>
         .progress-circle {
             position: relative;

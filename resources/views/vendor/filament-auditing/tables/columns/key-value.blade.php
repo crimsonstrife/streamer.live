@@ -1,5 +1,5 @@
 @php
-    $data = isset($state) ? $state : $getState()
+    $data = $state ?? $getState()
 @endphp
 
 <div class="my-2 text-sm font-medium tracking-tight">
