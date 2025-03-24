@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\FourthwallService;
 use App\Utilities\CartHelper;
 use Illuminate\Support\ServiceProvider;
 use Filament\FilamentManager;
@@ -23,8 +24,8 @@ class AppServiceProvider extends ServiceProvider
             // Register additional local services
         }
 
-        $this->app->singleton(CartHelper::class, function (FourthwallService $service) {
-            return new CartHelper($service);
+        $this->app->singleton(CartHelper::class, function ($app) {
+            return new CartHelper($app->make(FourthwallService::class));
         });
     }
 
