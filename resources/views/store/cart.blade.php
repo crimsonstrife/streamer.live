@@ -26,31 +26,30 @@
                                 <tbody>
                                     @foreach ($cart['items'] as $item)
                                         @php
-                                            $variantId = $item['variant']['id'];
+                                            $variantId = $item->variant->id;
+                                            $image = $item->variant->images->isNotEmpty() ? asset($item->variant->images->first()->local_path) : asset(config('fourthwall.default_product_image'));
                                         @endphp
                                         <tr>
                                             <td class="d-flex align-items-center">
-                                                <img src="{{ $item['variant']['images'][0]['url'] ?? asset('images/default-product.png') }}"
-                                                    alt="{{ $item['variant']['name'] }}"
-                                                    class="rounded me-3" width="60" height="60">
-                                                {{ $item['variant']['name'] }}
+                                                <img src="{{ $image }}" alt="{{ $item->variant->name }} Image" class="rounded me-3" width="60" height="60">
+                                                {{ $item->variant->name }}
                                             </td>
-                                            <td>{{ $item['variant']['name'] }}</td>
+                                            <td>{{ $item->variant->name }}</td>
                                             <td>
-                                                {{ number_format($item['variant']['unitPrice']['value'], 2) }}
-                                                {{ $item['variant']['unitPrice']['currency'] }}
+                                                {{ $item->variant->symbol_price }} USD
                                             </td>
                                             <td>
                                                 <input type="number" name="cart[{{ $variantId }}][quantity]"
-                                                    value="{{ $item['quantity'] }}" min="1"
+                                                    value="{{ $item->quantity }}" min="1"
                                                     class="text-center form-control w-50">
                                             </td>
                                             <td>
-                                                {{ number_format($item['quantity'] * $item['variant']['unitPrice']['value'], 2) }}
-                                                {{ $item['variant']['unitPrice']['currency'] }}
+                                                {{ number_format(($item->quantity * $item->variant->price), 2) }}
+                                                USD
                                             </td>
                                             <td>
-                                                <a href="{{ route('store.cart.remove', $variantId) }}" class="btn btn-danger btn-sm">
+                                                <a href="{{ route('store.cart.remove', $variantId) }}"
+                                                    class="btn btn-danger btn-sm">
                                                     <i class="bi bi-trash"></i> Remove
                                                 </a>
                                             </td>

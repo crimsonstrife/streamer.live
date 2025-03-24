@@ -15,9 +15,8 @@ class DiscordBotService
     {
         $this->enabled = config('discord.enabled', false);
 
-        // If disabled, log and return early
+        // If disabled, return early
         if (!$this->enabled || empty(config('discord.token')) || empty(config('discord.channel_id'))) {
-            Log::warning('Discord bot service is disabled or missing credentials.');
             return;
         }
 
