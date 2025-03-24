@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\FourthwallService;
-use Illuminate\Http\Request;
 use App\Models\Collection;
 use App\Models\Product;
+use App\Services\FourthwallService;
+use App\Utilities\CartHelper;
 
 class StoreController extends Controller
 {
     protected FourthwallService $fourthwallService;
 
-    public function __construct(FourthwallService $fourthwallService)
+    protected CartHelper $cartHelper;
+
+    public function __construct(FourthwallService $fourthwallService, CartHelper $cartHelper)
     {
         $this->fourthwallService = $fourthwallService;
+        $this->cartHelper = $cartHelper;
     }
 
     /**
@@ -53,5 +56,10 @@ class StoreController extends Controller
             ->firstOrFail();
 
         return view('store.product', compact('product'));
+    }
+
+    public function getCartItemCount(): int
+    {
+        return $this->cartHelper->getCartItemCount();
     }
 }
