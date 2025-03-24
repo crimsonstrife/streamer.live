@@ -136,11 +136,8 @@ class CartController extends Controller
 
             $checkoutUrl = $this->cartHelper->getCheckoutUrl();
 
-            if (! empty($checkoutUrl) && filter_var($checkoutUrl, FILTER_VALIDATE_URL)) {
-                session()->put('checkout_url', $checkoutUrl);
-            } else {
-                Log::warning('Invalid checkout URL generated.');
-            }
+            // Removed duplicate session management for checkout URL.
+            // The CartHelper->getCheckoutUrl method already handles storing the checkout URL and cart currency into the session.
 
             $currency = config('app.default_currency', 'USD'); // Use configurable default
             session()->put('cart_currency', $currency);
