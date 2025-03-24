@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
             // Register additional local services
         }
 
-        $this->app->singleton(CartHelper::class, function () {
-            return new CartHelper();
+        $this->app->singleton(CartHelper::class, function (FourthwallService $service) {
+            return new CartHelper($service);
         });
     }
 
