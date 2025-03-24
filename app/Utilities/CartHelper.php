@@ -57,13 +57,13 @@ class CartHelper
     /**
      * Get the cart ID or create a new cart with a given variant.
      */
-    public function getOrCreateCart(string $variantId, int $quantity = 1): ?string
+    public function getOrCreateCart(string $variant_id, int $quantity = 1): ?string
     {
         if ($this->hasCartId()) {
             return $this->getCartId();
         }
 
-        $response = $this->fourthwall->createCart($variantId, $quantity);
+        $response = $this->fourthwall->createCart($variant_id, $quantity);
 
         if ($response && isset($response['id'])) {
             $this->setCartId($response['id']);
@@ -77,15 +77,15 @@ class CartHelper
     /**
      * Add a variant to the current cart (create if necessary).
      */
-    public function addToCart(string $variantId, int $quantity = 1): bool
+    public function addToCart(string $variant_id, int $quantity = 1): bool
     {
-        $cartId = $this->getOrCreateCart($variantId, $quantity);
+        $cartId = $this->getOrCreateCart($variant_id, $quantity);
 
         if (! $cartId) {
             return false;
         }
 
-        return (bool) $this->fourthwall->addToCart($cartId, $variantId, $quantity);
+        return (bool) $this->fourthwall->addToCart($cartId, $variant_id, $quantity);
     }
 
     /**
@@ -105,7 +105,7 @@ class CartHelper
     /**
      * Remove an item from the cart.
      */
-    public function removeFromCart(string $variantId): bool
+    public function removeFromCart(string $variant_id): bool
     {
         $cartId = $this->getCartId();
 
@@ -113,7 +113,7 @@ class CartHelper
             return false;
         }
 
-        return (bool) $this->fourthwall->removeFromCart($cartId, $variantId);
+        return (bool) $this->fourthwall->removeFromCart($cartId, $variant_id);
     }
 
     public function updateCart(array $items): bool
@@ -126,7 +126,7 @@ class CartHelper
 
         $formattedItems = collect($items)->map(function ($item) {
             return [
-                'variantId' => $item['variant_id'],
+                'variant_id' => $item['variant_id'],
                 'quantity' => max(1, (int) $item['quantity']),
             ];
         })->toArray();

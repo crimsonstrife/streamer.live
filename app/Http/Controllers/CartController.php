@@ -46,10 +46,10 @@ class CartController extends Controller
     public function addToCart(Request $request): ?\Illuminate\Http\RedirectResponse
     {
         try {
-            $variantId = $request->input('variant_id');
+            $variant_id = $request->input('variant_id');
             $quantity = max(1, (int) $request->input('quantity', 1));
 
-            $variant = ProductVariant::where('provider_id', $variantId)->first();
+            $variant = ProductVariant::where('provider_id', $variant_id)->first();
 
             if (! $variant) {
                 return redirect()->back()->with('error', 'Variant not found.');
@@ -81,9 +81,9 @@ class CartController extends Controller
 
             $updatedItems = [];
 
-            foreach ($request->input('cart', []) as $variantId => $details) {
+            foreach ($request->input('cart', []) as $variant_id => $details) {
                 $quantity = max(1, (int) $details['quantity']);
-                $updatedItems[] = ['variantId' => $variantId, 'quantity' => $quantity];
+                $updatedItems[] = ['variant_id' => $variant_id, 'quantity' => $quantity];
             }
 
             $updated = $this->cartHelper->updateCart($updatedItems);
@@ -103,14 +103,14 @@ class CartController extends Controller
     /**
      * Remove an item from the cart.
      */
-    public function removeFromCart(string $variantId): ?\Illuminate\Http\RedirectResponse
+    public function removeFromCart(string $variant_id): ?\Illuminate\Http\RedirectResponse
     {
         try {
             if (! $this->cartHelper->hasCartId()) {
                 return back()->with('error', 'No active cart found.');
             }
 
-            $removed = $this->cartHelper->removeFromCart($variantId);
+            $removed = $this->cartHelper->removeFromCart($variant_id);
 
             if (! $removed) {
                 return back()->with('error', 'Failed to remove item from cart.');

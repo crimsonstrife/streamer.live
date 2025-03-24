@@ -226,14 +226,14 @@ class FourthwallService
     /**
      * Creates a new cart with a single item.
      */
-    public function createCart(string $variantId, int $quantity = 1, string $currency = 'USD')
+    public function createCart(string $variant_id, int $quantity = 1, string $currency = 'USD')
     {
         $params = ['currency' => $currency];
 
         $body = [
             'items' => [
                 [
-                    'variantId' => $variantId,
+                    'variant_id' => $variant_id,
                     'quantity' => $quantity,
                 ],
             ],
@@ -245,12 +245,12 @@ class FourthwallService
     /**
      * Adds an item to an existing cart.
      */
-    public function addToCart(string $cartId, string $variantId, int $quantity = 1)
+    public function addToCart(string $cartId, string $variant_id, int $quantity = 1)
     {
         $body = [
             'items' => [
                 [
-                    'variantId' => $variantId,
+                    'variant_id' => $variant_id,
                     'quantity' => $quantity,
                 ],
             ],
@@ -272,11 +272,11 @@ class FourthwallService
     /**
      * Removes an item from the cart.
      */
-    public function removeFromCart(string $cartId, string $variantId)
+    public function removeFromCart(string $cartId, string $variant_id)
     {
         $body = [
             'items' => [
-                ['variantId' => $variantId],
+                ['variant_id' => $variant_id],
             ],
         ];
 
