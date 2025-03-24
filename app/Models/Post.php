@@ -17,6 +17,51 @@ use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
 use Spatie\Sluggable\SlugOptions;
 use Spatie\Tags\HasTags;
 
+/**
+ *
+ *
+ * @property int $id
+ * @property int|null $blog_author_id
+ * @property int|null $blog_category_id
+ * @property string $title
+ * @property string $slug
+ * @property string|null $excerpt
+ * @property string|null $banner
+ * @property string $content
+ * @property \Illuminate\Support\Carbon|null $published_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read mixed $banner_url
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \LakM\Comments\Models\Comment> $comments
+ * @property-read int|null $comments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reaction> $reactions
+ * @property-read int|null $reactions_count
+ * @property \Illuminate\Database\Eloquent\Collection<int, \Spatie\Tags\Tag> $tags
+ * @property-read int|null $tags_count
+ * @method static Builder<static>|Post draft()
+ * @method static Builder<static>|Post newModelQuery()
+ * @method static Builder<static>|Post newQuery()
+ * @method static Builder<static>|Post published()
+ * @method static Builder<static>|Post query()
+ * @method static Builder<static>|Post whereBanner($value)
+ * @method static Builder<static>|Post whereBlogAuthorId($value)
+ * @method static Builder<static>|Post whereBlogCategoryId($value)
+ * @method static Builder<static>|Post whereContent($value)
+ * @method static Builder<static>|Post whereCreatedAt($value)
+ * @method static Builder<static>|Post whereExcerpt($value)
+ * @method static Builder<static>|Post whereId($value)
+ * @method static Builder<static>|Post wherePublishedAt($value)
+ * @method static Builder<static>|Post whereSlug($value)
+ * @method static Builder<static>|Post whereTitle($value)
+ * @method static Builder<static>|Post whereUpdatedAt($value)
+ * @method static Builder<static>|Post withAllTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @method static Builder<static>|Post withAllTagsOfAnyType($tags)
+ * @method static Builder<static>|Post withAnyTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @method static Builder<static>|Post withAnyTagsOfAnyType($tags)
+ * @method static Builder<static>|Post withAnyTagsOfType(array|string $type)
+ * @method static Builder<static>|Post withoutTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @mixin \Eloquent
+ */
 class Post extends BasePost implements CommentableContract
 {
     use HasReactions;
