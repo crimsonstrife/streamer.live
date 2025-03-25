@@ -92,7 +92,7 @@
                                 data-thumb-index="{{ $index }}"
                                 style="cursor:pointer;"
                                 onclick="goToSlide({{ $index }})"
-                            >
+                                alt="{{ $image->alt_text }}" >
                         @endforeach
                     </div>
 
@@ -109,7 +109,7 @@
                             @foreach($product->images as $index => $image)
                                 <div class="carousel-item @if($index === 0) active @endif">
                                     <div class="position-relative">
-                                        <img src="{!! asset($image->local_path) ?? $image->url !!}" class="img-fluid rounded shadow" alt="Product Image">
+                                        <img src="{!! asset($image->local_path) ?? $image->url !!}" class="img-fluid rounded shadow" alt="{{ $image->alt_text }}">
                                         @if($image->model_name || $image->model_size_worn || $image->model_height_cm || $image->model_description)
                                             <span class="info-badge position-absolute top-0 end-0 m-2 p-2 bg-dark bg-opacity-75 text-white rounded-circle"
                                                   title="Model info"

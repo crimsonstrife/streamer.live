@@ -30,11 +30,20 @@
                                 @foreach ($cart['items'] as $item)
                                         @php
                                             $variantId = $item->variant->id;
-                                            $image = $item->variant->images->isNotEmpty() ? asset($item->variant->images->first()->local_path) : asset(config('fourthwall.default_product_image'));
+                                            if ($item->variant->product->images->isNotEmpty())
+                                            {
+                                                $image = $item->variant->product->images->first();
+                                            }
+                                            else
+                                            {
+                                                $image = null;
+                                            }
                                         @endphp
                                         <tr>
                                             <td class="d-flex align-items-center">
-                                                <img src="{{ $image }}" alt="{{ $item->variant->name }} Image" class="rounded me-3" width="60" height="60">
+                                                @if ($item->variant->product->images->isNotEmpty())
+                                                <img src="{!! asset($image->local_path) ?? $image->url !!}" alt="{{ $image->alt_text }}" class="rounded me-3" width="60" height="60">
+                                                @endif
                                                 {{ $item->variant->name }}
                                             </td>
                                             <td>{{ $item->variant->name }}</td>

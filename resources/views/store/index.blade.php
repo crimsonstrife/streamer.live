@@ -20,11 +20,19 @@
                                 <!-- Image of first product in collection -->
                                 @if ($collection->products->isNotEmpty())
                                     @php
-                                        $image = $collection->products->first()->images->isNotEmpty()
-                                            ? asset($collection->products->first()->images->first()->local_path)
-                                            : asset(config('fourthwall.default_product_image'));
+                                    $product = $collection->products->first();
+                                        if ($product->images->isNotEmpty())
+                            {
+                                $image = $product->images->first();
+                            }
+                        else
+                            {
+                                $image = null;
+                            }
                                     @endphp
-                                    <img src="{{ $image }}" class="card-img-top" alt="{{ $collection->products->first()->name }} Image">
+                                    @if ($product->images->isNotEmpty())
+                                    <img src="{!! asset($image->local_path) ?? $image->url !!}" class="card-img-top" alt="{{ $image->alt_text }}">
+                                    @endif
                                 @else
                                     <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="Default Image" class="w-full max-w-md rounded">
                                 @endif
