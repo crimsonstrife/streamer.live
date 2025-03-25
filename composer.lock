@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0c32232920e1618cc1da24c863ef637d",
+    "content-hash": "8eadb32e2b53cf98fe74f891a2d83a2d",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -18181,25 +18181,37 @@
         },
         {
             "name": "tomatophp/filament-menus",
-            "version": "v1.0.8",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomatophp/filament-menus.git",
-                "reference": "12b8bd59159e9950395deb8e6e6e2404226684b5"
+                "reference": "99ae2e62d0fbe709e09d3d9bb81019b126b2a36d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomatophp/filament-menus/zipball/12b8bd59159e9950395deb8e6e6e2404226684b5",
-                "reference": "12b8bd59159e9950395deb8e6e6e2404226684b5",
+                "url": "https://api.github.com/repos/tomatophp/filament-menus/zipball/99ae2e62d0fbe709e09d3d9bb81019b126b2a36d",
+                "reference": "99ae2e62d0fbe709e09d3d9bb81019b126b2a36d",
                 "shasum": ""
             },
             "require": {
-                "filament/filament": "^3.0.0",
-                "filament/notifications": "^3.0.0",
-                "filament/spatie-laravel-translatable-plugin": "^3.0.0",
-                "php": "^8.1|^8.2",
+                "filament/filament": "^3.3",
+                "filament/spatie-laravel-translatable-plugin": "^3.3",
+                "php": "^8.2|^8.3|^8.4",
                 "tomatophp/console-helpers": "^1.1",
-                "tomatophp/filament-icons": "^1.0"
+                "tomatophp/filament-icons": "^1.1",
+                "tomatophp/filament-translation-component": "^v1.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.21",
+                "livewire/livewire": "^2.10|^3.0",
+                "nunomaduro/larastan": "^3.1",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^3.7",
+                "pestphp/pest-plugin-laravel": "^3.1",
+                "pestphp/pest-plugin-livewire": "^3.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
             },
             "type": "library",
             "extra": {
@@ -18237,7 +18249,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tomatophp/filament-menus/issues",
-                "source": "https://github.com/tomatophp/filament-menus/tree/v1.0.8"
+                "source": "https://github.com/tomatophp/filament-menus/tree/v2.0.0"
             },
             "funding": [
                 {
@@ -18245,7 +18257,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-22T23:03:34+00:00"
+            "time": "2025-03-24T13:09:48+00:00"
         },
         {
             "name": "tomatophp/filament-seo",
@@ -18392,6 +18404,67 @@
                 }
             ],
             "time": "2025-02-26T03:03:24+00:00"
+        },
+        {
+            "name": "tomatophp/filament-translation-component",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tomatophp/filament-translation-component.git",
+                "reference": "cf492374542d3d5c8db463c9b5ee9fcd21aebe67"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tomatophp/filament-translation-component/zipball/cf492374542d3d5c8db463c9b5ee9fcd21aebe67",
+                "reference": "cf492374542d3d5c8db463c9b5ee9fcd21aebe67",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "filament/spatie-laravel-translatable-plugin": "^3.0",
+                "php": "^8.1|^8.2",
+                "tomatophp/console-helpers": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "TomatoPHP\\FilamentTranslationComponent\\FilamentTranslationComponentServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TomatoPHP\\FilamentTranslationComponent\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fady Mondy",
+                    "email": "info@3x1.io"
+                }
+            ],
+            "description": "Translation Component as a key/value to use it with Spatie Translatable FilamentPHP Plugin",
+            "keywords": [
+                "laravel",
+                "php",
+                "template"
+            ],
+            "support": {
+                "issues": "https://github.com/tomatophp/filament-translation-component/issues",
+                "source": "https://github.com/tomatophp/filament-translation-component/tree/v1.0.4"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/3x1io",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-12-22T23:04:08+00:00"
         },
         {
             "name": "trafficcophp/bytebuffer",
@@ -22326,5 +22399,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
