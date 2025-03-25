@@ -15,7 +15,7 @@ return new class () extends Migration {
             $table->foreignId('product_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('variant_id')->nullable()->constrained('product_variants')->onDelete('cascade');
             $table->string('provider_id')->nullable(); // Image ID from Fourthwall
-            $table->string('url'); // Original image URL
+            $table->string('url')->nullable(); // Original image URL
             $table->string('local_path')->nullable(); // Saved local path
             $table->integer('width')->nullable();
             $table->integer('height')->nullable();

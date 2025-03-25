@@ -3,10 +3,48 @@
         <h1 class="text-2xl font-bold">{{ $product->name }}</h1>
 
         @if ($product->images->isNotEmpty())
-            <img src="{{ asset($product->images->first()->local_path) }}" alt="{{ $product->name }} Image"
-                class="w-full max-w-md rounded">
+            <!-- Main Image Carousel -->
+            <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    @foreach($product->images as $index => $image)
+                        <div class="carousel-item @if($index === 0) active @endif">
+                            <img src="{!! asset($image->local_path) ?? $image->url !!}" class="d-block w-100" alt="Product Image">
+                            @if($image->model_size_worn || $image->model_height_cm || $image->model_description)
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
+                                    @if($image->model_size_worn)
+                                        <p><strong>Size Worn:</strong> {{ $image->model_size_worn }}</p>
+                                    @endif
+                                    @if($image->model_height_cm)
+                                        <p><strong>Height:</strong> {{ floor($image->model_height_cm / 30.48) }}'{{ round(fmod($image->model_height_cm / 2.54, 12)) }}" ({{ $image->model_height_cm }} cm)</p>
+                                    @endif
+                                    @if($image->model_description)
+                                        <p>{{ $image->model_description }}</p>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productImageCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productImageCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+            <!-- Thumbnails -->
+            <div class="row mt-3">
+                @foreach($product->images as $index => $image)
+                    <div class="col-3">
+                        <img src="{!! asset($image->local_path) ?? $image->url !!}" class="img-thumbnail" style="cursor:pointer;" onclick="document.querySelector('#productImageCarousel').carousel({{ $index }})" alt="">
+                    </div>
+                @endforeach
+            </div>
         @else
-            <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="Default Image" class="w-full max-w-md rounded">
+            <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="No image available" class="img-fluid">
         @endif
 
         <p class="mt-4">{{ htmlspecialchars_decode($product->description) }}</p>
