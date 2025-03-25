@@ -1,5 +1,8 @@
 import $ from 'jquery'
-import 'bootstrap'
+import * as bootstrap from 'bootstrap'
 
-// Optional: Use jQuery globally
+// Use Bootstrap globally
+window.bootstrap = bootstrap;
+
+// Use jQuery globally
 window.$ = window.jQuery = $
