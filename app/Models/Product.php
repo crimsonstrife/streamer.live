@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MoneyValueCast;
 use App\Models\BaseModel;
+use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
@@ -102,12 +103,12 @@ class Product extends BaseModel
         return $image ? Storage::url($image->local_path ?? $image->url) : '/default-image.jpg';
     }
 
-    public function getNameAttribute()
+    public function getNameAttribute(): string
     {
         return html_entity_decode($this->attributes['name']);
     }
 
-    public function getDescriptionAttribute()
+    public function getDescriptionAttribute(): string
     {
         return html_entity_decode($this->attributes['description']);
     }
@@ -117,6 +118,9 @@ class Product extends BaseModel
         return $this->price ? $this->price->formatted() : 'N/A';
     }
 
+    /**
+     * @throws Exception
+     */
     public function getSymbolPriceAttribute(): string
     {
         return $this->price ? $this->price->symbolFormatted() : 'N/A';

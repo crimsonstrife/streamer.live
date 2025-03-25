@@ -239,7 +239,6 @@ class FourthwallService
             ],
         ];
 
-
         return $this->postRequest('v1/carts', $params, $body);
     }
 
@@ -297,6 +296,11 @@ class FourthwallService
      */
     public function getCheckoutUrl(string $cartId, string $currency = 'USD'): string
     {
+        // Check if the storefront url is set, and starts with 'https://'
+        if (! str_starts_with($this->storefrontUrl, 'https://')) {
+            $this->storefrontUrl = 'https://'.$this->storefrontUrl;
+        }
+
         // Check if the storefront url is set and ends with a slash
         if (! str_ends_with($this->storefrontUrl, '/')) {
             // if not, add a slash to the end of the storefront url
