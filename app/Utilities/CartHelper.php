@@ -2,7 +2,9 @@
 
 namespace App\Utilities;
 
+use App\Models\ProductVariant;
 use App\Services\FourthwallService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -65,6 +67,8 @@ class CartHelper
 
         $response = $this->fourthwall->createCart($variant_id, $quantity);
 
+        Log::debug('Fourthwall createCart response:', $response);
+
         if ($response && isset($response['id'])) {
             $this->setCartId($response['id']);
 
@@ -99,7 +103,30 @@ class CartHelper
             return null;
         }
 
-        return $this->fourthwall->getCart($cartId);
+        $cart = $this->fourthwall->getCart($cartId);
+
+        if (! $cart || ! isset($cart['items'])) {
+            return null;
+        }
+
+        foreach ($cart['items'] as &$item) {
+            // Get the Fourthwall-provided variant ID
+            $fwVariantId = $item['variant']['id'] ?? null;
+
+            // Match with local ProductVariant by provider_id
+            $localVariant = ProductVariant::with('product', 'images')
+                ->where('provider_id', $fwVariantId)
+                ->first();
+
+            $item = (object) $item;
+            $item->variant = $localVariant;
+
+            if (! $localVariant) {
+                Log::warning("Variant not found locally for Fourthwall variant ID: $fwVariantId");
+            }
+        }
+
+        return $cart;
     }
 
     /**
@@ -164,12 +191,10 @@ class CartHelper
 
         $cart = $this->fourthwall->getCart($cartId);
 
-        if (! $cart || !isset($cart['items'])) {
+        if (! $cart || ! isset($cart['items'])) {
             return 0;
         }
 
         return collect($cart['items'])->sum('quantity');
     }
-
-
 }

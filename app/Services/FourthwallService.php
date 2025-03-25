@@ -233,11 +233,12 @@ class FourthwallService
         $body = [
             'items' => [
                 [
-                    'variant_id' => $variant_id,
-                    'quantity' => $quantity,
+                    'variantId' => $variant_id,
+                    'quantity' => (int) $quantity,
                 ],
             ],
         ];
+
 
         return $this->postRequest('v1/carts', $params, $body);
     }
@@ -250,8 +251,8 @@ class FourthwallService
         $body = [
             'items' => [
                 [
-                    'variant_id' => $variant_id,
-                    'quantity' => $quantity,
+                    'variantId' => $variant_id,
+                    'quantity' => (int) $quantity,
                 ],
             ],
         ];

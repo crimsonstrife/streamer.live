@@ -19,8 +19,8 @@
                 <label for="variant" class="mt-4 font-semibold">Select Variant:</label>
                 <select name="variant_id" id="variant" class="mt-2 form-control">
                     @foreach ($product->variants as $variant)
-                        <option value="{{ $variant->id }}">
-                            {{ $variant->name }} - {{ $variant->formatted_price }}
+                        <option value="{{ $variant->provider_id }}">
+                        {{ $variant->name }} - {{ $variant->formatted_price }}
                         </option>
                     @endforeach
                 </select>
