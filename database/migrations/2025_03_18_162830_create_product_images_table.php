@@ -19,6 +19,10 @@ return new class () extends Migration {
             $table->string('local_path')->nullable(); // Saved local path
             $table->integer('width')->nullable();
             $table->integer('height')->nullable();
+            $table->string('model_name')->nullable();
+            $table->integer('model_height_cm')->nullable();
+            $table->string('model_size_worn')->nullable();
+            $table->text('model_description')->nullable();
             $table->timestamps();
         });
     }
