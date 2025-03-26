@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->string('state')->nullable(); // Product state (e.g., active, inactive)
-            $table->string('access')->nullable(); // Access type (e.g., public, private)
+            $table->string('state')->nullable(); // Product state (e.g., Available, SoldOut)
+            $table->string('access')->nullable(); // Access type (e.g., Archived, Hidden, Public)
             $table->decimal('price', 10, 2)->default(0.00); // Current price
             $table->decimal('compare_at_price', 10, 2)->nullable(); // Original price before discounts
             $table->string('external_url')->nullable(); // Checkout link

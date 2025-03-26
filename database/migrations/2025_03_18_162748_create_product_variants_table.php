@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -18,7 +19,7 @@ return new class () extends Migration {
             $table->string('sku')->nullable(); // SKU (Stock Keeping Unit)
             $table->decimal('price', 10, 2)->default(0.00); // Current price
             $table->decimal('compare_at_price', 10, 2)->nullable();
-            $table->string('stock_status')->nullable(); // e.g., "inStock"
+            $table->string('stock_status')->nullable(); // e.g., "limited", "unlimited"
             $table->integer('stock_count')->default(0);
             $table->integer('weight')->nullable();
             $table->string('weight_unit')->nullable(); // kg, lb, etc.
