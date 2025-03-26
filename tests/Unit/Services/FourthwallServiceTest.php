@@ -20,7 +20,7 @@ class FourthwallServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new FourthwallService;
+        $this->service = new FourthwallService();
     }
 
     /**
