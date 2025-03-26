@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Session;
  */
 class CartHelper
 {
-    protected const string CART_SESSION_KEY = 'fourthwall_cart_id';
+    private const CART_SESSION_KEY = 'fourthwall_cart_id';
 
     protected FourthwallService $fourthwall;
 
