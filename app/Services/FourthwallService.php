@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -456,8 +457,14 @@ class FourthwallService
      */
     public function validateProductStock(string $variant_id): array|bool
     {
+        // Use a unique key for the product cache
+        $cacheKey = "fourthwall_stock_{$variant_id}";
+        $lockKey = "lock_{$cacheKey}";
         $inStock = null;
         $stockAmount = 0;
+        $remoteProduct = null;
+        // Set a TTL that suits risk threshold—e.g., 30 seconds to 1 minute
+        $ttl = now()->addSeconds(30);
         $productVariantObject = ProductVariant::find($variant_id, 'provider_id');
 
         if (! $productVariantObject) {
@@ -471,8 +478,27 @@ class FourthwallService
             throw new RuntimeException('Parent Product not found');
         }
 
-        // Get the product from the API
-        $remoteProduct = $this->getRequest("/v1/products/{ $productObject->provider_id }");
+        $providerId = $productObject->provider_id;
+
+        $stockStatus = Cache::get($cacheKey);
+
+        if (is_null($stockStatus)) {
+            // Acquire a lock to prevent multiple API calls
+            $lock = Cache::lock($lockKey, 5); // lock for 5 seconds
+            try {
+                if ($lock->get()) {
+                    // Get the product from the API
+                    $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($providerId) {
+                        $this->getRequest("/v1/products/{ $providerId }");
+                    });
+                } else {
+                    // Simply fetch from API if lock not acquired
+                    $remoteProduct = $this->getRequest("/v1/products/{ $providerId }");
+                }
+            } finally {
+                optional($lock)->release();
+            }
+        }
 
         if (! $remoteProduct) {
             throw new RuntimeException('Product not found on API');
