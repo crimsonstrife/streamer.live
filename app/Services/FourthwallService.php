@@ -36,6 +36,8 @@ class FourthwallService
 
     protected int $productsChunkSize;
 
+    protected const STOCK_TTL_SECONDS = 30;
+
     /**
      * FourthwallService constructor.
      * Initializes a new instance of the FourthwallService class.
@@ -463,8 +465,8 @@ class FourthwallService
         $inStock = null;
         $stockAmount = 0;
         $remoteProduct = null;
-        // Set a TTL that suits risk threshold—e.g., 30 seconds to 1 minute
-        $ttl = now()->addSeconds(30);
+        // Set a TTL that suits risk threshold—e.g., configurable seconds
+        $ttl = now()->addSeconds(self::STOCK_TTL_SECONDS);
         $productVariantObject = ProductVariant::select('provider_id', 'product_id')->find($variant_id);
 
         if (! $productVariantObject) {

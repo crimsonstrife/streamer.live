@@ -79,7 +79,7 @@ class CartHelper
         $productAvailability = $this->fourthwall->validateProductStock($variant_id);
 
         if (is_bool($productAvailability) && ! $productAvailability) {
-            Log::error('Product stock not found/ or out of stock');
+            Log::error('Product stock not found/ or out of stock, cart will not be changed.');
 
             return null;
         }
@@ -98,6 +98,7 @@ class CartHelper
             return $response['id'];
         }
 
+        Log::error('Cart could not be created or retrieved.');
         return null;
     }
 
@@ -113,7 +114,7 @@ class CartHelper
         $productAvailability = $this->fourthwall->validateProductStock($variant_id);
 
         if (is_bool($productAvailability) && ! $productAvailability) {
-            Log::error('Product stock not found/ or out of stock');
+            Log::error('Product stock not found/ or out of stock, failed to add to cart');
 
             return false;
         }
@@ -121,6 +122,8 @@ class CartHelper
         $cartId = $this->getOrCreateCart($variant_id, $quantity);
 
         if (! $cartId) {
+            Log::error('Cart could not be retrieved or created, nothing can be added to cart.');
+
             return false;
         }
 
