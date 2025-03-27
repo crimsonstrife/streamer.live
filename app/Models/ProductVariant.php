@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $provider_id
  * @property int $product_id
  * @property string $name
+ * @property string|null $description
+ * @property string|null $color_name
+ * @property string|null $color_swatch
+ * @property string|null $size
  * @property string|null $sku
  * @property numeric $price
  * @property numeric|null $compare_at_price
@@ -69,6 +73,10 @@ class ProductVariant extends BaseModel
         'width',
         'height',
         'dimension_unit',
+        'description',
+        'color_name',
+        'color_swatch',
+        'size',
     ];
 
     protected $casts = [

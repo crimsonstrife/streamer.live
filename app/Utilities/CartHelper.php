@@ -15,10 +15,15 @@ use Illuminate\Support\Facades\Session;
  */
 class CartHelper
 {
-    protected const CART_SESSION_KEY = 'fourthwall_cart_id';
+    private const CART_SESSION_KEY = 'fourthwall_cart_id';
 
     protected FourthwallService $fourthwall;
 
+    /**
+     * CartHelper constructor.
+     *
+     * @param  FourthwallService  $fourthwall  The Fourthwall service instance.
+     */
     public function __construct(FourthwallService $fourthwall)
     {
         $this->fourthwall = $fourthwall;
@@ -26,6 +31,8 @@ class CartHelper
 
     /**
      * Get the cart ID from session.
+     *
+     * @return string|null The cart ID or null if not found.
      */
     public function getCartId(): ?string
     {
@@ -34,6 +41,8 @@ class CartHelper
 
     /**
      * Set the cart ID in session.
+     *
+     * @param  string  $cartId  The cart ID to set.
      */
     public function setCartId(string $cartId): void
     {
@@ -42,6 +51,8 @@ class CartHelper
 
     /**
      * Determine if a cart ID exists in the session.
+     *
+     * @return bool True if a cart ID exists, false otherwise.
      */
     public function hasCartId(): bool
     {
@@ -58,9 +69,21 @@ class CartHelper
 
     /**
      * Get the cart ID or create a new cart with a given variant.
+     *
+     * @param  string  $variant_id  The ID of the product variant.
+     * @param  int  $quantity  The quantity of the item to add to the cart.
+     * @return string|null The cart ID or null if creation failed.
      */
     public function getOrCreateCart(string $variant_id, int $quantity = 1): ?string
     {
+        $productAvailability = $this->fourthwall->validateProductStock($variant_id);
+
+        if (is_bool($productAvailability) && ! $productAvailability) {
+            Log::error('Product stock not found/ or out of stock, cart will not be changed.');
+
+            return null;
+        }
+
         if ($this->hasCartId()) {
             return $this->getCartId();
         }
@@ -75,17 +98,32 @@ class CartHelper
             return $response['id'];
         }
 
+        Log::error('Cart could not be created or retrieved.');
         return null;
     }
 
     /**
      * Add a variant to the current cart (create if necessary).
+     *
+     * @param  string  $variant_id  The ID of the product variant.
+     * @param  int  $quantity  The quantity of the item to add to the cart.
+     * @return bool True if the item was added successfully, false otherwise.
      */
     public function addToCart(string $variant_id, int $quantity = 1): bool
     {
+        $productAvailability = $this->fourthwall->validateProductStock($variant_id);
+
+        if (is_bool($productAvailability) && ! $productAvailability) {
+            Log::error('Product stock not found/ or out of stock, failed to add to cart');
+
+            return false;
+        }
+
         $cartId = $this->getOrCreateCart($variant_id, $quantity);
 
         if (! $cartId) {
+            Log::error('Cart could not be retrieved or created, nothing can be added to cart.');
+
             return false;
         }
 
@@ -94,6 +132,8 @@ class CartHelper
 
     /**
      * Get the current cart contents.
+     *
+     * @return array|null The cart contents or null if the cart is empty.
      */
     public function getCartContents(): ?array
     {
@@ -131,6 +171,9 @@ class CartHelper
 
     /**
      * Remove an item from the cart.
+     *
+     * @param  string  $variant_id  The ID of the product variant to remove.
+     * @return bool True if the item was removed successfully, false otherwise.
      */
     public function removeFromCart(string $variant_id): bool
     {
@@ -143,6 +186,12 @@ class CartHelper
         return (bool) $this->fourthwall->removeFromCart($cartId, $variant_id);
     }
 
+    /**
+     * Update the cart with new items.
+     *
+     * @param  array  $items  The items to update in the cart.
+     * @return bool True if the cart was updated successfully, false otherwise.
+     */
     public function updateCart(array $items): bool
     {
         $cartId = $this->getCartId();
@@ -158,11 +207,37 @@ class CartHelper
             ];
         })->toArray();
 
+        // check the variants to ensure the new quantity doesn't exceed available stock
+        foreach ($formattedItems as $item) {
+            $productAvailability = $this->fourthwall->validateProductStock($item['variant_id']);
+            if (is_bool($productAvailability) && ! $productAvailability) {
+                Log::error('Product stock not found/ or out of stock');
+
+                return false;
+            }
+
+            if ($productAvailability['type'] === 'UNLIMITED') {
+                continue;
+            }
+
+            if ($productAvailability['amount'] < $item['quantity']) {
+                Log::error('Not enough stock.');
+
+                return false;
+            }
+        }
+
         $response = $this->fourthwall->updateCart($cartId, $formattedItems);
 
         return (bool) $response;
     }
 
+    /**
+     * Get the checkout URL for the current cart.
+     *
+     * @param  string  $currency  The currency for the checkout.
+     * @return string|null The checkout URL or null if the cart ID is not found.
+     */
     public function getCheckoutUrl(string $currency = 'USD'): ?string
     {
         $cartId = $this->getCartId();
@@ -181,6 +256,11 @@ class CartHelper
         return $url;
     }
 
+    /**
+     * Get the total item count in the current cart.
+     *
+     * @return int The total item count in the cart.
+     */
     public function getCartItemCount(): int
     {
         $cartId = $this->getCartId();
