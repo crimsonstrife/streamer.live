@@ -465,14 +465,14 @@ class FourthwallService
         $remoteProduct = null;
         // Set a TTL that suits risk threshold—e.g., 30 seconds to 1 minute
         $ttl = now()->addSeconds(30);
-        $productVariantObject = ProductVariant::find($variant_id, 'provider_id');
+        $productVariantObject = ProductVariant::select('provider_id', 'product_id')->find($variant_id);
 
         if (! $productVariantObject) {
             throw new RuntimeException('Variant not found locally');
         }
 
         // Get the product object
-        $productObject = Product::find($productVariantObject->product_id, 'id');
+        $productObject = Product::select('provider_id')->find($productVariantObject->product_id);
 
         if (! $productObject) {
             throw new RuntimeException('Parent Product not found');
@@ -489,11 +489,11 @@ class FourthwallService
                 if ($lock->get()) {
                     // Get the product from the API
                     $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($providerId) {
-                        $this->getRequest("/v1/products/{ $providerId }");
+                        return $this->getRequest("/v1/products/{$providerId}");
                     });
                 } else {
                     // Simply fetch from API if lock not acquired
-                    $remoteProduct = $this->getRequest("/v1/products/{ $providerId }");
+                    $remoteProduct = $this->getRequest("/v1/products/{$providerId}");
                 }
             } finally {
                 optional($lock)->release();
@@ -505,7 +505,7 @@ class FourthwallService
         }
 
         // Check for the 'SOLDOUT' state before continuing
-        if ($remoteProduct['state']['type'] !== 'AVAILABLE') {
+        if (! isset($remoteProduct['state']['type']) || $remoteProduct['state']['type'] !== 'AVAILABLE') {
             return false; // Product is out of stock, so we don't need a stock count
         }
 
@@ -516,13 +516,22 @@ class FourthwallService
             throw new RuntimeException('Product has not variants!');
         }
 
+        $matched = false;
+
         // Loop the variants and find a match
         foreach ($remoteVariants as $remoteVariant) {
             if ($remoteVariant['id'] === $variant_id) {
                 // Get the stock values
                 $inStock = $remoteVariant['stock']['type'];
-                $stockAmount += $remoteVariant['stock']['inStock'];
+                $stockAmount = $remoteVariant['stock']['inStock'] ?? 0;
+                $matched = true;
+                break;
             }
+        }
+
+        if (! $matched) {
+            Log::error("Variant {$variant_id} not found in Fourthwall API product response.");
+            throw new RuntimeException('Variant not found in API response');
         }
 
         if ($inStock === 'UNLIMITED') {
