@@ -19,19 +19,31 @@
                                         <th>Variant</th>
                                         <th>Price</th>
                                         <th>Quantity</th>
-                                        <th>Total</th>
+                                        <th>Subtotal</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($cart['items'] as $item)
+                                @php
+                                    $cartTotal = new \App\Models\ValueObjects\MoneyValue(0, 'USD');
+                                @endphp
+                                @foreach ($cart['items'] as $item)
                                         @php
                                             $variantId = $item->variant->id;
-                                            $image = $item->variant->images->isNotEmpty() ? asset($item->variant->images->first()->local_path) : asset(config('fourthwall.default_product_image'));
+                                            if ($item->variant->product->images->isNotEmpty())
+                                            {
+                                                $image = $item->variant->product->images->first();
+                                            }
+                                            else
+                                            {
+                                                $image = null;
+                                            }
                                         @endphp
                                         <tr>
                                             <td class="d-flex align-items-center">
-                                                <img src="{{ $image }}" alt="{{ $item->variant->name }} Image" class="rounded me-3" width="60" height="60">
+                                                @if ($item->variant->product->images->isNotEmpty())
+                                                <img src="{!! asset($image->local_path) ?? $image->url !!}" alt="{{ $image->alt_text }}" class="rounded me-3" width="60" height="60">
+                                                @endif
                                                 {{ $item->variant->name }}
                                             </td>
                                             <td>{{ $item->variant->name }}</td>
@@ -44,8 +56,7 @@
                                                     class="text-center form-control w-50">
                                             </td>
                                             <td>
-                                                {{ number_format(($item->quantity * $item->variant->price), 2) }}
-                                                USD
+                                                {{ $item->variant->price->multiply($item->quantity)->symbolFormatted() }} USD
                                             </td>
                                             <td>
                                                 <a href="{{ route('store.cart.remove', $variantId) }}"
@@ -54,7 +65,17 @@
                                                 </a>
                                             </td>
                                         </tr>
+                                        @php
+                                            $lineTotal = $item->variant->price->multiply($item->quantity);
+                                            $cartTotal = $cartTotal->sum($lineTotal);
+                                        @endphp
                                     @endforeach
+                                <tr class="fw-bold">
+                                    <td colspan="4" class="text-end">Cart Total:</td>
+                                    <td colspan="2">
+                                        {{ $cartTotal->symbolFormatted() }} USD
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
 

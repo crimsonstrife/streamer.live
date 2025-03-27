@@ -9,19 +9,20 @@ use InvalidArgumentException;
 final class MoneyValue
 {
     private float $amount;
+
     private string $currency; // currencies are limited to "USD" "EUR" "CAD" "GBP" "AUD" "NZD" "SEK" "NOK" "DKK" "PLN" "INR" "JPY" "MYR" "SGD"
 
     public function __construct(float $amount, string $currency = 'USD')
     {
         if ($amount < 0) {
-            throw new InvalidArgumentException("Price cannot be negative.");
+            throw new InvalidArgumentException('Price cannot be negative.');
         }
 
         $this->amount = $amount;
 
         // Check currency is supported
-        if (!in_array(strtoupper($currency), Currency::getValues())) {
-            throw new InvalidArgumentException("Currency is not supported.");
+        if (! in_array(strtoupper($currency), Currency::getValues())) {
+            throw new InvalidArgumentException('Currency is not supported.');
         }
 
         $this->currency = strtoupper($currency);
@@ -34,11 +35,10 @@ final class MoneyValue
 
     public function formatted(): string
     {
-        return number_format($this->amount, 2, '.', ',') . ' ' . $this->currency;
+        return number_format($this->amount, 2, '.', ',').' '.$this->currency;
     }
 
     /**
-     *
      * @throws Exception
      */
     public function symbolFormatted(): string
@@ -48,7 +48,7 @@ final class MoneyValue
 
         $formatted = number_format($this->amount, 2, '.', ',');
 
-        return $symbol .' '. $formatted;
+        return $symbol.' '.$formatted;
     }
 
     public function equals(MoneyValue $other): bool
@@ -60,4 +60,24 @@ final class MoneyValue
     {
         return $this->formatted();
     }
+
+    public function multiply(int|float $factor): MoneyValue
+    {
+        if ($factor < 0) {
+            throw new InvalidArgumentException('Multiplier cannot be negative.');
+        }
+
+        return new self($this->amount * $factor, $this->currency);
+    }
+
+    public function sum(MoneyValue $other): MoneyValue
+    {
+        if ($this->currency !== $other->currency) {
+            throw new InvalidArgumentException('Cannot add amounts with different currencies.');
+        }
+
+        return new self($this->amount + $other->amount, $this->currency);
+    }
+
+
 }

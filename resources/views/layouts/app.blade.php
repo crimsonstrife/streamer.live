@@ -16,6 +16,13 @@
 
         <!-- Styles -->
         @livewireStyles
+
+        <!-- Conditional Styles -->
+        @stack('styles')
+
+        <!-- Conditional Scripts -->
+        @stack('head-scripts')
+
     </head>
     <body class="bg-light">
     <x-banner />
@@ -42,5 +49,9 @@
     @stack('modals')
 
     @livewireScripts
+
+    <!-- Page Specific Scripts -->
+    @stack('scripts')
+
     </body>
 </html>

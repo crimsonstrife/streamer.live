@@ -1,4 +1,7 @@
 @import "bootstrap/dist/css/bootstrap.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import "swiper/css";
+@import "swiper/css/navigation";
 
 body {
     font-family: "Arial", sans-serif;
