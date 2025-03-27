@@ -82,8 +82,7 @@ class ProductImage extends BaseModel
     {
         $returnURL = null;
         // If the local path is set, and starts with '/storage/', remove it
-        if (isset($this->local_path) && starts_with($this->local_path, '/storage/'))
-        {
+        if (isset($this->local_path) && starts_with($this->local_path, '/storage/')) {
             // Remove the '/storage/' from the path
             $returnURL = str_replace('/storage/', '', $this->local_path);
         }
