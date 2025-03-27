@@ -3,6 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationManager;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -66,7 +68,8 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            VariationsRelationManager::class,
+            ImagesRelationManager::class,
         ];
     }
 

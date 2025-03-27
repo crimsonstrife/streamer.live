@@ -80,6 +80,14 @@ class ProductImage extends BaseModel
      */
     public function getImageUrlAttribute(): ?string
     {
-        return $this->local_path ? Storage::url($this->local_path) : $this->url;
+        $returnURL = null;
+        // If the local path is set, and starts with '/storage/', remove it
+        if (isset($this->local_path) && starts_with($this->local_path, '/storage/'))
+        {
+            // Remove the '/storage/' from the path
+            $returnURL = str_replace('/storage/', '', $this->local_path);
+        }
+
+        return $this->local_path ? Storage::url($returnURL) : $this->url;
     }
 }
