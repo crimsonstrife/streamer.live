@@ -2,7 +2,14 @@ import { defineConfig } from 'vite'
 import laravel from 'laravel-vite-plugin'
 
 export default defineConfig({
-  plugins: [
+    define: {
+        'window.jQuery': 'jQuery',
+        'window.$': 'jQuery'
+    },
+    optimizeDeps: {
+        include: ['jquery']
+    },
+    plugins: [
     laravel({
       input: [
         'resources/css/app.css',
