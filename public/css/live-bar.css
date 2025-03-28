@@ -18,9 +18,8 @@
     transition: 1s;
 }
 
-.livebar.gold:before
-{
-    position:absolute;
+.livebar.gold:before {
+    position: absolute;
     top: 0;
     left: 0;
     content: "";
@@ -29,30 +28,27 @@
     background: gold;
 }
 
-.livebar.gold.on:before{
+.livebar.gold.on:before {
     width: 100%;
 
     transition: 1s 0.05s;
 }
 
-.livebar.on
-{
+.livebar.on {
     width: 100%;
     background: rgb(18, 22, 27);
 }
 
-.livebar .content
-{
+.livebar .content {
     display: flex;
-    white-space:nowrap;
+    white-space: nowrap;
 
     height: 0;
     opacity: 0;
     transform: translateY(-100%);
 }
 
-.livebar.on .content
-{
+.livebar.on .content {
     opacity: 1;
 
     transform: translateY(0);
@@ -60,12 +56,11 @@
     transition: 1s 0.8s;
 }
 
-.text
-{
+.text {
     position: relative;
 }
 
-.pulses{
+.pulses {
     position: relative;
     display: flex;
     flex: 1 0;
@@ -75,8 +70,7 @@
     margin-left: 20px;
 }
 
-.pulse
-{
+.pulse {
     position: relative;
     width: 12px;
     height: 12px;
@@ -87,39 +81,37 @@
     transform: translateX(-50%);
 }
 
-.circle{
+.circle {
     position: absolute;
     top: 50%;
     left: 50%;
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255,0,0,0);
+    background: rgba(255, 0, 0, 0);
     border: 5px solid red;
 
     transform: translateY(-50%) translateX(-50%);
     animation: 2s expand ease;
 }
 
-.circle.special
-{
+.circle.special {
     background-color: white;
 }
 
-@keyframes expand{
+@keyframes expand {
     0% {
         width: 0;
         height: 0;
         opacity: 0.5;
     }
 
-    100%
-    {
+    100% {
         width: 750%;
         height: 750%;
         opacity: 0;
-        border-color:white;
-        background-color:none;
-        border-width:2px;
+        border-color: white;
+        background-color: none;
+        border-width: 2px;
     }
 }
