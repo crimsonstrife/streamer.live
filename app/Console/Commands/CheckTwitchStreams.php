@@ -2,14 +2,16 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Services\TwitchService;
 use App\Services\DiscordBotService;
+use App\Services\TwitchService;
+use Illuminate\Console\Command;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 
 class CheckTwitchStreams extends Command
 {
     protected $signature = 'twitch:check';
+
     protected $description = 'Check Twitch stream status and notify Discord';
 
     public function __construct(
@@ -19,10 +21,13 @@ class CheckTwitchStreams extends Command
         parent::__construct();
     }
 
-    public function handle()
+    /**
+     * @throws ConnectionException
+     */
+    public function handle(): void
     {
-        $streamer = 'crimsonstrife'; // Change this to dynamic values later
-        $streamData = $this->twitchService->getStreamStatus($streamer);
+        $streamer = config('services.twitch.channel_name') ?? 'crimsonstrife';
+        $streamData = $this->twitchService->getStreamData($streamer);
 
         if ($streamData) {
             $category = $streamData['game_name'] ?? 'Unknown Game';
@@ -31,7 +36,7 @@ class CheckTwitchStreams extends Command
             // Get last known status
             $lastStatus = Cache::get("stream_status_$streamer");
 
-            if (!$lastStatus) {
+            if (! $lastStatus) {
                 $roleId = $this->getRoleForCategory($category);
                 $message = "**$streamer is now live!**\n🎮 Playing: $category\n📌 $title\n🔴 Watch now: https://twitch.tv/$streamer";
 
@@ -46,9 +51,9 @@ class CheckTwitchStreams extends Command
 
     private function getRoleForCategory($category)
     {
+        // TODO: Make this configurable
         $roles = [
-            'Dark Souls' => '1234567890',  // Example role ID
-            'Elden Ring' => '0987654321',
+            'Software and Game Development' => 'Dev Stream Ping',
         ];
 
         return $roles[$category] ?? null;

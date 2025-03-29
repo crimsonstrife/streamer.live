@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use Exception;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -217,9 +218,10 @@ class FourthwallService
     /**
      * Store an image locally and update the database.
      *
-     * @param  Product  $product  The product the image belongs to.
-     * @param  ProductVariant|null  $variant  The variant the image belongs to, if any.
-     * @param  array  $imageData  The image data from the API.
+     * @param Product $product The product the image belongs to.
+     * @param ProductVariant|null $variant The variant the image belongs to, if any.
+     * @param array $imageData The image data from the API.
+     * @throws ConnectionException
      */
     public function storeImage(Product $product, ?ProductVariant $variant, array $imageData): void
     {
@@ -467,20 +469,22 @@ class FourthwallService
         $remoteProduct = null;
         // Set a TTL that suits risk threshold—e.g., configurable seconds
         $ttl = now()->addSeconds(self::STOCK_TTL_SECONDS);
-        $productVariantObject = ProductVariant::select('provider_id', 'product_id')->find($variant_id);
+        $productVariantObject = ProductVariant::select('provider_id', 'product_id')->where('provider_id', $variant_id)->first();
 
         if (! $productVariantObject) {
+            Log::error('ProductVariant Object for this Provider ID was not found locally');
             throw new RuntimeException('Variant not found locally');
         }
 
         // Get the product object
-        $productObject = Product::select('provider_id')->find($productVariantObject->product_id);
+        $productObject = Product::select('provider_id', 'slug')->find($productVariantObject->product_id);
 
         if (! $productObject) {
+            Log::error("ProductVariant's Parent Product Object not found. The Variant may be orphaned.");
             throw new RuntimeException('Parent Product not found');
         }
 
-        $providerId = $productObject->provider_id;
+        $provider_slug = $productObject->slug;
 
         $stockStatus = Cache::get($cacheKey);
 
@@ -490,24 +494,26 @@ class FourthwallService
             try {
                 if ($lock->get()) {
                     // Get the product from the API
-                    $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($providerId) {
-                        return $this->getRequest("/v1/products/{$providerId}");
+                    $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($provider_slug) {
+                        return $this->getRequest("v1/products/{$provider_slug}");
                     });
                 } else {
                     // Simply fetch from API if lock not acquired
-                    $remoteProduct = $this->getRequest("/v1/products/{$providerId}");
+                    $remoteProduct = $this->getRequest("v1/products/{$provider_slug}");
                 }
             } finally {
                 optional($lock)->release();
             }
         }
 
-        if (! $remoteProduct) {
+        if (! $remoteProduct || array_key_exists('error', $remoteProduct)) {
+            Log::error('The Product could not be found on the Fourthwall API.');
             throw new RuntimeException('Product not found on API');
         }
 
         // Check for the 'SOLDOUT' state before continuing
         if (! isset($remoteProduct['state']['type']) || $remoteProduct['state']['type'] !== 'AVAILABLE') {
+            Log::error("Product {$provider_slug} is not available for sale. State Type is reported as {$remoteProduct['state']['type']}.");
             return false; // Product is out of stock, so we don't need a stock count
         }
 
@@ -515,7 +521,8 @@ class FourthwallService
         $remoteVariants = $remoteProduct['variants'];
 
         if (! $remoteVariants) {
-            throw new RuntimeException('Product has not variants!');
+            Log::error('Product had no variants in the Fourthwall API!');
+            throw new RuntimeException('Product has no variants!');
         }
 
         $matched = false;
