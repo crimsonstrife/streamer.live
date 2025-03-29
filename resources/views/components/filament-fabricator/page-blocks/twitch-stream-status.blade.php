@@ -16,7 +16,7 @@
 @once
     <link rel="stylesheet" href="{{ asset('css/live-bar.css') }}">
 @endonce
-<div class="livebar gold data-live="{{ $isLive ? '1' : '0' }}" >
+<div class="livebar gold" data-live="{{$isLive ?'1' :'0'}}" >
     <div class="livebar content">
         <div class="text">{{ strtoupper($streamer_username) }} IS LIVE NOW</div>
         <div class="pulses">

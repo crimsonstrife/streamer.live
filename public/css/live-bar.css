@@ -3,12 +3,8 @@
     display: flex;
     justify-content: center;
     overflow: hidden;
-
-    width: 0;
-
     box-sizing: border-box;
     padding: 11px 18px 9px;
-
     font-size: 15px;
     color: white;
     font-family: sans-serif;
@@ -30,7 +26,6 @@
 
 .livebar.gold.on:before {
     width: 100%;
-
     transition: 1s 0.05s;
 }
 
@@ -42,7 +37,6 @@
 .livebar .content {
     display: flex;
     white-space: nowrap;
-
     height: 0;
     opacity: 0;
     transform: translateY(-100%);
@@ -50,7 +44,6 @@
 
 .livebar.on .content {
     opacity: 1;
-
     transform: translateY(0);
     height: auto;
     transition: 1s 0.8s;
@@ -64,9 +57,7 @@
     position: relative;
     display: flex;
     flex: 1 0;
-
     align-items: center;
-
     margin-left: 20px;
 }
 
@@ -74,10 +65,8 @@
     position: relative;
     width: 12px;
     height: 12px;
-
     background: red;
     border-radius: 50%;
-
     transform: translateX(-50%);
 }
 
@@ -90,7 +79,6 @@
     border-radius: 50%;
     background: rgba(255, 0, 0, 0);
     border: 5px solid red;
-
     transform: translateY(-50%) translateX(-50%);
     animation: 2s expand ease;
 }

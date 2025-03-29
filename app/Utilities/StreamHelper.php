@@ -47,15 +47,15 @@ class StreamHelper
 
         Log::info(print_r($streamData, true));
 
-        if (empty($streamData) || ! isset($streamData['type'])) {
+        if (empty($streamData) || ! isset($streamData[0]['type'])) {
             return 'offline';
         }
 
         // Does the 'type' equal 'live'?
-        if ($streamData['type'] !== 'live') {
+        if ($streamData[0]['type'] !== 'live') {
             return false;
         }
 
-        return $streamData['type'];
+        return $streamData[0]['type'];
     }
 }
