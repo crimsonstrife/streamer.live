@@ -31,7 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const remainingIterations = ending.length - index;
 
             if (remainingIterations < endingString.length) {
-                newString += ending.substr(0, ending.length - remainingIterations);
+                newString += ending.substr(
+                    0,
+                    ending.length - remainingIterations,
+                );
             }
 
             if (index < ending.length) {
