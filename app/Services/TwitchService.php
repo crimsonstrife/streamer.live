@@ -74,7 +74,9 @@ class TwitchService
             ]);
 
             Log::debug("TwitchService: Response status: {$response->status()}");
-            Log::debug('TwitchService: Full response: ', $response->json());
+            if (config('app.debug')) {
+                Log::debug('TwitchService: Full response: ', $response->json());
+            }
 
             $data = $response->json()['data'] ?? null;
 
