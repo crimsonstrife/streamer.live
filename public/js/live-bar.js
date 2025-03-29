@@ -55,9 +55,15 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     // === Live Bar Pulse Effect ===
-    setTimeout(() => {
-        $(".livebar").addClass("on");
-    }, 1000);
+    $(".livebar").each(function () {
+        if ($(this).data("live") === 1) {
+            $(this).addClass("on");
+        } else {
+            $(this).removeClass("on");
+        }
+    });
+
+
 
     let pulseFrame = 0;
     const framesPerNewPulse = 140;
