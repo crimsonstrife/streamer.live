@@ -23,6 +23,9 @@ class TwitchEmbed extends PageBlock
                 Toggle::make('autoplay')
                     ->label('Autoplay')
                     ->default(false),
+                Toggle::make('horizontal_layout')
+                    ->label('Chat beside stream (horizontal layout)')
+                    ->default(true),
             ]);
     }
 
