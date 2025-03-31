@@ -44,7 +44,7 @@ class TwitchService
             return; // Prevent further execution
         }
 
-        $response = Http::post('https://id.twitch.tv/oauth2/token', [
+        $response = Http::withOptions(['verify' => config('services.twitch.verify')])->post('https://id.twitch.tv/oauth2/token', [
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
             'grant_type' => 'client_credentials',
