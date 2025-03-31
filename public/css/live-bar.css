@@ -99,7 +99,7 @@
         height: 750%;
         opacity: 0;
         border-color: white;
-        background-color: none;
+        background-color: transparent;
         border-width: 2px;
     }
 }
