@@ -10,11 +10,13 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('discord:quicktest', function (DiscordBotService $discord) {
-    $discord->sendMessage('Quick test from routes/console.php!');
+    $discord->sendMessage(config('discord.channel_id'), 'Quick test from routes/console.php!');
     $this->info('Quick test message sent.');
 });
 
-Schedule::job(new CheckStreamerStatus(config('services.twitch.channel_name')))
+Schedule::command('alerts:check-streams')->everyFiveMinutes();
+
+Schedule::job(new CheckStreamerStatus(config('services.twitch.channel_name')), 'default')
     ->everyFiveMinutes()
     ->name('check-streamer-status')
     ->withoutOverlapping()

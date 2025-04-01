@@ -66,12 +66,16 @@ class TwitchService
         Log::debug("TwitchService: Fetching stream data for user: {$username}");
 
         try {
-            $response = Http::withHeaders([
-                'Client-ID' => $this->clientId,
-                'Authorization' => 'Bearer '.$this->accessToken,
-            ])->get('https://api.twitch.tv/helix/streams', [
-                'user_login' => $username,
-            ]);
+            $response = Http::withOptions([
+                'verify' => config('services.twitch.verify'),
+            ])
+                ->withHeaders([
+                    'Client-ID' => $this->clientId,
+                    'Authorization' => 'Bearer '.$this->accessToken,
+                ])
+                ->get('https://api.twitch.tv/helix/streams', [
+                    'user_login' => $username,
+                ]);
 
             Log::debug("TwitchService: Response status: {$response->status()}");
             if (config('app.debug')) {
