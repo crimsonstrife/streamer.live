@@ -104,7 +104,7 @@
         "stephenjude/filament-blog": "^4.0",
         "stephenjude/filament-debugger": "^4.0",
         "stephenjude/filament-feature-flags": "^3.0",
-        "stephenjude/filament-jetstream": "^0.0.15",
+        "stephenjude/filament-jetstream": "^0.0.16",
         "tapp/filament-auditing": "^3.0",
         "team-reflex/discord-php": "^10.4",
         "tomatophp/filament-media-manager": "^1.1",
