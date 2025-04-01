@@ -30,8 +30,8 @@ class CheckTwitchStreams extends Command
         $streamData = $this->twitchService->getStreamData($streamer);
 
         if ($streamData) {
-            $category = $streamData['game_name'] ?? 'Unknown Game';
-            $title = $streamData['title'];
+            $category = $streamData[0]['game_name'] ?? 'Unknown Game';
+            $title = $streamData[0]['title'];
 
             // Get last known status
             $lastStatus = Cache::get("stream_status_$streamer");
@@ -40,7 +40,7 @@ class CheckTwitchStreams extends Command
                 $roleId = $this->getRoleForCategory($category);
                 $message = "**$streamer is now live!**\n🎮 Playing: $category\n📌 $title\n🔴 Watch now: https://twitch.tv/$streamer";
 
-                $this->discordBotService->sendMessage($message, $roleId);
+                $this->discordBotService->sendMessage(config('discord.channel_id'), $message, $roleId);
 
                 Cache::put("stream_status_$streamer", true, now()->addMinutes(10));
             }

@@ -60,7 +60,7 @@ class DiscordBotService
         }
 
         return collect($response->json())
-            ->where('type', 0 or 5) // text and announcement channels only
+            ->where('type', [0, 5]) // text and announcement channels only
             ->pluck('name', 'id')
             ->toArray();
     }
@@ -93,5 +93,4 @@ class DiscordBotService
     {
         return collect($this->getRoleList())->get($id);
     }
-
 }

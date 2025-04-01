@@ -24,6 +24,7 @@ class TestDiscordMessage extends Command
 
     /**
      * Execute the console command.
+     *
      * @throws ConnectionException
      */
     public function handle(DiscordBotService $discord): void
@@ -32,7 +33,7 @@ class TestDiscordMessage extends Command
 
         $this->info("Sending: $message");
 
-        $discord->sendMessage($message);
+        $discord->sendMessage(config('discord.channel_id'), $message);
 
         $this->info('Message sent (if Discord config is valid).');
     }
