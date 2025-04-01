@@ -8,11 +8,19 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use Exception;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
+use RuntimeException;
 
+/**
+ * Class FourthwallService
+ *
+ * Service class to handle interactions with the Fourthwall API.
+ */
 class FourthwallService
 {
     protected string $baseUrl;
@@ -28,6 +36,8 @@ class FourthwallService
     protected int $collectionsChunkSize;
 
     protected int $productsChunkSize;
+
+    protected const STOCK_TTL_SECONDS = 30;
 
     /**
      * FourthwallService constructor.
@@ -59,13 +69,13 @@ class FourthwallService
 
         if (! isset($collectionsResponse['results'])) {
             Log::error('Failed to fetch collections from Fourthwall.');
-            throw new \RuntimeException('API request for collections failed.');
+            throw new RuntimeException('API request for collections failed.');
         }
 
         // Ensure at least one collection is retrieved
         if (empty($collectionsResponse['results'])) {
             Log::warning('No collections found from API.');
-            throw new \RuntimeException('No collections returned from API.');
+            throw new RuntimeException('No collections returned from API.');
         }
 
         // Use a lazy collection to iterate without loading everything at once
@@ -92,7 +102,7 @@ class FourthwallService
                         $this->syncProducts($collection);
                     } catch (Exception $e) {
                         Log::error("Error syncing products for collection {$collection->name}: ".$e->getMessage());
-                        throw new \RuntimeException("Failed to sync products for collection: {$collection->name}");
+                        throw new RuntimeException("Failed to sync products for collection: {$collection->name}");
                     }
                 }
                 if ($this->enableGC) {
@@ -116,13 +126,13 @@ class FourthwallService
 
         if (! isset($productsResponse['results'])) {
             Log::error('No products found for collection: '.$collection->name);
-            throw new \RuntimeException('API request for products failed.');
+            throw new RuntimeException('API request for products failed.');
         }
 
         // Ensure at least one product is retrieved
         if (empty($productsResponse['results'])) {
             Log::warning('No products found for collection: '.$collection->name);
-            throw new \RuntimeException("No products returned for collection: {$collection->name}");
+            throw new RuntimeException("No products returned for collection: {$collection->name}");
         }
 
         foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
@@ -135,6 +145,8 @@ class FourthwallService
                         'name' => $productData['name'],
                         'slug' => $productData['slug'],
                         'description' => $productData['description'] ?? '',
+                        'state' => $productData['state']['type'] ?? 'SOLDOUT',
+                        'access' => $productData['access']['type'] ?? 'PUBLIC',
                     ]
                 );
 
@@ -151,8 +163,22 @@ class FourthwallService
                                 [
                                     'product_id' => $product->id,
                                     'name' => $variantData['name'],
+                                    'sku' => $variantData['sku'],
                                     'price' => $variantData['unitPrice']['value'],
+                                    'compare_at_price' => $variantData['compareAtPrice']['value'] ?? null,
                                     'currency' => $variantData['unitPrice']['currency'],
+                                    'stock_status' => $variantData['stock']['type'],
+                                    'stock_count' => $variantData['stock']['inStock'] ?? 0,
+                                    'weight' => $variantData['weight']['value'],
+                                    'weight_unit' => $variantData['weight']['unit'],
+                                    'height' => $variantData['dimensions']['height'],
+                                    'length' => $variantData['dimensions']['length'],
+                                    'width' => $variantData['dimensions']['width'],
+                                    'dimension_unit' => $variantData['dimensions']['unit'],
+                                    'description' => $variantData['attributes']['description'] ?? null,
+                                    'size' => $variantData['attributes']['size']['name'] ?? null,
+                                    'color_name' => $variantData['attributes']['color']['name'] ?? null,
+                                    'color_swatch' => $variantData['attributes']['color']['swatch'] ?? null,
                                 ]
                             );
                         }
@@ -161,6 +187,7 @@ class FourthwallService
 
                 // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
                 $product->update(['price' => $product->variants->min('price')]);
+                $product->update(['compare_at_price' => $product->variants->min('compare_at_price')]);
                 Log::info("Updated price for product: {$product->name}");
 
                 // Dispatch image processing for the product
@@ -190,6 +217,11 @@ class FourthwallService
 
     /**
      * Store an image locally and update the database.
+     *
+     * @param Product $product The product the image belongs to.
+     * @param ProductVariant|null $variant The variant the image belongs to, if any.
+     * @param array $imageData The image data from the API.
+     * @throws ConnectionException
      */
     public function storeImage(Product $product, ?ProductVariant $variant, array $imageData): void
     {
@@ -225,16 +257,21 @@ class FourthwallService
 
     /**
      * Creates a new cart with a single item.
+     *
+     * @param  string  $variant_id  The ID of the product variant to add to the cart.
+     * @param  int  $quantity  The quantity of the item to add to the cart.
+     * @param  string  $currency  The currency for the cart.
+     * @return mixed The response from the API.
      */
-    public function createCart(string $variant_id, int $quantity = 1, string $currency = 'USD')
+    public function createCart(string $variant_id, int $quantity = 1, string $currency = 'USD'): mixed
     {
         $params = ['currency' => $currency];
 
         $body = [
             'items' => [
                 [
-                    'variant_id' => $variant_id,
-                    'quantity' => $quantity,
+                    'variantId' => $variant_id,
+                    'quantity' => (int) $quantity,
                 ],
             ],
         ];
@@ -244,14 +281,19 @@ class FourthwallService
 
     /**
      * Adds an item to an existing cart.
+     *
+     * @param  string  $cartId  The ID of the cart to add the item to.
+     * @param  string  $variant_id  The ID of the product variant to add to the cart.
+     * @param  int  $quantity  The quantity of the item to add to the cart.
+     * @return mixed The response from the API.
      */
-    public function addToCart(string $cartId, string $variant_id, int $quantity = 1)
+    public function addToCart(string $cartId, string $variant_id, int $quantity = 1): mixed
     {
         $body = [
             'items' => [
                 [
-                    'variant_id' => $variant_id,
-                    'quantity' => $quantity,
+                    'variantId' => $variant_id,
+                    'quantity' => (int) $quantity,
                 ],
             ],
         ];
@@ -261,8 +303,12 @@ class FourthwallService
 
     /**
      * Updates items in the cart.
+     *
+     * @param  string  $cartId  The ID of the cart to update.
+     * @param  array  $items  The items to update in the cart.
+     * @return mixed The response from the API.
      */
-    public function updateCart(string $cartId, array $items)
+    public function updateCart(string $cartId, array $items): mixed
     {
         $body = ['items' => $items];
 
@@ -271,8 +317,12 @@ class FourthwallService
 
     /**
      * Removes an item from the cart.
+     *
+     * @param  string  $cartId  The ID of the cart to remove the item from.
+     * @param  string  $variant_id  The ID of the product variant to remove from the cart.
+     * @return mixed The response from the API.
      */
-    public function removeFromCart(string $cartId, string $variant_id)
+    public function removeFromCart(string $cartId, string $variant_id): mixed
     {
         $body = [
             'items' => [
@@ -285,17 +335,29 @@ class FourthwallService
 
     /**
      * Retrieves cart details based on cart ID.
+     *
+     * @param  string  $cartId  The ID of the cart to retrieve.
+     * @return mixed The response from the API.
      */
-    public function getCart(string $cartId)
+    public function getCart(string $cartId): mixed
     {
         return $this->getRequest("v1/carts/{$cartId}");
     }
 
     /**
      * Generates the checkout URL for an existing cart.
+     *
+     * @param  string  $cartId  The ID of the cart to generate the checkout URL for.
+     * @param  string  $currency  The currency for the checkout.
+     * @return string The checkout URL.
      */
     public function getCheckoutUrl(string $cartId, string $currency = 'USD'): string
     {
+        // Check if the storefront url is set, and starts with 'https://'
+        if (! str_starts_with($this->storefrontUrl, 'https://')) {
+            $this->storefrontUrl = 'https://'.$this->storefrontUrl;
+        }
+
         // Check if the storefront url is set and ends with a slash
         if (! str_ends_with($this->storefrontUrl, '/')) {
             // if not, add a slash to the end of the storefront url
@@ -310,7 +372,19 @@ class FourthwallService
     /** ===========================
      *  HELPER METHODS
      *  =========================== */
-    private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = [])
+
+    /**
+     * Make a request to the Fourthwall API.
+     *
+     * @param  string  $method  The HTTP method to use for the request.
+     * @param  string  $endpoint  The endpoint to make the request to.
+     * @param  array  $queryParams  The query parameters to include in the request.
+     * @param  array  $bodyParams  The body parameters to include in the request.
+     * @return mixed The response from the API.
+     *
+     * @throws RuntimeException If the storefront token is not set.
+     */
+    private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = []): mixed
     {
         // Check if the query parameters are not empty
         if (! empty($queryParams)) {
@@ -320,14 +394,14 @@ class FourthwallService
                 $queryParams['storefront_token'] = $this->storefrontToken;
             } else {
                 // if not set, throw an exception
-                throw new \RuntimeException('Storefront token is required for this request.');
+                throw new RuntimeException('Storefront token is required for this request.');
             }
         } elseif ($this->storefrontToken) {
             // if set, add the storefront token to the query parameters
             $queryParams['storefront_token'] = $this->storefrontToken;
         } else {
             // if not set, throw an exception
-            throw new \RuntimeException('Storefront token is required for this request.');
+            throw new RuntimeException('Storefront token is required for this request.');
         }
 
         $url = "{$this->baseUrl}/{$endpoint}?".http_build_query($queryParams, '', '&');
@@ -341,7 +415,7 @@ class FourthwallService
     }
 
     /**
-     * Make a GET request to the Fourthwall API
+     * Make a GET request to the Fourthwall API.
      *
      * @param  string  $endpoint  The endpoint to make the request to.
      * @param  array  $queryParams  The query parameters to include in the request.
@@ -353,11 +427,11 @@ class FourthwallService
     }
 
     /**
-     * Make a POST request to the Fourthwall API
+     * Make a POST request to the Fourthwall API.
      *
      * @param  string  $endpoint  The endpoint to make the request to.
-     * @param  array  $bodyParams  The body parameters to include in the request.
      * @param  array  $queryParams  The query parameters to include in the request.
+     * @param  array  $bodyParams  The body parameters to include in the request.
      * @return mixed The response from the API.
      */
     private function postRequest(string $endpoint, array $queryParams, array $bodyParams): mixed
@@ -367,10 +441,115 @@ class FourthwallService
 
     /**
      * Generate a local image path based on the storage disk configuration.
+     *
+     * @param  string  $localPath  The local path of the image.
+     * @return string The generated local image path.
      */
     protected function getLocalImagePath(string $localPath): string
     {
         // Using Laravel Storage helper to generate the URL based on 'public' disk configuration.
         return Storage::url($localPath);
+    }
+
+    /**
+     * Validate the stock of the product variant.
+     *
+     * @param  string  $variant_id  The ID of the product variant to validate.
+     * @return array|bool The stock information or false if not available.
+     *
+     * @throws RuntimeException If the variant or product is not found.
+     */
+    public function validateProductStock(string $variant_id): array|bool
+    {
+        // Use a unique key for the product cache
+        $cacheKey = "fourthwall_stock_{$variant_id}";
+        $lockKey = "lock_{$cacheKey}";
+        $inStock = null;
+        $stockAmount = 0;
+        $remoteProduct = null;
+        // Set a TTL that suits risk threshold—e.g., configurable seconds
+        $ttl = now()->addSeconds(self::STOCK_TTL_SECONDS);
+        $productVariantObject = ProductVariant::select('provider_id', 'product_id')->where('provider_id', $variant_id)->first();
+
+        if (! $productVariantObject) {
+            Log::error('ProductVariant Object for this Provider ID was not found locally');
+            throw new RuntimeException('Variant not found locally');
+        }
+
+        // Get the product object
+        $productObject = Product::select('provider_id', 'slug')->find($productVariantObject->product_id);
+
+        if (! $productObject) {
+            Log::error("ProductVariant's Parent Product Object not found. The Variant may be orphaned.");
+            throw new RuntimeException('Parent Product not found');
+        }
+
+        $provider_slug = $productObject->slug;
+
+        $stockStatus = Cache::get($cacheKey);
+
+        if (is_null($stockStatus)) {
+            // Acquire a lock to prevent multiple API calls
+            $lock = Cache::lock($lockKey, 5); // lock for 5 seconds
+            try {
+                if ($lock->get()) {
+                    // Get the product from the API
+                    $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($provider_slug) {
+                        return $this->getRequest("v1/products/{$provider_slug}");
+                    });
+                } else {
+                    // Simply fetch from API if lock not acquired
+                    $remoteProduct = $this->getRequest("v1/products/{$provider_slug}");
+                }
+            } finally {
+                optional($lock)->release();
+            }
+        }
+
+        if (! $remoteProduct || array_key_exists('error', $remoteProduct)) {
+            Log::error('The Product could not be found on the Fourthwall API.');
+            throw new RuntimeException('Product not found on API');
+        }
+
+        // Check for the 'SOLDOUT' state before continuing
+        if (! isset($remoteProduct['state']['type']) || $remoteProduct['state']['type'] !== 'AVAILABLE') {
+            Log::error("Product {$provider_slug} is not available for sale. State Type is reported as {$remoteProduct['state']['type']}.");
+            return false; // Product is out of stock, so we don't need a stock count
+        }
+
+        // Parse the remoteProduct response to find the 'variants' array
+        $remoteVariants = $remoteProduct['variants'];
+
+        if (! $remoteVariants) {
+            Log::error('Product had no variants in the Fourthwall API!');
+            throw new RuntimeException('Product has no variants!');
+        }
+
+        $matched = false;
+
+        // Loop the variants and find a match
+        foreach ($remoteVariants as $remoteVariant) {
+            if ($remoteVariant['id'] === $variant_id) {
+                // Get the stock values
+                $inStock = $remoteVariant['stock']['type'];
+                $stockAmount = $remoteVariant['stock']['inStock'] ?? 0;
+                $matched = true;
+                break;
+            }
+        }
+
+        if (! $matched) {
+            Log::error("Variant {$variant_id} not found in Fourthwall API product response.");
+            throw new RuntimeException('Variant not found in API response');
+        }
+
+        if ($inStock === 'UNLIMITED') {
+            return true;
+        }
+
+        return [
+            'type' => $inStock,
+            'amount' => $stockAmount,
+        ];
     }
 }

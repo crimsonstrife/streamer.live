@@ -3,14 +3,12 @@
 namespace App\Models;
 
 use App\Casts\MoneyValueCast;
-use App\Models\BaseModel;
+use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 /**
- *
- *
  * @property int $id
  * @property string $provider_id
  * @property string $provider
@@ -31,6 +29,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read int|null $images_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductVariant> $variants
  * @property-read int|null $variants_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
@@ -47,6 +46,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Product extends BaseModel
@@ -61,7 +61,7 @@ class Product extends BaseModel
         'access',
         'price',
         'compare_at_price',
-        'external_url'
+        'external_url',
     ];
 
     protected $casts = [
@@ -99,15 +99,16 @@ class Product extends BaseModel
     public function getPrimaryImageUrlAttribute(): string
     {
         $image = $this->images()->first();
+
         return $image ? Storage::url($image->local_path ?? $image->url) : '/default-image.jpg';
     }
 
-    public function getNameAttribute()
+    public function getNameAttribute(): string
     {
         return html_entity_decode($this->attributes['name']);
     }
 
-    public function getDescriptionAttribute()
+    public function getDescriptionAttribute(): string
     {
         return html_entity_decode($this->attributes['description']);
     }
@@ -117,6 +118,9 @@ class Product extends BaseModel
         return $this->price ? $this->price->formatted() : 'N/A';
     }
 
+    /**
+     * @throws Exception
+     */
     public function getSymbolPriceAttribute(): string
     {
         return $this->price ? $this->price->symbolFormatted() : 'N/A';

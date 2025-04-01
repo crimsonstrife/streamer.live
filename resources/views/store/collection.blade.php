@@ -16,13 +16,20 @@
             <div class="row">
                 @foreach ($collection->products as $product)
                     @php
-                        $image = $product->images->isNotEmpty()
-                            ? asset($product->images->first()->local_path)
-                            : asset(config('fourthwall.default_product_image'));
+                        if ($product->images->isNotEmpty())
+                            {
+                                $image = $product->images->first();
+                            }
+                        else
+                            {
+                                $image = null;
+                            }
                     @endphp
                     <div class="mb-4 col-md-4">
                         <div class="shadow-sm card">
-                            <img src="{{ $image }}" class="card-img-top" alt="{{ $product->name }} Image">
+                            @if ($product->images->isNotEmpty())
+                            <img src="{!! asset($image->local_path) ?? $image->url !!}" class="card-img-top" alt="{{ $image->alt_text }}">
+                            @endif
                             <div class="card-body">
                                 <h5 class="card-title">{{ $product->name }}</h5>
                                 <p class="card-text text-muted">

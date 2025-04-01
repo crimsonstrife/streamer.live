@@ -3,17 +3,19 @@
 namespace App\Models;
 
 use App\Casts\MoneyValueCast;
-use App\Models\BaseModel;
+use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- *
- *
  * @property int $id
  * @property string $provider_id
  * @property int $product_id
  * @property string $name
+ * @property string|null $description
+ * @property string|null $color_name
+ * @property string|null $color_swatch
+ * @property string|null $size
  * @property string|null $sku
  * @property numeric $price
  * @property numeric|null $compare_at_price
@@ -30,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductImage> $images
  * @property-read int|null $images_count
  * @property-read \App\Models\Product $product
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant query()
@@ -50,6 +53,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWeight($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWeightUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWidth($value)
+ *
  * @mixin \Eloquent
  */
 class ProductVariant extends BaseModel
@@ -68,7 +72,11 @@ class ProductVariant extends BaseModel
         'length',
         'width',
         'height',
-        'dimension_unit'
+        'dimension_unit',
+        'description',
+        'color_name',
+        'color_swatch',
+        'size',
     ];
 
     protected $casts = [
@@ -102,6 +110,9 @@ class ProductVariant extends BaseModel
         return $this->price ? $this->price->formatted() : 'N/A';
     }
 
+    /**
+     * @throws Exception
+     */
     public function getSymbolPriceAttribute(): string
     {
         return $this->price ? $this->price->symbolFormatted() : 'N/A';

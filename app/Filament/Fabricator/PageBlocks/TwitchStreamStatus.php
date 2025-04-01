@@ -2,30 +2,30 @@
 
 namespace App\Filament\Fabricator\PageBlocks;
 
+use App\Utilities\StreamHelper;
+use App\Services\TwitchService;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\App;
+use Throwable;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 
-class TwitchEmbed extends PageBlock
+class TwitchStreamStatus extends PageBlock
 {
+    protected TwitchService $twitchService;
+
+    protected StreamHelper $streamHelper;
+
     public static function getBlockSchema(): Block
     {
-        return Block::make('twitch-embed')
+        return Block::make('twitch-stream-status')
+            ->label('Stream Status Bar')
             ->schema([
                 TextInput::make('channel')
                     ->label('Channel')
                     ->placeholder('Channel name')
                     ->required(),
-                Toggle::make('chat')
-                    ->label('Show chat')
-                    ->default(false),
-                Toggle::make('autoplay')
-                    ->label('Autoplay')
-                    ->default(false),
-                Toggle::make('horizontal_layout')
-                    ->label('Chat beside stream (horizontal layout)')
-                    ->default(true),
             ]);
     }
 
