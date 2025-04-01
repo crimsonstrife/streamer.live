@@ -11,4 +11,10 @@ Artisan::command('inspire', function () {
 Schedule::job(new CheckStreamerStatus(config('services.twitch.channel_name')))
     ->everyFiveMinutes()
     ->name('check-streamer-status')
-    ->withoutOverlapping();
+    ->withoutOverlapping()
+    ->onSuccess(function () {
+        Log::info('CheckStreamerStatus job completed successfully.');
+    })
+    ->onFailure(function (Throwable $e) {
+        Log::error("CheckStreamerStatus job failed: {$e->getMessage()}");
+    });
