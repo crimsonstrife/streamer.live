@@ -45,7 +45,7 @@ class StreamHelper
 
         $streamData = $this->getStreamInfo($username);
 
-        Log::info(print_r($streamData, true));
+        Log::debug(print_r($streamData, true));
 
         if (empty($streamData) || ! isset($streamData[0]['type'])) {
             return 'offline';
