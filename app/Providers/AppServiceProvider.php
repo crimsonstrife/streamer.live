@@ -2,15 +2,18 @@
 
 namespace App\Providers;
 
+use App\Filament\Resources\PostResource;
 use App\Services\FourthwallService;
+use App\Services\TwitchService;
 use App\Utilities\CartHelper;
-use Illuminate\Support\ServiceProvider;
+use App\Utilities\StreamHelper;
+use Exception;
 use Filament\FilamentManager;
-use Spatie\Health\Facades\Health;
-use Spatie\Health\Checks\Checks\OptimizedAppCheck;
+use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
-use App\Filament\Resources\PostResource;
+use Spatie\Health\Checks\Checks\OptimizedAppCheck;
+use Spatie\Health\Facades\Health;
 use Stephenjude\FilamentBlog\Resources\PostResource as PackagePostResource;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,10 +30,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CartHelper::class, function ($app) {
             return new CartHelper($app->make(FourthwallService::class));
         });
+
+        $this->app->singleton(StreamHelper::class, function ($app) {
+            return new StreamHelper($app->make(TwitchService::class));
+        });
     }
 
     /**
      * Bootstrap any application services.
+     *
+     * @throws Exception
      */
     public function boot(): void
     {
@@ -51,5 +60,6 @@ class AppServiceProvider extends ServiceProvider
         app(FilamentManager::class)->getPanel('admin')->resources([
             PostResource::class,
         ]);
+
     }
 }
