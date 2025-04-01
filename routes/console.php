@@ -10,7 +10,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Artisan::command('discord:quicktest', function (DiscordBotService $discord) {
-    $discord->sendMessage('✅ Quick test from routes/console.php!');
+    $discord->sendMessage('Quick test from routes/console.php!');
     $this->info('Quick test message sent.');
 });
 
