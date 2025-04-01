@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8eadb32e2b53cf98fe74f891a2d83a2d",
+    "content-hash": "19a26f8e0194c19f3321547da54a0768",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -13573,16 +13573,16 @@
         },
         {
             "name": "spatie/laravel-health",
-            "version": "1.33.0",
+            "version": "1.34.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-health.git",
-                "reference": "2c79b9ad26d37e361689b6df87fe4aba680a3827"
+                "reference": "f3d7c5e19569d83e4c37f7a5e249187a96ab8aa8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-health/zipball/2c79b9ad26d37e361689b6df87fe4aba680a3827",
-                "reference": "2c79b9ad26d37e361689b6df87fe4aba680a3827",
+                "url": "https://api.github.com/repos/spatie/laravel-health/zipball/f3d7c5e19569d83e4c37f7a5e249187a96ab8aa8",
+                "reference": "f3d7c5e19569d83e4c37f7a5e249187a96ab8aa8",
                 "shasum": ""
             },
             "require": {
@@ -13654,7 +13654,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-health/tree/1.33.0"
+                "source": "https://github.com/spatie/laravel-health/tree/1.34.0"
             },
             "funding": [
                 {
@@ -13662,7 +13662,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-18T22:44:18+00:00"
+            "time": "2025-04-01T13:22:01+00:00"
         },
         {
             "name": "spatie/laravel-honeypot",
@@ -22399,5 +22399,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

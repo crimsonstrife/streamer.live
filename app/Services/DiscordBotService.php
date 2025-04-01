@@ -34,7 +34,7 @@ class DiscordBotService
     /**
      * @throws ConnectionException
      */
-    public function sendMessage($message, $roleId = null): void
+    public function sendMessage($message, $roleId = null, $channelId = null): void
     {
         if (! $this->enabled) {
             Log::warning('Attempted to send a message while Discord bot is disabled.');
@@ -42,24 +42,27 @@ class DiscordBotService
             return;
         }
 
-        $channelId = config('discord.channel_id');
-
         if (empty($channelId)) {
-            Log::error('Discord channel ID is not set. Cannot send message.');
+            $channelId = config('discord.channel_id');
 
-            return;
+            if (empty($channelId)) {
+                Log::error('Discord channel ID is not set. Cannot send message.');
+
+                return;
+            }
         }
 
         $mention = $roleId ? "<@&$roleId> " : '';
 
-        $payload = [
-            'content' => $mention.$message,
-        ];
+        Log::channel('twitch')->info("Sending Discord alert: {$message}");
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bot '.config('discord.token'),
-            'Content-Type' => 'application/json',
-        ])->post("https://discord.com/api/v10/channels/$channelId/messages", $payload);
+        $response = Http::withOptions([
+            'verify' => config('discord.verify'),
+        ])
+            ->withToken(config('discord.token'), 'Bot')
+            ->post("https://discord.com/api/v10/channels/$channelId/messages", [
+                'content' => $mention.$message,
+            ]);
 
         if ($response->failed()) {
             Log::error('Failed to send Discord message: '.$response->body());
