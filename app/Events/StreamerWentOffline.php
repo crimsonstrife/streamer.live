@@ -7,7 +7,8 @@ use Illuminate\Queue\SerializesModels;
 
 class StreamerWentOffline
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     public string $username;
 

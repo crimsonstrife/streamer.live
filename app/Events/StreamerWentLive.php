@@ -7,7 +7,8 @@ use Illuminate\Queue\SerializesModels;
 
 class StreamerWentLive
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     public string $username;
     public array $streamData;
