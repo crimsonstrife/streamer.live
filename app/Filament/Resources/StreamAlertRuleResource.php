@@ -24,7 +24,7 @@ class StreamAlertRuleResource extends Resource
         return $form
             ->schema([
                 TextInput::make('category_pattern')
-                    ->label('Twitch Category')
+                    ->label('Twitch Category (Regex)')
                     ->required(),
 
                 Select::make('discord_channel_id')
@@ -53,7 +53,7 @@ class StreamAlertRuleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('category_pattern')
-                    ->label('Twitch Category')
+                    ->label('Twitch Category (Regex)')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('discord_channel_id')
@@ -68,6 +68,7 @@ class StreamAlertRuleResource extends Resource
                     ->label('Mention Roles')
                     ->formatStateUsing(function ($state) {
                         $service = app(DiscordBotService::class);
+
                         return collect($state ?? [])
                             ->map(fn ($id) => $service->getRoleNameById($id) ?? "Unknown ({$id})")
                             ->implode(', ');

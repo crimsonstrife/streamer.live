@@ -47,7 +47,7 @@ class CheckTwitchStreams extends Command
                         continue;
                     }
 
-                    if (! preg_match('/'.$rule->category_pattern.'/i', $category)) {
+                    if (! preg_match($rule->category_pattern, $category)) {
                         continue;
                     }
 
