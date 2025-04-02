@@ -159,9 +159,7 @@ class FourthwallService
                 }
 
                 // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
-                $product->update(['price' => $product->variants->min('price')]);
-                $product->update(['compare_at_price' => $product->variants->min('compare_at_price')]);
-                Log::info("Updated price for product: {$product->name}");
+                $this->updateProductPricing($product);
 
                 // Dispatch image processing for the product
                 if (! empty($productData['images'])) {
@@ -230,6 +228,19 @@ class FourthwallService
         }
     }
 
+    /**
+     * Update the product's price and compare-at price using its variants.
+     *
+     * @param Product $product
+     */
+    protected function updateProductPricing(Product $product): void
+    {
+        $product->update([
+            'price' => $product->variants->min('price'),
+            'compare_at_price' => $product->variants->min('compare_at_price'),
+        ]);
+        Log::info("Updated price for product: {$product->name}");
+    }
 
     /** ===========================
      *  IMAGE PROCESSING
