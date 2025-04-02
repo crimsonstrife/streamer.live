@@ -40,8 +40,6 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     })->name('store.checkout.external');
 });
 
-Route::post('/webhooks/fourthwall', FourthwallWebhookController::class);
-
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])

@@ -15,11 +15,24 @@ class FourthwallWebhookController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $signature = $request->header('x-fourthwall-hmac-sha256');
+        $secret = config('services.fourthwall.webhook_secret');
+
+        $payload = $request->getContent();
+
+        $expected = base64_encode(hash_hmac('sha256', $payload, $secret, true));
+
+        if (! hash_equals($expected, $signature)) {
+            Log::warning('Invalid Fourthwall webhook signature.');
+            return response('Invalid signature', 401);
+        }
+
         $payload = $request->all();
         $eventId = $payload['id'] ?? null;
 
         if (! $eventId) {
             Log::warning('Invalid webhook payload received.');
+
             return response('Invalid', 400);
         }
 
@@ -102,5 +115,4 @@ class FourthwallWebhookController extends Controller
 
         Log::info("Order synced [{$order->friendly_id}] status={$order->status}");
     }
-
 }
