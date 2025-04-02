@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use Exception;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -154,53 +155,15 @@ class FourthwallService
                 Log::info("Attached product: {$product->name} to collection: {$collection->name}");
 
                 if (! empty($productData['variants'])) {
-                    foreach (array_chunk($productData['variants'], $this->productsChunkSize) as $variantBatch) {
-                        foreach ($variantBatch as $variantData) {
-                            Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
-                            ProductVariant::updateOrCreate(
-                                ['provider_id' => $variantData['id']],
-                                [
-                                    'product_id' => $product->id,
-                                    'name' => $variantData['name'],
-                                    'sku' => $variantData['sku'],
-                                    'price' => $variantData['unitPrice']['value'],
-                                    'compare_at_price' => $variantData['compareAtPrice']['value'] ?? null,
-                                    'currency' => $variantData['unitPrice']['currency'],
-                                    'stock_status' => $variantData['stock']['type'],
-                                    'stock_count' => $variantData['stock']['inStock'] ?? 0,
-                                    'weight' => $variantData['weight']['value'],
-                                    'weight_unit' => $variantData['weight']['unit'],
-                                    'height' => $variantData['dimensions']['height'],
-                                    'length' => $variantData['dimensions']['length'],
-                                    'width' => $variantData['dimensions']['width'],
-                                    'dimension_unit' => $variantData['dimensions']['unit'],
-                                    'description' => $variantData['attributes']['description'] ?? null,
-                                    'size' => $variantData['attributes']['size']['name'] ?? null,
-                                    'color_name' => $variantData['attributes']['color']['name'] ?? null,
-                                    'color_swatch' => $variantData['attributes']['color']['swatch'] ?? null,
-                                ]
-                            );
-                        }
-                    }
+                    $this->syncProductVariants($product, $productData['variants']);
                 }
 
                 // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
-                $product->update(['price' => $product->variants->min('price')]);
-                $product->update(['compare_at_price' => $product->variants->min('compare_at_price')]);
-                Log::info("Updated price for product: {$product->name}");
+                $this->updateProductPricing($product);
 
                 // Dispatch image processing for the product
                 if (! empty($productData['images'])) {
-                    foreach (array_chunk($productData['images'], 3) as $imageBatch) {
-                        foreach ($imageBatch as $imageData) {
-                            Log::info("Dispatching image processing for product: {$product->name}");
-                            ProcessProductImage::dispatchSync($product, $imageData);
-                        }
-
-                        if ($this->enableGC) {
-                            gc_collect_cycles();
-                        }
-                    }
+                    $this->syncProductImages($product, $productData['images']);
                 }
                 unset($productData);
             }
@@ -208,6 +171,75 @@ class FourthwallService
                 gc_collect_cycles();
             }
         }
+    }
+
+    /**
+     * Sync product variants for a given product.
+     */
+    protected function syncProductVariants(Product $product, array $variants): void
+    {
+        foreach (array_chunk($variants, $this->productsChunkSize) as $variantBatch) {
+            foreach ($variantBatch as $variantData) {
+                Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
+                ProductVariant::updateOrCreate(
+                    ['provider_id' => $variantData['id']],
+                    [
+                        'product_id' => $product->id,
+                        'name' => $variantData['name'],
+                        'sku' => $variantData['sku'],
+                        'price' => $variantData['unitPrice']['value'],
+                        'compare_at_price' => $variantData['compareAtPrice']['value'] ?? null,
+                        'currency' => $variantData['unitPrice']['currency'],
+                        'stock_status' => $variantData['stock']['type'],
+                        'stock_count' => $variantData['stock']['inStock'] ?? 0,
+                        'weight' => $variantData['weight']['value'],
+                        'weight_unit' => $variantData['weight']['unit'],
+                        'height' => $variantData['dimensions']['height'],
+                        'length' => $variantData['dimensions']['length'],
+                        'width' => $variantData['dimensions']['width'],
+                        'dimension_unit' => $variantData['dimensions']['unit'],
+                        'description' => $variantData['attributes']['description'] ?? null,
+                        'size' => $variantData['attributes']['size']['name'] ?? null,
+                        'color_name' => $variantData['attributes']['color']['name'] ?? null,
+                        'color_swatch' => $variantData['attributes']['color']['swatch'] ?? null,
+                    ]
+                );
+            }
+        }
+    }
+
+    /**
+     * Sync product images by dispatching image processing jobs.
+     *
+     * @param Product $product
+     * @param array $images
+     */
+    protected function syncProductImages(Product $product, array $images): void
+    {
+        foreach (array_chunk($images, 3) as $imageBatch) {
+            foreach ($imageBatch as $imageData) {
+                Log::info("Dispatching image processing for product: {$product->name}");
+                ProcessProductImage::dispatchSync($product, $imageData);
+            }
+
+            if ($this->enableGC) {
+                gc_collect_cycles();
+            }
+        }
+    }
+
+    /**
+     * Update the product's price and compare-at price using its variants.
+     *
+     * @param Product $product
+     */
+    protected function updateProductPricing(Product $product): void
+    {
+        $product->update([
+            'price' => $product->variants->min('price'),
+            'compare_at_price' => $product->variants->min('compare_at_price'),
+        ]);
+        Log::info("Updated price for product: {$product->name}");
     }
 
     /** ===========================
@@ -220,6 +252,8 @@ class FourthwallService
      * @param  Product  $product  The product the image belongs to.
      * @param  ProductVariant|null  $variant  The variant the image belongs to, if any.
      * @param  array  $imageData  The image data from the API.
+     *
+     * @throws ConnectionException
      */
     public function storeImage(Product $product, ?ProductVariant $variant, array $imageData): void
     {
@@ -467,20 +501,22 @@ class FourthwallService
         $remoteProduct = null;
         // Set a TTL that suits risk threshold—e.g., configurable seconds
         $ttl = now()->addSeconds(self::STOCK_TTL_SECONDS);
-        $productVariantObject = ProductVariant::select('provider_id', 'product_id')->find($variant_id);
+        $productVariantObject = ProductVariant::select('provider_id', 'product_id')->where('provider_id', $variant_id)->first();
 
         if (! $productVariantObject) {
+            Log::error('ProductVariant Object for this Provider ID was not found locally');
             throw new RuntimeException('Variant not found locally');
         }
 
         // Get the product object
-        $productObject = Product::select('provider_id')->find($productVariantObject->product_id);
+        $productObject = Product::select('provider_id', 'slug')->find($productVariantObject->product_id);
 
         if (! $productObject) {
+            Log::error("ProductVariant's Parent Product Object not found. The Variant may be orphaned.");
             throw new RuntimeException('Parent Product not found');
         }
 
-        $providerId = $productObject->provider_id;
+        $provider_slug = $productObject->slug;
 
         $stockStatus = Cache::get($cacheKey);
 
@@ -490,24 +526,27 @@ class FourthwallService
             try {
                 if ($lock->get()) {
                     // Get the product from the API
-                    $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($providerId) {
-                        return $this->getRequest("/v1/products/{$providerId}");
+                    $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($provider_slug) {
+                        return $this->getRequest("v1/products/{$provider_slug}");
                     });
                 } else {
                     // Simply fetch from API if lock not acquired
-                    $remoteProduct = $this->getRequest("/v1/products/{$providerId}");
+                    $remoteProduct = $this->getRequest("v1/products/{$provider_slug}");
                 }
             } finally {
                 optional($lock)->release();
             }
         }
 
-        if (! $remoteProduct) {
+        if (! $remoteProduct || array_key_exists('error', $remoteProduct)) {
+            Log::error('The Product could not be found on the Fourthwall API.');
             throw new RuntimeException('Product not found on API');
         }
 
         // Check for the 'SOLDOUT' state before continuing
         if (! isset($remoteProduct['state']['type']) || $remoteProduct['state']['type'] !== 'AVAILABLE') {
+            Log::error("Product {$provider_slug} is not available for sale. State Type is reported as {$remoteProduct['state']['type']}.");
+
             return false; // Product is out of stock, so we don't need a stock count
         }
 
@@ -515,7 +554,8 @@ class FourthwallService
         $remoteVariants = $remoteProduct['variants'];
 
         if (! $remoteVariants) {
-            throw new RuntimeException('Product has not variants!');
+            Log::error('Product had no variants in the Fourthwall API!');
+            throw new RuntimeException('Product has no variants!');
         }
 
         $matched = false;

@@ -103,12 +103,12 @@
         "spatie/laravel-tags": "^4.9",
         "stephenjude/filament-blog": "^4.0",
         "stephenjude/filament-debugger": "^4.0",
-        "stephenjude/filament-feature-flags": "^2.1",
-        "stephenjude/filament-jetstream": "^0.0.15",
+        "stephenjude/filament-feature-flags": "^3.0",
+        "stephenjude/filament-jetstream": "^0.0.16",
         "tapp/filament-auditing": "^3.0",
         "team-reflex/discord-php": "^10.4",
         "tomatophp/filament-media-manager": "^1.1",
-        "tomatophp/filament-menus": "^1.0",
+        "tomatophp/filament-menus": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
         "tomatophp/filament-settings-hub": "^2.0",
         "z3d0x/filament-fabricator": "^2.4"
@@ -148,7 +148,8 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php artisan filament:upgrade",
+            "@php artisan telescope:publish"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",

@@ -127,6 +127,12 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'twitch' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/twitch.log'),
+            'level' => 'info',
+        ],
+
     ],
 
 ];
