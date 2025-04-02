@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -45,50 +46,62 @@ class DiscordBotService
         }
     }
 
+    /**
+     */
     public function getChannelList(): array
     {
-        $guildId = config('discord.guild_id');
+        return Cache::remember('discord_channel_list', now()->addMinutes(15), function () {
+            $guildId = config('discord.guild_id');
 
-        $response = Http::withOptions(['verify' => config('discord.verify', true)])
-            ->withToken(config('discord.token'), 'Bot')
-            ->get("{$this->baseUrl}/guilds/{$guildId}/channels");
+            $response = Http::withOptions(['verify' => config('discord.verify', true)])
+                ->withToken(config('discord.token'), 'Bot')
+                ->get("{$this->baseUrl}/guilds/{$guildId}/channels");
 
-        if ($response->failed()) {
-            Log::error('Failed to fetch Discord channels: '.$response->body());
+            if ($response->failed()) {
+                Log::error('Failed to fetch Discord channels: '.$response->body());
 
-            return [];
-        }
+                return [];
+            }
 
-        return collect($response->json())
-            ->where('type', 0 or 5) // text and announcement channels only
-            ->pluck('name', 'id')
-            ->toArray();
+            return collect($response->json())
+                ->whereIn('type', [0, 5]) // text and announcement channels only
+                ->pluck('name', 'id')
+                ->toArray();
+        });
     }
 
+    /**
+     */
     public function getRoleList(): array
     {
-        $guildId = config('discord.guild_id');
+        return Cache::remember('discord_role_list', now()->addMinutes(15), function () {
+            $guildId = config('discord.guild_id');
 
-        $response = Http::withOptions(['verify' => config('discord.verify', true)])
-            ->withToken(config('discord.token'), 'Bot')
-            ->get("{$this->baseUrl}/guilds/{$guildId}/roles");
+            $response = Http::withOptions(['verify' => config('discord.verify', true)])
+                ->withToken(config('discord.token'), 'Bot')
+                ->get("{$this->baseUrl}/guilds/{$guildId}/roles");
 
-        if ($response->failed()) {
-            Log::error('Failed to fetch Discord roles: '.$response->body());
+            if ($response->failed()) {
+                Log::error('Failed to fetch Discord roles: '.$response->body());
 
-            return [];
-        }
+                return [];
+            }
 
-        return collect($response->json())
-            ->pluck('name', 'id')
-            ->toArray();
+            return collect($response->json())
+                ->pluck('name', 'id')
+                ->toArray();
+        });
     }
 
+    /**
+     */
     public function getChannelNameById(string $id): ?string
     {
         return collect($this->getChannelList())->get($id);
     }
 
+    /**
+     */
     public function getRoleNameById(string $id): ?string
     {
         return collect($this->getRoleList())->get($id);
