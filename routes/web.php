@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\Webhook\FourthwallWebhookController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Support\Facades\Route;
@@ -33,9 +34,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::get('/store/checkout/external', function () {
         if ($url = session('checkout_url')) {
             return redirect()->away($url);
-        } else {
-            return redirect()->route('store.index')->with('error', 'External checkout is not available.');
         }
+
+        return redirect()->route('store.index')->with('error', 'External checkout is not available.');
     })->name('store.checkout.external');
 });
 
