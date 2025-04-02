@@ -43,7 +43,7 @@ class OrderItem extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        return $this->total ? $this->total->symbolFormatted() : 'N/A';
+        return $this->price ? $this->price->symbolFormatted() : 'N/A';
     }
 
     public function getColorAttribute(): ?string
