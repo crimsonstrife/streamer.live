@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\CheckTwitchStreams;
+use App\Console\Commands\SyncFourthwallData;
 use App\Jobs\CheckStreamerStatus;
 use App\Services\DiscordBotService;
 use Illuminate\Foundation\Inspiring;
@@ -11,3 +12,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command(CheckTwitchStreams::class)->everyFiveMinutes();
+Schedule::command(SyncFourthwallData::class)->everyFifteenMinutes();
