@@ -165,16 +165,7 @@ class FourthwallService
 
                 // Dispatch image processing for the product
                 if (! empty($productData['images'])) {
-                    foreach (array_chunk($productData['images'], 3) as $imageBatch) {
-                        foreach ($imageBatch as $imageData) {
-                            Log::info("Dispatching image processing for product: {$product->name}");
-                            ProcessProductImage::dispatchSync($product, $imageData);
-                        }
-
-                        if ($this->enableGC) {
-                            gc_collect_cycles();
-                        }
-                    }
+                    $this->syncProductImages($product, $productData['images']);
                 }
                 unset($productData);
             }
@@ -218,6 +209,27 @@ class FourthwallService
             }
         }
     }
+
+    /**
+     * Sync product images by dispatching image processing jobs.
+     *
+     * @param Product $product
+     * @param array $images
+     */
+    protected function syncProductImages(Product $product, array $images): void
+    {
+        foreach (array_chunk($images, 3) as $imageBatch) {
+            foreach ($imageBatch as $imageData) {
+                Log::info("Dispatching image processing for product: {$product->name}");
+                ProcessProductImage::dispatchSync($product, $imageData);
+            }
+
+            if ($this->enableGC) {
+                gc_collect_cycles();
+            }
+        }
+    }
+
 
     /** ===========================
      *  IMAGE PROCESSING
