@@ -2,67 +2,108 @@
 
 namespace App\Services;
 
-use Discord\Discord;
-use Discord\Exceptions\IntentException;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class DiscordBotService
 {
-    protected mixed $discord;
-
     protected bool $enabled;
 
-    /**
-     * @throws IntentException
-     */
+    protected string $baseUrl = 'https://discord.com/api/v10';
+
     public function __construct()
     {
         $this->enabled = config('discord.enabled', false);
-
-        // If disabled, return early
-        if (! $this->enabled || empty(config('discord.token')) || empty(config('discord.channel_id'))) {
-            return;
-        }
-
-        $this->discord = new Discord([
-            'token' => config('discord.token'),
-        ]);
     }
 
     /**
      * @throws ConnectionException
      */
-    public function sendMessage($message, $roleId = null): void
+    public function sendMessage(string $channelId, string $message, array $roleIds = []): void
     {
-        if (! $this->enabled) {
-            Log::warning('Attempted to send a message while Discord bot is disabled.');
+        if (! $this->enabled || empty(config('discord.token'))) {
+            Log::warning('Discord bot disabled or missing token');
 
             return;
         }
 
-        $channelId = config('discord.channel_id');
-
-        if (empty($channelId)) {
-            Log::error('Discord channel ID is not set. Cannot send message.');
-
-            return;
-        }
-
-        $mention = $roleId ? "<@&$roleId> " : '';
+        $mentions = collect($roleIds)
+            ->map(fn ($id) => "<@&$id>")
+            ->implode(' ');
 
         $payload = [
-            'content' => $mention.$message,
+            'content' => trim($mentions.' '.$message),
         ];
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bot '.config('discord.token'),
-            'Content-Type' => 'application/json',
-        ])->post("https://discord.com/api/v10/channels/$channelId/messages", $payload);
+        $response = Http::withOptions(['verify' => config('discord.verify', true)])
+            ->withToken(config('discord.token'), 'Bot')
+            ->post("{$this->baseUrl}/channels/{$channelId}/messages", $payload);
 
         if ($response->failed()) {
             Log::error('Failed to send Discord message: '.$response->body());
         }
+    }
+
+    /**
+     */
+    public function getChannelList(): array
+    {
+        return Cache::remember('discord_channel_list', now()->addMinutes(15), function () {
+            $guildId = config('discord.guild_id');
+
+            $response = Http::withOptions(['verify' => config('discord.verify', true)])
+                ->withToken(config('discord.token'), 'Bot')
+                ->get("{$this->baseUrl}/guilds/{$guildId}/channels");
+
+            if ($response->failed()) {
+                Log::error('Failed to fetch Discord channels: '.$response->body());
+
+                return [];
+            }
+
+            return collect($response->json())
+                ->whereIn('type', [0, 5]) // text and announcement channels only
+                ->pluck('name', 'id')
+                ->toArray();
+        });
+    }
+
+    /**
+     */
+    public function getRoleList(): array
+    {
+        return Cache::remember('discord_role_list', now()->addMinutes(15), function () {
+            $guildId = config('discord.guild_id');
+
+            $response = Http::withOptions(['verify' => config('discord.verify', true)])
+                ->withToken(config('discord.token'), 'Bot')
+                ->get("{$this->baseUrl}/guilds/{$guildId}/roles");
+
+            if ($response->failed()) {
+                Log::error('Failed to fetch Discord roles: '.$response->body());
+
+                return [];
+            }
+
+            return collect($response->json())
+                ->pluck('name', 'id')
+                ->toArray();
+        });
+    }
+
+    /**
+     */
+    public function getChannelNameById(string $id): ?string
+    {
+        return collect($this->getChannelList())->get($id);
+    }
+
+    /**
+     */
+    public function getRoleNameById(string $id): ?string
+    {
+        return collect($this->getRoleList())->get($id);
     }
 }
