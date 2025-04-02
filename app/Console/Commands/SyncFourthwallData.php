@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Services\FourthwallService;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 class SyncFourthwallData extends Command
@@ -21,7 +21,7 @@ class SyncFourthwallData extends Command
     /**
      * Execute the console command.
      */
-    public function handle(FourthwallService $fourthwallService)
+    public function handle(FourthwallService $fourthwallService): void
     {
         $this->info('Starting sync with Fourthwall API...');
 
@@ -30,8 +30,9 @@ class SyncFourthwallData extends Command
             $fourthwallService->syncCollectionsAndProducts();
             $this->info('Sync completed successfully.');
         } catch (\Exception $e) {
-            Log::error('Error during sync: ' . $e->getMessage());
+            Log::error('Error during sync: '.$e->getMessage());
             $this->error('An error occurred during sync. Check logs for details.');
+
             return;
         }
     }
