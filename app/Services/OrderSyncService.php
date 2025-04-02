@@ -69,4 +69,3 @@ class OrderSyncService
         \Log::info("Order synced [{$order->friendly_id}] status={$order->status}");
     }
 }
-
