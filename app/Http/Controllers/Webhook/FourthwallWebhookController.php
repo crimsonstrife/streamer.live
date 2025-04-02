@@ -27,8 +27,8 @@ class FourthwallWebhookController extends Controller
             return response('Invalid signature', 401);
         }
 
-        $payload = $request->all();
-        $eventId = $payload['id'] ?? null;
+        $data = $request->all();
+        $eventId = $data['id'] ?? null;
 
         if (! $eventId) {
             Log::warning('Invalid webhook payload received.');
