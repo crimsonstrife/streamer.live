@@ -38,13 +38,14 @@ class CheckStreamAlerts extends Command
         $stream = $twitch->getStreamData(config('services.twitch.channel_name'));
         $username = config('services.twitch.channel_name');
 
-        if (isset($rules)) {
+        if (!$rules->isEmpty()) {
+
             foreach ($rules as $rule) {
                 if (! $stream || strtolower($stream[0]['type'] ?? '') !== 'live') {
                     continue;
                 }
 
-                $category = $stream['game_name'] ?? '';
+                $category = $stream[0]['game_name'] ?? '';
 
                 if (! preg_match('/'.$rule->category_pattern.'/i', $category)) {
                     continue;
@@ -72,6 +73,8 @@ class CheckStreamAlerts extends Command
                 Log::channel('twitch')->info("Alert sent for {$username}");
             }
         }
+
+        Log::debug('No Stream Alert Rules found.');
 
         return CommandAlias::SUCCESS;
     }
