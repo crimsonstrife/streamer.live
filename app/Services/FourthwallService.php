@@ -210,9 +210,6 @@ class FourthwallService
 
     /**
      * Sync product images by dispatching image processing jobs.
-     *
-     * @param Product $product
-     * @param array $images
      */
     protected function syncProductImages(Product $product, array $images): void
     {
@@ -230,15 +227,24 @@ class FourthwallService
 
     /**
      * Update the product's price and compare-at price using its variants.
-     *
-     * @param Product $product
      */
     protected function updateProductPricing(Product $product): void
     {
+        if ($product->variants->isEmpty()) {
+            $product->update([
+                'price' => null,
+                'compare_at_price' => null,
+            ]);
+            Log::info("Price skipped for product: {$product->name} (no variants)");
+
+            return;
+        }
+
         $product->update([
             'price' => $product->variants->min('price'),
             'compare_at_price' => $product->variants->min('compare_at_price'),
         ]);
+
         Log::info("Updated price for product: {$product->name}");
     }
 

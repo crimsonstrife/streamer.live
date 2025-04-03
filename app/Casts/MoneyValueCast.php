@@ -4,6 +4,7 @@ namespace App\Casts;
 
 use App\Models\ValueObjects\MoneyValue;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
 class MoneyValueCast implements CastsAttributes
@@ -19,6 +20,10 @@ class MoneyValueCast implements CastsAttributes
 
     public function set($model, string $key, $value, array $attributes)
     {
+        if ($value === null) {
+            return null; // allow null values during sync
+        }
+
         if ($value instanceof MoneyValue) {
             return $value->raw();
         }
@@ -27,6 +32,8 @@ class MoneyValueCast implements CastsAttributes
             return (float) $value;
         }
 
-        throw new InvalidArgumentException("Invalid price format.");
+        Log::error('Invalid price input to MoneyValueCast', ['value' => $value]);
+
+        throw new InvalidArgumentException('Invalid price format.');
     }
 }
