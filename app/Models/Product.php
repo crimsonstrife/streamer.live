@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Tags\HasTags;
 
 /**
  * @property int $id
@@ -52,6 +53,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class Product extends BaseModel
 {
+    use HasTags;
+
     protected $fillable = [
         'provider_id',
         'provider',

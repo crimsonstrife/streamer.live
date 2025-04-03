@@ -8,6 +8,7 @@ use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationMa
 use App\Models\Category;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -44,7 +45,7 @@ class ProductResource extends Resource
                     ->prefix('$')
                     ->dehydrateStateUsing(fn ($state) => (float) $state) // avoid object binding
                     ->formatStateUsing(fn ($state) => is_object($state) && method_exists($state, 'raw') ? $state->raw() : $state),
-                Forms\Components\Select::make('status')->required()->options([
+                Forms\Components\Select::make('state')->required()->options([
                     'AVAILABLE' => 'Available',
                     'SOLDOUT' => 'Sold Out',
                 ])->default('AVAILABLE'),
@@ -83,6 +84,8 @@ class ProductResource extends Resource
                     ])
                     ->preload()
                     ->searchable(),
+                SpatieTagsInput::make('tags')
+                    ->label(__('filament-blog::filament-blog.tags')),
             ]);
     }
 
