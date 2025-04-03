@@ -64,6 +64,7 @@ class Product extends BaseModel
         'state',
         'access',
         'price',
+        'is_featured',
         'compare_at_price',
         'external_url',
     ];
@@ -71,6 +72,7 @@ class Product extends BaseModel
     protected $casts = [
         'price' => MoneyValueCast::class,
         'compare_at_price' => MoneyValueCast::class,
+        'is_featured' => 'boolean',
     ];
 
     /**

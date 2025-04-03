@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieTagsInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -54,6 +55,11 @@ class ProductResource extends Resource
                     'HIDDEN' => 'Private',
                     'PUBLIC' => 'Public',
                 ])->default('PUBLIC'),
+                Toggle::make('is_featured')
+                    ->label('Featured')
+                    ->inline(false)
+                    ->default(false)
+                    ->helperText('Mark this product as featured'),
                 Forms\Components\Select::make('categories')
                     ->multiple()
                     ->relationship(
