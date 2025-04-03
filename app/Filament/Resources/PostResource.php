@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PostResource\RelationManagers;
+use App\Models\Author;
 use App\Models\Post;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieTagsInput;
@@ -15,12 +15,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Stephenjude\FilamentBlog\Resources\PostResource\Pages;
+use App\Filament\Resources\PostResource\Pages;
 use Stephenjude\FilamentBlog\Traits\HasContentEditor;
 
 class PostResource extends Resource
 {
+    use HasContentEditor;
+
     protected static ?string $model = Post::class;
 
     protected static ?string $slug = 'blog/posts';
@@ -82,19 +83,52 @@ class PostResource extends Resource
                         Forms\Components\Select::make('blog_author_id')
                             ->label(__('filament-blog::filament-blog.author'))
                             ->relationship(name: 'author', titleAttribute: 'name')
+                            ->searchable()
+                            ->required()
+                            ->default(function () {
+                                return auth()->user()?->blogAuthor?->id;
+                            })
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('name')
                                     ->required(),
                                 Forms\Components\TextInput::make('email')
                                     ->required()
                                     ->email(),
+                                Forms\Components\Select::make('user_id')
+                                    ->label('Linked User')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name) // Uses accessor safely
+                                    ->disabled(fn (?Author $record) => $record?->user_id && ! auth()->user()->can('updateUserLink'))
+                                    ->options(function (?Author $record) {
+                                        $query = \App\Models\User::query();
+
+                                        // Exclude users already linked to other authors
+                                        if ($record) {
+                                            $query->where(function ($q) use ($record) {
+                                                $q->whereDoesntHave('blogAuthor')
+                                                    ->orWhereHas('blogAuthor', fn ($q2) => $q2->where('id', $record->id));
+                                            });
+                                        } else {
+                                            $query->whereDoesntHave('blogAuthor');
+                                        }
+
+                                        return $query->get()->mapWithKeys(fn ($user) => [
+                                            $user->id => $user->name,
+                                        ])->toArray();
+                                    }),
                             ])
                             ->searchable()
                             ->required(),
 
                         Forms\Components\Select::make('blog_category_id')
                             ->label(__('filament-blog::filament-blog.category'))
-                            ->relationship(name: 'category', titleAttribute: 'name')
+                            ->relationship(
+                                name: 'category',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->where('type', 'blog')
+                            )
                             ->searchable()
                             ->required(),
 
@@ -156,7 +190,7 @@ class PostResource extends Resource
                 Tables\Filters\Filter::make('published_at')
                     ->form([
                         Forms\Components\DatePicker::make('published_from')
-                            ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
+                            ->placeholder(fn ($state): string => 'Dec 18, '.now()->subYear()->format('Y')),
                         Forms\Components\DatePicker::make('published_until')
                             ->placeholder(fn ($state): string => now()->format('M d, Y')),
                     ])

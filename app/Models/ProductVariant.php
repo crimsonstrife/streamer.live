@@ -6,6 +6,7 @@ use App\Casts\MoneyValueCast;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Tags\HasTags;
 
 /**
  * @property int $id
@@ -58,6 +59,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class ProductVariant extends BaseModel
 {
+    use HasTags;
+
     protected $fillable = [
         'provider_id',
         'product_id',

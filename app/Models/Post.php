@@ -7,19 +7,15 @@ use App\Enums\Sort;
 use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;
-use Stephenjude\FilamentBlog\Models\Post as BasePost;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
-use Spatie\MediaLibrary\HasMedia as SpatieHasMedia;
 use Spatie\Sluggable\SlugOptions;
 use Spatie\Tags\HasTags;
+use Stephenjude\FilamentBlog\Models\Post as BasePost;
 
 /**
- *
- *
  * @property int $id
  * @property int|null $blog_author_id
  * @property int|null $blog_category_id
@@ -38,6 +34,7 @@ use Spatie\Tags\HasTags;
  * @property-read int|null $reactions_count
  * @property \Illuminate\Database\Eloquent\Collection<int, \Spatie\Tags\Tag> $tags
  * @property-read int|null $tags_count
+ *
  * @method static Builder<static>|Post draft()
  * @method static Builder<static>|Post newModelQuery()
  * @method static Builder<static>|Post newQuery()
@@ -60,20 +57,21 @@ use Spatie\Tags\HasTags;
  * @method static Builder<static>|Post withAnyTagsOfAnyType($tags)
  * @method static Builder<static>|Post withAnyTagsOfType(array|string $type)
  * @method static Builder<static>|Post withoutTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ *
  * @mixin \Eloquent
  */
 class Post extends BasePost implements CommentableContract
 {
-    use HasReactions;
-    use HasSlug;
     use HasComments;
     use HasReactions;
+    use HasReactions;
+    use HasSlug;
     use HasTags;
 
     /**
      * @var string
      */
-    protected $table = 'blog_posts';
+    protected $table = 'posts';
 
     /**
      * @var array<int, string>
@@ -86,7 +84,7 @@ class Post extends BasePost implements CommentableContract
         'content',
         'published_at',
         'blog_author_id',
-        'blog_category_id',
+        'category_id',
     ];
 
     /**
@@ -133,11 +131,11 @@ class Post extends BasePost implements CommentableContract
         return $this->authCheck();
     }
 
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(static function ($model) {
             // If there is no slug provided, generate one from the title
             $currentSlug = $model->slug;
 
@@ -146,7 +144,7 @@ class Post extends BasePost implements CommentableContract
             }
         });
 
-        static::updating(function ($model) {
+        static::updating(static function ($model) {
             // If there is no slug provided, generate one from the title, otherwise keep the existing slug
             $currentSlug = $model->slug;
 
@@ -172,12 +170,12 @@ class Post extends BasePost implements CommentableContract
         return Attribute::get(fn () => $this->banner ? asset(Storage::url($this->banner)) : '');
     }
 
-    public function scopePublished(Builder $query)
+    public function scopePublished(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|\LaravelIdea\Helper\App\Models\_IH_Post_QB
     {
         return $query->whereNotNull('published_at');
     }
 
-    public function scopeDraft(Builder $query)
+    public function scopeDraft(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|\LaravelIdea\Helper\App\Models\_IH_Post_QB
     {
         return $query->whereNull('published_at');
     }
@@ -201,7 +199,7 @@ class Post extends BasePost implements CommentableContract
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'blog_category_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public static function rules(): array
@@ -222,7 +220,7 @@ class Post extends BasePost implements CommentableContract
      *
      * @return BelongsTo|null The relationship to the owner or null if no owner exists.
      */
-    public function owner(): BelongsTo|null
+    public function owner(): ?BelongsTo
     {
         return $this->author();
     }

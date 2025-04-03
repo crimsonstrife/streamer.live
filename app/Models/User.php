@@ -4,7 +4,9 @@ namespace App\Models;
 
 use Filament\Models\Contracts\HasAvatar;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -14,8 +16,6 @@ use Mchev\Banhammer\Traits\Bannable;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- *
- *
  * @property int $id
  * @property string $username
  * @property string|null $first_name
@@ -50,6 +50,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User banned(bool $banned = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User bannedByType(string $className)
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
@@ -82,17 +83,21 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsername($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutPermission($permissions)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutRole($roles, $guard = null)
+ *
  * @mixin \Eloquent
  */
+#[\AllowDynamicProperties]
 class User extends Authenticatable implements HasAvatar
 {
     use Bannable;
     use HasApiTokens;
-    use HasRoles;
+    use HasApiTokens;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-    use HasApiTokens;
+
     use HasProfilePhoto;
+    use HasRoles;
     use Notifiable;
     use TwoFactorAuthenticatable;
 
@@ -174,6 +179,7 @@ class User extends Authenticatable implements HasAvatar
     protected function casts(): array
     {
         return [
+            'display_name' => 'string',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
@@ -184,37 +190,47 @@ class User extends Authenticatable implements HasAvatar
      *
      * @return string|null The user's full name.
      */
-    public function getFullNameAttribute(): string|null
+    public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->last_name}" ?? null;
+        $full = trim("{$this->first_name} {$this->last_name}");
+
+        return $full !== '' ? $full : $this->username;
     }
 
     /**
      * Get the user's display name.
      *
-     * @return string The user's display name.
+     * @return Attribute The user's display name.
      */
-    public function getDisplayNameAttribute(): string
+    protected function displayName(): Attribute
     {
-        return $this->display_name ?? $this->username;
+        return Attribute::get(
+            fn ($value, $attributes) => $value ?: ($attributes['username'] ?? 'Unknown')
+        );
     }
 
     /**
      * Get the user's name.
      *
-     * @return string The user's name.
+     * @return Attribute The user's name.
      */
-    public function getNameAttribute(): string
+    protected function name(): Attribute
     {
-        return $this->getFullNameAttribute() ?? $this->display_name ?? $this->username;
+        return Attribute::get(
+            fn ($value, $attributes) =>
+                $attributes['display_name']
+                ?? trim(($attributes['first_name'] ?? '') . ' ' . ($attributes['last_name'] ?? ''))
+                ?: ($attributes['username'] ?? 'Unknown')
+        );
     }
+
 
     /**
      * Get the user's first name.
      *
      * @return string|null The first name of the user.
      */
-    public function getFirstNameAttribute(): string|null
+    public function getFirstNameAttribute(): ?string
     {
         return $this->first_name ?? null;
     }
@@ -224,8 +240,13 @@ class User extends Authenticatable implements HasAvatar
      *
      * @return string|null The user's last name.
      */
-    public function getLastNameAttribute(): string|null
+    public function getLastNameAttribute(): ?string
     {
         return $this->last_name ?? null;
+    }
+
+    public function blogAuthor(): HasOne
+    {
+        return $this->hasOne(Author::class);
     }
 }

@@ -6,7 +6,9 @@ use App\Casts\MoneyValueCast;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Tags\HasTags;
 
 /**
  * @property int $id
@@ -51,6 +53,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class Product extends BaseModel
 {
+    use HasTags;
+
     protected $fillable = [
         'provider_id',
         'provider',
@@ -124,5 +128,10 @@ class Product extends BaseModel
     public function getSymbolPriceAttribute(): string
     {
         return $this->price ? $this->price->symbolFormatted() : 'N/A';
+    }
+
+    public function categories(): MorphToMany
+    {
+        return $this->morphToMany(Category::class, 'categorizable');
     }
 }
