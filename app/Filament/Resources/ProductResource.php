@@ -5,18 +5,30 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationManager;
+use App\Models\Category;
 use App\Models\Product;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
+    protected static ?string $slug = 'store/products';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $navigationGroup = 'Store';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -41,6 +53,36 @@ class ProductResource extends Resource
                     'HIDDEN' => 'Private',
                     'PUBLIC' => 'Public',
                 ])->default('PUBLIC'),
+                Forms\Components\Select::make('categories')
+                    ->multiple()
+                    ->relationship(
+                        name: 'categories',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn ($query) => $query->where('type', 'product')
+                    )
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('filament-blog::filament-blog.name'))
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
+                                if (($get('slug') ?? '') !== Str::slug($old)) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug($state));
+                            }),
+                        Forms\Components\TextInput::make('slug')
+                            ->label(__('filament-blog::filament-blog.slug'))
+                            ->required()
+                            ->unique(Category::class, 'slug', fn ($record) => $record),
+                        Forms\Components\Toggle::make('is_visible')
+                            ->label(__('filament-blog::filament-blog.visible_to_guests'))
+                            ->default(true),
+                        Forms\Components\Hidden::make('type')->default('product'),
+                    ])
+                    ->preload()
+                    ->searchable(),
             ]);
     }
 
