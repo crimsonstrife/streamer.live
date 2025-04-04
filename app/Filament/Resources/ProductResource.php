@@ -91,7 +91,7 @@ class ProductResource extends Resource
                     ->preload()
                     ->searchable(),
                 SpatieTagsInput::make('tags')
-                    ->label(__('filament-blog::filament-blog.tags')),
+                    ->label(__('filament-blog::filament-blog.tags'))->type('product'),
             ]);
     }
 
