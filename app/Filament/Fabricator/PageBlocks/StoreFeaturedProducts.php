@@ -24,7 +24,7 @@ class StoreFeaturedProducts extends PageBlock
         return [
             'title' => $data['title'] ?? 'Featured Products',
             'description' => $data['description'] ?? 'Featured product selections from our store.',
-            'products' => Product::where('is_featured', true)->take($data['product_count'])->orderByDesc('created_at')->get(),
+            'products' => Product::where('is_featured', true)->orderByDesc('created_at')->take($data['product_count'])->get(),
         ];
     }
 }
