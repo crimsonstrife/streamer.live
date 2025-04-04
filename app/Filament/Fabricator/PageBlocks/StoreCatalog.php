@@ -22,7 +22,9 @@ class StoreCatalog extends PageBlock
 
         // Category filter
         if (request()->filled('category')) {
-            $query->whereHas('categories', fn($q) =>
+            $query->whereHas(
+                'categories',
+                fn ($q) =>
             $q->whereIn('slug', (array) request('category'))
             );
         }
@@ -34,7 +36,9 @@ class StoreCatalog extends PageBlock
 
         // Size filter (via variant)
         if (request()->filled('size')) {
-            $query->whereHas('variants', fn($q) =>
+            $query->whereHas(
+                'variants',
+                fn ($q) =>
             $q->where('size', request('size'))
             );
         }
