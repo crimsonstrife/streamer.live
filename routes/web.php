@@ -25,15 +25,17 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     $productSlug = ShopHelper::getProductSlug();         // 'product'
     $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
 
-    Log::info('Shop: '.ShopHelper::getShopSlug());
-    Log::info('Product: '.ShopHelper::getProductSlug());
-    Log::info('Collection: '.ShopHelper::getCollectionSlug());
+    if (! app()->environment('production')) {
+        Log::info('Shop: '.ShopHelper::getShopSlug());
+        Log::info('Product: '.ShopHelper::getProductSlug());
+        Log::info('Collection: '.ShopHelper::getCollectionSlug());
+    }
 
     // Homepage
     Route::get('/', FabricatorPageController::class)->name('fabricator.page.home');
 
     // === Cart Routes ===
-    Route::prefix("$shopSlug/cart")->name($shopSlug . '.cart.')->group(function () {
+    Route::prefix("$shopSlug/cart")->name($shopSlug.'.cart.')->group(function () {
         Route::get('/', [CartController::class, 'showCart'])->name('show');
         Route::post('/add', [CartController::class, 'addToCart'])->name('add');
         Route::post('/update', [CartController::class, 'updateCart'])->name('update');
@@ -50,13 +52,13 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     })->name('cart.checkout.external');
 
     // All /shop/* routes
-    Route::prefix($shopSlug)->group(function () {
+    Route::prefix($shopSlug)->name($shopSlug.'.')->group(function () {
         $productSlug = ShopHelper::getProductSlug();         // 'product'
         $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
-        Route::get("$productSlug/{slug}", [FabricatorPageController::class, 'product'])->name('shop.product');
-        Route::get("$collectionSlug/{slug}", [FabricatorPageController::class, 'collection'])->name('shop.collection');
-        Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('shop.category');
-        Route::get('/', FabricatorPageController::class)->name('shop.page');
+        Route::get("$productSlug/{slug}", [FabricatorPageController::class, 'product'])->name('product');
+        Route::get("$collectionSlug/{slug}", [FabricatorPageController::class, 'collection'])->name('collection');
+        Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('category');
+        Route::get('/', FabricatorPageController::class)->name('page');
         Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
     });
 
