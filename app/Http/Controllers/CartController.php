@@ -26,18 +26,19 @@ class CartController extends Controller
      */
     public function showCart()
     {
+        $shopSlug = ShopHelper::getShopSlug();
         try {
             if (! $this->cartHelper->hasCartId()) {
-                return view('store.cart', ['cart' => []]);
+                return view($shopSlug.'.cart', ['cart' => []]);
             }
 
             $cart = $this->cartHelper->getCartContents();
 
-            return view('store.cart', ['cart' => $cart ?? []]);
+            return view($shopSlug.'.cart', ['cart' => $cart ?? []]);
         } catch (\Throwable $e) {
             Log::error('Cart session retrieval failed: '.$e->getMessage());
 
-            return redirect()->route('store.index')->with('error', 'Could not load cart. Please try again.');
+            return redirect()->route($shopSlug.'.index')->with('error', 'Could not load cart. Please try again.');
         }
     }
 
@@ -46,9 +47,9 @@ class CartController extends Controller
      */
     public function addToCart(Request $request): ?\Illuminate\Http\RedirectResponse
     {
+        $shopSlug = ShopHelper::getShopSlug();
         try {
             $variant_id = $request->input('variant_id');
-            $shopSlug = ShopHelper::getShopSlug();
             $quantity = max(1, (int) $request->input('quantity', 1));
 
             $variant = ProductVariant::where('provider_id', $variant_id)->first();
@@ -76,8 +77,8 @@ class CartController extends Controller
      */
     public function updateCart(Request $request): ?\Illuminate\Http\RedirectResponse
     {
+        $shopSlug = ShopHelper::getShopSlug();
         try {
-            $shopSlug = ShopHelper::getShopSlug();
             if (! $this->cartHelper->hasCartId()) {
                 return redirect()->route($shopSlug.'.cart.show')->with('error', 'No active cart found.');
             }
@@ -97,7 +98,6 @@ class CartController extends Controller
 
             return redirect()->route($shopSlug.'.cart.show')->with('success', 'Cart updated successfully.');
         } catch (\Throwable $e) {
-            $shopSlug = ShopHelper::getShopSlug();
             Log::error('Failed to update cart: '.$e->getMessage());
 
             return redirect()->route($shopSlug.'.cart.show')->with('error', 'An error occurred while updating the cart.');
@@ -133,8 +133,8 @@ class CartController extends Controller
      */
     public function redirectToCheckout(): ?\Illuminate\Http\RedirectResponse
     {
+        $shopSlug = ShopHelper::getShopSlug();
         try {
-            $shopSlug = ShopHelper::getShopSlug();
             if (! $this->cartHelper->hasCartId()) {
                 return redirect()->route($shopSlug.'.cart.show')->with('error', 'Your cart is empty.');
             }
@@ -149,7 +149,6 @@ class CartController extends Controller
 
             return redirect()->route($shopSlug.'.checkout.external');
         } catch (\Throwable $e) {
-            $shopSlug = ShopHelper::getShopSlug();
             Log::error('Checkout failed: '.$e->getMessage());
 
             return redirect()->route($shopSlug.'.cart.show')->with('error', 'An error occurred while processing checkout.');
