@@ -38,7 +38,7 @@ class CartController extends Controller
         } catch (\Throwable $e) {
             Log::error('Cart session retrieval failed: '.$e->getMessage());
 
-            return redirect()->route($shopSlug.'.index')->with('error', 'Could not load cart. Please try again.');
+            return redirect()->route($shopSlug.'.page')->with('error', 'Could not load cart. Please try again.');
         }
     }
 
