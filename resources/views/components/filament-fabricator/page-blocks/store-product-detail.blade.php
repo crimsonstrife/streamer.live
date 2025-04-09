@@ -31,14 +31,14 @@
                             <label for="variant_id" class="form-label">Select Variant</label>
                             <select name="variant_id" class="form-select" required>
                                 @foreach ($product->variants as $variant)
-                                    <option value="{{ $variant->id }}">
+                                    <option value="{{ $variant->provider_id }}">
                                         {{ $variant->name }} - {{ $variant->symbol_price }} USD
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                     @else
-                        <input type="hidden" name="variant_id" value="{{ $product->variants->first()?->id }}">
+                        <input type="hidden" name="variant_id" value="{{ $product->variants->first()?->provider_id }}">
                     @endif
 
                     <div class="d-grid gap-2">
