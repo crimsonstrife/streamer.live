@@ -3,6 +3,7 @@
 namespace App\Filament\Fabricator\PageBlocks;
 
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Filament\Forms\Components\Builder\Block;
@@ -13,19 +14,28 @@ class StoreCatalog extends PageBlock
 {
     public static function getBlockSchema(): Block
     {
-        return Block::make('store-catalog')->schema([]);
+        return Block::make('store-catalog') // unique key (used as the block's "type")
+            ->label('Store Catalog')        // this is just the label shown in the panel
+            ->schema([
+            ]);
     }
 
     public static function mutateData(array $data): array
     {
-        $query = Product::query()->with(['categories', 'tags', 'variants']);
+        $query = Product::query()->with(['categories', 'tags', 'variants', 'collections']);
+
+        // Collection Filter
+        if (request()->filled('collection')) {
+            $query->whereHas(
+                'collections', fn ($q) => $q->whereIn('slug', (array) request('collection'))
+            );
+        }
 
         // Category filter
         if (request()->filled('category')) {
             $query->whereHas(
                 'categories',
-                fn ($q) =>
-            $q->whereIn('slug', (array) request('category'))
+                fn ($q) => $q->whereIn('slug', (array) request('category'))
             );
         }
 
@@ -38,8 +48,7 @@ class StoreCatalog extends PageBlock
         if (request()->filled('size')) {
             $query->whereHas(
                 'variants',
-                fn ($q) =>
-            $q->where('size', request('size'))
+                fn ($q) => $q->where('size', request('size'))
             );
         }
 
@@ -55,6 +64,7 @@ class StoreCatalog extends PageBlock
 
         return [
             'products' => $products,
+            'collections' => Collection::orderBy('name')->get(),
             'categories' => Category::where('type', 'product')->orderBy('name')->get(),
             'tags' => Tag::getWithType('product'),
             'sizes' => $sizes,

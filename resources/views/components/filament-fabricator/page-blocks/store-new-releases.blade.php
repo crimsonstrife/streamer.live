@@ -23,7 +23,7 @@
                         <p class="card-text text-muted">
                             {{ $product->symbol_price }} USD
                         </p>
-                        <a href="{{ route('store.product', ['slug' => $product->slug]) }}"
+                        <a href="{{ route('shop.product', ['slug' => $product->slug]) }}"
                            class="btn btn-primary">
                             View Product
                         </a>

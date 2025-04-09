@@ -18,6 +18,31 @@
         <aside class="col-md-3 mb-4">
             <form method="GET">
                 <div class="accordion" id="storeFilters">
+                    {{-- Collections --}}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingCollection">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseCollection" aria-expanded="true">
+                                Collections
+                            </button>
+                        </h2>
+                        <div id="collapseCollection" class="accordion-collapse collapse show"
+                             data-bs-parent="#storeFilters">
+                            <div class="accordion-body">
+                                @foreach ($collections as $collection)
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="collection[]"
+                                               value="{{ $collection->slug }}"
+                                               id="collection_{{ $collection->id }}"
+                                            {{ in_array($collection->slug, $filters['collection'] ?? [], true) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="collection_{{ $collection->id }}">
+                                            {{ $collection->name }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
 
                     {{-- Categories --}}
                     <div class="accordion-item">
@@ -101,8 +126,15 @@
                 <div class="mb-3">
                     <h6 class="mb-2">Active Filters:</h6>
                     <div class="d-flex flex-wrap gap-2">
+                        @foreach (($filters['collection'] ?? []) as $col)
+                            <a href="{{ request()->fullUrlWithQuery(['collection' => collect($filters['collection'])->reject(fn($co) => $co === $col)->values()->all()]) }}"
+                               class="badge bg-primary text-white text-decoration-none">
+                                {{ ucfirst($col) }} ×
+                            </a>
+                        @endforeach
+
                         @foreach (($filters['category'] ?? []) as $cat)
-                            <a href="{{ request()->fullUrlWithQuery(['category' => collect($filters['category'])->reject(fn($c) => $c === $cat)->values()->all()]) }}"
+                            <a href="{{ request()->fullUrlWithQuery(['category' => collect($filters['category'])->reject(fn($ca) => $ca === $cat)->values()->all()]) }}"
                                class="badge bg-primary text-white text-decoration-none">
                                 {{ ucfirst($cat) }} ×
                             </a>
@@ -145,7 +177,7 @@
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">{{ $product->name }}</h5>
                                 <p class="card-text mb-2">{{ $product->symbol_price }} USD</p>
-                                <a href="{{ route('store.product', $product->slug) }}" class="btn btn-primary mt-auto">View</a>
+                                <a href="{{ route('shop.product', ['slug' => $product->slug]) }}" class="btn btn-primary mt-auto">View</a>
                             </div>
                         </div>
 

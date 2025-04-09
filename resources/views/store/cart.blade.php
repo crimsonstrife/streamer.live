@@ -10,7 +10,7 @@
             <div class="shadow-sm card">
                 <div class="card-body">
                     @if ($cart && count($cart['items']) > 0)
-                        <form action="{{ route('store.cart.update') }}" method="POST">
+                        <form action="{{ route('cart.update') }}" method="POST">
                             @csrf
                             <table class="table align-middle table-bordered">
                                 <thead class="table-light">
@@ -59,7 +59,7 @@
                                                 {{ $item->variant->price->multiply($item->quantity)->symbolFormatted() }} USD
                                             </td>
                                             <td>
-                                                <a href="{{ route('store.cart.remove', $variantId) }}"
+                                                <a href="{{ route('cart.remove', $variantId) }}"
                                                     class="btn btn-danger btn-sm">
                                                     <i class="bi bi-trash"></i> Remove
                                                 </a>
@@ -80,13 +80,13 @@
                             </table>
 
                             <div class="mt-4 d-flex justify-content-between">
-                                <a href="{{ route('store.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('shop.page') }}" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Continue Shopping
                                 </a>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-arrow-repeat"></i> Update Cart
                                 </button>
-                                <a href="{{ route('store.cart.checkout') }}" class="btn btn-success">
+                                <a href="{{ route('cart.checkout') }}" class="btn btn-success">
                                     <i class="bi bi-bag-check"></i> Proceed to Checkout
                                 </a>
                             </div>
@@ -94,7 +94,7 @@
                     @else
                         <p class="text-center text-muted fs-5">Your cart is empty.</p>
                         <div class="text-center">
-                            <a href="{{ route('store.index') }}" class="btn btn-primary">
+                            <a href="{{ route('shop.page') }}" class="btn btn-primary">
                                 <i class="bi bi-shop"></i> Go to Store
                             </a>
                         </div>
