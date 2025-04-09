@@ -88,7 +88,9 @@ class Page extends BasePage
             // Merge and log
             $finalData = array_merge($layoutData, ['page' => $this]);
 
-            logger()->debug('Layout data sent to view', $finalData); // <--- Add this
+            if (config('app.debug')) {
+                logger()->debug('Layout data sent to view', $finalData);
+            }
 
             return $finalData;
         }
