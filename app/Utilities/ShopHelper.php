@@ -70,7 +70,7 @@ class ShopHelper
 
     public static function collection(string $slug, string $prefix = self::DEFAULT_SHOP_SLUG): string
     {
-        $collection = self::fetchProductSlug();
+        $collection = self::fetchCollectionSlug();
         return url("{$prefix}/{$collection}/{$slug}");
     }
 }
