@@ -6,6 +6,7 @@ use App\Filament\Resources\PostResource;
 use App\Services\FourthwallService;
 use App\Services\TwitchService;
 use App\Utilities\CartHelper;
+use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use Exception;
 use Filament\FilamentManager;
@@ -61,5 +62,6 @@ class AppServiceProvider extends ServiceProvider
             PostResource::class,
         ]);
 
+        view()->share('shopSlug', ShopHelper::getShopSlug());
     }
 }
