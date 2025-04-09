@@ -27,7 +27,8 @@ class StoreCatalog extends PageBlock
         // Collection Filter
         if (request()->filled('collection')) {
             $query->whereHas(
-                'collections', fn ($q) => $q->whereIn('slug', (array) request('collection'))
+                'collections',
+                fn ($q) => $q->whereIn('slug', (array) request('collection'))
             );
         }
 
