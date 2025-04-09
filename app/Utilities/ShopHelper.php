@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Cache;
 
 class ShopHelper
 {
-    private const string SHOP_SLUG_CACHE_KEY = 'shop_slug';
-    private const string COLLECTION_SLUG_CACHE_KEY = 'collection_slug';
-    private const string PRODUCT_SLUG_CACHE_KEY = 'product_slug';
-    private const string DEFAULT_SHOP_SLUG = 'shop';
-    private const string DEFAULT_COLLECTION_SLUG = 'collection';
-    private const string DEFAULT_PRODUCT_SLUG = 'product';
+    private const SHOP_SLUG_CACHE_KEY = 'shop_slug';
+    private const COLLECTION_SLUG_CACHE_KEY = 'collection_slug';
+    private const PRODUCT_SLUG_CACHE_KEY = 'product_slug';
+    private const DEFAULT_SHOP_SLUG = 'shop';
+    private const DEFAULT_COLLECTION_SLUG = 'collection';
+    private const DEFAULT_PRODUCT_SLUG = 'product';
 
     /**
      * Get the slug of the current shop page.
