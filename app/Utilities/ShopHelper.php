@@ -2,16 +2,22 @@
 
 namespace App\Utilities;
 
+use App\Models\OrderItem;
 use App\Models\Page;
 use Illuminate\Support\Facades\Cache;
 
 class ShopHelper
 {
     private const SHOP_SLUG_CACHE_KEY = 'shop_slug';
+
     private const COLLECTION_SLUG_CACHE_KEY = 'collection_slug';
+
     private const PRODUCT_SLUG_CACHE_KEY = 'product_slug';
+
     private const DEFAULT_SHOP_SLUG = 'shop';
+
     private const DEFAULT_COLLECTION_SLUG = 'collection';
+
     private const DEFAULT_PRODUCT_SLUG = 'product';
 
     /**
@@ -66,12 +72,21 @@ class ShopHelper
     public static function product(string $slug, string $prefix = self::DEFAULT_SHOP_SLUG): string
     {
         $product = self::fetchProductSlug();
+
         return url("{$prefix}/{$product}/{$slug}");
     }
 
     public static function collection(string $slug, string $prefix = self::DEFAULT_SHOP_SLUG): string
     {
         $collection = self::fetchCollectionSlug();
+
         return url("{$prefix}/{$collection}/{$slug}");
+    }
+
+    public static function userHasPurchasedProduct(int $userId, int $productId): bool
+    {
+        return OrderItem::whereHas('order', fn ($query) => $query->where('user_id', $userId)
+        )->whereHas('variant', fn ($query) => $query->where('product_id', $productId)
+        )->exists();
     }
 }
