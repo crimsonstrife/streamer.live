@@ -168,6 +168,22 @@
             <div class="col-md-6">
                 <h2>{{ $product->name }}</h2>
 
+                @if ($product->review_count > 0)
+                    <div class="mb-2">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                        @endfor
+                        <small class="text-muted ms-2">
+                            {{ number_format($product->average_rating, 1) }}/5
+                            ({{ $product->review_count }} {{ Str::plural('review', $product->review_count) }})
+                        </small>
+                    </div>
+                @else
+                    <div class="mb-2">
+                        <small class="text-muted">No ratings yet</small>
+                    </div>
+                @endif
+
                 <p class="text-muted">{{ $product->symbol_price }} USD</p>
 
                 <div class="mb-3">
@@ -202,6 +218,104 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mt-5">
+                    <h4>Customer Reviews ({{ $product->reviews->count() }})</h4>
+                    @if ($product->review_count > 0)
+                        <div class="mt-5">
+                            <h4>Rating Summary</h4>
+                            <div class="mb-3">
+                                <strong class="fs-4">{{ number_format($product->average_rating, 1) }}/5</strong>
+                                <div>
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                                    @endfor
+                                </div>
+                                <small class="text-muted">{{ $product->review_count }}
+                                    total {{ Str::plural('review', $product->review_count) }}</small>
+                            </div>
+
+                            @php
+                                $ratings = collect([5, 4, 3, 2, 1])->mapWithKeys(function ($star) use ($product) {
+                                    $total = $product->reviews->where('rating', $star);
+                                    return [
+                                        $star => [
+                                            'total' => $total->count(),
+                                            'verified' => $total->where('is_verified', true)->count(),
+                                        ],
+                                    ];
+                                });
+                            @endphp
+
+                            @foreach ($ratings as $star => $data)
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="me-2" style="width: 40px;">{{ $star }}★</div>
+                                    <div class="progress flex-grow-1 me-2" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" role="progressbar"
+                                             style="width: {{ ($data['total'] / max($product->review_count, 1)) * 100 }}%;"
+                                             aria-valuenow="{{ $data['total'] }}"
+                                             aria-valuemin="0"
+                                             aria-valuemax="{{ $product->review_count }}">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">
+                                        {{ $data['total'] }} <span class="text-success">({{ $data['verified'] }} verified)</span>
+                                    </small>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @if ($product->reviews->count())
+                        @foreach ($product->reviews->sortByDesc('created_at') as $review)
+                            <div class="border rounded p-3 mb-3 @if($review->is_verified) border-success @endif">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong>{{ $review->user?->name ?? 'Anonymous' }}</strong>
+                                    <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                </div>
+                                <div class="mb-2">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <i class="bi @if($i <= $review->rating) bi-star-fill text-warning @else bi-star text-muted @endif"></i>
+                                    @endfor
+                                </div>
+                                <p class="mb-1">{{ $review->review }}</p>
+                                @if ($review->is_verified)
+                                    <span class="badge bg-success">Verified Purchase</span>
+                                @endif
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="alert alert-info mt-3">
+                            There are no reviews yet. Be the first to leave one!
+                        </div>
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-6">
+                @auth
+                    <div class="mt-4">
+                        <h5>Leave a Review</h5>
+                        <form method="POST" action="{{ route('product.review.submit', $product) }}">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Rating</label>
+                                <select name="rating" class="form-select" required>
+                                    @for ($i = 5; $i >= 1; $i--)
+                                        <option value="{{ $i }}">{{ $i }} Star{{ $i > 1 ? 's' : '' }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="review" class="form-label">Your Review</label>
+                                <textarea name="review" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary">Submit Review</button>
+                        </form>
+                    </div>
+                @endauth
             </div>
         </div>
     </div>

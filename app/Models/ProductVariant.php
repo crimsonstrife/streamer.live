@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Casts\MoneyValueCast;
+use Eloquent;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Spatie\Tags\HasTags;
 
 /**
@@ -28,34 +31,34 @@ use Spatie\Tags\HasTags;
  * @property int|null $width
  * @property int|null $height
  * @property string|null $dimension_unit
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductImage> $images
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ProductImage> $images
  * @property-read int|null $images_count
- * @property-read \App\Models\Product $product
+ * @property-read Product $product
  *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereCompareAtPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereDimensionUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereHeight($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereLength($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereProviderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereSku($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereStockCount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereStockStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWeight($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWeightUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWidth($value)
+ * @method static Builder<static>|ProductVariant newModelQuery()
+ * @method static Builder<static>|ProductVariant newQuery()
+ * @method static Builder<static>|ProductVariant query()
+ * @method static Builder<static>|ProductVariant whereCompareAtPrice($value)
+ * @method static Builder<static>|ProductVariant whereCreatedAt($value)
+ * @method static Builder<static>|ProductVariant whereDimensionUnit($value)
+ * @method static Builder<static>|ProductVariant whereHeight($value)
+ * @method static Builder<static>|ProductVariant whereId($value)
+ * @method static Builder<static>|ProductVariant whereLength($value)
+ * @method static Builder<static>|ProductVariant whereName($value)
+ * @method static Builder<static>|ProductVariant wherePrice($value)
+ * @method static Builder<static>|ProductVariant whereProductId($value)
+ * @method static Builder<static>|ProductVariant whereProviderId($value)
+ * @method static Builder<static>|ProductVariant whereSku($value)
+ * @method static Builder<static>|ProductVariant whereStockCount($value)
+ * @method static Builder<static>|ProductVariant whereStockStatus($value)
+ * @method static Builder<static>|ProductVariant whereUpdatedAt($value)
+ * @method static Builder<static>|ProductVariant whereWeight($value)
+ * @method static Builder<static>|ProductVariant whereWeightUnit($value)
+ * @method static Builder<static>|ProductVariant whereWidth($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class ProductVariant extends BaseModel
 {
@@ -119,5 +122,10 @@ class ProductVariant extends BaseModel
     public function getSymbolPriceAttribute(): string
     {
         return $this->price ? $this->price->symbolFormatted() : 'N/A';
+    }
+
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class, 'variant_id', 'id');
     }
 }
