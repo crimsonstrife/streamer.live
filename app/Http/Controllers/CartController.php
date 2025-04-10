@@ -6,8 +6,10 @@ use App\Models\ProductVariant;
 use App\Services\FourthwallService;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CartController extends Controller
 {
@@ -35,7 +37,7 @@ class CartController extends Controller
             $cart = $this->cartHelper->getCartContents();
 
             return view($shopSlug.'.cart', ['cart' => $cart ?? []]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Cart session retrieval failed: '.$e->getMessage());
 
             return redirect()->route($shopSlug.'.page')->with('error', 'Could not load cart. Please try again.');
@@ -45,7 +47,7 @@ class CartController extends Controller
     /**
      * Add product to the cart.
      */
-    public function addToCart(Request $request): ?\Illuminate\Http\RedirectResponse
+    public function addToCart(Request $request): ?RedirectResponse
     {
         $shopSlug = ShopHelper::getShopSlug();
         try {
@@ -65,7 +67,7 @@ class CartController extends Controller
             }
 
             return redirect()->route($shopSlug.'.cart.show')->with('success', 'Product added to cart!');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Failed to add product to cart: '.$e->getMessage());
 
             return redirect()->back()->with('error', 'An error occurred while adding the product to the cart.');
@@ -75,7 +77,7 @@ class CartController extends Controller
     /**
      * Update the cart quantities.
      */
-    public function updateCart(Request $request): ?\Illuminate\Http\RedirectResponse
+    public function updateCart(Request $request): ?RedirectResponse
     {
         $shopSlug = ShopHelper::getShopSlug();
         try {
@@ -97,7 +99,7 @@ class CartController extends Controller
             }
 
             return redirect()->route($shopSlug.'.cart.show')->with('success', 'Cart updated successfully.');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Failed to update cart: '.$e->getMessage());
 
             return redirect()->route($shopSlug.'.cart.show')->with('error', 'An error occurred while updating the cart.');
@@ -107,7 +109,7 @@ class CartController extends Controller
     /**
      * Remove an item from the cart.
      */
-    public function removeFromCart(string $variant_id): ?\Illuminate\Http\RedirectResponse
+    public function removeFromCart(string $variant_id): ?RedirectResponse
     {
         try {
             if (! $this->cartHelper->hasCartId()) {
@@ -121,7 +123,7 @@ class CartController extends Controller
             }
 
             return back()->with('success', 'Item removed from cart.');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Failed to remove item from cart: '.$e->getMessage());
 
             return back()->with('error', 'An error occurred while removing the item.');
@@ -131,7 +133,7 @@ class CartController extends Controller
     /**
      * Proceed to checkout.
      */
-    public function redirectToCheckout(): ?\Illuminate\Http\RedirectResponse
+    public function redirectToCheckout(): ?RedirectResponse
     {
         $shopSlug = ShopHelper::getShopSlug();
         try {
@@ -147,8 +149,8 @@ class CartController extends Controller
             $currency = config('app.default_currency', 'USD'); // Use configurable default
             session()->put('cart_currency', $currency);
 
-            return redirect()->route($shopSlug.'.checkout.external');
-        } catch (\Throwable $e) {
+            return redirect()->route('cart.checkout.external');
+        } catch (Throwable $e) {
             Log::error('Checkout failed: '.$e->getMessage());
 
             return redirect()->route($shopSlug.'.cart.show')->with('error', 'An error occurred while processing checkout.');
