@@ -32,7 +32,10 @@
             }
 
             .thumbnail-column {
-                max-height: 400px;
+                margin-right: 5%;
+                height: 100%;
+                max-height: 600px;
+                width: 6rem;
             }
 
             .thumbnail-column img {
@@ -42,6 +45,13 @@
 
             .thumbnail-column img:hover {
                 border-color: #0d6efd;
+            }
+
+            #thumbnailContainer {
+                max-height: 600px;
+                width: 3rem;
+                margin-right: 50%;
+                position: relative;
             }
 
             .carousel.vertical .carousel-inner {
@@ -60,15 +70,15 @@
 
             .carousel.vertical .carousel-item-next.carousel-item-left,
             .carousel.vertical .carousel-item-prev.carousel-item-right {
-                transform: translateY(-100%);
+                transform: translateX(-100%);
             }
 
             .carousel.vertical .active.carousel-item-left {
-                transform: translateY(100%);
+                transform: translateX(100%);
             }
 
             .carousel.vertical .active.carousel-item-right {
-                transform: translateY(-100%);
+                transform: translateX(-100%);
             }
         </style>
     @endpush
@@ -79,18 +89,18 @@
                     <!-- Main Image Carousel -->
                     <div class="row justify-content-center">
                         <!-- Thumbnail Column -->
-                        <div class="col-auto col-sm-2 col-md-2 col-lg-1">
+                        <div class="col-auto col-sm-2 col-md-2 col-lg-1 thumbnail-column">
                             <!-- Carousel Prev Button (moved here) -->
                             <button class="btn btn-outline-secondary mb-2" onclick="navigateCarousel('prev')">
                                 <i class="bi bi-chevron-up"></i>
                             </button>
 
                             <!-- Scrollable Thumbnails -->
-                            <div id="thumbnailContainer" class="overflow-auto" style="max-height: 400px;">
+                            <div id="thumbnailContainer" class="overflow-auto">
                                 @foreach($product->images as $index => $image)
                                     <img
                                             src="{!! asset($image->local_path) ?? $image->url !!}"
-                                            class="img-thumbnail mb-2 @if($index === 0) border-primary @endif"
+                                            class="img-thumbnail mb-4 @if($index === 0) border-primary @endif"
                                             data-thumb-index="{{ $index }}"
                                             style="cursor:pointer;"
                                             onclick="goToSlide({{ $index }})"
