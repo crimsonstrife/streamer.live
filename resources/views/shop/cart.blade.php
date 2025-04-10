@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
     @php
-        use App\Models\ValueObjects\MoneyValue;$shopPrefix =  App\Utilities\ShopHelper::getShopSlug();
+        $shopPrefix =  App\Utilities\ShopHelper::getShopSlug();
     @endphp
     <div class="py-4">
         <div class="container">
@@ -27,7 +27,7 @@
                                 </thead>
                                 <tbody>
                                 @php
-                                    $cartTotal = new MoneyValue(0, 'USD');
+                                    $cartTotal = new App\Models\ValueObjects\MoneyValue(0, 'USD');
                                 @endphp
                                 @foreach ($cart['items'] as $item)
                                     @php
@@ -43,12 +43,18 @@
                                     @endphp
                                     <tr>
                                         <td class="d-flex align-items-center">
-                                            @if ($item->variant->product->images->isNotEmpty())
-                                                <img src="{!! asset($image->local_path) ?? $image->url !!}"
-                                                     alt="{{ $image->alt_text }}" class="rounded me-3" width="60"
-                                                     height="60">
-                                            @endif
-                                            {{ $item->variant->name }}
+                                            <a href="{{ route('shop.product', ['slug' => $item->variant->product->slug]) }}"
+                                               style="text-decoration: none; color: inherit;">
+                                                @if ($item->variant->product->images->isNotEmpty())
+                                                    <img src="{!! asset($image->local_path) ?? $image->url !!}"
+                                                         alt="{{ $image->alt_text }}" class="rounded me-3" width="60"
+                                                         height="60">
+                                                @endif
+                                            </a>
+                                            <a href="{{ route('shop.product', ['slug' => $item->variant->product->slug]) }}"
+                                               style="text-decoration: none; color: inherit;">
+                                                {{ $item->variant->name }}
+                                            </a>
                                         </td>
                                         <td>{{ $item->variant->name }}</td>
                                         <td>
