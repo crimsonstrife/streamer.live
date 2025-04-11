@@ -27,8 +27,12 @@ class ProductReview extends Model
                 return;
             }
 
-            $review->is_verified = OrderItem::whereHas('order', fn ($q) => $q->where('user_id', $review->user_id)
-            )->whereHas('variant', fn ($q) => $q->where('product_id', $review->product_id)
+            $review->is_verified = OrderItem::whereHas(
+                'order',
+                fn ($q) => $q->where('user_id', $review->user_id)
+            )->whereHas(
+                'variant',
+                fn ($q) => $q->where('product_id', $review->product_id)
             )->exists();
         });
     }

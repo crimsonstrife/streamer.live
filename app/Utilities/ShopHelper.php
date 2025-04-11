@@ -85,8 +85,12 @@ class ShopHelper
 
     public static function userHasPurchasedProduct(int $userId, int $productId): bool
     {
-        return OrderItem::whereHas('order', fn ($query) => $query->where('user_id', $userId)
-        )->whereHas('variant', fn ($query) => $query->where('product_id', $productId)
+        return OrderItem::whereHas(
+            'order',
+            fn ($query) => $query->where('user_id', $userId)
+        )->whereHas(
+            'variant',
+            fn ($query) => $query->where('product_id', $productId)
         )->exists();
     }
 }
