@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FabricatorPageController;
+use App\Http\Controllers\ProductReviewController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Utilities\ShopHelper;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -61,6 +62,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::get('/', FabricatorPageController::class)->name('page');
         Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
     });
+    Route::post("/$productSlug/{product}/review", [ProductReviewController::class, 'store'])
+        ->middleware('auth')
+        ->name('product.review.submit');
 
     // Global fallback for all other Fabricator pages (e.g. /blog, /about, etc.)
     Route::get('/{slug}', FabricatorPageController::class)

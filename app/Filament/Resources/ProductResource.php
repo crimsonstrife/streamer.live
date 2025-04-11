@@ -38,6 +38,8 @@ class ProductResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->required()->disabled(),
                 Forms\Components\Textarea::make('description')->rows(6)->required(),
+                Forms\Components\Textarea::make('more_details')->rows(9),
+                Forms\Components\Textarea::make('product_information')->rows(5),
                 Forms\Components\TextInput::make('price')
                     ->label('Price')
                     ->required()

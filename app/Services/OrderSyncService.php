@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
 use App\Models\User;
+use Log;
 
 class OrderSyncService
 {
@@ -34,6 +35,8 @@ class OrderSyncService
                 'total' => $data['amounts']['total']['value'] ?? 0,
                 'currency' => $data['amounts']['total']['currency'] ?? 'USD',
                 'user_id' => $user?->id,
+                'created_at' => $data['createdAt'],
+                'updated_at' => $data['updatedAt'],
             ]
         );
 
@@ -62,10 +65,12 @@ class OrderSyncService
                     'price' => $offer['variant']['price']['amount'] ?? 0,
                     'currency' => $offer['variant']['unitPrice']['currency'] ?? 'USD',
                     'attributes' => $offer['variant']['attributes'] ?? [],
+                    'created_at' => $data['createdAt'],
+                    'updated_at' => $data['updatedAt'],
                 ]);
             }
         }
 
-        \Log::info("Order synced [{$order->friendly_id}] status={$order->status}");
+        Log::info("Order synced [{$order->friendly_id}] status={$order->status}");
     }
 }
