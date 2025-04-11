@@ -218,6 +218,44 @@
                         </button>
                     </div>
                 </form>
+                @if ($product->more_details || $product->product_information)
+                    <div class="accordion mt-5" id="productDetailsAccordion">
+                        @if ($product->more_details)
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingDetails">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseDetails" aria-expanded="false"
+                                            aria-controls="collapseDetails">
+                                        More Details
+                                    </button>
+                                </h2>
+                                <div id="collapseDetails" class="accordion-collapse collapse"
+                                     aria-labelledby="headingDetails" data-bs-parent="#productDetailsAccordion">
+                                    <div class="accordion-body">
+                                        {!! $product->more_details !!}
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        @if ($product->product_information)
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingInfo">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseInfo" aria-expanded="false"
+                                            aria-controls="collapseInfo">
+                                        Product Information
+                                    </button>
+                                </h2>
+                                <div id="collapseInfo" class="accordion-collapse collapse" aria-labelledby="headingInfo"
+                                     data-bs-parent="#productDetailsAccordion">
+                                    <div class="accordion-body">
+                                        {!! $product->product_information !!}
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
         <div class="row">

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyValueCast;
+use DB;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -76,6 +77,11 @@ class Product extends BaseModel
         'price' => MoneyValueCast::class,
         'compare_at_price' => MoneyValueCast::class,
         'is_featured' => 'boolean',
+    ];
+
+    protected $appends = [
+        'more_details',
+        'product_information',
     ];
 
     /**
@@ -158,5 +164,28 @@ class Product extends BaseModel
     public function getVerifiedReviewCountAttribute(): int
     {
         return $this->reviews()->where('is_verified', true)->count();
+    }
+
+    public function additionalData(): array
+    {
+        $data = DB::table('additional_product_data')
+            ->where('product_id', $this->id)
+            ->first();
+
+        return (array) $data;
+    }
+
+    public function getMoreDetailsAttribute(): string
+    {
+        $moreDetails = $this->additionalData()['more_details'] ?? '';
+
+        return html_entity_decode($moreDetails);
+    }
+
+    public function getProductInformationAttribute(): string
+    {
+        $productInformation = $this->additionalData()['product_information'] ?? '';
+
+        return html_entity_decode($productInformation);
     }
 }
