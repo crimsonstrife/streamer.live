@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\OrderResource\Pages;
 
 use App\Filament\Resources\OrderResource;
-use Filament\Actions;
+use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 
 class ListOrders extends ListRecords
@@ -13,7 +13,11 @@ class ListOrders extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Action::make('Import Orders')
+                ->label('Import Orders')
+                ->url(OrderResource::getUrl('import')) // uses the custom route we registered
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('primary'),
         ];
     }
 }

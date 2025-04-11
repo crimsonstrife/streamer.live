@@ -40,7 +40,7 @@ class OrderResource extends Resource
                     ->dateTime()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('items_count')
+                Tables\Columns\TextColumn::make('orderItems_count')
                     ->counts('orderItems')
                     ->label('Items'),
             ])
@@ -66,6 +66,7 @@ class OrderResource extends Resource
     {
         return [
             'index' => Pages\ListOrders::route('/'),
+            'import' => Pages\ImportOrder::route('/import'),
             'view' => Pages\ViewOrder::route('/{record}'),
         ];
     }
