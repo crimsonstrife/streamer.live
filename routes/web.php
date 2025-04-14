@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Support\Facades\Route;
@@ -25,15 +27,18 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     $shopSlug = ShopHelper::getShopSlug();               // 'shop'
     $productSlug = ShopHelper::getProductSlug();         // 'product'
     $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
-
-    if (! app()->environment('production')) {
-        Log::info('Shop: '.ShopHelper::getShopSlug());
-        Log::info('Product: '.ShopHelper::getProductSlug());
-        Log::info('Collection: '.ShopHelper::getCollectionSlug());
-    }
+    $blogSlug = BlogHelper::getBlogSlug();               // 'blog'
 
     // Homepage
     Route::get('/', FabricatorPageController::class)->name('fabricator.page.home');
+
+    Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () use ($blogSlug) {
+        Route::get('/', FabricatorPageController::class)->name('index');
+        Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
+        Route::post("$blogSlug/{post}/comment", [BlogCommentController::class, 'store'])
+            ->middleware('auth')
+            ->name('comment.submit');
+    });
 
     // === Cart Routes ===
     Route::prefix("$shopSlug/cart")->name($shopSlug.'.cart.')->group(function () {

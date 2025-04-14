@@ -3,8 +3,9 @@
 namespace App\Traits;
 
 use App\Abstracts\AbstractQueries;
-use App\Exceptions\CommentLimitExceededException;
 use App\Enums\Sort;
+use App\Exceptions\CommentLimitExceededException;
+use App\Facades\SecureGuestMode;
 use App\Models\Comment;
 use App\Utilities\Helpers;
 use App\Utilities\ModelResolver;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Throwable;
 
 /**
  * @mixin Model
@@ -37,9 +39,9 @@ trait HasComments
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function canCreateComment(Authenticatable $user = null): bool
+    public function canCreateComment(?Authenticatable $user = null): bool
     {
         if (method_exists($this, 'commentCanCreate')) {
             return $this->commentCanCreate($user);
@@ -75,7 +77,7 @@ trait HasComments
         return false;
     }
 
-    public function limitExceeded(Authenticatable $user = null): bool
+    public function limitExceeded(?Authenticatable $user = null): bool
     {
         $limit = $this->getCommentLimit();
 
@@ -126,11 +128,11 @@ trait HasComments
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function getAuthUser(): ?Authenticatable
     {
-        if (!$this->authCheck()) {
+        if (! $this->authCheck()) {
             return null;
         }
 
@@ -145,11 +147,11 @@ trait HasComments
     {
         $order = Sort::TOP;
 
-        if (!empty($defaultOrder = config('comments.default_sort'))) {
+        if (! empty($defaultOrder = config('comments.default_sort'))) {
             $order = $defaultOrder;
         }
 
-        if (!empty($this->commmentsSortOrder)) {
+        if (! empty($this->commmentsSortOrder)) {
             $order = $this->commmentsSortOrder;
         }
 
@@ -158,9 +160,9 @@ trait HasComments
 
     public function getRepliesSortOrder(): Sort
     {
-        $order = Sort::LATEST;
+        $order = Sort::NEWEST();
 
-        if (!empty($this->repliesSortOrder)) {
+        if (! empty($this->repliesSortOrder)) {
             $order = $this->repliesSortOrder;
         }
 

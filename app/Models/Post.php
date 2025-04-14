@@ -7,12 +7,18 @@ use App\Enums\Sort;
 use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;
+use ArrayAccess;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use LaravelIdea\Helper\App\Models\_IH_Post_QB;
 use Spatie\Sluggable\SlugOptions;
 use Spatie\Tags\HasTags;
+use Spatie\Tags\Tag;
 use Stephenjude\FilamentBlog\Models\Post as BasePost;
 
 /**
@@ -24,15 +30,15 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  * @property string|null $excerpt
  * @property string|null $banner
  * @property string $content
- * @property \Illuminate\Support\Carbon|null $published_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $published_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read mixed $banner_url
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \LakM\Comments\Models\Comment> $comments
  * @property-read int|null $comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reaction> $reactions
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Reaction> $reactions
  * @property-read int|null $reactions_count
- * @property \Illuminate\Database\Eloquent\Collection<int, \Spatie\Tags\Tag> $tags
+ * @property \Illuminate\Database\Eloquent\Collection<int, Tag> $tags
  * @property-read int|null $tags_count
  *
  * @method static Builder<static>|Post draft()
@@ -51,14 +57,14 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  * @method static Builder<static>|Post whereSlug($value)
  * @method static Builder<static>|Post whereTitle($value)
  * @method static Builder<static>|Post whereUpdatedAt($value)
- * @method static Builder<static>|Post withAllTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @method static Builder<static>|Post withAllTags(ArrayAccess|Tag|array|string $tags, ?string $type = null)
  * @method static Builder<static>|Post withAllTagsOfAnyType($tags)
- * @method static Builder<static>|Post withAnyTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @method static Builder<static>|Post withAnyTags(ArrayAccess|Tag|array|string $tags, ?string $type = null)
  * @method static Builder<static>|Post withAnyTagsOfAnyType($tags)
  * @method static Builder<static>|Post withAnyTagsOfType(array|string $type)
- * @method static Builder<static>|Post withoutTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+ * @method static Builder<static>|Post withoutTags(ArrayAccess|Tag|array|string $tags, ?string $type = null)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Post extends BasePost implements CommentableContract
 {
@@ -170,12 +176,12 @@ class Post extends BasePost implements CommentableContract
         return Attribute::get(fn () => $this->banner ? asset(Storage::url($this->banner)) : '');
     }
 
-    public function scopePublished(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|\LaravelIdea\Helper\App\Models\_IH_Post_QB
+    public function scopePublished(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
     {
         return $query->whereNotNull('published_at');
     }
 
-    public function scopeDraft(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|\LaravelIdea\Helper\App\Models\_IH_Post_QB
+    public function scopeDraft(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
     {
         return $query->whereNull('published_at');
     }
@@ -223,5 +229,10 @@ class Post extends BasePost implements CommentableContract
     public function owner(): ?BelongsTo
     {
         return $this->author();
+    }
+
+    public function commentable(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

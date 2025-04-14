@@ -7,9 +7,8 @@ use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Message extends Model
 {
@@ -22,8 +21,11 @@ class Message extends Model
 
     protected $fillable = [
         'text',
-        'author_type',
-        'author_id',
+        'commented_on_type',
+        'commented_on_id',
+        'commented_by_type',
+        'commented_by_id',
+        'reply_id',
         'approved',
         'is_spam',
     ];
