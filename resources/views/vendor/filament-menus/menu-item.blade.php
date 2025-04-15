@@ -1,5 +1,5 @@
-<div class="text-danger-600 bg-gray-50 dark:bg-white/5 py-2 px-4 rounded-lg">
+<div class="alert alert-danger bg-light border rounded p-3">
     <code>
-        {{ '<' }}{{ 'x-filament-menu menu="'.$getState().'"/>' }}
+        {{ '<x-filament-menu menu="'.$getState().'"/>' }}
     </code>
 </div>
