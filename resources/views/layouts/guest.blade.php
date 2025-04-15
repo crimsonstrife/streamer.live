@@ -9,7 +9,7 @@
         {{ $slot }}
     </div>
 </main>
-</div>
+</div> <!-- Tag match is actually contained in the header, pulled in via LayoutSection::header() -->
 
 @stack('modals')
 {!! App\View\Helpers\LayoutSection::footer() !!}

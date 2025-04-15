@@ -63,5 +63,5 @@
 <!-- Page Specific Scripts -->
 @stack('scripts')
 
-</body>
-</html>
+</body> <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
+</html>  <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->

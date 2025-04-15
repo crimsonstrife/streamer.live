@@ -43,3 +43,4 @@
             </form>
         </div>
     </header>
+    <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::header() -->
