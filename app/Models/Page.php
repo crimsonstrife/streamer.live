@@ -104,4 +104,14 @@ class Page extends BasePage
     {
         return FilamentFabricator::getLayouts()[$this->layout] ?? '';
     }
+
+    public static function getHeaderVariant(): ?string
+    {
+        return null;
+    }
+
+    public static function getFooterVariant(): ?string
+    {
+        return null;
+    }
 }
