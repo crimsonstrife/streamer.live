@@ -37231,3 +37231,9 @@ namespace {
     class Navigation extends \Spatie\Navigation\Facades\Navigation {}
     class FilamentFabricator extends \Z3d0X\FilamentFabricator\Facades\FilamentFabricator {}
 }
+
+namespace Facades\Livewire\Features\SupportFileUploads {
+    /**
+     * @mixin \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl     */
+    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl {}
+}
