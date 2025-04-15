@@ -2,23 +2,23 @@
 
 namespace App\Utilities;
 
-use Illuminate\Database\Eloquent\Builder;
-use App\Models\User;
 use App\Models\Comment;
 use App\Models\Guest;
 use App\Models\Reaction;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 
 final class ModelResolver
 {
     /** @return class-string */
     public static function commentClass(): string
     {
-        return  config('comments.model', Comment::class);
+        return config('comments.model', Comment::class);
     }
 
     public static function commentModel(): Comment
     {
-        return  app(self::commentClass());
+        return app(self::commentClass());
     }
 
     public static function commentQuery(): Builder
@@ -29,12 +29,12 @@ final class ModelResolver
     /** @return class-string */
     public static function userClass(): string
     {
-        return  config('comments.user_model', User::class);
+        return config('comments.user_model', User::class);
     }
 
     public static function userModel(): User
     {
-        return  app(self::userClass());
+        return app(self::userClass());
     }
 
     public static function userQuery(): Builder
@@ -45,12 +45,12 @@ final class ModelResolver
     /** @return class-string */
     public static function reactionClass(): string
     {
-        return  config('comments.reaction_model', Reaction::class);
+        return config('comments.reaction_model', Reaction::class);
     }
 
     public static function reactionModel(): Reaction
     {
-        return  app(self::reactionClass());
+        return app(self::reactionClass());
     }
 
     public static function reactionQuery(): Builder
@@ -61,12 +61,12 @@ final class ModelResolver
     /** @return class-string */
     public static function guestClass(): string
     {
-        return  config('comments.guest_model', Guest::class);
+        return config('comments.guest_model', Guest::class);
     }
 
     public static function guestModel(): Guest
     {
-        return  app(self::guestClass());
+        return app(self::guestClass());
     }
 
     public static function guestQuery(): Builder

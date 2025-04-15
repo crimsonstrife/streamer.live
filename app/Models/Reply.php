@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Message;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Traits\HasReactions;
 use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Reply extends Message
 {
@@ -19,8 +19,11 @@ class Reply extends Message
 
     protected $fillable = [
         'text',
-        'author_type',
-        'author_id',
+        'commented_on_type',
+        'commented_on_id',
+        'commented_by_type',
+        'commented_by_id',
+        'reply_id',
         'approved',
         'is_spam',
     ];
@@ -33,5 +36,15 @@ class Reply extends Message
     public function comment(): BelongsTo
     {
         return $this->belongsTo(M::commentClass());
+    }
+
+    public function commentedOn(): MorphTo
+    {
+        return $this->morphTo('commented_on');
+    }
+
+    public function commentedBy(): MorphTo
+    {
+        return $this->morphTo('commented_by');
     }
 }

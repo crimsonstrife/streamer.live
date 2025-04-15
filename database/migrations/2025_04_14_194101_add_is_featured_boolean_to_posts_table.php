@@ -10,8 +10,8 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::table('pages', function (Blueprint $table) {
-            $table->enum('type', ['shop', 'product_detail', 'collection_detail', 'blog', 'blog_detail'])->nullable()->after('layout');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->boolean('is_featured')->nullable()->default(false);
         });
     }
 
@@ -20,8 +20,8 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::table('pages', function (Blueprint $table) {
-            $table->dropColumn('type');
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('is_featured');
         });
     }
 };
