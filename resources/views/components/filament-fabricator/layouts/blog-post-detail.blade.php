@@ -1,4 +1,5 @@
-@props(['page'])
+@php use App\View\Helpers\Breadcrumb; @endphp
+@props(['page','post'])
     <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -6,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ $page->title ?? config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -41,6 +42,7 @@
     <!-- Page Content -->
     <main class="flex-grow-1">
         <div class="container py-4">
+            <x-ui.breadcrumb :items="Breadcrumb::forPost($post)"/>
             <x-filament-fabricator::page-blocks :blocks="$page->blocks"/>
         </div>
     </main>

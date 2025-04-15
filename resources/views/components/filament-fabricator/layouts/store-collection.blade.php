@@ -1,3 +1,4 @@
+@php use App\View\Helpers\Breadcrumb; @endphp
 @props(['page'])
     <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -6,11 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ $page->title ?? config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -26,7 +27,7 @@
 
 </head>
 <body class="bg-light">
-<x-banner />
+<x-banner/>
 <div class="min-vh-100 d-flex flex-column">
     @livewire('navigation-menu')
 
@@ -42,7 +43,8 @@
     <!-- Page Content -->
     <main class="flex-grow-1">
         <div class="container py-4">
-            <x-filament-fabricator::page-blocks :blocks="$page->blocks" />
+            <x-ui.breadcrumb :items="Breadcrumb::forCollection($collection)"/>
+            <x-filament-fabricator::page-blocks :blocks="$page->blocks"/>
         </div>
     </main>
 </div>
