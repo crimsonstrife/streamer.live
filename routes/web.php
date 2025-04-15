@@ -33,6 +33,65 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     // Homepage
     Route::get('/', FabricatorPageController::class)->name('fabricator.page.home');
 
+    // User Dashboard
+    Route::middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'verified',
+    ])->group(function () {
+        Route::get('/dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+    });
+
+    /**
+     * Route for verifying email address after registration.
+     * uses the 'verification.verify' middleware.
+     * This route is accessible via the '/email/verify/{id}/{hash}' URL.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    Route::get('/email/verify/{id}/{hash}', function () {
+        return view('auth.verify-email');
+    })->middleware(['auth:sanctum', config('jetstream.auth_session'), 'signed'])->name('verification.verify');
+
+    /**
+     * Route for handling email verification notices.
+     * This route is accessible via the '/email/verify' URL.
+     * It uses the 'verification.notice' middleware.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.notice');
+
+    /**
+     * Route to handle sending email verification link.
+     * It uses the 'verification.send' middleware.
+     * This route is accessible via the '/email/verify/send' URL.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    Route::post('/email/verify/send', function () {
+        return view('auth.verify-email');
+    })->middleware(['auth:sanctum', config('jetstream.auth_session'), 'throttle:6,1'])->name('verification.send');
+
+    /**
+     * Route for handling email verification completion.
+     * This route is accessible via the '/email/verify/complete' URL.
+     * It uses the 'verification.complete' middleware.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    Route::get('/email/verify/complete', function () {
+        return view('auth.verify-email');
+    })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.complete');
+
+    Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
+        ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
+        ->name('team-invitations.accept');
+
     Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () use ($blogSlug) {
         Route::get('/', FabricatorPageController::class)->name('index');
         Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
@@ -87,8 +146,11 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         ->name('fabricator.page.global.fallback');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-
-Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
-    ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
-    ->name('team-invitations.accept');
+/**
+ * Define a fallback route that will be executed when no other routes match.
+ * This is useful for handling 404 errors and displaying a custom error page.
+ */
+Route::fallback(function () {
+    Log::error('Fallback route triggered', ['url' => request()->url()]);
+    abort(404);
+});
