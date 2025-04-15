@@ -67,4 +67,9 @@ class Author extends BaseAuthor
     {
         return $this->belongsTo(User::class);
     }
+
+    public function biography(): string
+    {
+        return html_entity_decode($this->bio);
+    }
 }

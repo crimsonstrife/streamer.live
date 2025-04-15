@@ -10,7 +10,7 @@
                 @endif
                 <div>
                     <h5 class="mb-1">{{ $post->author->name }}</h5>
-                    <p class="text-muted mb-0">{{ $post->author->bio }}</p>
+                    <span class="text-muted mb-0">{!! $post->author->biography() !!}</span>
                 </div>
             </div>
         </div>

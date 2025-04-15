@@ -4,6 +4,7 @@ use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\ProductReviewController;
+use App\Http\Controllers\ReactionController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
@@ -38,6 +39,15 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::post("$blogSlug/{post}/comment", [BlogCommentController::class, 'store'])
             ->middleware('auth')
             ->name('comment.submit');
+        // Post reactions
+        Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])
+            ->name('reaction.toggle')
+            ->middleware('auth');
+
+        // Comment reactions
+        Route::post('/comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
+            ->name('comment.reaction.toggle')
+            ->middleware('auth');
     });
 
     // === Cart Routes ===
