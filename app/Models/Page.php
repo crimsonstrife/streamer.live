@@ -5,10 +5,12 @@ namespace App\Models;
 use App\Utilities\ShopHelper;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 use Z3d0X\FilamentFabricator\Facades\FilamentFabricator;
 use Z3d0X\FilamentFabricator\Models\Page as BasePage;
 
-class Page extends BasePage
+class Page extends BasePage implements Searchable
 {
     public function __construct(array $attributes = [])
     {
@@ -113,5 +115,16 @@ class Page extends BasePage
     public static function getFooterVariant(): ?string
     {
         return null;
+    }
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('blog.post', $this->slug);
+
+        return new SearchResult(
+            $this,
+            $this->title,
+            $url
+        );
     }
 }
