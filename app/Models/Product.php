@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 use Spatie\Tags\HasTags;
 
 /**
@@ -55,7 +57,7 @@ use Spatie\Tags\HasTags;
  *
  * @mixin Eloquent
  */
-class Product extends BaseModel
+class Product extends BaseModel implements Searchable
 {
     use HasTags;
 
@@ -187,5 +189,16 @@ class Product extends BaseModel
         $productInformation = $this->additionalData()['product_information'] ?? '';
 
         return html_entity_decode($productInformation);
+    }
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('shop.product', $this->slug);
+
+        return new SearchResult(
+            $this,
+            $this->name,
+            $url
+        );
     }
 }
