@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use LaravelIdea\Helper\App\Models\_IH_Post_QB;
+use Spatie\Searchable\Searchable;
+use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\SlugOptions;
 use Spatie\Tags\HasTags;
 use Spatie\Tags\Tag;
@@ -66,7 +68,7 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  *
  * @mixin Eloquent
  */
-class Post extends BasePost implements CommentableContract
+class Post extends BasePost implements CommentableContract, Searchable
 {
     use HasComments;
     use HasReactions;
@@ -234,5 +236,16 @@ class Post extends BasePost implements CommentableContract
     public function commentable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function getSearchResult(): SearchResult
+    {
+        $url = route('blog.post', $this->slug);
+
+        return new SearchResult(
+            $this,
+            $this->title,
+            $url
+        );
     }
 }
