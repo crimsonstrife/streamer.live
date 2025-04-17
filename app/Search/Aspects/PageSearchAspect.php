@@ -5,7 +5,6 @@ namespace App\Search\Aspects;
 use App\Models\Page;
 use Illuminate\Support\Collection;
 use Spatie\Searchable\SearchAspect;
-use Spatie\Searchable\SearchResult;
 
 class PageSearchAspect extends SearchAspect
 {
@@ -13,29 +12,29 @@ class PageSearchAspect extends SearchAspect
     {
         return Page::all()
             ->filter(function (Page $page) use ($term) {
-                // Match against the title
-                if (stripos($page->title, $term) !== false) {
-                    return true;
+                $score = 0;
+
+                // Exact match on title
+                if (strcasecmp($page->title, $term) === 0) {
+                    $score += 100;
+                } elseif (stripos($page->title, $term) !== false) {
+                    $score += 50;
                 }
 
-                // Match against any block type or data field
+                // Search inside blocks
                 foreach ($page->blocks as $block) {
-                    // Check data values
                     if (! empty($block['data'])) {
                         foreach ($block['data'] as $value) {
                             if (is_string($value) && stripos($value, $term) !== false) {
-                                return true;
+                                $score += 20;
                             }
                         }
                     }
                 }
 
-                return false;
-            })
-            ->map(fn (Page $page) => new SearchResult(
-                $page,
-                $page->title,
-                url(route('fabricator.page.global.fallback', $page->slug))
-            ));
+                $page->search_score = $score; // Attach virtual property
+
+                return $score > 0; // Only keep matches
+            });
     }
 }

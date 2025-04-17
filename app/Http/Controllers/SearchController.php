@@ -18,6 +18,11 @@ class SearchController extends Controller
             ->registerAspect(PageSearchAspect::class)
             ->search($request->input('query'));
 
-        return view('search.results', compact('results'));
+        // Manually sort by score if it exists
+        $sortedResults = $results->sortByDesc(function ($result) {
+            return property_exists($result, 'search_score') ? $result->search_score : 0;
+        });
+
+        return view('search.results', ['results' => $sortedResults]);
     }
 }
