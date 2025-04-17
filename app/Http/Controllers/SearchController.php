@@ -12,7 +12,7 @@ class SearchController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $results = (new Search)
+        $results = (new Search())
             ->registerAspect(PostSearchAspect::class)
             ->registerAspect(ProductSearchAspect::class)
             ->registerAspect(PageSearchAspect::class)
