@@ -85,7 +85,7 @@ class AppPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
                 \Z3d0X\FilamentFabricator\FilamentFabricatorPlugin::make(),
-                \Stephenjude\FilamentBlog\BlogPlugin::make(),
+                \App\Plugins\BlogPlugin::make(),
                 \Stephenjude\FilamentDebugger\DebuggerPlugin::make(),
                 \ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin::make(),
                 \Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin::make()

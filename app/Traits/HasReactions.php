@@ -3,24 +3,21 @@
 namespace App\Traits;
 
 use App\Models\Reaction;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Trait HasReactions
  *
  * This trait provides methods to handle reactions for a model.
  *
- * @package App\Traits
  * @method morphMany(string $class, string $string)
  */
 trait HasReactions
 {
     /**
      * Define the polymorphic relationship for reactions.
-     *
-     * @return MorphMany
      */
     public function reactions(): MorphMany
     {
@@ -29,10 +26,6 @@ trait HasReactions
 
     /**
      * Add a reaction to the model.
-     *
-     * @param string $type
-     * @param Model $owner
-     * @return Reaction
      */
     public function addReaction(string $type, Model $owner): Reaction
     {
@@ -45,10 +38,6 @@ trait HasReactions
 
     /**
      * Remove a specific reaction.
-     *
-     * @param string $type
-     * @param Model $owner
-     * @return int
      */
     public function removeReaction(string $type, Model $owner): int
     {
@@ -61,9 +50,6 @@ trait HasReactions
 
     /**
      * Check if a specific type of reaction exists.
-     *
-     * @param string $type
-     * @return bool
      */
     public function hasReaction(string $type): bool
     {
@@ -72,23 +58,20 @@ trait HasReactions
 
     /**
      * Count reactions of a specific type.
-     *
-     * @param string|null $type
-     * @return int
      */
-    public function countReactions(string $type = null): int
+    public function countReactions(?string $type = null): int
     {
         $query = $this->reactions();
         if ($type) {
             $query->where('type', $type);
         }
+
         return $query->count();
     }
 
     /**
      * Get a summary of all reactions.
      * Returns counts for each reaction type of the model. "i.e. ['like' => 5, 'dislike' => 2]"
-     * @return array
      */
     public function getReactionSummary(): array
     {
@@ -101,10 +84,6 @@ trait HasReactions
 
     /**
      * Toggle a reaction on the model.
-     *
-     * @param string $type
-     * @param Model $owner
-     * @return string
      */
     public function toggleReaction(string $type, Model $owner): string
     {
@@ -116,9 +95,11 @@ trait HasReactions
 
         if ($reaction) {
             $reaction->delete();
+
             return 'removed';
         } else {
             $this->addReaction($type, $owner);
+
             return 'added';
         }
     }

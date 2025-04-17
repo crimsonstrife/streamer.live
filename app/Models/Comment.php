@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Message;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Traits\HasReactions;
 use App\Utilities\ModelResolver;
 use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -16,16 +16,19 @@ use Illuminate\Support\Facades\DB;
 
 class Comment extends Message
 {
-    use HasReactions;
     use HasOwner;
     use HasOwnerAvatar;
+    use HasReactions;
 
     protected $table = 'comments';
 
     protected $fillable = [
         'text',
-        'author_type',
-        'author_id',
+        'commented_on_type',
+        'commented_on_id',
+        'commented_by_type',
+        'commented_by_id',
+        'reply_id',
         'approved',
         'is_spam',
     ];
@@ -40,12 +43,9 @@ class Comment extends Message
         return $this->morphTo();
     }
 
-    /**
-     * @return HasMany
-     */
     public function replies(): HasMany
     {
-        return $this->hasMany(Reply::class, 'reply_id', 'id');
+        return $this->hasMany(self::class, 'reply_id')->with('replies');
     }
 
     public function replyReactions(): HasManyThrough
@@ -75,13 +75,33 @@ class Comment extends Message
             type = 'dislike')";
 
         return $query->addSelect(
-            DB::raw('(select ' .
-                $reactionsCount . ' + ' .
-                $repliesCountQuery . ' + ' .
-                $replyReactionsCount . ' - ' .
-                $dislikesCountQuery . ' - ' .
-                $replyReactionsDislikeCount . ') ' .
+            DB::raw('(select '.
+                $reactionsCount.' + '.
+                $repliesCountQuery.' + '.
+                $replyReactionsCount.' - '.
+                $dislikesCountQuery.' - '.
+                $replyReactionsDislikeCount.') '.
                 'as score')
         );
+    }
+
+    public function content(): string
+    {
+        return html_entity_decode($this->text);
+    }
+
+    public function commentedOn(): MorphTo
+    {
+        return $this->morphTo('commented_on');
+    }
+
+    public function commentedBy(): MorphTo
+    {
+        return $this->morphTo('commented_by');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'reply_id');
     }
 }

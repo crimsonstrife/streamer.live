@@ -15,8 +15,7 @@ use Spatie\Enum\Laravel\Enum;
  * @method static self CONTROVERSIAL()
  * @method static self REPLIES()
  * @method static self POPULAR()
- *
- * @package App\Enums
+ * @method static self LATEST()
  */
 final class Sort extends Enum
 {
@@ -51,10 +50,10 @@ final class Sort extends Enum
      */
     public const POPULAR = 'popular';
 
+    public const LATEST = 'latest';
+
     /**
      * Get the default value for the enum.
-     *
-     * @return string
      */
     public static function default(): string
     {

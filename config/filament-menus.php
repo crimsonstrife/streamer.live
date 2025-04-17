@@ -1,9 +1,9 @@
 <?php
 
 return [
-    "locals" => [
-        "en" => [
-            "en" => "English"
-        ]
-    ]
+    'locals' => [
+        'en' => [
+            'en' => 'English',
+        ],
+    ],
 ];

@@ -5,18 +5,32 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationManager;
+use App\Models\Category;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\SpatieTagsInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $slug = 'store/products';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $navigationGroup = 'Store';
+
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -24,6 +38,8 @@ class ProductResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->required()->disabled(),
                 Forms\Components\Textarea::make('description')->rows(6)->required(),
+                Forms\Components\Textarea::make('more_details')->rows(9),
+                Forms\Components\Textarea::make('product_information')->rows(5),
                 Forms\Components\TextInput::make('price')
                     ->label('Price')
                     ->required()
@@ -32,7 +48,7 @@ class ProductResource extends Resource
                     ->prefix('$')
                     ->dehydrateStateUsing(fn ($state) => (float) $state) // avoid object binding
                     ->formatStateUsing(fn ($state) => is_object($state) && method_exists($state, 'raw') ? $state->raw() : $state),
-                Forms\Components\Select::make('status')->required()->options([
+                Forms\Components\Select::make('state')->required()->options([
                     'AVAILABLE' => 'Available',
                     'SOLDOUT' => 'Sold Out',
                 ])->default('AVAILABLE'),
@@ -41,6 +57,43 @@ class ProductResource extends Resource
                     'HIDDEN' => 'Private',
                     'PUBLIC' => 'Public',
                 ])->default('PUBLIC'),
+                Toggle::make('is_featured')
+                    ->label('Featured')
+                    ->inline(false)
+                    ->default(false)
+                    ->helperText('Mark this product as featured'),
+                Forms\Components\Select::make('categories')
+                    ->multiple()
+                    ->relationship(
+                        name: 'categories',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn ($query) => $query->where('type', 'product')
+                    )
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label(__('filament-blog::filament-blog.name'))
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
+                                if (($get('slug') ?? '') !== Str::slug($old)) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug($state));
+                            }),
+                        Forms\Components\TextInput::make('slug')
+                            ->label(__('filament-blog::filament-blog.slug'))
+                            ->required()
+                            ->unique(Category::class, 'slug', fn ($record) => $record),
+                        Forms\Components\Toggle::make('is_visible')
+                            ->label(__('filament-blog::filament-blog.visible_to_guests'))
+                            ->default(true),
+                        Forms\Components\Hidden::make('type')->default('product'),
+                    ])
+                    ->preload()
+                    ->searchable(),
+                SpatieTagsInput::make('tags')
+                    ->label(__('filament-blog::filament-blog.tags'))->type('product'),
             ]);
     }
 

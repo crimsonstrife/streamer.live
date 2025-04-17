@@ -50,7 +50,7 @@ class Order extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
     public function getFormattedTotalAttribute(): string
@@ -61,5 +61,10 @@ class Order extends Model
     public function getCustomerNameAttribute(): string
     {
         return $this->billing_address['name'] ?? $this->username ?? $this->email;
+    }
+
+    public function orderItems(): HasMany
+    {
+        return $this->items();
     }
 }
