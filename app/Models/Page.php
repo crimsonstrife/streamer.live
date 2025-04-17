@@ -23,7 +23,7 @@ class Page extends BasePage implements Searchable
 
     protected static function booted(): void
     {
-        static::saved(function ($page) {
+        static::saved(static function ($page) {
             if ($page->type === 'shop') {
                 ShopHelper::clearSlugCache();
             }
@@ -88,13 +88,7 @@ class Page extends BasePage implements Searchable
             $layoutData = $layoutClass::getData($this);
 
             // Merge and log
-            $finalData = array_merge($layoutData, ['page' => $this]);
-
-            if (config('app.debug')) {
-                logger()->debug('Layout data sent to view', $finalData);
-            }
-
-            return $finalData;
+            return array_merge($layoutData, ['page' => $this]);
         }
 
         return [
