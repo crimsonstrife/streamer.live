@@ -44,22 +44,31 @@ class Helpers
         return Auth::guard(Auth::getDefaultDriver());
     }
 
-    public static function highlight_search_match(string $text, string $term, int $radius = 40): string
+    public static function highlight_search_match(string $text, string $term, int $radius = 40, bool $highlightAll = true): string
     {
-        // Escape for regex
+        // Escape special regex characters
         $escapedTerm = preg_quote($term, '/');
 
-        // Find match with context around it
-        if (preg_match("/(.{0,{$radius}}{$escapedTerm}.{0,{$radius}})/i", $text, $match)) {
+        // Strip any dangerous HTML tags if needed
+        $safeText = strip_tags($text);
+
+        // Try to find a snippet around the search term
+        if (preg_match("/(.{0,{$radius}}{$escapedTerm}.{0,{$radius}})/i", $safeText, $match)) {
             $snippet = $match[1];
 
-            // Highlight the matched term
-            $highlighted = preg_replace("/($escapedTerm)/i", '<mark>$1</mark>', $snippet);
+            // Highlight occurrences
+            $pattern = $highlightAll ? "/($escapedTerm)/i" : "/($escapedTerm)/iU";
+
+            $highlighted = preg_replace($pattern, '<mark>$1</mark>', $snippet);
+
+            // Trim edges nicely
+            $highlighted = ltrim($highlighted);
+            $highlighted = rtrim($highlighted);
 
             return '...'.$highlighted.'...';
         }
 
-        // Fallback: return a truncated version
-        return Str::limit($text, $radius * 2);
+        // If no match found, fallback to a nice word-limited version
+        return Str::words($safeText, ($radius / 4), '...');
     }
 }
