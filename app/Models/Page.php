@@ -119,7 +119,7 @@ class Page extends BasePage implements Searchable
 
     public function getSearchResult(): SearchResult
     {
-        $url = route('blog.post', $this->slug);
+        $url = route('fabricator.page.global.fallback', $this->slug);
 
         return new SearchResult(
             $this,

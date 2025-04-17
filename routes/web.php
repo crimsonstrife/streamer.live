@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
+use App\Http\Controllers\SearchController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
@@ -92,6 +93,8 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
         ->name('team-invitations.accept');
 
+    Route::get('/search', SearchController::class)->name('search');
+
     Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () use ($blogSlug) {
         Route::get('/', FabricatorPageController::class)->name('index');
         Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
@@ -140,7 +143,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         ->middleware('auth')
         ->name('product.review.submit');
 
-    // Global fallback for all other Fabricator pages (e.g. /blog, /about, etc.)
+    // Global fallback for all other Fabricator pages
     Route::get('/{slug}', FabricatorPageController::class)
         ->where('slug', '.*')
         ->name('fabricator.page.global.fallback');
