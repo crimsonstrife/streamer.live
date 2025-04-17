@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyValueCast;
+use App\Utilities\ShopHelper;
 use DB;
 use Eloquent;
 use Exception;
@@ -193,7 +194,7 @@ class Product extends BaseModel implements Searchable
 
     public function getSearchResult(): SearchResult
     {
-        $url = route('shop.product', $this->slug);
+        $url = route(ShopHelper::getShopSlug().'.product', $this->slug);
 
         return new SearchResult(
             $this,

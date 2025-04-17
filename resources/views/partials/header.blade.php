@@ -38,8 +38,8 @@
                 LOGO HERE
                 <span class="fs-4">{{ config('app.name', 'Streamer.live') }}</span>
             </a>
-            <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search">
-                <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+            <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search" method="GET" action="{{ route('search') }}">
+                <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search">
             </form>
         </div>
     </header>

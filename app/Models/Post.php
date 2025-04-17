@@ -7,6 +7,7 @@ use App\Enums\Sort;
 use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;
+use App\Utilities\BlogHelper;
 use ArrayAccess;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -240,7 +241,7 @@ class Post extends BasePost implements CommentableContract, Searchable
 
     public function getSearchResult(): SearchResult
     {
-        $url = route('blog.post', $this->slug);
+        $url = route(BlogHelper::getBlogSlug().'.post', $this->slug);
 
         return new SearchResult(
             $this,
