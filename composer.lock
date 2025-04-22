@@ -15121,16 +15121,16 @@
         },
         {
             "name": "stephenjude/filament-feature-flags",
-            "version": "3.0.1",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stephenjude/filament-feature-flags.git",
-                "reference": "4441fd4463e77ad731d395090f2835fdde34bf30"
+                "reference": "40d6c9cb8daa2871686e2f0a4c374df7364c3b44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stephenjude/filament-feature-flags/zipball/4441fd4463e77ad731d395090f2835fdde34bf30",
-                "reference": "4441fd4463e77ad731d395090f2835fdde34bf30",
+                "url": "https://api.github.com/repos/stephenjude/filament-feature-flags/zipball/40d6c9cb8daa2871686e2f0a4c374df7364c3b44",
+                "reference": "40d6c9cb8daa2871686e2f0a4c374df7364c3b44",
                 "shasum": ""
             },
             "require": {
@@ -15183,9 +15183,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stephenjude/filament-feature-flags/issues",
-                "source": "https://github.com/stephenjude/filament-feature-flags/tree/3.0.1"
+                "source": "https://github.com/stephenjude/filament-feature-flags/tree/3.0.2"
             },
-            "time": "2025-03-31T19:49:10+00:00"
+            "time": "2025-04-16T10:52:42+00:00"
         },
         {
             "name": "stephenjude/filament-jetstream",
