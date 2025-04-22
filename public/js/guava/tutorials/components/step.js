@@ -164,7 +164,7 @@ function stepComponent ({
     },
     findElement: function (name) {
       return (
-        document.querySelector(selector.replace(/\./g, '\\$&')) ??
+        document.querySelector(selector.replace(/\\/g, '\\\\').replace(/\./g, '\\$&')) ??
                 document.querySelector(selector)
       )
     },
