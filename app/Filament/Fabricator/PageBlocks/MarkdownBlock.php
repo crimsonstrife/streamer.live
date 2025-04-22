@@ -3,8 +3,7 @@
 namespace App\Filament\Fabricator\PageBlocks;
 
 use Filament\Forms\Components\Builder\Block;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea as SimpleTextarea;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
@@ -16,19 +15,9 @@ class MarkdownBlock extends PageBlock
         return Block::make('markdown')
             ->label('Markdown Block')
             ->schema([
-                SimpleTextarea::make('markdown')
+                MarkdownEditor::make('markdown')
                     ->label('Markdown Content')
-                    ->rows(10)
                     ->required(),
-
-                Select::make('editor_height')
-                    ->label('Editor Size')
-                    ->options([
-                        'small' => 'Small (5 rows)',
-                        'medium' => 'Medium (10 rows)',
-                        'large' => 'Large (20 rows)',
-                    ])
-                    ->default('medium'),
 
                 TextInput::make('custom_class')
                     ->label('Custom CSS Class')
@@ -51,7 +40,6 @@ class MarkdownBlock extends PageBlock
             'markdown' => $data['markdown'] ?? '',
             'customClass' => $data['custom_class'] ?? '',
             'showPreview' => $data['show_preview'] ?? false,
-            'editorHeight' => $data['editor_height'] ?? 'medium',
             'allowUnsafe' => $data['allow_unsafe_html'] ?? false,
         ];
     }

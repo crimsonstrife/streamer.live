@@ -1,13 +1,4 @@
-@aware(['page','markdown', 'customClass', 'showPreview' => false, 'editorHeight' => 'medium', 'allowUnsafe' => false])
-
-@php
-    $height = match ($editorHeight) {
-        'small' => 5,
-        'medium' => 10,
-        'large' => 20,
-        default => 10,
-    };
-@endphp
+@aware(['page','markdown', 'customClass', 'showPreview' => false, 'allowUnsafe' => false])
 
 <div class="{{ $customClass }}">
     <div class="prose">
