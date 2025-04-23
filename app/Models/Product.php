@@ -88,6 +88,13 @@ class Product extends BaseModel implements Searchable
     ];
 
     /**
+     * Cached additional data for this product.
+     *
+     * @var array|null
+     */
+    protected $cachedAdditionalData = null;
+
+    /**
      * Get the collections this product belongs to.
      */
     public function collections(): BelongsToMany
@@ -171,11 +178,17 @@ class Product extends BaseModel implements Searchable
 
     public function additionalData(): array
     {
+        if ($this->cachedAdditionalData !== null) {
+            return $this->cachedAdditionalData;
+        }
+
         $data = DB::table('additional_product_data')
             ->where('product_id', $this->id)
             ->first();
 
-        return (array) $data;
+        $this->cachedAdditionalData = (array) $data;
+
+        return $this->cachedAdditionalData;
     }
 
     public function getMoreDetailsAttribute(): string
