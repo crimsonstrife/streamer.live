@@ -8,8 +8,10 @@ use App\Services\TwitchService;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
+use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
@@ -44,6 +46,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Blade::if('filament', function () {
+            return ViewHelpers::isFilament();
+        });
+
         Health::checks([
             OptimizedAppCheck::new(),
             DebugModeCheck::new(),
