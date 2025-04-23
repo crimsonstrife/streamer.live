@@ -18,11 +18,7 @@ class ProductReviewController extends Controller
 
         $user = auth()->user();
 
-        $isVerified = $product->variants()
-            ->whereHas('orderItems.order', function ($q) use ($user) {
-                $q->where('user_id', $user->id);
-            })
-            ->exists();
+        $isVerified = ProductReview::verifyPurchase($user->id, $product->id);
 
         ProductReview::create([
             'product_id' => $product->id,

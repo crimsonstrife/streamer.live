@@ -20,23 +20,6 @@ class ProductReview extends Model
         'is_verified' => 'boolean',
     ];
 
-    public static function booted()
-    {
-        static::creating(function ($review) {
-            if (! $review->user_id) {
-                return;
-            }
-
-            $review->is_verified = OrderItem::whereHas(
-                'order',
-                fn ($q) => $q->where('user_id', $review->user_id)
-            )->whereHas(
-                'variant',
-                fn ($q) => $q->where('product_id', $review->product_id)
-            )->exists();
-        });
-    }
-
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -50,5 +33,16 @@ class ProductReview extends Model
     public function canReview(): bool
     {
         return Helpers::userHasPurchasedProduct($this->user_id, $this->product_id);
+    }
+
+    public function verifyPurchase($user_id, $product_id): bool
+    {
+        return OrderItem::whereHas(
+            'order',
+            static fn ($q) => $q->where('user_id', $user_id)
+        )->whereHas(
+            'variant',
+            fn ($q) => $q->where('product_id', $product_id)
+        )->exists();
     }
 }
