@@ -2,13 +2,16 @@
 
 namespace App\Providers\Filament;
 
+use A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin;
 use App\Filament\Pages\ApiTokens;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Pages\CreateTeam;
 use App\Filament\Pages\EditProfile;
 use App\Filament\Pages\EditTeam;
 use App\Listeners\SwitchTeam;
 use App\Models\Team;
+use App\Plugins\BlogPlugin;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Filament\Events\TenantSet;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
@@ -18,8 +21,10 @@ use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\SpatieLaravelTranslatablePlugin;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
+use Gerenuk\FilamentBanhammer\FilamentBanhammerPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -28,10 +33,18 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Event;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 use Laravel\Fortify\Fortify;
 use Laravel\Jetstream\Features;
 use Laravel\Jetstream\Jetstream;
+use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
+use Stephenjude\FilamentDebugger\DebuggerPlugin;
+use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
+use TomatoPHP\FilamentMenus\FilamentMenusPlugin;
+use TomatoPHP\FilamentSeo\FilamentSeoPlugin;
+use TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin;
+use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -57,6 +70,7 @@ class AppPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->pages([
                 Pages\Dashboard::class,
                 EditProfile::class,
@@ -83,23 +97,23 @@ class AppPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
-                \A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin::make(),
-                \Z3d0X\FilamentFabricator\FilamentFabricatorPlugin::make(),
-                \App\Plugins\BlogPlugin::make(),
-                \Stephenjude\FilamentDebugger\DebuggerPlugin::make(),
-                \ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin::make(),
-                \Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin::make()
+                FilamentShortUrlPlugin::make(),
+                FilamentFabricatorPlugin::make(),
+                BlogPlugin::make(),
+                DebuggerPlugin::make(),
+                FilamentSpatieLaravelHealthPlugin::make(),
+                FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
-                \Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin::make(),
-                \Filament\SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
-                \TomatoPHP\FilamentMenus\FilamentMenusPlugin::make(),
-                \TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin::make(),
-                \TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin::make()
-                    ->allowSiteSettings()
+                MaintenanceSwitchPlugin::make(),
+                SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
+                FilamentMenusPlugin::make(),
+                FilamentMediaManagerPlugin::make(),
+                FilamentSettingsHubPlugin::make()
+                    ->allowSiteSettings(false)
                     ->allowShield()
-                    ->allowSocialMenuSettings(),
-                \Gerenuk\FilamentBanhammer\FilamentBanhammerPlugin::make(),
-                \TomatoPHP\FilamentSeo\FilamentSeoPlugin::make()->allowShield(),
+                    ->allowSocialMenuSettings(false),
+                FilamentBanhammerPlugin::make(),
+                FilamentSeoPlugin::make()->allowShield(),
             ]);
 
         if (Features::hasApiFeatures()) {

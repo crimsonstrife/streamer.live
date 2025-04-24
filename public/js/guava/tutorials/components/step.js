@@ -224,7 +224,6 @@ function stepComponent({
     }
   };
 }
-
 export {
     stepComponent as default
 };
