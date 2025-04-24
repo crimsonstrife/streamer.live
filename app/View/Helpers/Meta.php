@@ -2,4 +2,6 @@
 
 namespace App\View\Helpers;
 
-class Meta {}
+class Meta
+{
+}
