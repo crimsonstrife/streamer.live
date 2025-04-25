@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Integrations\Pages;
 
 use App\Filament\Clusters\Integrations;
-use App\Settings\DiscordSettings as DiscordIntegrationSettings;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -14,7 +13,7 @@ class DiscordSettings extends SettingsPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static string $settings = DiscordIntegrationSettings::class;
+    protected static string $settings = \App\Settings\DiscordSettings::class;
 
     protected static ?string $cluster = Integrations::class;
 

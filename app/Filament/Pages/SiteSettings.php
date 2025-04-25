@@ -3,7 +3,6 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Clusters\Settings;
-use App\Settings\SiteSettings as GeneralSiteSettings;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
@@ -18,7 +17,7 @@ class SiteSettings extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static string $settings = GeneralSiteSettings::class;
+    protected static string $settings = \App\Settings\SiteSettings::class;
 
     public function form(Form $form): Form
     {

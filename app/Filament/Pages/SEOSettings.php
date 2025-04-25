@@ -3,7 +3,6 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Clusters\Settings;
-use App\Settings\SEOSettings as SEOSiteSettings;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
@@ -24,7 +23,7 @@ class SEOSettings extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static string $settings = SEOSiteSettings::class;
+    protected static string $settings = \App\Settings\SEOSettings::class;
 
     public function getTitle(): string
     {

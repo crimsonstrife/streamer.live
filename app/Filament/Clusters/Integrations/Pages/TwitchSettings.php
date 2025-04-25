@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Integrations\Pages;
 
 use App\Filament\Clusters\Integrations;
-use App\Settings\TwitchSettings as TwitchIntegrationSettings;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -14,7 +13,7 @@ class TwitchSettings extends SettingsPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static string $settings = TwitchIntegrationSettings::class;
+    protected static string $settings = \App\Settings\TwitchSettings::class;
 
     protected static ?string $cluster = Integrations::class;
 
