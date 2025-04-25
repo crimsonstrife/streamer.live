@@ -12,7 +12,7 @@ class SiteSettings extends SettingsPage
 {
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationLabel = 'Site Settings';
+    protected static ?string $navigationLabel = 'General Settings';
 
     protected static ?string $navigationGroup = 'Settings';
 

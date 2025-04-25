@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Filament\Resources\PostResource;
 use App\Services\FourthwallService;
 use App\Services\TwitchService;
+use App\Settings\LookFeelSettings;
+use App\Settings\SEOSettings;
+use App\Settings\SiteSettings;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
@@ -12,6 +15,7 @@ use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
@@ -46,6 +50,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        View::composer('*', function ($view) {
+            $view->with('siteSettings', app(SiteSettings::class))
+                ->with('seoSettings', app(SEOSettings::class))
+                ->with('themeSettings', app(LookFeelSettings::class));
+        });
+
         Blade::if('filament', function () {
             return ViewHelpers::isFilament();
         });

@@ -7,6 +7,7 @@ use App\Settings\SEOSettings as SEOSiteSettings;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -15,7 +16,7 @@ use TomatoPHP\FilamentSeo\Jobs\GoogleIndexURLJob;
 
 class SEOSettings extends SettingsPage
 {
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static ?string $navigationIcon = 'heroicon-o-magnifying-glass-circle';
 
     protected static ?string $navigationLabel = 'SEO Settings';
 
@@ -59,6 +60,15 @@ class SEOSettings extends SettingsPage
     protected function getFormSchema(): array
     {
         return [
+            Section::make('General Meta Settings')
+                ->schema([
+                    TextInput::make('meta_title')
+                        ->required()
+                        ->placeholder(config('app.name', 'Streamer.live'))
+                        ->default(config('app.name', 'Streamer.live')),
+                    TextArea::make('meta_description'),
+                ]),
+
             Section::make(trans('filament-seo::messages.google_analytics.title'))
                 ->description(trans('filament-seo::messages.google_analytics.description'))
                 ->schema([
