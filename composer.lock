@@ -1110,19 +1110,20 @@
         },
         {
             "name": "asmit/filament-mention",
-            "version": "v1.0.4",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AsmitNepali/filament-mention.git",
-                "reference": "efaffef7c2ae7f58ba6e831e4f59f020a20b6f13"
+                "reference": "11a5e81345d05fd3470f7e1147dbe7e485de8d74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AsmitNepali/filament-mention/zipball/efaffef7c2ae7f58ba6e831e4f59f020a20b6f13",
-                "reference": "efaffef7c2ae7f58ba6e831e4f59f020a20b6f13",
+                "url": "https://api.github.com/repos/AsmitNepali/filament-mention/zipball/11a5e81345d05fd3470f7e1147dbe7e485de8d74",
+                "reference": "11a5e81345d05fd3470f7e1147dbe7e485de8d74",
                 "shasum": ""
             },
             "require": {
+                "filament/forms": "^3.0",
                 "filament/support": "^3.0"
             },
             "type": "library",
@@ -1149,12 +1150,12 @@
                     "role": "Software Engineer"
                 }
             ],
-            "description": "Mention editor",
+            "description": "A Laravel Filament package for implementing a customizable mention editor with support for tagging users or entities.",
             "support": {
                 "issues": "https://github.com/AsmitNepali/filament-mention/issues",
-                "source": "https://github.com/AsmitNepali/filament-mention/tree/v1.0.4"
+                "source": "https://github.com/AsmitNepali/filament-mention/tree/v1.1.0"
             },
-            "time": "2025-02-21T02:12:20+00:00"
+            "time": "2025-04-26T16:48:19+00:00"
         },
         {
             "name": "asosick/filament-layout-manager",
@@ -5887,16 +5888,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.44.3",
+            "version": "v11.44.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "b0a87fbd13c0b05227a00da7968701f4274e3195"
+                "reference": "00bc6ac91a6d577bf051c18ddaa638c0d221e1c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/b0a87fbd13c0b05227a00da7968701f4274e3195",
-                "reference": "b0a87fbd13c0b05227a00da7968701f4274e3195",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/00bc6ac91a6d577bf051c18ddaa638c0d221e1c7",
+                "reference": "00bc6ac91a6d577bf051c18ddaa638c0d221e1c7",
                 "shasum": ""
             },
             "require": {
@@ -6098,7 +6099,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2025-04-23T14:45:24+00:00"
+            "time": "2025-04-25T12:40:47+00:00"
         },
         {
             "name": "laravel/helpers",
@@ -23330,5 +23331,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
