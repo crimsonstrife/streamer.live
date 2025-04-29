@@ -27292,6 +27292,32 @@ namespace nickurt\Akismet {
     }
 }
 
+namespace Omaressaouaf\LaravelIdGenerator {
+    /**
+     * @see \Omaressaouaf\LaravelIdGenerator\IdGeneratorFactory
+     */
+    class IdGenerator
+    {
+        /**
+         * @static
+         */
+        public static function generateFromConfig($generatorName)
+        {
+            /** @var \Omaressaouaf\LaravelIdGenerator\IdGeneratorFactory $instance */
+            return $instance->generateFromConfig($generatorName);
+        }
+
+        /**
+         * @static
+         */
+        public static function generate($modelOrTable, $field = 'id', $paddingLength = 5, $prefix = '', $suffix = '')
+        {
+            /** @var \Omaressaouaf\LaravelIdGenerator\IdGeneratorFactory $instance */
+            return $instance->generate($modelOrTable, $field, $paddingLength, $prefix, $suffix);
+        }
+    }
+}
+
 namespace Spatie\Health\Facades {
     /**
      * @mixin \Spatie\Health\Health
@@ -37241,6 +37267,7 @@ namespace {
     class Livewire extends \Livewire\Livewire {}
     class Purifier extends \Mews\Purifier\Facades\Purifier {}
     class Akismet extends \nickurt\Akismet\Facade {}
+    class IdGenerator extends \Omaressaouaf\LaravelIdGenerator\IdGenerator {}
     class Health extends \Spatie\Health\Facades\Health {}
     class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
     class Navigation extends \Spatie\Navigation\Facades\Navigation {}

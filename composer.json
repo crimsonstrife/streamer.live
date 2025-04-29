@@ -71,6 +71,7 @@
         "mews/purifier": "^3.4",
         "nesbot/carbon": "^3.8",
         "nickurt/laravel-akismet": "^2.0",
+        "omaressaouaf/laravel-id-generator": "^1.2",
         "parallax/filament-comments": "^1.4",
         "pxlrbt/filament-activity-log": "^1.1",
         "ramsey/uuid": "^4.7",

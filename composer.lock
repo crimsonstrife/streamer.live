@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32f3c46ab3c9393057f2b099cdf8144a",
+    "content-hash": "e5ebc6cbc524125f882749fc855f532a",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -8765,6 +8765,72 @@
                 }
             ],
             "time": "2024-11-21T10:39:51+00:00"
+        },
+        {
+            "name": "omaressaouaf/laravel-id-generator",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/omaressaouaf/laravel-id-generator.git",
+                "reference": "439a61db783b8cb475acffc678553b3164cc3125"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/omaressaouaf/laravel-id-generator/zipball/439a61db783b8cb475acffc678553b3164cc3125",
+                "reference": "439a61db783b8cb475acffc678553b3164cc3125",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^10.0||^11.0||^12.0",
+                "php": "^8.2|^8.3|^8.4"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.21",
+                "orchestra/testbench": "^8.0",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "IdGenerator": "Omaressaouaf\\LaravelIdGenerator\\IdGenerator"
+                    },
+                    "providers": [
+                        "Omaressaouaf\\LaravelIdGenerator\\IdGeneratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Omaressaouaf\\LaravelIdGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Omar Essaouaf",
+                    "email": "souafomar@gmail.com"
+                }
+            ],
+            "description": "Generate custom incremental unique ids for Laravel",
+            "homepage": "https://github.com/omaressaouaf/laravel-id-generator",
+            "keywords": [
+                "id-generation",
+                "id-generator",
+                "increment-id",
+                "laravel",
+                "laravel-id-generator",
+                "omaressaouaf",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/omaressaouaf/laravel-id-generator/issues",
+                "source": "https://github.com/omaressaouaf/laravel-id-generator/tree/v1.2.1"
+            },
+            "time": "2025-04-26T13:23:33+00:00"
         },
         {
             "name": "openspout/openspout",
