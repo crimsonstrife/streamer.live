@@ -3,6 +3,7 @@
 namespace App\Utilities;
 
 use App\Services\TwitchService;
+use App\Settings\TwitchSettings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -11,9 +12,12 @@ class StreamHelper
 {
     protected TwitchService $twitch;
 
+    protected bool $enabled;
+
     public function __construct(TwitchService $twitch)
     {
         $this->twitch = $twitch;
+        $this->enabled = app(TwitchSettings::class)->enable_integration;
     }
 
     /**
@@ -23,39 +27,49 @@ class StreamHelper
     {
         $cacheKey = "stream_info_{$username}";
 
-        return Cache::remember($cacheKey, now()->addMinutes(2), function () use ($username) {
-            try {
-                return $this->twitch->getStreamData($username);
-            } catch (Throwable $e) {
-                Log::warning("Twitch stream fetch failed for {$username}: {$e->getMessage()}");
+        if ($this->enabled) {
+            return Cache::remember($cacheKey, now()->addMinutes(2), function () use ($username) {
+                try {
+                    return $this->twitch->getStreamData($username);
+                } catch (Throwable $e) {
+                    Log::warning("Twitch stream fetch failed for {$username}: {$e->getMessage()}");
 
-                return null;
-            }
-        });
+                    return null;
+                }
+            });
+        }
+
+        Log::warning("Twitch stream fetch failed for {$username}: Twitch integration is disabled");
+
+        return null;
     }
 
     /**
      * Check if the user is live.
      */
-    public function getStreamStatus($username)
+    public function getStreamStatus($username = null)
     {
-        if (empty($username)) {
-            return 'offline'; // avoid processing null or empty usernames
+        if ($this->enabled) {
+            if (empty($username)) {
+                $username = app(TwitchSettings::class)->channel_name;
+            }
+
+            $streamData = $this->getStreamInfo($username);
+
+            if (empty($streamData) || ! isset($streamData[0]['type'])) {
+                return 'offline';
+            }
+
+            // Does the 'type' equal 'live'?
+            if ($streamData[0]['type'] !== 'live') {
+                return false;
+            }
+
+            return $streamData[0]['type'];
         }
 
-        $streamData = $this->getStreamInfo($username);
+        Log::warning("Twitch stream fetch failed for {$username}: Twitch integration is disabled");
 
-        Log::debug(print_r($streamData, true));
-
-        if (empty($streamData) || ! isset($streamData[0]['type'])) {
-            return 'offline';
-        }
-
-        // Does the 'type' equal 'live'?
-        if ($streamData[0]['type'] !== 'live') {
-            return false;
-        }
-
-        return $streamData[0]['type'];
+        return null;
     }
 }
