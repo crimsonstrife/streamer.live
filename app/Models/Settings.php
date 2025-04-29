@@ -4,10 +4,7 @@ namespace App\Models;
 
 use Exception;
 use Illuminate\Container\Container;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
-use JsonException;
 use ReflectionProperty;
 use Spatie\LaravelSettings\Events\SavingSettings;
 use Spatie\LaravelSettings\Events\SettingsLoaded;
@@ -17,12 +14,9 @@ use Spatie\LaravelSettings\Settings as SpatieSettings;
 use Spatie\LaravelSettings\SettingsConfig;
 use Spatie\LaravelSettings\SettingsRepositories\SettingsRepository;
 use Spatie\LaravelSettings\Support\Crypto;
-use Symfony\Component\HttpFoundation\Response;
 
 abstract class Settings extends SpatieSettings
 {
-    protected ?Collection $originalValues = null;
-
     private SettingsMapper $mapper;
 
     private SettingsConfig $config;
@@ -31,12 +25,27 @@ abstract class Settings extends SpatieSettings
 
     private bool $configInitialized = false;
 
+    protected ?Collection $originalValues = null;
+
     abstract public static function group(): string;
+
+    public static function repository(): ?string
+    {
+        return null;
+    }
+
+    public static function casts(): array
+    {
+        return [];
+    }
+
+    public static function encrypted(): array
+    {
+        return [];
+    }
 
     /**
      * @return static
-     *
-     * @throws MissingSettings
      */
     public static function fake(array $values, bool $loadMissingValues = true): self
     {
@@ -65,6 +74,20 @@ abstract class Settings extends SpatieSettings
         return app(Container::class)->instance(static::class, new static(
             $mergedValues
         ));
+    }
+
+    public function __get($name)
+    {
+        $this->loadValues();
+
+        return $this->{$name};
+    }
+
+    public function __set($name, $value)
+    {
+        $this->loadValues();
+
+        $this->{$name} = $value;
     }
 
     public function __debugInfo(): array
@@ -101,17 +124,6 @@ abstract class Settings extends SpatieSettings
         );
     }
 
-    public function toCollection(): Collection
-    {
-        $this->ensureConfigIsLoaded();
-
-        return $this->config
-            ->getReflectedProperties()
-            ->mapWithKeys(fn (ReflectionProperty $property) => [
-                $property->getName() => $this->{$property->getName()},
-            ]);
-    }
-
     public function __unserialize(array $data): void
     {
         $this->loaded = false;
@@ -132,6 +144,19 @@ abstract class Settings extends SpatieSettings
         $this->loadValues($data);
     }
 
+    /**
+     * @param  Collection|array  $properties
+     * @return $this
+     */
+    public function fill($properties): self
+    {
+        foreach ($properties as $name => $payload) {
+            $this->{$name} = $payload;
+        }
+
+        return $this;
+    }
+
     public function save(): self
     {
         $properties = $this->toCollection();
@@ -148,14 +173,14 @@ abstract class Settings extends SpatieSettings
         return $this;
     }
 
-    public function lock(string ...$properties): void
+    public function lock(string ...$properties)
     {
         $this->ensureConfigIsLoaded();
 
         $this->config->lock(...$properties);
     }
 
-    public function unlock(string ...$properties): void
+    public function unlock(string ...$properties)
     {
         $this->ensureConfigIsLoaded();
 
@@ -164,7 +189,12 @@ abstract class Settings extends SpatieSettings
 
     public function isLocked(string $property): bool
     {
-        return in_array($property, $this->getLockedProperties(), true);
+        return in_array($property, $this->getLockedProperties());
+    }
+
+    public function isUnlocked(string $property): bool
+    {
+        return ! $this->isLocked($property);
     }
 
     public function getLockedProperties(): array
@@ -174,20 +204,32 @@ abstract class Settings extends SpatieSettings
         return $this->config->getLocked()->toArray();
     }
 
-    /**
-     * @throws JsonException
-     */
-    public function toResponse($request): JsonResponse|Response
+    public function toCollection(): Collection
     {
-        return response()->json($this->toJson());
+        $this->loadValues();
+
+        $this->ensureConfigIsLoaded();
+
+        return $this->config
+            ->getReflectedProperties()
+            ->mapWithKeys(fn (ReflectionProperty $property) => [
+                $property->getName() => $this->{$property->getName()},
+            ]);
     }
 
-    /**
-     * @throws JsonException
-     */
+    public function toArray(): array
+    {
+        return $this->toCollection()->toArray();
+    }
+
     public function toJson($options = 0): string
     {
-        return json_encode($this->toArray(), JSON_THROW_ON_ERROR | $options);
+        return json_encode($this->toArray(), $options);
+    }
+
+    public function toResponse($request)
+    {
+        return response()->json($this->toJson());
     }
 
     public function getRepository(): SettingsRepository
@@ -207,48 +249,18 @@ abstract class Settings extends SpatieSettings
         return $this;
     }
 
-    public function __get($name)
-    {
-        // Attempt to get a fallback value for the missing setting.
-        $fallback = $this->missingSettingFallback($name);
-
-        // If a fallback exists, use it.
-        if ($fallback !== null) {
-            return $fallback;
-        }
-
-        // In non-production environments, log a warning instead of throwing.
-        if (! app()->environment('production') && Schema::hasTable('settings')) {
-            logger()->warning("Missing setting '{$name}' in '".static::class."'.");
-
-            // Return null to prevent breaking migrations.
-            return null;
-        }
-
-        // Default to the parent behavior if no fallback exists and in production.
-        return parent::__get($name);
-    }
-
-    public function __set($name, $value)
-    {
-        $this->loadValues();
-
-        $this->{$name} = $value;
-    }
-
     private function loadValues(?array $values = null): self
     {
         if ($this->loaded) {
             return $this;
         }
 
-        // Ensure the configuration and mapper are initialized.
+        // hydrate the mapper + config first
         $this->ensureConfigIsLoaded();
 
         $values ??= $this->mapper->load(static::class);
 
         $this->loaded = true;
-
         $this->fill($values);
         $this->originalValues = collect($values);
 
@@ -268,50 +280,5 @@ abstract class Settings extends SpatieSettings
         $this->configInitialized = true;
 
         return $this;
-    }
-
-    protected function missingSettingFallback(string $property): mixed
-    {
-        // Avoid errors during migrations.
-        if (! Schema::hasTable('settings')) {
-            return $this->getDefaultValueForProperty($property);
-        }
-
-        // Return the default value if it exists.
-        return $this->getDefaultValueForProperty($property);
-    }
-
-    private function getDefaultValueForProperty(string $property): mixed
-    {
-        if (property_exists($this, $property)) {
-            $reflection = new ReflectionProperty($this, $property);
-
-            // Handle boolean type defaults.
-            if ($reflection->getType() && $reflection->getType()->getName() === 'bool') {
-                return false;
-            }
-
-            // Handle integer type defaults.
-            if ($reflection->getType() && $reflection->getType()->getName() === 'int') {
-                return 0;
-            }
-
-            // Handle string type defaults.
-            if ($reflection->getType() && $reflection->getType()->getName() === 'string') {
-                return '';
-            }
-
-            // Return the default value if defined.
-            if ($reflection->hasDefaultValue()) {
-                return $reflection->getDefaultValue();
-            }
-
-            // Allow null only if the property type permits it.
-            if ($reflection->getType()->allowsNull()) {
-                return null;
-            }
-        }
-
-        return null;
     }
 }

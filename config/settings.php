@@ -9,6 +9,7 @@ return [
     'settings' => [
         App\Settings\SiteSettings::class,
         App\Settings\SEOSettings::class,
+        App\Settings\DiscordSettings::class,
     ],
 
     /*

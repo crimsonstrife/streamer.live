@@ -30,11 +30,17 @@ class DiscordSettings extends SettingsPage
 
                         TextInput::make('guild_id')
                             ->label('Discord Guild ID')
+                            ->password()
+                            ->required()
+                            ->dehydrated()
+                            ->revealable()
                             ->maxLength(50),
 
                         TextInput::make('bot_token')
                             ->label('Bot Token')
                             ->password()
+                            ->required()
+                            ->dehydrated()
                             ->revealable()
                             ->maxLength(255),
 
