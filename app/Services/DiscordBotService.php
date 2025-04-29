@@ -2,28 +2,68 @@
 
 namespace App\Services;
 
+use App\Settings\DiscordSettings;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class DiscordBotService
+ *
+ * Service class to handle interactions with the Discord API.
+ */
 class DiscordBotService
 {
+    /**
+     * @var bool Indicates whether the Discord integration is enabled.
+     */
     protected bool $enabled;
 
+    /**
+     * @var string The base URL for the Discord API.
+     */
     protected string $baseUrl = 'https://discord.com/api/v10';
 
+    /**
+     * @var string|null The API token for authenticating with the Discord API.
+     */
+    protected ?string $apiToken;
+
+    /**
+     * @var string|null The ID of the Discord guild (server).
+     */
+    protected ?string $guild_id;
+
+    /**
+     * @var bool Indicates whether SSL verification is enabled for API requests.
+     */
+    protected bool $verify_ssl = true;
+
+    /**
+     * DiscordBotService constructor.
+     * Initializes the service with configuration values.
+     */
     public function __construct()
     {
-        $this->enabled = config('discord.enabled', false);
+        $this->enabled = app(DiscordSettings::class)->enable_integration ?? config('discord.enabled', false);
+        $this->apiToken = app(DiscordSettings::class)->bot_token ?? config('discord.token');
+        $this->guild_id = app(DiscordSettings::class)->guild_id ?? config('discord.guild_id');
+        $this->verify_ssl = app(DiscordSettings::class)->verify_ssl ?? config('discord.verify', true);
     }
 
     /**
-     * @throws ConnectionException
+     * Sends a message to a specified Discord channel.
+     *
+     * @param  string  $channelId  The ID of the Discord channel to send the message to.
+     * @param  string  $message  The message content to send.
+     * @param  array  $roleIds  An array of role IDs to mention in the message.
+     *
+     * @throws ConnectionException If the API request fails.
      */
     public function sendMessage(string $channelId, string $message, array $roleIds = []): void
     {
-        if (! $this->enabled || empty(config('discord.token'))) {
+        if (! $this->enabled || $this->apiToken === null) {
             Log::warning('Discord bot disabled or missing token');
 
             return;
@@ -37,8 +77,8 @@ class DiscordBotService
             'content' => trim($mentions.' '.$message),
         ];
 
-        $response = Http::withOptions(['verify' => config('discord.verify', true)])
-            ->withToken(config('discord.token'), 'Bot')
+        $response = Http::withOptions(['verify' => $this->verify_ssl])
+            ->withToken($this->apiToken, 'Bot')
             ->post("{$this->baseUrl}/channels/{$channelId}/messages", $payload);
 
         if ($response->failed()) {
@@ -47,14 +87,17 @@ class DiscordBotService
     }
 
     /**
+     * Retrieves a list of channels in the Discord guild.
+     *
+     * @return array An associative array of channel IDs and names.
      */
     public function getChannelList(): array
     {
         return Cache::remember('discord_channel_list', now()->addMinutes(15), function () {
-            $guildId = config('discord.guild_id');
+            $guildId = $this->guild_id;
 
-            $response = Http::withOptions(['verify' => config('discord.verify', true)])
-                ->withToken(config('discord.token'), 'Bot')
+            $response = Http::withOptions(['verify' => $this->verify_ssl])
+                ->withToken($this->apiToken, 'Bot')
                 ->get("{$this->baseUrl}/guilds/{$guildId}/channels");
 
             if ($response->failed()) {
@@ -71,14 +114,17 @@ class DiscordBotService
     }
 
     /**
+     * Retrieves a list of roles in the Discord guild.
+     *
+     * @return array An associative array of role IDs and names.
      */
     public function getRoleList(): array
     {
         return Cache::remember('discord_role_list', now()->addMinutes(15), function () {
-            $guildId = config('discord.guild_id');
+            $guildId = $this->guild_id;
 
-            $response = Http::withOptions(['verify' => config('discord.verify', true)])
-                ->withToken(config('discord.token'), 'Bot')
+            $response = Http::withOptions(['verify' => $this->verify_ssl])
+                ->withToken($this->apiToken, 'Bot')
                 ->get("{$this->baseUrl}/guilds/{$guildId}/roles");
 
             if ($response->failed()) {
@@ -94,6 +140,10 @@ class DiscordBotService
     }
 
     /**
+     * Retrieves the name of a channel by its ID.
+     *
+     * @param  string  $id  The ID of the channel.
+     * @return string|null The name of the channel, or null if not found.
      */
     public function getChannelNameById(string $id): ?string
     {
@@ -101,6 +151,10 @@ class DiscordBotService
     }
 
     /**
+     * Retrieves the name of a role by its ID.
+     *
+     * @param  string  $id  The ID of the role.
+     * @return string|null The name of the role, or null if not found.
      */
     public function getRoleNameById(string $id): ?string
     {
