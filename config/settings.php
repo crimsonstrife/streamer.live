@@ -10,6 +10,7 @@ return [
         App\Settings\SiteSettings::class,
         App\Settings\SEOSettings::class,
         App\Settings\DiscordSettings::class,
+        App\Settings\FourthwallSettings::class,
     ],
 
     /*
