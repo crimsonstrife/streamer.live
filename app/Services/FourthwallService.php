@@ -7,6 +7,7 @@ use App\Models\Collection;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
+use App\Settings\FourthwallSettings;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
@@ -23,15 +24,17 @@ use RuntimeException;
  */
 class FourthwallService
 {
+    protected bool $enabled;
+
     protected string $baseUrl;
 
-    protected string $storefrontToken;
+    protected ?string $storefrontToken;
 
-    protected string $storefrontUrl;
+    protected ?string $storefrontUrl;
 
-    protected bool $verify;
+    protected bool $verify_ssl;
 
-    protected bool $enableGC;
+    protected bool $enable_garbage_collection;
 
     protected int $collectionsChunkSize;
 
@@ -45,11 +48,12 @@ class FourthwallService
      */
     public function __construct()
     {
-        $this->baseUrl = config('services.fourthwall.base_url', 'https://storefront-api.fourthwall.com');
-        $this->storefrontToken = config('services.fourthwall.storefront_token');
-        $this->storefrontUrl = config('services.fourthwall.storefront_url', 'https://storefront.fourthwall.com');
-        $this->verify = config('services.fourthwall.verify', true);
-        $this->enableGC = config('fourthwall.enable_gc', true);
+        $this->enabled = app(FourthwallSettings::class)->enable_integration;
+        $this->baseUrl = app(FourthwallSettings::class)->base_url ?? 'https://storefront-api.fourthwall.com';
+        $this->storefrontToken = app(FourthwallSettings::class)->storefront_token;
+        $this->storefrontUrl = app(FourthwallSettings::class)->storefront_url;
+        $this->verify_ssl = app(FourthwallSettings::class)->ssl_verify;
+        $this->enable_garbage_collection = config('fourthwall.enable_gc', true);
         $this->collectionsChunkSize = config('fourthwall.chunk_size.collections', 10);
         $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);
     }
@@ -65,52 +69,56 @@ class FourthwallService
      */
     public function syncCollectionsAndProducts(): void
     {
-        $collectionsResponse = $this->getRequest('v1/collections');
+        if ($this->enabled) {
+            $collectionsResponse = $this->getRequest('v1/collections');
 
-        if (! isset($collectionsResponse['results'])) {
-            Log::error('Failed to fetch collections from Fourthwall.');
-            throw new RuntimeException('API request for collections failed.');
-        }
-
-        // Ensure at least one collection is retrieved
-        if (empty($collectionsResponse['results'])) {
-            Log::warning('No collections found from API.');
-            throw new RuntimeException('No collections returned from API.');
-        }
-
-        // Use a lazy collection to iterate without loading everything at once
-        LazyCollection::make(static function () use ($collectionsResponse) {
-            foreach ($collectionsResponse['results'] as $collectionData) {
-                yield $collectionData;
+            if (! isset($collectionsResponse['results'])) {
+                Log::error('Failed to fetch collections from Fourthwall.');
+                throw new RuntimeException('API request for collections failed.');
             }
-        })->chunk($this->collectionsChunkSize)
-            ->each(function ($collectionChunk) {
-                foreach ($collectionChunk as $collectionData) {
-                    $collection = Collection::updateOrCreate(
-                        ['provider_id' => $collectionData['id']],
-                        [
-                            'name' => $collectionData['name'],
-                            'slug' => $collectionData['slug'],
-                            'description' => $collectionData['description'] ?? null,
-                        ]
-                    );
 
-                    Log::info("Synced collection: {$collection->name}");
+            // Ensure at least one collection is retrieved
+            if (empty($collectionsResponse['results'])) {
+                Log::warning('No collections found from API.');
+                throw new RuntimeException('No collections returned from API.');
+            }
 
-                    // Attempt to sync products for this collection
-                    try {
-                        $this->syncProducts($collection);
-                    } catch (Exception $e) {
-                        Log::error("Error syncing products for collection {$collection->name}: ".$e->getMessage());
-                        throw new RuntimeException("Failed to sync products for collection: {$collection->name}");
+            // Use a lazy collection to iterate without loading everything at once
+            LazyCollection::make(static function () use ($collectionsResponse) {
+                foreach ($collectionsResponse['results'] as $collectionData) {
+                    yield $collectionData;
+                }
+            })->chunk($this->collectionsChunkSize)
+                ->each(function ($collectionChunk) {
+                    foreach ($collectionChunk as $collectionData) {
+                        $collection = Collection::updateOrCreate(
+                            ['provider_id' => $collectionData['id']],
+                            [
+                                'name' => $collectionData['name'],
+                                'slug' => $collectionData['slug'],
+                                'description' => $collectionData['description'] ?? null,
+                            ]
+                        );
+
+                        Log::info("Synced collection: {$collection->name}");
+
+                        // Attempt to sync products for this collection
+                        try {
+                            $this->syncProducts($collection);
+                        } catch (Exception $e) {
+                            Log::error("Error syncing products for collection {$collection->name}: ".$e->getMessage());
+                            throw new RuntimeException("Failed to sync products for collection: {$collection->name}");
+                        }
                     }
-                }
-                if ($this->enableGC) {
-                    gc_collect_cycles();
-                }
-            });
+                    if ($this->enable_garbage_collection) {
+                        gc_collect_cycles();
+                    }
+                });
 
-        Log::info('All collections and products synced successfully.');
+            Log::info('All collections and products synced successfully.');
+        } else {
+            Log::error('The Fourthwall integration is not enabled');
+        }
     }
 
     /**
@@ -122,54 +130,58 @@ class FourthwallService
      */
     public function syncProducts(Collection $collection): void
     {
-        $productsResponse = $this->getRequest("v1/collections/{$collection->slug}/products");
+        if ($this->enabled) {
+            $productsResponse = $this->getRequest("v1/collections/{$collection->slug}/products");
 
-        if (! isset($productsResponse['results'])) {
-            Log::error('No products found for collection: '.$collection->name);
-            throw new RuntimeException('API request for products failed.');
-        }
-
-        // Ensure at least one product is retrieved
-        if (empty($productsResponse['results'])) {
-            Log::warning('No products found for collection: '.$collection->name);
-            throw new RuntimeException("No products returned for collection: {$collection->name}");
-        }
-
-        foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
-            foreach ($productBatch as $productData) {
-                Log::info("Syncing product: {$productData['name']} for collection: {$collection->name}");
-                $product = Product::updateOrCreate(
-                    ['provider_id' => $productData['id']],
-                    [
-                        'collection_id' => $collection->id,
-                        'name' => $productData['name'],
-                        'slug' => $productData['slug'],
-                        'description' => $productData['description'] ?? '',
-                        'state' => $productData['state']['type'] ?? 'SOLDOUT',
-                        'access' => $productData['access']['type'] ?? 'PUBLIC',
-                    ]
-                );
-
-                // Ensure product is linked to the collection (pivot table)
-                $product->collections()->syncWithoutDetaching([$collection->id]);
-                Log::info("Attached product: {$product->name} to collection: {$collection->name}");
-
-                if (! empty($productData['variants'])) {
-                    $this->syncProductVariants($product, $productData['variants']);
-                }
-
-                // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
-                $this->updateProductPricing($product);
-
-                // Dispatch image processing for the product
-                if (! empty($productData['images'])) {
-                    $this->syncProductImages($product, $productData['images']);
-                }
-                unset($productData);
+            if (! isset($productsResponse['results'])) {
+                Log::error('No products found for collection: '.$collection->name);
+                throw new RuntimeException('API request for products failed.');
             }
-            if ($this->enableGC) {
-                gc_collect_cycles();
+
+            // Ensure at least one product is retrieved
+            if (empty($productsResponse['results'])) {
+                Log::warning('No products found for collection: '.$collection->name);
+                throw new RuntimeException("No products returned for collection: {$collection->name}");
             }
+
+            foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
+                foreach ($productBatch as $productData) {
+                    Log::info("Syncing product: {$productData['name']} for collection: {$collection->name}");
+                    $product = Product::updateOrCreate(
+                        ['provider_id' => $productData['id']],
+                        [
+                            'collection_id' => $collection->id,
+                            'name' => $productData['name'],
+                            'slug' => $productData['slug'],
+                            'description' => $productData['description'] ?? '',
+                            'state' => $productData['state']['type'] ?? 'SOLDOUT',
+                            'access' => $productData['access']['type'] ?? 'PUBLIC',
+                        ]
+                    );
+
+                    // Ensure product is linked to the collection (pivot table)
+                    $product->collections()->syncWithoutDetaching([$collection->id]);
+                    Log::info("Attached product: {$product->name} to collection: {$collection->name}");
+
+                    if (! empty($productData['variants'])) {
+                        $this->syncProductVariants($product, $productData['variants']);
+                    }
+
+                    // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
+                    $this->updateProductPricing($product);
+
+                    // Dispatch image processing for the product
+                    if (! empty($productData['images'])) {
+                        $this->syncProductImages($product, $productData['images']);
+                    }
+                    unset($productData);
+                }
+                if ($this->enable_garbage_collection) {
+                    gc_collect_cycles();
+                }
+            }
+        } else {
+            Log::error('The Fourthwall integration is not enabled');
         }
     }
 
@@ -178,33 +190,37 @@ class FourthwallService
      */
     protected function syncProductVariants(Product $product, array $variants): void
     {
-        foreach (array_chunk($variants, $this->productsChunkSize) as $variantBatch) {
-            foreach ($variantBatch as $variantData) {
-                Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
-                ProductVariant::updateOrCreate(
-                    ['provider_id' => $variantData['id']],
-                    [
-                        'product_id' => $product->id,
-                        'name' => $variantData['name'],
-                        'sku' => $variantData['sku'],
-                        'price' => $variantData['unitPrice']['value'],
-                        'compare_at_price' => $variantData['compareAtPrice']['value'] ?? null,
-                        'currency' => $variantData['unitPrice']['currency'],
-                        'stock_status' => $variantData['stock']['type'],
-                        'stock_count' => $variantData['stock']['inStock'] ?? 0,
-                        'weight' => $variantData['weight']['value'],
-                        'weight_unit' => $variantData['weight']['unit'],
-                        'height' => $variantData['dimensions']['height'],
-                        'length' => $variantData['dimensions']['length'],
-                        'width' => $variantData['dimensions']['width'],
-                        'dimension_unit' => $variantData['dimensions']['unit'],
-                        'description' => $variantData['attributes']['description'] ?? null,
-                        'size' => $variantData['attributes']['size']['name'] ?? null,
-                        'color_name' => $variantData['attributes']['color']['name'] ?? null,
-                        'color_swatch' => $variantData['attributes']['color']['swatch'] ?? null,
-                    ]
-                );
+        if ($this->enabled) {
+            foreach (array_chunk($variants, $this->productsChunkSize) as $variantBatch) {
+                foreach ($variantBatch as $variantData) {
+                    Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
+                    ProductVariant::updateOrCreate(
+                        ['provider_id' => $variantData['id']],
+                        [
+                            'product_id' => $product->id,
+                            'name' => $variantData['name'],
+                            'sku' => $variantData['sku'],
+                            'price' => $variantData['unitPrice']['value'],
+                            'compare_at_price' => $variantData['compareAtPrice']['value'] ?? null,
+                            'currency' => $variantData['unitPrice']['currency'],
+                            'stock_status' => $variantData['stock']['type'],
+                            'stock_count' => $variantData['stock']['inStock'] ?? 0,
+                            'weight' => $variantData['weight']['value'],
+                            'weight_unit' => $variantData['weight']['unit'],
+                            'height' => $variantData['dimensions']['height'],
+                            'length' => $variantData['dimensions']['length'],
+                            'width' => $variantData['dimensions']['width'],
+                            'dimension_unit' => $variantData['dimensions']['unit'],
+                            'description' => $variantData['attributes']['description'] ?? null,
+                            'size' => $variantData['attributes']['size']['name'] ?? null,
+                            'color_name' => $variantData['attributes']['color']['name'] ?? null,
+                            'color_swatch' => $variantData['attributes']['color']['swatch'] ?? null,
+                        ]
+                    );
+                }
             }
+        } else {
+            Log::error('The Fourthwall integration is not enabled');
         }
     }
 
@@ -213,15 +229,19 @@ class FourthwallService
      */
     protected function syncProductImages(Product $product, array $images): void
     {
-        foreach (array_chunk($images, 3) as $imageBatch) {
-            foreach ($imageBatch as $imageData) {
-                Log::info("Dispatching image processing for product: {$product->name}");
-                ProcessProductImage::dispatchSync($product, $imageData);
-            }
+        if ($this->enabled) {
+            foreach (array_chunk($images, 3) as $imageBatch) {
+                foreach ($imageBatch as $imageData) {
+                    Log::info("Dispatching image processing for product: {$product->name}");
+                    ProcessProductImage::dispatchSync($product, $imageData);
+                }
 
-            if ($this->enableGC) {
-                gc_collect_cycles();
+                if ($this->enable_garbage_collection) {
+                    gc_collect_cycles();
+                }
             }
+        } else {
+            Log::error('The Fourthwall integration is not enabled');
         }
     }
 
@@ -230,22 +250,26 @@ class FourthwallService
      */
     protected function updateProductPricing(Product $product): void
     {
-        if ($product->variants->isEmpty()) {
+        if ($this->enabled) {
+            if ($product->variants->isEmpty()) {
+                $product->update([
+                    'price' => null,
+                    'compare_at_price' => null,
+                ]);
+                Log::info("Price skipped for product: {$product->name} (no variants)");
+
+                return;
+            }
+
             $product->update([
-                'price' => null,
-                'compare_at_price' => null,
+                'price' => $product->variants->min('price'),
+                'compare_at_price' => $product->variants->min('compare_at_price'),
             ]);
-            Log::info("Price skipped for product: {$product->name} (no variants)");
 
-            return;
+            Log::info("Updated price for product: {$product->name}");
+        } else {
+            Log::error('The Fourthwall integration is not enabled');
         }
-
-        $product->update([
-            'price' => $product->variants->min('price'),
-            'compare_at_price' => $product->variants->min('compare_at_price'),
-        ]);
-
-        Log::info("Updated price for product: {$product->name}");
     }
 
     /** ===========================
@@ -263,30 +287,34 @@ class FourthwallService
      */
     public function storeImage(Product $product, ?ProductVariant $variant, array $imageData): void
     {
-        $filename = basename($imageData['url']);
-        $localPath = "products/{$product->provider_id}/{$filename}";
+        if ($this->enabled) {
+            $filename = basename($imageData['url']);
+            $localPath = "products/{$product->provider_id}/{$filename}";
 
-        $response = Http::withOptions(['verify' => $this->verify])->get($imageData['url']);
+            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get($imageData['url']);
 
-        if ($response->successful()) {
-            Storage::disk('public')->put($localPath, $response->body());
+            if ($response->successful()) {
+                Storage::disk('public')->put($localPath, $response->body());
+            } else {
+                Log::error('Failed to download image: '.$imageData['url']);
+
+                return;
+            }
+
+            ProductImage::updateOrCreate(
+                ['provider_id' => $imageData['id']],
+                [
+                    'product_id' => $product->id,
+                    'variant_id' => $variant?->id,
+                    'url' => $imageData['url'],
+                    'local_path' => $this->getLocalImagePath($localPath),
+                    'width' => $imageData['width'],
+                    'height' => $imageData['height'],
+                ]
+            );
         } else {
-            Log::error('Failed to download image: '.$imageData['url']);
-
-            return;
+            Log::error('The Fourthwall integration is not enabled');
         }
-
-        ProductImage::updateOrCreate(
-            ['provider_id' => $imageData['id']],
-            [
-                'product_id' => $product->id,
-                'variant_id' => $variant?->id,
-                'url' => $imageData['url'],
-                'local_path' => $this->getLocalImagePath($localPath),
-                'width' => $imageData['width'],
-                'height' => $imageData['height'],
-            ]
-        );
     }
 
     /** ===========================
@@ -303,18 +331,24 @@ class FourthwallService
      */
     public function createCart(string $variant_id, int $quantity = 1, string $currency = 'USD'): mixed
     {
-        $params = ['currency' => $currency];
+        if ($this->enabled) {
+            $params = ['currency' => $currency];
 
-        $body = [
-            'items' => [
-                [
-                    'variantId' => $variant_id,
-                    'quantity' => (int) $quantity,
+            $body = [
+                'items' => [
+                    [
+                        'variantId' => $variant_id,
+                        'quantity' => (int) $quantity,
+                    ],
                 ],
-            ],
-        ];
+            ];
 
-        return $this->postRequest('v1/carts', $params, $body);
+            return $this->postRequest('v1/carts', $params, $body);
+        }
+
+        Log::error('The Fourthwall integration is not enabled');
+
+        return null;
     }
 
     /**
@@ -327,16 +361,22 @@ class FourthwallService
      */
     public function addToCart(string $cartId, string $variant_id, int $quantity = 1): mixed
     {
-        $body = [
-            'items' => [
-                [
-                    'variantId' => $variant_id,
-                    'quantity' => (int) $quantity,
+        if ($this->enabled) {
+            $body = [
+                'items' => [
+                    [
+                        'variantId' => $variant_id,
+                        'quantity' => (int) $quantity,
+                    ],
                 ],
-            ],
-        ];
+            ];
 
-        return $this->postRequest("v1/carts/{$cartId}/add", [], $body);
+            return $this->postRequest("v1/carts/{$cartId}/add", [], $body);
+        }
+
+        Log::error('The Fourthwall integration is not enabled');
+
+        return null;
     }
 
     /**
@@ -348,9 +388,15 @@ class FourthwallService
      */
     public function updateCart(string $cartId, array $items): mixed
     {
-        $body = ['items' => $items];
+        if ($this->enabled) {
+            $body = ['items' => $items];
 
-        return $this->postRequest("v1/carts/{$cartId}/change", [], $body);
+            return $this->postRequest("v1/carts/{$cartId}/change", [], $body);
+        }
+
+        Log::error('The Fourthwall integration is not enabled');
+
+        return null;
     }
 
     /**
@@ -362,13 +408,19 @@ class FourthwallService
      */
     public function removeFromCart(string $cartId, string $variant_id): mixed
     {
-        $body = [
-            'items' => [
-                ['variant_id' => $variant_id],
-            ],
-        ];
+        if ($this->enabled) {
+            $body = [
+                'items' => [
+                    ['variant_id' => $variant_id],
+                ],
+            ];
 
-        return $this->postRequest("v1/carts/{$cartId}/remove", [], $body);
+            return $this->postRequest("v1/carts/{$cartId}/remove", [], $body);
+        }
+
+        Log::error('The Fourthwall integration is not enabled');
+
+        return null;
     }
 
     /**
@@ -379,7 +431,13 @@ class FourthwallService
      */
     public function getCart(string $cartId): mixed
     {
-        return $this->getRequest("v1/carts/{$cartId}");
+        if ($this->enabled) {
+            return $this->getRequest("v1/carts/{$cartId}");
+        }
+
+        Log::error('The Fourthwall integration is not enabled');
+
+        return null;
     }
 
     /**
@@ -391,20 +449,26 @@ class FourthwallService
      */
     public function getCheckoutUrl(string $cartId, string $currency = 'USD'): string
     {
-        // Check if the storefront url is set, and starts with 'https://'
-        if (! str_starts_with($this->storefrontUrl, 'https://')) {
-            $this->storefrontUrl = 'https://'.$this->storefrontUrl;
+        if ($this->enabled) {
+            // Check if the storefront url is set, and starts with 'https://'
+            if (! str_starts_with($this->storefrontUrl, 'https://')) {
+                $this->storefrontUrl = 'https://'.$this->storefrontUrl;
+            }
+
+            // Check if the storefront url is set and ends with a slash
+            if (! str_ends_with($this->storefrontUrl, '/')) {
+                // if not, add a slash to the end of the storefront url
+                $url = $this->storefrontUrl."/checkout/?cartCurrency={$currency}&cartId={$cartId}";
+            } else {
+                $url = $this->storefrontUrl."checkout/?cartCurrency={$currency}&cartId={$cartId}";
+            }
+
+            return $url;
         }
 
-        // Check if the storefront url is set and ends with a slash
-        if (! str_ends_with($this->storefrontUrl, '/')) {
-            // if not, add a slash to the end of the storefront url
-            $url = $this->storefrontUrl."/checkout/?cartCurrency={$currency}&cartId={$cartId}";
-        } else {
-            $url = $this->storefrontUrl."checkout/?cartCurrency={$currency}&cartId={$cartId}";
-        }
+        Log::error('The Fourthwall integration is not enabled');
 
-        return $url;
+        return '';
     }
 
     /** ===========================
@@ -424,32 +488,38 @@ class FourthwallService
      */
     private function request(string $method, string $endpoint, array $queryParams = [], array $bodyParams = []): mixed
     {
-        // Check if the query parameters are not empty
-        if (! empty($queryParams)) {
-            // if not empty, check if the storefront token is set
-            if ($this->storefrontToken) {
+        if ($this->enabled) {
+            // Check if the query parameters are not empty
+            if (! empty($queryParams)) {
+                // if not empty, check if the storefront token is set
+                if ($this->storefrontToken) {
+                    // if set, add the storefront token to the query parameters
+                    $queryParams['storefront_token'] = $this->storefrontToken;
+                } else {
+                    // if not set, throw an exception
+                    throw new RuntimeException('Storefront token is required for this request.');
+                }
+            } elseif ($this->storefrontToken) {
                 // if set, add the storefront token to the query parameters
                 $queryParams['storefront_token'] = $this->storefrontToken;
             } else {
                 // if not set, throw an exception
                 throw new RuntimeException('Storefront token is required for this request.');
             }
-        } elseif ($this->storefrontToken) {
-            // if set, add the storefront token to the query parameters
-            $queryParams['storefront_token'] = $this->storefrontToken;
-        } else {
-            // if not set, throw an exception
-            throw new RuntimeException('Storefront token is required for this request.');
+
+            $url = "{$this->baseUrl}/{$endpoint}?".http_build_query($queryParams, '', '&');
+
+            return Http::withOptions([
+                'verify_ssl' => $this->verify_ssl,
+            ])
+                ->withQueryParameters($queryParams)
+                ->{$method}($url, $method === 'get' ? [] : $bodyParams) // Only send body for non-GET requests
+                ->json();
         }
 
-        $url = "{$this->baseUrl}/{$endpoint}?".http_build_query($queryParams, '', '&');
+        Log::error('The Fourthwall integration is not enabled');
 
-        return Http::withOptions([
-            'verify' => $this->verify,
-        ])
-            ->withQueryParameters($queryParams)
-            ->{$method}($url, $method === 'get' ? [] : $bodyParams) // Only send body for non-GET requests
-            ->json();
+        return null;
     }
 
     /**
@@ -461,7 +531,13 @@ class FourthwallService
      */
     private function getRequest(string $endpoint, array $queryParams = []): mixed
     {
-        return $this->request('get', $endpoint, $queryParams, []);
+        if ($this->enabled) {
+            return $this->request('get', $endpoint, $queryParams, []);
+        }
+
+        Log::error('The Fourthwall integration is not enabled');
+
+        return null;
     }
 
     /**
@@ -474,7 +550,13 @@ class FourthwallService
      */
     private function postRequest(string $endpoint, array $queryParams, array $bodyParams): mixed
     {
-        return $this->request('post', $endpoint, $queryParams, $bodyParams);
+        if ($this->enabled) {
+            return $this->request('post', $endpoint, $queryParams, $bodyParams);
+        }
+
+        Log::error('The Fourthwall integration is not enabled');
+
+        return null;
     }
 
     /**
@@ -507,88 +589,94 @@ class FourthwallService
         $remoteProduct = null;
         // Set a TTL that suits risk threshold—e.g., configurable seconds
         $ttl = now()->addSeconds(self::STOCK_TTL_SECONDS);
-        $productVariantObject = ProductVariant::select('provider_id', 'product_id')->where('provider_id', $variant_id)->first();
 
-        if (! $productVariantObject) {
-            Log::error('ProductVariant Object for this Provider ID was not found locally');
-            throw new RuntimeException('Variant not found locally');
-        }
+        if ($this->enabled) {
+            $productVariantObject = ProductVariant::select('provider_id', 'product_id')->where('provider_id', $variant_id)->first();
 
-        // Get the product object
-        $productObject = Product::select('provider_id', 'slug')->find($productVariantObject->product_id);
+            if (! $productVariantObject) {
+                Log::error('ProductVariant Object for this Provider ID was not found locally');
+                throw new RuntimeException('Variant not found locally');
+            }
 
-        if (! $productObject) {
-            Log::error("ProductVariant's Parent Product Object not found. The Variant may be orphaned.");
-            throw new RuntimeException('Parent Product not found');
-        }
+            // Get the product object
+            $productObject = Product::select('provider_id', 'slug')->find($productVariantObject->product_id);
 
-        $provider_slug = $productObject->slug;
+            if (! $productObject) {
+                Log::error("ProductVariant's Parent Product Object not found. The Variant may be orphaned.");
+                throw new RuntimeException('Parent Product not found');
+            }
 
-        $stockStatus = Cache::get($cacheKey);
+            $provider_slug = $productObject->slug;
 
-        if (is_null($stockStatus)) {
-            // Acquire a lock to prevent multiple API calls
-            $lock = Cache::lock($lockKey, 5); // lock for 5 seconds
-            try {
-                if ($lock->get()) {
-                    // Get the product from the API
-                    $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($provider_slug) {
-                        return $this->getRequest("v1/products/{$provider_slug}");
-                    });
-                } else {
-                    // Simply fetch from API if lock not acquired
-                    $remoteProduct = $this->getRequest("v1/products/{$provider_slug}");
+            $stockStatus = Cache::get($cacheKey);
+
+            if (is_null($stockStatus)) {
+                // Acquire a lock to prevent multiple API calls
+                $lock = Cache::lock($lockKey, 5); // lock for 5 seconds
+                try {
+                    if ($lock->get()) {
+                        // Get the product from the API
+                        $remoteProduct = Cache::remember($cacheKey, $ttl, function () use ($provider_slug) {
+                            return $this->getRequest("v1/products/{$provider_slug}");
+                        });
+                    } else {
+                        // Simply fetch from API if lock not acquired
+                        $remoteProduct = $this->getRequest("v1/products/{$provider_slug}");
+                    }
+                } finally {
+                    optional($lock)->release();
                 }
-            } finally {
-                optional($lock)->release();
             }
-        }
 
-        if (! $remoteProduct || array_key_exists('error', $remoteProduct)) {
-            Log::error('The Product could not be found on the Fourthwall API.');
-            throw new RuntimeException('Product not found on API');
-        }
-
-        // Check for the 'SOLDOUT' state before continuing
-        if (! isset($remoteProduct['state']['type']) || $remoteProduct['state']['type'] !== 'AVAILABLE') {
-            Log::error("Product {$provider_slug} is not available for sale. State Type is reported as {$remoteProduct['state']['type']}.");
-
-            return false; // Product is out of stock, so we don't need a stock count
-        }
-
-        // Parse the remoteProduct response to find the 'variants' array
-        $remoteVariants = $remoteProduct['variants'];
-
-        if (! $remoteVariants) {
-            Log::error('Product had no variants in the Fourthwall API!');
-            throw new RuntimeException('Product has no variants!');
-        }
-
-        $matched = false;
-
-        // Loop the variants and find a match
-        foreach ($remoteVariants as $remoteVariant) {
-            if ($remoteVariant['id'] === $variant_id) {
-                // Get the stock values
-                $inStock = $remoteVariant['stock']['type'];
-                $stockAmount = $remoteVariant['stock']['inStock'] ?? 0;
-                $matched = true;
-                break;
+            if (! $remoteProduct || array_key_exists('error', $remoteProduct)) {
+                Log::error('The Product could not be found on the Fourthwall API.');
+                throw new RuntimeException('Product not found on API');
             }
+
+            // Check for the 'SOLDOUT' state before continuing
+            if (! isset($remoteProduct['state']['type']) || $remoteProduct['state']['type'] !== 'AVAILABLE') {
+                Log::error("Product {$provider_slug} is not available for sale. State Type is reported as {$remoteProduct['state']['type']}.");
+
+                return false; // Product is out of stock, so we don't need a stock count
+            }
+
+            // Parse the remoteProduct response to find the 'variants' array
+            $remoteVariants = $remoteProduct['variants'];
+
+            if (! $remoteVariants) {
+                Log::error('Product had no variants in the Fourthwall API!');
+                throw new RuntimeException('Product has no variants!');
+            }
+
+            $matched = false;
+
+            // Loop the variants and find a match
+            foreach ($remoteVariants as $remoteVariant) {
+                if ($remoteVariant['id'] === $variant_id) {
+                    // Get the stock values
+                    $inStock = $remoteVariant['stock']['type'];
+                    $stockAmount = $remoteVariant['stock']['inStock'] ?? 0;
+                    $matched = true;
+                    break;
+                }
+            }
+
+            if (! $matched) {
+                Log::error("Variant {$variant_id} not found in Fourthwall API product response.");
+                throw new RuntimeException('Variant not found in API response');
+            }
+
+            if ($inStock === 'UNLIMITED') {
+                return true;
+            }
+
+            return [
+                'type' => $inStock,
+                'amount' => $stockAmount,
+            ];
         }
 
-        if (! $matched) {
-            Log::error("Variant {$variant_id} not found in Fourthwall API product response.");
-            throw new RuntimeException('Variant not found in API response');
-        }
-
-        if ($inStock === 'UNLIMITED') {
-            return true;
-        }
-
-        return [
-            'type' => $inStock,
-            'amount' => $stockAmount,
-        ];
+        Log::error('The Fourthwall integration is not enabled');
+        throw new RuntimeException('The Fourthwall integration is not enabled');
     }
 }
