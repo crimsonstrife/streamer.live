@@ -5,19 +5,38 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\StreamAlertRuleResource\Pages;
 use App\Models\StreamAlertRule;
 use App\Services\DiscordBotService;
+use App\Settings\TwitchSettings;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class StreamAlertRuleResource extends Resource
 {
     protected static ?string $model = StreamAlertRule::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    /**
+     * Hide the “Create” button (and disable the create page) if Twitch is disabled.
+     */
+    public static function canCreate(): bool
+    {
+        return app(TwitchSettings::class)->enable_integration;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return app(TwitchSettings::class)->enable_integration;
+    }
 
     public static function form(Form $form): Form
     {
@@ -29,21 +48,21 @@ class StreamAlertRuleResource extends Resource
 
                 Select::make('discord_channel_id')
                     ->label('Discord Channel')
-                    ->options(fn () => app(\App\Services\DiscordBotService::class)->getChannelList())
+                    ->options(fn () => app(DiscordBotService::class)->getChannelList())
                     ->searchable()
                     ->required(),
 
                 Select::make('discord_roles')
                     ->label('Mention Roles')
                     ->multiple()
-                    ->options(fn () => app(\App\Services\DiscordBotService::class)->getRoleList())
+                    ->options(fn () => app(DiscordBotService::class)->getRoleList())
                     ->searchable(),
 
                 Textarea::make('message_template')
                     ->label('Message Template')
                     ->rows(4)
                     ->helperText('You can use placeholders like {streamer}, {category}, {url}')
-                    ->default(fn () => app(\App\Models\StreamAlertRule::class)->defaultMessageTemplate())
+                    ->default(fn () => app(StreamAlertRule::class)->defaultMessageTemplate())
                     ->required(),
             ]);
     }
@@ -52,51 +71,45 @@ class StreamAlertRuleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('category_pattern')
+                TextColumn::make('category_pattern')
                     ->label('Twitch Category (Regex)')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('discord_channel_id')
+                TextColumn::make('discord_channel_id')
                     ->label('Discord Channel')
-                    ->getStateUsing(function ($record) {
-                        $channelId = $record->discord_channel_id;
+                    ->getStateUsing(fn ($record) => app(DiscordBotService::class)
+                        ->getChannelNameById($record->discord_channel_id)
+                        ?? "Unknown ({$record->discord_channel_id})"
+                    ),
 
-                        return app(DiscordBotService::class)->getChannelNameById($channelId) ?? "Unknown ({$channelId})";
-                    }),
-
-                Tables\Columns\TextColumn::make('discord_roles')
+                TextColumn::make('discord_roles')
                     ->label('Mention Roles')
-                    ->formatStateUsing(function ($state) {
-                        $service = app(DiscordBotService::class);
-
-                        return collect($state ?? [])
-                            ->map(fn ($id) => $service->getRoleNameById($id) ?? "Unknown ({$id})")
-                            ->implode(', ');
-                    })
+                    ->formatStateUsing(fn ($state) => collect($state ?? [])
+                        ->map(fn ($id) => app(DiscordBotService::class)
+                            ->getRoleNameById($id)
+                            ?? "Unknown ({$id})"
+                        )
+                        ->implode(', ')
+                    )
                     ->wrap()
                     ->tooltip(fn ($state) => is_array($state) ? implode(', ', $state) : $state),
 
-                Tables\Columns\ToggleColumn::make('enabled')
+                ToggleColumn::make('enabled')
                     ->label('Enabled'),
             ])
-            ->filters([
-                //
-            ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
