@@ -26,9 +26,6 @@ use Laravel\Jetstream\Http\Controllers\TeamInvitationController;
 
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {
-    $shopSlug = ShopHelper::getShopSlug();               // 'shop'
-    $productSlug = ShopHelper::getProductSlug();         // 'product'
-    $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
     $blogSlug = BlogHelper::getBlogSlug();               // 'blog'
 
     // Homepage
@@ -112,36 +109,43 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
             ->middleware('auth');
     });
 
-    // === Cart Routes ===
-    Route::prefix("$shopSlug/cart")->name($shopSlug.'.cart.')->group(function () {
-        Route::get('/', [CartController::class, 'showCart'])->name('show');
-        Route::post('/add', [CartController::class, 'addToCart'])->name('add');
-        Route::post('/update', [CartController::class, 'updateCart'])->name('update');
-        Route::get('/remove/{variantId}', [CartController::class, 'removeFromCart'])->name('remove');
-        Route::get('/checkout', [CartController::class, 'redirectToCheckout'])->name('checkout');
-    });
+    Route::middleware(['store.enabled'])
+        ->group(function () {
+            $shopSlug = ShopHelper::getShopSlug();               // 'shop'
+            $productSlug = ShopHelper::getProductSlug();         // 'product'
+            $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
 
-    Route::get("$shopSlug/checkout/external", function () use ($shopSlug) {
-        if ($url = session('checkout_url')) {
-            return redirect()->away($url);
-        }
+            // === Cart Routes ===
+            Route::prefix("$shopSlug/cart")->name($shopSlug.'.cart.')->group(function () {
+                Route::get('/', [CartController::class, 'showCart'])->name('show');
+                Route::post('/add', [CartController::class, 'addToCart'])->name('add');
+                Route::post('/update', [CartController::class, 'updateCart'])->name('update');
+                Route::get('/remove/{variantId}', [CartController::class, 'removeFromCart'])->name('remove');
+                Route::get('/checkout', [CartController::class, 'redirectToCheckout'])->name('checkout');
+            });
 
-        return redirect("/$shopSlug")->with('error', 'External checkout is not available.');
-    })->name('cart.checkout.external');
+            Route::get("$shopSlug/checkout/external", function () use ($shopSlug) {
+                if ($url = session('checkout_url')) {
+                    return redirect()->away($url);
+                }
 
-    // All /shop/* routes
-    Route::prefix($shopSlug)->name($shopSlug.'.')->group(function () {
-        $productSlug = ShopHelper::getProductSlug();         // 'product'
-        $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
-        Route::get("$productSlug/{slug}", [FabricatorPageController::class, 'product'])->name('product');
-        Route::get("$collectionSlug/{slug}", [FabricatorPageController::class, 'collection'])->name('collection');
-        Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('category');
-        Route::get('/', FabricatorPageController::class)->name('page');
-        Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
-    });
-    Route::post("/$productSlug/{product}/review", [ProductReviewController::class, 'store'])
-        ->middleware('auth')
-        ->name('product.review.submit');
+                return redirect("/$shopSlug")->with('error', 'External checkout is not available.');
+            })->name('cart.checkout.external');
+
+            // All /shop/* routes
+            Route::prefix($shopSlug)->name($shopSlug.'.')->group(function () {
+                $productSlug = ShopHelper::getProductSlug();         // 'product'
+                $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
+                Route::get("$productSlug/{slug}", [FabricatorPageController::class, 'product'])->name('product');
+                Route::get("$collectionSlug/{slug}", [FabricatorPageController::class, 'collection'])->name('collection');
+                Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('category');
+                Route::get('/', FabricatorPageController::class)->name('page');
+                Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
+            });
+            Route::post("/$productSlug/{product}/review", [ProductReviewController::class, 'store'])
+                ->middleware('auth')
+                ->name('product.review.submit');
+        });
 
     // Global fallback for all other Fabricator pages
     Route::get('/{slug}', FabricatorPageController::class)
