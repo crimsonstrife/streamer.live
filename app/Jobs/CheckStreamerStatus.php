@@ -35,8 +35,8 @@ class CheckStreamerStatus implements ShouldQueue
     {
         $this->username = strtolower($username);
         $this->cacheKey = "twitch_stream_status_{$this->username}";
-        $this->twitch_enabled = app(TwitchSettings::class)->enabled;
-        $this->discord_enabled = app(DiscordSettings::class)->enabled;
+        $this->twitch_enabled = app(TwitchSettings::class)->enable_integration;
+        $this->discord_enabled = app(DiscordSettings::class)->enable_integration;
     }
 
     public function handle(TwitchService $twitch): void

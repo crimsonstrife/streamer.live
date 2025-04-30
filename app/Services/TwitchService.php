@@ -29,7 +29,7 @@ class TwitchService
      */
     public function __construct()
     {
-        $this->enabled = app(TwitchSettings::class)->enabled;
+        $this->enabled = app(TwitchSettings::class)->enable_integration;
         $this->channel_name = app(TwitchSettings::class)->channel_name;
         $this->client_id = app(TwitchSettings::class)->client_id;
         $this->client_secret = app(TwitchSettings::class)->client_secret;
