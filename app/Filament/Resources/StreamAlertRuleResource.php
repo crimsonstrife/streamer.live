@@ -77,15 +77,18 @@ class StreamAlertRuleResource extends Resource
 
                 TextColumn::make('discord_channel_id')
                     ->label('Discord Channel')
-                    ->getStateUsing(fn ($record) => app(DiscordBotService::class)
+                    ->getStateUsing(
+                        fn ($record) => app(DiscordBotService::class)
                         ->getChannelNameById($record->discord_channel_id)
                         ?? "Unknown ({$record->discord_channel_id})"
                     ),
 
                 TextColumn::make('discord_roles')
                     ->label('Mention Roles')
-                    ->formatStateUsing(fn ($state) => collect($state ?? [])
-                        ->map(fn ($id) => app(DiscordBotService::class)
+                    ->formatStateUsing(
+                        fn ($state) => collect($state ?? [])
+                        ->map(
+                            fn ($id) => app(DiscordBotService::class)
                             ->getRoleNameById($id)
                             ?? "Unknown ({$id})"
                         )
