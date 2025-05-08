@@ -3830,16 +3830,16 @@
         },
         {
             "name": "filament/spatie-laravel-tags-plugin",
-            "version": "v3.3.13",
+            "version": "v3.3.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-tags-plugin.git",
-                "reference": "83b9ccea77d807e61f1782a1a433de2f687384c3"
+                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/83b9ccea77d807e61f1782a1a433de2f687384c3",
-                "reference": "83b9ccea77d807e61f1782a1a433de2f687384c3",
+                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
+                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
                 "shasum": ""
             },
             "require": {
@@ -3863,7 +3863,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-04-23T06:40:07+00:00"
+            "time": "2025-04-30T09:16:35+00:00"
         },
         {
             "name": "filament/spatie-laravel-translatable-plugin",
@@ -5691,16 +5691,16 @@
         },
         {
             "name": "lakm/laravel-comments",
-            "version": "2.3.1",
+            "version": "2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lakshan-Madushanka/laravel-comments.git",
-                "reference": "c8da0069824e8b9c19bec9870ad06a241b89bfa0"
+                "reference": "b537bdb55c6a916994cf1e9c23aaa9d8e189b9b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lakshan-Madushanka/laravel-comments/zipball/c8da0069824e8b9c19bec9870ad06a241b89bfa0",
-                "reference": "c8da0069824e8b9c19bec9870ad06a241b89bfa0",
+                "url": "https://api.github.com/repos/Lakshan-Madushanka/laravel-comments/zipball/b537bdb55c6a916994cf1e9c23aaa9d8e189b9b1",
+                "reference": "b537bdb55c6a916994cf1e9c23aaa9d8e189b9b1",
                 "shasum": ""
             },
             "require": {
@@ -5754,7 +5754,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Lakshan-Madushanka/laravel-comments/issues",
-                "source": "https://github.com/Lakshan-Madushanka/laravel-comments/tree/2.3.1"
+                "source": "https://github.com/Lakshan-Madushanka/laravel-comments/tree/2.3.2"
             },
             "funding": [
                 {
@@ -5762,7 +5762,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-18T12:31:04+00:00"
+            "time": "2025-05-04T13:59:31+00:00"
         },
         {
             "name": "lakm/nopass",
@@ -6530,16 +6530,16 @@
         },
         {
             "name": "laravel/sanctum",
-            "version": "v4.1.0",
+            "version": "v4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sanctum.git",
-                "reference": "4e4ced5023e9d8949214e0fb43d9f4bde79c7166"
+                "reference": "a360a6a1fd2400ead4eb9b6a9c1bb272939194f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sanctum/zipball/4e4ced5023e9d8949214e0fb43d9f4bde79c7166",
-                "reference": "4e4ced5023e9d8949214e0fb43d9f4bde79c7166",
+                "url": "https://api.github.com/repos/laravel/sanctum/zipball/a360a6a1fd2400ead4eb9b6a9c1bb272939194f5",
+                "reference": "a360a6a1fd2400ead4eb9b6a9c1bb272939194f5",
                 "shasum": ""
             },
             "require": {
@@ -6590,7 +6590,7 @@
                 "issues": "https://github.com/laravel/sanctum/issues",
                 "source": "https://github.com/laravel/sanctum"
             },
-            "time": "2025-04-22T13:53:47+00:00"
+            "time": "2025-04-23T13:03:38+00:00"
         },
         {
             "name": "laravel/scout",
@@ -13737,16 +13737,16 @@
         },
         {
             "name": "spatie/laravel-honeypot",
-            "version": "4.6.0",
+            "version": "4.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-honeypot.git",
-                "reference": "9c97023c7170e410a3ba660cf64809af1ee6e250"
+                "reference": "38d164f14939e943b92771859fc206c74cba8397"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-honeypot/zipball/9c97023c7170e410a3ba660cf64809af1ee6e250",
-                "reference": "9c97023c7170e410a3ba660cf64809af1ee6e250",
+                "url": "https://api.github.com/repos/spatie/laravel-honeypot/zipball/38d164f14939e943b92771859fc206c74cba8397",
+                "reference": "38d164f14939e943b92771859fc206c74cba8397",
                 "shasum": ""
             },
             "require": {
@@ -13801,7 +13801,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-honeypot/tree/4.6.0"
+                "source": "https://github.com/spatie/laravel-honeypot/tree/4.6.1"
             },
             "funding": [
                 {
@@ -13809,7 +13809,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-04-24T08:36:03+00:00"
+            "time": "2025-05-05T13:50:37+00:00"
         },
         {
             "name": "spatie/laravel-ignition",
@@ -19615,16 +19615,16 @@
         },
         {
             "name": "hamcrest/hamcrest-php",
-            "version": "v2.1.0",
+            "version": "v2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hamcrest/hamcrest-php.git",
-                "reference": "99ec86beb7da3604d57cd3ca3699d2853f53018d"
+                "reference": "f8b1c0173b22fa6ec77a81fe63e5b01eba7e6487"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hamcrest/hamcrest-php/zipball/99ec86beb7da3604d57cd3ca3699d2853f53018d",
-                "reference": "99ec86beb7da3604d57cd3ca3699d2853f53018d",
+                "url": "https://api.github.com/repos/hamcrest/hamcrest-php/zipball/f8b1c0173b22fa6ec77a81fe63e5b01eba7e6487",
+                "reference": "f8b1c0173b22fa6ec77a81fe63e5b01eba7e6487",
                 "shasum": ""
             },
             "require": {
@@ -19660,9 +19660,9 @@
             ],
             "support": {
                 "issues": "https://github.com/hamcrest/hamcrest-php/issues",
-                "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.0"
+                "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.1"
             },
-            "time": "2025-04-29T18:09:42+00:00"
+            "time": "2025-04-30T06:54:44+00:00"
         },
         {
             "name": "iamcal/sql-parser",
