@@ -3830,16 +3830,16 @@
         },
         {
             "name": "filament/spatie-laravel-tags-plugin",
-            "version": "v3.3.13",
+            "version": "v3.3.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-tags-plugin.git",
-                "reference": "83b9ccea77d807e61f1782a1a433de2f687384c3"
+                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/83b9ccea77d807e61f1782a1a433de2f687384c3",
-                "reference": "83b9ccea77d807e61f1782a1a433de2f687384c3",
+                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
+                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
                 "shasum": ""
             },
             "require": {
@@ -3863,7 +3863,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-04-23T06:40:07+00:00"
+            "time": "2025-04-30T09:16:35+00:00"
         },
         {
             "name": "filament/spatie-laravel-translatable-plugin",
@@ -19615,16 +19615,16 @@
         },
         {
             "name": "hamcrest/hamcrest-php",
-            "version": "v2.1.0",
+            "version": "v2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hamcrest/hamcrest-php.git",
-                "reference": "99ec86beb7da3604d57cd3ca3699d2853f53018d"
+                "reference": "f8b1c0173b22fa6ec77a81fe63e5b01eba7e6487"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hamcrest/hamcrest-php/zipball/99ec86beb7da3604d57cd3ca3699d2853f53018d",
-                "reference": "99ec86beb7da3604d57cd3ca3699d2853f53018d",
+                "url": "https://api.github.com/repos/hamcrest/hamcrest-php/zipball/f8b1c0173b22fa6ec77a81fe63e5b01eba7e6487",
+                "reference": "f8b1c0173b22fa6ec77a81fe63e5b01eba7e6487",
                 "shasum": ""
             },
             "require": {
@@ -19660,9 +19660,9 @@
             ],
             "support": {
                 "issues": "https://github.com/hamcrest/hamcrest-php/issues",
-                "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.0"
+                "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.1"
             },
-            "time": "2025-04-29T18:09:42+00:00"
+            "time": "2025-04-30T06:54:44+00:00"
         },
         {
             "name": "iamcal/sql-parser",
