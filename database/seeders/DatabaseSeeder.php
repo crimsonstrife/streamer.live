@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             FabricatorStorePagesSeeder::class,
             FabricatorBlogPagesSeeder::class,
             MenuSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }
