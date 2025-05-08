@@ -5691,16 +5691,16 @@
         },
         {
             "name": "lakm/laravel-comments",
-            "version": "2.3.1",
+            "version": "2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lakshan-Madushanka/laravel-comments.git",
-                "reference": "c8da0069824e8b9c19bec9870ad06a241b89bfa0"
+                "reference": "b537bdb55c6a916994cf1e9c23aaa9d8e189b9b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lakshan-Madushanka/laravel-comments/zipball/c8da0069824e8b9c19bec9870ad06a241b89bfa0",
-                "reference": "c8da0069824e8b9c19bec9870ad06a241b89bfa0",
+                "url": "https://api.github.com/repos/Lakshan-Madushanka/laravel-comments/zipball/b537bdb55c6a916994cf1e9c23aaa9d8e189b9b1",
+                "reference": "b537bdb55c6a916994cf1e9c23aaa9d8e189b9b1",
                 "shasum": ""
             },
             "require": {
@@ -5754,7 +5754,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Lakshan-Madushanka/laravel-comments/issues",
-                "source": "https://github.com/Lakshan-Madushanka/laravel-comments/tree/2.3.1"
+                "source": "https://github.com/Lakshan-Madushanka/laravel-comments/tree/2.3.2"
             },
             "funding": [
                 {
@@ -5762,7 +5762,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-18T12:31:04+00:00"
+            "time": "2025-05-04T13:59:31+00:00"
         },
         {
             "name": "lakm/nopass",
@@ -13737,16 +13737,16 @@
         },
         {
             "name": "spatie/laravel-honeypot",
-            "version": "4.6.0",
+            "version": "4.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-honeypot.git",
-                "reference": "9c97023c7170e410a3ba660cf64809af1ee6e250"
+                "reference": "38d164f14939e943b92771859fc206c74cba8397"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-honeypot/zipball/9c97023c7170e410a3ba660cf64809af1ee6e250",
-                "reference": "9c97023c7170e410a3ba660cf64809af1ee6e250",
+                "url": "https://api.github.com/repos/spatie/laravel-honeypot/zipball/38d164f14939e943b92771859fc206c74cba8397",
+                "reference": "38d164f14939e943b92771859fc206c74cba8397",
                 "shasum": ""
             },
             "require": {
@@ -13801,7 +13801,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-honeypot/tree/4.6.0"
+                "source": "https://github.com/spatie/laravel-honeypot/tree/4.6.1"
             },
             "funding": [
                 {
@@ -13809,7 +13809,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-04-24T08:36:03+00:00"
+            "time": "2025-05-05T13:50:37+00:00"
         },
         {
             "name": "spatie/laravel-ignition",
