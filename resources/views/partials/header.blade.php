@@ -30,7 +30,7 @@
 <body class="bg-light">
 <x-banner/>
 <div class="min-vh-100 d-flex flex-column">
-    <x-filament-menu menu="main"/>
+    <x-filament-menu menu="header-nav-main"/>
     <!-- Page Heading -->
     <header class="py-3 mb-4 border-bottom">
         <div class="container d-flex flex-wrap justify-content-center">

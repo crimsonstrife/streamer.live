@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Page;
 use Illuminate\Database\Seeder;
-use Z3d0X\FilamentFabricator\Models\Page;
 
 class FabricatorStorePagesSeeder extends Seeder
 {

@@ -5,22 +5,17 @@
         <div class="row">
             <div class="col-6 col-md-2 mb-3">
                 <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="{{ route('fabricator.page.home') }}"
-                                                 class="nav-link p-0 text-body-secondary">Home</a></li>
-                </ul>
+                <x-filament-menu menu="footer-nav-1"/>
             </div>
 
             <div class="col-6 col-md-2 mb-3">
                 <h5>Section</h5>
-                <ul class="nav flex-column">
-                </ul>
+                <x-filament-menu menu="footer-nav-2"/>
             </div>
 
             <div class="col-6 col-md-2 mb-3">
                 <h5>Section</h5>
-                <ul class="nav flex-column">
-                </ul>
+                <x-filament-menu menu="footer-nav-3"/>
             </div>
 
             <div class="col-md-5 offset-md-1 mb-3">
