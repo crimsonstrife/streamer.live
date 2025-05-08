@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             FabricatorStorePagesSeeder::class,
+            FabricatorBlogPagesSeeder::class,
             MenuSeeder::class,
         ]);
     }
