@@ -20,7 +20,7 @@
     "dependencies": {
         "@floating-ui/dom": "^1.6.13",
         "@popperjs/core": "^2.11.8",
-        "bootstrap": "^5.3.5",
+        "bootstrap": "^5.3.6",
         "bootstrap-icons": "^1.11.3",
         "jquery": "^3.7.1",
         "jquery-ui": "^1.14.1",
