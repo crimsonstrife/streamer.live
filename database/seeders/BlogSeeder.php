@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Author;
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
 use Carbon\Carbon;
@@ -46,6 +47,19 @@ class BlogSeeder extends Seeder
                 'category_id' => $uncategorizedCategory->id,
                 'content' => '<p>Welcome to Streamer. This is your first post. Edit or delete it, then start writing!</p>',
                 'published_at' => Carbon::now(),
+            ]);
+        }
+
+        // Seed a comment to the post
+        if (! empty($hello_world_post->id)) {
+            $dummyComment = Comment::updateOrCreate([
+                'commented_on_type' => 'App\Models\Post',
+                'commented_on_id' => $hello_world_post->id,
+                'commented_by_type' => 'App\Models\User',
+                'commented_by_id' => $adminUser->id,
+            ], [
+                'text' => 'Hi, this is a comment. To get started with moderating, editing, and deleting comments, please visit the Comments screen in the dashboard.',
+                'approved' => true,
             ]);
         }
     }
