@@ -6,7 +6,6 @@ use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Traits\HasReactions;
 use App\Utilities\ModelResolver;
-use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -50,39 +49,52 @@ class Comment extends Message
 
     public function replyReactions(): HasManyThrough
     {
-        return $this->hasManyThrough(M::reactionClass(), Reply::class, 'reply_id', 'comment_id');
+        return $this->hasManyThrough(
+            ModelResolver::reactionModel(), // Reaction class
+            self::class,                    // through Comment (as Reply)
+            'reply_id',                     // replies.reply_id → parent comment id
+            'reactable_id',                 // reactions.reactable_id → reply comment id
+            'id',                           // parent comment PK
+            'id'                            // reply comment PK
+        )
+            ->where('reactable_type', self::class);
     }
 
     public function scopeAddScore(Builder $query): Builder
     {
-        $reactionsTable = ModelResolver::reactionModel()->getTable();
-        $commentsTable = ModelResolver::commentModel()->getTable();
+        $reactionClass = ModelResolver::reactionModel();
+        $reactionTable = (new $reactionClass)->getTable();
+        $commentsTable = $this->getTable();
+        $commentClass = addslashes(self::class);
 
-        $reactionsCount = "(select count(*) from {$reactionsTable} where
-            {$commentsTable}.id = {$reactionsTable}.comment_id)";
+        $reactionsCount = "(select count(*) from {$reactionTable}
+            where reactable_type = '{$commentClass}'
+              and reactable_id = {$commentsTable}.id)";
 
-        $dislikesCountQuery = "(select (count(*) * 2) from {$reactionsTable} where
-            {$commentsTable}.id = {$reactionsTable}.comment_id and type = 'dislike')";
+        $dislikesCount = "(select count(*) * 2 from {$reactionTable}
+            where reactable_type = '{$commentClass}'
+              and reactable_id = {$commentsTable}.id
+              and type = 'dislike')";
 
-        $repliesCountQuery = "(select (count(*) * 2) from {$commentsTable} as laravel_reserved_0 where
-            {$commentsTable}.id = laravel_reserved_0.reply_id)";
+        $repliesCount = "(select count(*) * 2 from {$commentsTable} as laravel_reserved_0
+            where laravel_reserved_0.reply_id = {$commentsTable}.id)";
 
-        $replyReactionsCount = "(select count(*) from {$reactionsTable} inner join {$commentsTable} as laravel_reserved_1
-            on laravel_reserved_1.id = {$reactionsTable}.comment_id where {$commentsTable}.id = laravel_reserved_1.reply_id)";
+        $replyReactionsCount = "(select count(*) from {$reactionTable}
+            inner join {$commentsTable} as laravel_reserved_1
+              on laravel_reserved_1.id = {$reactionTable}.reactable_id
+            where {$reactionTable}.reactable_type = '{$commentClass}'
+              and laravel_reserved_1.reply_id = {$commentsTable}.id)";
 
-        $replyReactionsDislikeCount = "(select (count(*) * 2) from  {$reactionsTable}  inner join {$commentsTable} as laravel_reserved_2
-            on laravel_reserved_2.id = {$reactionsTable}.comment_id  where  {$commentsTable}.id = laravel_reserved_2.reply_id and
-            type = 'dislike')";
+        $replyReactionsDislikeCount = "(select count(*) * 2 from {$reactionTable}
+            inner join {$commentsTable} as laravel_reserved_2
+              on laravel_reserved_2.id = {$reactionTable}.reactable_id
+            where {$reactionTable}.reactable_type = '{$commentClass}'
+              and laravel_reserved_2.reply_id = {$commentsTable}.id
+              and {$reactionTable}.type = 'dislike')";
 
-        return $query->addSelect(
-            DB::raw('(select '.
-                $reactionsCount.' + '.
-                $repliesCountQuery.' + '.
-                $replyReactionsCount.' - '.
-                $dislikesCountQuery.' - '.
-                $replyReactionsDislikeCount.') '.
-                'as score')
-        );
+        return $query->addSelect([
+            'score' => DB::raw("({$reactionsCount} + {$repliesCount} + {$replyReactionsCount} - {$dislikesCount} - {$replyReactionsDislikeCount})"),
+        ]);
     }
 
     public function content(): string

@@ -1,0 +1,148 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\CommentResource\Pages;
+use App\Models\Comment;
+use Exception;
+use Filament\Forms;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+
+class CommentResource extends Resource
+{
+    protected static ?string $model = Comment::class;
+
+    protected static ?string $slug = 'blog/comments';
+
+    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+
+    protected static ?string $navigationGroup = 'Blog';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $table = (new static::$model)->getTable();
+
+        return parent::getEloquentQuery()
+            // make sure to still pull in all comment columns
+            ->select("{$table}.*")
+            // eager-load the user who made the comment
+            ->with('commentedBy')
+            ->addScore();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('id')->label('ID')->sortable(),
+                TextColumn::make('commentedBy.username')
+                    ->label('Author')
+                    ->sortable('commented_by_id')
+                    ->searchable()
+                    ->default('—'),
+                TextColumn::make('commentedOn')
+                    ->label('On')
+                    ->formatStateUsing(fn ($state, Comment $record) => class_basename($record->commented_on_type)." #{$record->commented_on_id}"),
+                TextColumn::make('text')
+                    ->label('Comment')
+                    ->limit(50)
+                    ->wrap(),
+                TextColumn::make('score')
+                    ->label('Score')
+                    ->sortable(),
+                IconColumn::make('approved')
+                    ->label('Approved')
+                    ->boolean()
+                    ->sortable(),
+                IconColumn::make('is_spam')
+                    ->label('Spam')
+                    ->boolean()
+                    ->sortable(),
+            ])
+            ->filters([
+                Filter::make('approved')
+                    ->label('Approved')
+                    ->query(fn (Builder $q) => $q->where('approved', true)),
+                Filter::make('unapproved')
+                    ->label('Unapproved')
+                    ->query(fn (Builder $q) => $q->where('approved', false)),
+                Filter::make('spam')
+                    ->label('Spam')
+                    ->query(fn (Builder $q) => $q->where('is_spam', true)),
+            ])
+            ->actions([
+                EditAction::make(),
+                Action::make('reply')
+                    ->label('Reply')
+                    ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->form([
+                        Forms\Components\Textarea::make('reply_text')
+                            ->label('Your reply')
+                            ->required()
+                            ->rows(3),
+                    ])
+                    ->action(function (Comment $record, array $data) {
+                        Comment::create([
+                            'text' => $data['reply_text'],
+                            'reply_id' => $record->id,
+                            'commented_on_type' => $record->commented_on_type,
+                            'commented_on_id' => $record->commented_on_id,
+                            'commented_by_type' => get_class(Auth::user()),
+                            'commented_by_id' => Auth::id(),
+                            'approved' => true,
+                            'is_spam' => false,
+                        ]);
+                        // $this->notify('success', 'Reply posted');
+                    }),
+                DeleteAction::make(),  // optional
+            ])
+            ->bulkActions([
+                BulkAction::make('approve')
+                    ->label('Mark as Approved')
+                    ->action(fn ($records) => $records->each->update(['approved' => true]))
+                    ->deselectRecordsAfterCompletion()
+                    ->successNotificationTitle('Comments approved'),
+                BulkAction::make('spam')
+                    ->label('Mark as Spam')
+                    ->action(fn ($records) => $records->each->update(['is_spam' => true]))
+                    ->deselectRecordsAfterCompletion()
+                    ->successNotificationTitle('Comments marked as spam'),
+            ]);
+    }
+
+    public static function form(Forms\Form $form): Forms\Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Textarea::make('text')
+                    ->label('Content')
+                    ->required()
+                    ->rows(3),
+                Forms\Components\Toggle::make('approved')
+                    ->label('Approved'),
+                Forms\Components\Toggle::make('is_spam')
+                    ->label('Spam'),
+            ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListComments::route('/'),
+            'edit' => Pages\EditComment::route('/{record}/edit'),
+        ];
+    }
+}
