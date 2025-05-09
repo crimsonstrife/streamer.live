@@ -39,13 +39,12 @@ class MenuSeeder extends Seeder
                         'pt_BR' => null,
                     ],
                     'menu_id' => $mainMenu->id,
+                    'route' => 'fabricator.page.home',
                 ], [
-                    'menu_id' => $mainMenu->id,
                     'icon' => null,
                     'has_badge' => 0,
                     'has_badge_query' => 1,
                     'is_route' => 1,
-                    'route' => 'fabricator.page.home',
                     'new_tab' => 0,
                     'order' => 1,
                 ]);
@@ -63,13 +62,12 @@ class MenuSeeder extends Seeder
                         'pt_BR' => null,
                     ],
                     'menu_id' => $mainMenu->id,
+                    'route' => 'blog.index',
                 ], [
-                    'menu_id' => $mainMenu->id,
                     'icon' => null,
                     'has_badge' => 0,
                     'has_badge_query' => 1,
                     'is_route' => 1,
-                    'route' => 'blog.index',
                     'new_tab' => 0,
                     'order' => 2,
                 ]);
@@ -87,13 +85,12 @@ class MenuSeeder extends Seeder
                         'pt_BR' => null,
                     ],
                     'menu_id' => $mainMenu->id,
+                    'route' => 'shop.page',
                 ], [
-                    'menu_id' => $mainMenu->id,
                     'icon' => null,
                     'has_badge' => 0,
                     'has_badge_query' => 1,
                     'is_route' => 1,
-                    'route' => 'shop.page',
                     'new_tab' => 0,
                     'order' => 3,
                 ]);
@@ -122,13 +119,12 @@ class MenuSeeder extends Seeder
                         'pt_BR' => null,
                     ],
                     'menu_id' => $footerMenuOne->id,
+                    'route' => 'fabricator.page.home',
                 ], [
-                    'menu_id' => $footerMenuOne->id,
                     'icon' => null,
                     'has_badge' => 0,
                     'has_badge_query' => 1,
                     'is_route' => 1,
-                    'route' => 'fabricator.page.home',
                     'new_tab' => 0,
                     'order' => 1,
                 ]);
@@ -156,13 +152,12 @@ class MenuSeeder extends Seeder
                         'pt_BR' => null,
                     ],
                     'menu_id' => $footerMenuTwo->id,
+                    'route' => 'blog.index',
                 ], [
-                    'menu_id' => $footerMenuTwo->id,
                     'icon' => null,
                     'has_badge' => 0,
                     'has_badge_query' => 1,
                     'is_route' => 1,
-                    'route' => 'blog.index',
                     'new_tab' => 0,
                     'order' => 1,
                 ]);
@@ -190,13 +185,12 @@ class MenuSeeder extends Seeder
                         'pt_BR' => null,
                     ],
                     'menu_id' => $footerMenuThree->id,
+                    'route' => 'shop.page',
                 ], [
-                    'menu_id' => $footerMenuThree->id,
                     'icon' => null,
                     'has_badge' => 0,
                     'has_badge_query' => 1,
                     'is_route' => 1,
-                    'route' => 'shop.page',
                     'new_tab' => 0,
                     'order' => 1,
                 ]);
