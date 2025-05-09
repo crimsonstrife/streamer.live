@@ -33,7 +33,7 @@ class MenuSeeder extends Seeder
                 MenuItem::updateOrCreate([
                     'title' => [
                         'ar' => null,
-                        'en' => 'Home',
+                        'en' => $homePage->title,
                         'id' => null,
                         'my' => null,
                         'pt_BR' => null,
@@ -56,7 +56,7 @@ class MenuSeeder extends Seeder
                 MenuItem::updateOrCreate([
                     'title' => [
                         'ar' => null,
-                        'en' => 'Blog',
+                        'en' => $blogPage->title,
                         'id' => null,
                         'my' => null,
                         'pt_BR' => null,
@@ -79,7 +79,7 @@ class MenuSeeder extends Seeder
                 MenuItem::updateOrCreate([
                     'title' => [
                         'ar' => null,
-                        'en' => 'Shop',
+                        'en' => $shopPage->title,
                         'id' => null,
                         'my' => null,
                         'pt_BR' => null,
@@ -113,7 +113,7 @@ class MenuSeeder extends Seeder
                 MenuItem::updateOrCreate([
                     'title' => [
                         'ar' => null,
-                        'en' => 'Home',
+                        'en' => $homePage->title,
                         'id' => null,
                         'my' => null,
                         'pt_BR' => null,
@@ -146,7 +146,7 @@ class MenuSeeder extends Seeder
                 MenuItem::updateOrCreate([
                     'title' => [
                         'ar' => null,
-                        'en' => 'Blog',
+                        'en' => $blogPage->title,
                         'id' => null,
                         'my' => null,
                         'pt_BR' => null,
@@ -179,7 +179,7 @@ class MenuSeeder extends Seeder
                 MenuItem::updateOrCreate([
                     'title' => [
                         'ar' => null,
-                        'en' => 'Shop',
+                        'en' => $shopPage->title,
                         'id' => null,
                         'my' => null,
                         'pt_BR' => null,
