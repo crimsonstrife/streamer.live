@@ -31,6 +31,7 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        // Instantiate the class held by static::$model and get its table name.
         $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
