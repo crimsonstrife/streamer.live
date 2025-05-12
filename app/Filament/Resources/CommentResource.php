@@ -32,7 +32,7 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $table = (new static::$model)->getTable();
+        $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -67,13 +67,15 @@ class CommentResource extends Resource
                 TextColumn::make('commentedOn')
                     ->label('On')
                     // display the related model’s title (or fallback to Type #ID)
-                    ->getStateUsing(fn (Comment $record) => optional($record->commentedOn)->title
+                    ->getStateUsing(
+                        fn (Comment $record) => optional($record->commentedOn)->title
                         ?? class_basename($record->commented_on_type)
                         .' #'
                         .$record->commented_on_id
                     )
                     // link to it using its slug (route key)
-                    ->url(fn (Comment $record): ?string => $record->commentedOn
+                    ->url(
+                        fn (Comment $record): ?string => $record->commentedOn
                         ? match ($record->commented_on_type) {
                             Post::class => PostResource::getUrl('edit', [
                                 'record' => $record->commentedOn->getRouteKey(),
