@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
@@ -34,7 +35,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model())->getTable();
+        $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -126,6 +127,26 @@ class CommentResource extends Resource
                 Filter::make('spam')
                     ->label('Spam')
                     ->query(fn (Builder $q) => $q->where('is_spam', true)),
+                Filter::make('date_range')
+                    ->label('Created Between')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('From')
+                            ->placeholder('Start date'),
+                        DatePicker::make('created_until')
+                            ->label('Until')
+                            ->placeholder('End date'),
+                    ])
+                    ->query(fn (Builder $query, array $data) => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date),
+                        )
+                    ),
             ])
             ->actions([
                 EditAction::make(),
