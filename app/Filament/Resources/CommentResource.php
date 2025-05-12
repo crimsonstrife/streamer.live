@@ -35,7 +35,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model)->getTable();
+        $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -138,7 +138,8 @@ class CommentResource extends Resource
                             ->preload()
                             ->placeholder('Any author'),
                     ])
-                    ->query(fn (Builder $query, array $data) => $query
+                    ->query(
+                        fn (Builder $query, array $data) => $query
                         ->when(
                             $data['commented_by_id'],
                             fn (Builder $q, $id) => $q->where('commented_by_id', $id),
