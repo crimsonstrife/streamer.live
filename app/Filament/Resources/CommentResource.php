@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommentResource\Pages;
 use App\Models\Comment;
+use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
@@ -32,6 +33,7 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        // Instantiate the class held by static::$model and get its table name.
         $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
@@ -74,7 +76,30 @@ class CommentResource extends Resource
                     ),
                 TextColumn::make('commentedOn')
                     ->label('On')
-                    ->formatStateUsing(fn ($state, Comment $record) => class_basename($record->commented_on_type)." #{$record->commented_on_id}"),
+                    // display the related model’s title (or fallback to Type #ID)
+                    ->getStateUsing(
+                        fn (Comment $record) => optional($record->commentedOn)->title
+                        ?? class_basename($record->commented_on_type)
+                        .' #'
+                        .$record->commented_on_id
+                    )
+                    // link to it using its slug (route key)
+                    ->url(
+                        fn (Comment $record): ?string => $record->commentedOn
+                        ? match ($record->commented_on_type) {
+                            Post::class => PostResource::getUrl('edit', [
+                                'record' => $record->commentedOn->getRouteKey(),
+                            ]),
+                            default => null,
+                        }
+                        : null
+                    )
+                    ->openUrlInNewTab(),
+                TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()          // renders a human-readable datetime
+                    ->since()             // “2 hours ago” style
+                    ->sortable(),
                 TextColumn::make('text')
                     ->label('Comment')
                     ->limit(50)
