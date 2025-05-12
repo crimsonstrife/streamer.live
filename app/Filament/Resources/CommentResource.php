@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
@@ -142,6 +143,27 @@ class CommentResource extends Resource
                 Filter::make('spam')
                     ->label('Spam')
                     ->query(fn (Builder $q) => $q->where('is_spam', true)),
+                Filter::make('date_range')
+                    ->label('Created Between')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('From')
+                            ->placeholder('Start date'),
+                        DatePicker::make('created_until')
+                            ->label('Until')
+                            ->placeholder('End date'),
+                    ])
+                    ->query(
+                        fn (Builder $query, array $data) => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date),
+                        )
+                    ),
             ])
             ->actions([
                 EditAction::make(),
