@@ -33,7 +33,7 @@
         @endauth
 
         @foreach ($post->comments->whereNull('reply_id') as $comment)
-            @include('components.comment-thread', ['comment' => $comment])
+            @include('filament.components.comment-thread', ['comment' => $comment])
         @endforeach
     </div>
 @endif

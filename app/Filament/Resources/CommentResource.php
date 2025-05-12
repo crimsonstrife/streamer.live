@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommentResource\Pages;
 use App\Models\Comment;
+use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
@@ -31,13 +33,22 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        // Instantiate the class held by static::$model and get its table name.
         $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
             ->select("{$table}.*")
             // eager-load the user who made the comment
-            ->with('commentedBy')
+            ->with([
+                'commentedBy',
+                'commentedOn',
+                // load first‐level replies
+                'replies' => fn ($q) => $q->with('commentedBy'),
+                // and two more levels deep (adjust as needed)
+                'replies.replies' => fn ($q) => $q->with('commentedBy'),
+                'replies.replies.replies' => fn ($q) => $q->with('commentedBy'),
+            ])
             ->addScore();
     }
 
@@ -65,7 +76,30 @@ class CommentResource extends Resource
                     ),
                 TextColumn::make('commentedOn')
                     ->label('On')
-                    ->formatStateUsing(fn ($state, Comment $record) => class_basename($record->commented_on_type)." #{$record->commented_on_id}"),
+                    // display the related model’s title (or fallback to Type #ID)
+                    ->getStateUsing(
+                        fn (Comment $record) => optional($record->commentedOn)->title
+                        ?? class_basename($record->commented_on_type)
+                        .' #'
+                        .$record->commented_on_id
+                    )
+                    // link to it using its slug (route key)
+                    ->url(
+                        fn (Comment $record): ?string => $record->commentedOn
+                        ? match ($record->commented_on_type) {
+                            Post::class => PostResource::getUrl('edit', [
+                                'record' => $record->commentedOn->getRouteKey(),
+                            ]),
+                            default => null,
+                        }
+                        : null
+                    )
+                    ->openUrlInNewTab(),
+                TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()          // renders a human-readable datetime
+                    ->since()             // “2 hours ago” style
+                    ->sortable(),
                 TextColumn::make('text')
                     ->label('Comment')
                     ->limit(50)
@@ -95,6 +129,17 @@ class CommentResource extends Resource
             ])
             ->actions([
                 EditAction::make(),
+                Action::make('viewThread')
+                    ->label('View Thread')
+                    ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->modalHeading('Comment Thread')
+                    ->modalWidth('2xl')
+                    ->modalContent(
+                        fn (Comment $record) => // Return the View instance, not a string
+                    view('filament.components.comment-thread', [
+                        'comment' => $record,
+                    ])
+                    ),
                 Action::make('reply')
                     ->label('Reply')
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
