@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
@@ -143,6 +144,24 @@ class CommentResource extends Resource
                 Filter::make('spam')
                     ->label('Spam')
                     ->query(fn (Builder $q) => $q->where('is_spam', true)),
+                Filter::make('commented_by_id')
+                    ->label('By Author')
+                    ->form([
+                        Select::make('commented_by_id')
+                            ->label('Commenter')
+                            // load all users as [id => name]
+                            ->options(fn () => User::pluck('users.username', 'id')->toArray())
+                            ->searchable()
+                            ->preload()
+                            ->placeholder('Any author'),
+                      ])
+                    ->query(
+                        fn (Builder $query, array $data) => $query
+                        ->when(
+                          $data['commented_by_id'],
+                            fn (Builder $q, $id) => $q->where('commented_by_id', $id),
+                        )
+                    ),
                 Filter::make('date_range')
                     ->label('Created Between')
                     ->form([
