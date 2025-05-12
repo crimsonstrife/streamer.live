@@ -31,6 +31,7 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        // Instantiate the class held by static::$model and get its table name.
         $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
@@ -66,6 +67,11 @@ class CommentResource extends Resource
                 TextColumn::make('commentedOn')
                     ->label('On')
                     ->formatStateUsing(fn ($state, Comment $record) => class_basename($record->commented_on_type)." #{$record->commented_on_id}"),
+                TextColumn::make('created_at')
+                    ->label('Created')
+                    ->dateTime()          // renders a human-readable datetime
+                    ->since()             // “2 hours ago” style
+                    ->sortable(),
                 TextColumn::make('text')
                     ->label('Comment')
                     ->limit(50)
