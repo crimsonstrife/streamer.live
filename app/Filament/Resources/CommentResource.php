@@ -8,6 +8,9 @@ use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
@@ -117,6 +120,21 @@ class CommentResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Filter::make('search')
+                    ->label('Search Text')
+                    ->form([
+                        TextInput::make('search')
+                            ->label('Search comments…')
+                            ->placeholder('Enter keywords…')
+                            ->columnSpan('full'),
+                    ])
+                    ->query(
+                        fn (Builder $query, array $data) => $query
+                        ->when(
+                            $data['search'],
+                            fn (Builder $q, $search) => $q->where('text', 'like', "%{$search}%")
+                        )
+                    ),
                 Filter::make('approved')
                     ->label('Approved')
                     ->query(fn (Builder $q) => $q->where('approved', true)),
@@ -126,6 +144,56 @@ class CommentResource extends Resource
                 Filter::make('spam')
                     ->label('Spam')
                     ->query(fn (Builder $q) => $q->where('is_spam', true)),
+                Filter::make('contains_urls')
+                    ->label('Contains URLs')
+                    ->query(fn (Builder $query) => $query->where(function (Builder $q) {
+                        // Pattern for bare URLs: http:// or https:// followed by any non-space, non-quote, non-)] characters
+                        $bare = 'https?://[^[:space:]"\'\)\]]+';
+                        // Pattern for Markdown links: [text](http://...)
+                        $md = '\[[^]]+\]\(https?://[^)]+\)';
+                        // Run either regex
+                        $q->where('text', 'regexp', $bare)
+                            ->orWhere('text', 'regexp', $md);
+                    })),
+                Filter::make('commented_by_id')
+                    ->label('By Author')
+                    ->form([
+                        Select::make('commented_by_id')
+                            ->label('Commenter')
+                            // load all users as [id => name]
+                            ->options(fn () => User::pluck('users.username', 'id')->toArray())
+                            ->searchable()
+                            ->preload()
+                            ->placeholder('Any author'),
+                      ])
+                    ->query(
+                        fn (Builder $query, array $data) => $query
+                        ->when(
+                            $data['commented_by_id'],
+                            fn (Builder $q, $id) => $q->where('commented_by_id', $id),
+                        )
+                    ),
+                Filter::make('date_range')
+                    ->label('Created Between')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('From')
+                            ->placeholder('Start date'),
+                        DatePicker::make('created_until')
+                            ->label('Until')
+                            ->placeholder('End date'),
+                    ])
+                    ->query(
+                        fn (Builder $query, array $data) => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date),
+                        )
+                    ),
             ])
             ->actions([
                 EditAction::make(),
