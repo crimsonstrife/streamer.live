@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
@@ -31,13 +32,21 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $table = (new static::$model())->getTable();
+        $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
             ->select("{$table}.*")
             // eager-load the user who made the comment
-            ->with('commentedBy')
+            ->with([
+                'commentedBy',
+                'commentedOn',
+                // load first‐level replies
+                'replies' => fn ($q) => $q->with('commentedBy'),
+                // and two more levels deep (adjust as needed)
+                'replies.replies' => fn ($q) => $q->with('commentedBy'),
+                'replies.replies.replies' => fn ($q) => $q->with('commentedBy'),
+            ])
             ->addScore();
     }
 
@@ -95,6 +104,16 @@ class CommentResource extends Resource
             ])
             ->actions([
                 EditAction::make(),
+                Action::make('viewThread')
+                    ->label('View Thread')
+                    ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                    ->modalHeading('Comment Thread')
+                    ->modalWidth('2xl')
+                    ->modalContent(fn (Comment $record) => // Return the View instance, not a string
+                    view('filament.components.comment-thread', [
+                        'comment' => $record,
+                    ])
+                    ),
                 Action::make('reply')
                     ->label('Reply')
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
