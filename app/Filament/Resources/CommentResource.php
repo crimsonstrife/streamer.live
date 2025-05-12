@@ -31,7 +31,7 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $table = (new static::$model)->getTable();
+        $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -53,7 +53,8 @@ class CommentResource extends Resource
                     ->label('Author')
                     ->sortable('commented_by_id')
                     ->searchable()
-                    ->getStateUsing(fn (Comment $record) => // try name…
+                    ->getStateUsing(
+                        fn (Comment $record) => // try name…
                         $record->commentedBy?->name
                         // …otherwise username…
                         ?? $record->commentedBy?->username
