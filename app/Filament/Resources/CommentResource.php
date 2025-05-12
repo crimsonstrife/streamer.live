@@ -169,7 +169,7 @@ class CommentResource extends Resource
                     ->query(
                         fn (Builder $query, array $data) => $query
                         ->when(
-                          $data['commented_by_id'],
+                            $data['commented_by_id'],
                             fn (Builder $q, $id) => $q->where('commented_by_id', $id),
                         )
                     ),
