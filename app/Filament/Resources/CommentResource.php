@@ -8,8 +8,8 @@ use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
@@ -37,7 +37,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model())->getTable();
+        $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -130,10 +130,10 @@ class CommentResource extends Resource
                     ])
                     ->query(
                         fn (Builder $query, array $data) => $query
-                        ->when(
-                            $data['search'],
-                            fn (Builder $q, $search) => $q->where('text', 'like', "%{$search}%")
-                        )
+                            ->when(
+                                $data['search'],
+                                fn (Builder $q, $search) => $q->where('text', 'like', "%{$search}%")
+                            )
                     ),
                 Filter::make('approved')
                     ->label('Approved')
@@ -165,13 +165,13 @@ class CommentResource extends Resource
                             ->searchable()
                             ->preload()
                             ->placeholder('Any author'),
-                      ])
+                    ])
                     ->query(
                         fn (Builder $query, array $data) => $query
-                        ->when(
-                            $data['commented_by_id'],
-                            fn (Builder $q, $id) => $q->where('commented_by_id', $id),
-                        )
+                            ->when(
+                                $data['commented_by_id'],
+                                fn (Builder $q, $id) => $q->where('commented_by_id', $id),
+                            )
                     ),
                 Filter::make('date_range')
                     ->label('Created Between')
@@ -185,14 +185,14 @@ class CommentResource extends Resource
                     ])
                     ->query(
                         fn (Builder $query, array $data) => $query
-                        ->when(
-                            $data['created_from'],
-                            fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date),
-                        )
-                        ->when(
-                            $data['created_until'],
-                            fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date),
-                        )
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $q, $date) => $q->whereDate('created_at', '<=', $date),
+                            )
                     ),
             ])
             ->actions([
@@ -243,6 +243,30 @@ class CommentResource extends Resource
                     ->action(fn ($records) => $records->each->update(['is_spam' => true]))
                     ->deselectRecordsAfterCompletion()
                     ->successNotificationTitle('Comments marked as spam'),
+                BulkAction::make('not_spam')
+                    ->label('Not Spam')
+                    ->action(fn ($records) => $records->each->update(['is_spam' => false]))
+                    ->deselectRecordsAfterCompletion()
+                    ->successNotificationTitle('Comments un‐flagged as spam'),
+                BulkAction::make('destroy')
+                    ->label('Destroy Permanently')
+                    ->requiresConfirmation()
+                    ->color('danger')
+                    ->action(fn ($records) => $records->each->forceDelete())
+                    ->deselectRecordsAfterCompletion()
+                    ->successNotificationTitle('Comments permanently deleted'),
+                BulkAction::make('ban_user')
+                    ->label('Ban User')
+                    ->requiresConfirmation()
+                    ->action(function ($records) {
+                        // collect unique commenter IDs
+                        $records
+                            ->pluck('commented_by_id')
+                            ->unique()
+                            ->each(fn ($userId) => User::find($userId)?->ban());
+                    })
+                    ->deselectRecordsAfterCompletion()
+                    ->successNotificationTitle('Users banned'),
             ]);
     }
 
