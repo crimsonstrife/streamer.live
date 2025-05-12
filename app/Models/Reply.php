@@ -40,11 +40,11 @@ class Reply extends Message
 
     public function commentedOn(): MorphTo
     {
-        return $this->morphTo('commented_on');
+        return $this->morphTo();
     }
 
     public function commentedBy(): MorphTo
     {
-        return $this->morphTo('commented_by');
+        return $this->morphTo();
     }
 }

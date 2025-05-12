@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommentResource\Pages;
 use App\Models\Comment;
+use App\Models\User;
 use Exception;
 use Filament\Forms;
 use Filament\Resources\Resource;
@@ -48,11 +49,19 @@ class CommentResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->label('ID')->sortable(),
-                TextColumn::make('commentedBy.username')
+                TextColumn::make('author')
                     ->label('Author')
                     ->sortable('commented_by_id')
                     ->searchable()
-                    ->default('—'),
+                    ->getStateUsing(fn (Comment $record) => // try name…
+                        $record->commentedBy?->name
+                        // …otherwise username…
+                        ?? $record->commentedBy?->username
+                        // …otherwise email…
+                        ?? $record->commentedBy?->email
+                        // …otherwise a dash
+                        ?? '—'
+                    ),
                 TextColumn::make('commentedOn')
                     ->label('On')
                     ->formatStateUsing(fn ($state, Comment $record) => class_basename($record->commented_on_type)." #{$record->commented_on_id}"),

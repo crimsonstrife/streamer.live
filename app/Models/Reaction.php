@@ -6,8 +6,12 @@ use App\Enums\ReactionType;
 use App\Models\BaseModel as Model;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
+use App\Utilities\ModelResolver;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Reaction
@@ -15,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * This class represents a reaction model that can be associated with various entities in the application.
  * It supports polymorphic relationships for the owner and the re-actable entities.
  *
- * @package App\Models
  * @property int $id
  * @property string $owner_type
  * @property int $owner_id
@@ -23,23 +26,25 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $reactable_id
  * @property ReactionType $type
  * @property int $point_value
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $owner
- * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $reactable
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereOwnerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereOwnerType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction wherePointValue($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereReactableId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereReactableType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Model|Eloquent $owner
+ * @property-read \Illuminate\Database\Eloquent\Model|Eloquent $reactable
+ *
+ * @method static Builder<static>|Reaction newModelQuery()
+ * @method static Builder<static>|Reaction newQuery()
+ * @method static Builder<static>|Reaction query()
+ * @method static Builder<static>|Reaction whereCreatedAt($value)
+ * @method static Builder<static>|Reaction whereId($value)
+ * @method static Builder<static>|Reaction whereOwnerId($value)
+ * @method static Builder<static>|Reaction whereOwnerType($value)
+ * @method static Builder<static>|Reaction wherePointValue($value)
+ * @method static Builder<static>|Reaction whereReactableId($value)
+ * @method static Builder<static>|Reaction whereReactableType($value)
+ * @method static Builder<static>|Reaction whereType($value)
+ * @method static Builder<static>|Reaction whereUpdatedAt($value)
+ *
+ * @mixin Eloquent
  */
 class Reaction extends Model
 {
@@ -58,8 +63,6 @@ class Reaction extends Model
      * Get the owning model of the reaction.
      *
      * This method defines a polymorphic relationship to the owner model.
-     *
-     * @return MorphTo
      */
     public function owner(): MorphTo
     {
@@ -70,8 +73,6 @@ class Reaction extends Model
      * Get the reactable model that the reaction belongs to.
      *
      * This method defines a polymorphic relationship to the reactable model.
-     *
-     * @return MorphTo
      */
     public function reactable(): MorphTo
     {
@@ -82,8 +83,6 @@ class Reaction extends Model
      * Get the type of the reaction.
      *
      * This method returns the reaction type as an instance of the ReactionType enum.
-     *
-     * @return ReactionType
      */
     public function getTypeAttribute(): ReactionType
     {
