@@ -29,11 +29,14 @@ class Comment extends Message
         'reply_id',
         'approved',
         'is_spam',
+        'spam_score',
+        'is_spam_auto',
     ];
 
     protected $casts = [
         'approved' => 'bool',
         'is_spam' => 'bool',
+        'is_spam_auto' => 'bool',
     ];
 
     public function commentable(): MorphTo

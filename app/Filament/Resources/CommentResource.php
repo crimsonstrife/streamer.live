@@ -108,8 +108,17 @@ class CommentResource extends Resource
                     ->limit(50)
                     ->wrap(),
                 TextColumn::make('score')
-                    ->label('Score')
+                    ->label('Reputation Score')
                     ->sortable(),
+                TextColumn::make('spam_score')
+                    ->label('Spam Risk Score')
+                    ->sortable()
+                    ->color(fn ($state) => match (true) {
+                        $state >= 5 => 'danger',   // very high risk
+                        $state >= 2 => 'warning',  // medium risk
+                        default => 'success',  // low risk
+                    })
+                    ->tooltip(fn ($state) => "Composite spam score: {$state}"),
                 IconColumn::make('approved')
                     ->label('Approved')
                     ->boolean()
@@ -117,6 +126,12 @@ class CommentResource extends Resource
                 IconColumn::make('is_spam')
                     ->label('Spam')
                     ->boolean()
+                    ->sortable(),
+                IconColumn::make('is_spam_auto')
+                    ->label('Auto-Spam')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-shield-exclamation')
+                    ->falseIcon('heroicon-o-shield-check')
                     ->sortable(),
             ])
             ->filters([
@@ -141,6 +156,12 @@ class CommentResource extends Resource
                 Filter::make('unapproved')
                     ->label('Unapproved')
                     ->query(fn (Builder $q) => $q->where('approved', false)),
+                Filter::make('auto_spam')
+                    ->label('Auto-flagged Spam')
+                    ->query(fn (Builder $query) => $query->where('is_spam_auto', true)),
+                Filter::make('high_risk')
+                    ->label('Spam Risk Score ≥ 2')
+                    ->query(fn (Builder $q) => $q->where('spam_score', '>=', 2)),
                 Filter::make('spam')
                     ->label('Spam')
                     ->query(fn (Builder $q) => $q->where('is_spam', true)),

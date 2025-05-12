@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Filament\Resources\PostResource;
+use App\Models\Comment;
+use App\Observers\CommentObserver;
 use App\Services\FourthwallService;
 use App\Services\TwitchService;
 use App\Settings\LookFeelSettings;
@@ -50,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Comment::observe(CommentObserver::class);
+
         View::composer('*', function ($view) {
             $view->with('siteSettings', app(SiteSettings::class))
                 ->with('seoSettings', app(SEOSettings::class))
