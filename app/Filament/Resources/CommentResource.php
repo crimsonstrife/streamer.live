@@ -32,7 +32,7 @@ class CommentResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $table = (new static::$model)->getTable();
+        $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -109,7 +109,8 @@ class CommentResource extends Resource
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
                     ->modalHeading('Comment Thread')
                     ->modalWidth('2xl')
-                    ->modalContent(fn (Comment $record) => // Return the View instance, not a string
+                    ->modalContent(
+                        fn (Comment $record) => // Return the View instance, not a string
                     view('filament.components.comment-thread', [
                         'comment' => $record,
                     ])
