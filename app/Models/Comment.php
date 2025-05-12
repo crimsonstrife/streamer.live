@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Facades\DB;
 
 class Comment extends Message
 {
@@ -62,14 +61,13 @@ class Comment extends Message
 
     public function scopeAddScore(Builder $query): Builder
     {
-        $reactionClass = ModelResolver::reactionModel();
-        $reactionTable = (new $reactionClass)->getTable();
+        $reactionTable = (new (ModelResolver::reactionModel()))->getTable();
         $commentsTable = $this->getTable();
         $commentClass = addslashes(self::class);
 
         $reactionsCount = "(select count(*) from {$reactionTable}
-            where reactable_type = '{$commentClass}'
-              and reactable_id = {$commentsTable}.id)";
+        where reactable_type = '{$commentClass}'
+          and reactable_id = {$commentsTable}.id)";
 
         $dislikesCount = "(select count(*) * 2 from {$reactionTable}
             where reactable_type = '{$commentClass}'
@@ -92,9 +90,20 @@ class Comment extends Message
               and laravel_reserved_2.reply_id = {$commentsTable}.id
               and {$reactionTable}.type = 'dislike')";
 
-        return $query->addSelect([
-            'score' => DB::raw("({$reactionsCount} + {$repliesCount} + {$replyReactionsCount} - {$dislikesCount} - {$replyReactionsDislikeCount})"),
-        ]);
+        // now explicitly alias the whole expression as “score”
+        $fullScoreExpr = "(
+        {$reactionsCount}
+      + {$repliesCount}
+      + {$replyReactionsCount}
+      - {$dislikesCount}
+      - {$replyReactionsDislikeCount}
+    ) as score";
+
+        return $query
+            // make sure we still select the base columns
+            ->select("{$commentsTable}.*")
+            // then add the aliased raw
+            ->selectRaw($fullScoreExpr);
     }
 
     public function content(): string
