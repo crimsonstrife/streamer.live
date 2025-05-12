@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommentResource\Pages;
 use App\Models\Comment;
+use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
@@ -38,7 +39,7 @@ class CommentResource extends Resource
             // make sure to still pull in all comment columns
             ->select("{$table}.*")
             // eager-load the user who made the comment
-            ->with('commentedBy')
+            ->with(['commentedBy', 'commentable'])
             ->addScore();
     }
 
@@ -66,7 +67,25 @@ class CommentResource extends Resource
                     ),
                 TextColumn::make('commentedOn')
                     ->label('On')
-                    ->formatStateUsing(fn ($state, Comment $record) => class_basename($record->commented_on_type)." #{$record->commented_on_id}"),
+                    // display the related model’s title (or fallback to Type #ID)
+                    ->getStateUsing(
+                        fn (Comment $record) => optional($record->commentedOn)->title
+                        ?? class_basename($record->commented_on_type)
+                        .' #'
+                        .$record->commented_on_id
+                    )
+                    // link to it using its slug (route key)
+                    ->url(
+                        fn (Comment $record): ?string => $record->commentedOn
+                        ? match ($record->commented_on_type) {
+                            Post::class => PostResource::getUrl('edit', [
+                                'record' => $record->commentedOn->getRouteKey(),
+                            ]),
+                            default => null,
+                        }
+                        : null
+                    )
+                    ->openUrlInNewTab(),
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()          // renders a human-readable datetime
