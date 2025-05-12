@@ -34,7 +34,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model())->getTable();
+        $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -126,6 +126,17 @@ class CommentResource extends Resource
                 Filter::make('spam')
                     ->label('Spam')
                     ->query(fn (Builder $q) => $q->where('is_spam', true)),
+                Filter::make('contains_urls')
+                    ->label('Contains URLs')
+                    ->query(fn (Builder $query) => $query->where(function (Builder $q) {
+                        // Pattern for bare URLs: http:// or https:// followed by any non-space, non-quote, non-)] characters
+                        $bare = 'https?://[^[:space:]"\'\)\]]+';
+                        // Pattern for Markdown links: [text](http://...)
+                        $md = '\[[^]]+\]\(https?://[^)]+\)';
+                        // Run either regex
+                        $q->where('text', 'regexp', $bare)
+                            ->orWhere('text', 'regexp', $md);
+                    })),
             ])
             ->actions([
                 EditAction::make(),
