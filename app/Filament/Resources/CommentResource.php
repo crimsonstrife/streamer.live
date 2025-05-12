@@ -35,7 +35,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model)->getTable();
+        $table = (new static::$model())->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -137,7 +137,8 @@ class CommentResource extends Resource
                             ->label('Until')
                             ->placeholder('End date'),
                     ])
-                    ->query(fn (Builder $query, array $data) => $query
+                    ->query(
+                        fn (Builder $query, array $data) => $query
                         ->when(
                             $data['created_from'],
                             fn (Builder $q, $date) => $q->whereDate('created_at', '>=', $date),
