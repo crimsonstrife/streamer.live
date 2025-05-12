@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
@@ -34,7 +35,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model())->getTable();
+        $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -117,6 +118,20 @@ class CommentResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Filter::make('search')
+                    ->label('Search Text')
+                    ->form([
+                        TextInput::make('search')
+                            ->label('Search comments…')
+                            ->placeholder('Enter keywords…')
+                            ->columnSpan('full'),
+                    ])
+                    ->query(fn (Builder $query, array $data) => $query
+                        ->when(
+                            $data['search'],
+                            fn (Builder $q, $search) => $q->where('text', 'like', "%{$search}%")
+                        )
+                    ),
                 Filter::make('approved')
                     ->label('Approved')
                     ->query(fn (Builder $q) => $q->where('approved', true)),
