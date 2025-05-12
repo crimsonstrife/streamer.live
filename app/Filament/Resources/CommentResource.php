@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use Exception;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\View;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
@@ -34,7 +35,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model())->getTable();
+        $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -126,6 +127,23 @@ class CommentResource extends Resource
                 Filter::make('spam')
                     ->label('Spam')
                     ->query(fn (Builder $q) => $q->where('is_spam', true)),
+                Filter::make('commented_by_id')
+                    ->label('By Author')
+                    ->form([
+                        Select::make('commented_by_id')
+                            ->label('Commenter')
+                            // load all users as [id => name]
+                            ->options(fn () => User::pluck('users.username', 'id')->toArray())
+                            ->searchable()
+                            ->preload()
+                            ->placeholder('Any author'),
+                    ])
+                    ->query(fn (Builder $query, array $data) => $query
+                        ->when(
+                            $data['commented_by_id'],
+                            fn (Builder $q, $id) => $q->where('commented_by_id', $id),
+                        )
+                    ),
             ])
             ->actions([
                 EditAction::make(),
