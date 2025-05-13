@@ -11,12 +11,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Comment extends Message
 {
     use HasOwner;
     use HasOwnerAvatar;
     use HasReactions;
+    use LogsActivity;
 
     protected $table = 'comments';
 
@@ -127,5 +130,14 @@ class Comment extends Message
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'reply_id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('comment')
+            ->logFillable()
+            ->logOnlyDirty()                // only changed fields
+            ->dontSubmitEmptyLogs();
     }
 }

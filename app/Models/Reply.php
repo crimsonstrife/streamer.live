@@ -8,12 +8,15 @@ use App\Traits\HasReactions;
 use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Reply extends Message
 {
     use HasOwner;
     use HasOwnerAvatar;
     use HasReactions;
+    use LogsActivity;
 
     protected $table = 'comments';
 
@@ -46,5 +49,14 @@ class Reply extends Message
     public function commentedBy(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('comment')
+            ->logFillable()
+            ->logOnlyDirty()                // only changed fields
+            ->dontSubmitEmptyLogs();
     }
 }

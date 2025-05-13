@@ -9,11 +9,15 @@ use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Message extends Model
 {
     use HasOwner;
     use HasOwnerAvatar;
+    use LogsActivity;
 
     protected $table = 'comments';
 
@@ -59,5 +63,21 @@ class Message extends Model
     public function ownerReactions(): HasMany
     {
         return $this->hasMany(M::reactionClass(), 'comment_id');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('message')
+            ->logFillable()
+            ->logOnlyDirty()                // only changed fields
+            ->dontSubmitEmptyLogs();
+    }
+
+    // Expose the polymorphic relation for the logs:
+    public function activities(): MorphMany
+    {
+        return $this->morphMany(Activity::class, 'subject')
+            ->orderBy('created_at', 'desc');
     }
 }
