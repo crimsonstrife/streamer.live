@@ -18187,16 +18187,16 @@
         },
         {
             "name": "tomatophp/filament-media-manager",
-            "version": "v1.1.4",
+            "version": "v1.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomatophp/filament-media-manager.git",
-                "reference": "b16d1d02ff6de40c8bfcf3c96a8e257a328e86ed"
+                "reference": "f44481f3a067569b83fcf255d2cbbc257c9ab408"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomatophp/filament-media-manager/zipball/b16d1d02ff6de40c8bfcf3c96a8e257a328e86ed",
-                "reference": "b16d1d02ff6de40c8bfcf3c96a8e257a328e86ed",
+                "url": "https://api.github.com/repos/tomatophp/filament-media-manager/zipball/f44481f3a067569b83fcf255d2cbbc257c9ab408",
+                "reference": "f44481f3a067569b83fcf255d2cbbc257c9ab408",
                 "shasum": ""
             },
             "require": {
@@ -18242,7 +18242,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tomatophp/filament-media-manager/issues",
-                "source": "https://github.com/tomatophp/filament-media-manager/tree/v1.1.4"
+                "source": "https://github.com/tomatophp/filament-media-manager/tree/v1.1.5"
             },
             "funding": [
                 {
@@ -18250,7 +18250,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-16T04:38:15+00:00"
+            "time": "2025-05-11T06:01:42+00:00"
         },
         {
             "name": "tomatophp/filament-menus",
@@ -23398,5 +23398,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
