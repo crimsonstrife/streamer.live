@@ -95,7 +95,8 @@ class SpamCheckService
             $username = $modelInstance->username;
 
             $validator = validator()->make(['akismet' => 'akismet'], ['akismet' => [new AkismetRule(
-                request()->input($email), request()->input($username)
+                request()->input($email),
+                request()->input($username)
             )]]);
 
             if ($validator->fails()) {
