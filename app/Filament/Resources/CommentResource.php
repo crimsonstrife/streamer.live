@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommentResource\Pages;
+use App\Filament\Resources\CommentResource\RelationManagers\ActivityLogsRelationManager;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -17,6 +18,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -217,6 +219,9 @@ class CommentResource extends Resource
                     ),
             ])
             ->actions([
+                ViewAction::make()
+                    ->label('View')
+                    ->icon('heroicon-o-eye'),
                 EditAction::make(),
                 Action::make('viewThread')
                     ->label('View Thread')
@@ -306,10 +311,18 @@ class CommentResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            ActivityLogsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListComments::route('/'),
+            'view' => Pages\ViewComment::route('/{record}'),
             'edit' => Pages\EditComment::route('/{record}/edit'),
         ];
     }
