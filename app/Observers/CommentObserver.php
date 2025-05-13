@@ -18,5 +18,16 @@ class CommentObserver
 
         // write back a numeric score
         $comment->spam_score = $checker->getScore($comment);
+
+        // auto‐flag spam based on banned words
+        $banned = ['viagra', 'casino', 'free money', 'lotto']; // TODO: Make the word blacklist configurable.
+        foreach ($banned as $word) {
+            if (stripos($comment->text, $word) !== false) {
+                $comment->is_spam = true;
+                // increase the spam risk score for each match
+                $comment->spam_score++;
+                break;
+            }
+        }
     }
 }
