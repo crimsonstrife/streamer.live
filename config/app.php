@@ -135,5 +135,4 @@ return [
     */
 
     'soft_deletes' => true,
-
 ];

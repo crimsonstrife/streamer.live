@@ -11,8 +11,10 @@ class CommentObserver
     /**
      * @throws Exception
      */
-    public function creating(Comment $comment, SpamCheckService $checker): void
+    public function creating(Comment $comment): void
     {
+        $checker = app(SpamCheckService::class);
+
         // run before the comment is saved
         $comment->is_spam_auto = $checker->isSpam($comment);
 

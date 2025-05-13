@@ -9,4 +9,6 @@ return [
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
     Spatie\EloquentSortable\EloquentSortableServiceProvider::class,
+    nickurt\Akismet\ServiceProvider::class,
+    nickurt\StopForumSpam\ServiceProvider::class,
 ];

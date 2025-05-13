@@ -27292,6 +27292,171 @@ namespace nickurt\Akismet {
     }
 }
 
+namespace nickurt\StopForumSpam {
+    /**
+     * @method static \nickurt\StopForumSpam\StopForumSpam setClient(\GuzzleHttp\ClientInterface $client)
+     * @method static \GuzzleHttp\ClientInterface getClient()
+     *
+     * @see \nickurt\StopForumSpam\StopForumSpam
+     */
+    class Facade
+    {
+        /**
+         * @return bool
+         *
+         * @throws Exception
+         *
+         * @static
+         */
+        public static function isSpamEmail()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->isSpamEmail();
+        }
+
+        /**
+         * @return string
+         *
+         * @static
+         */
+        public static function getEmail()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->getEmail();
+        }
+
+        /**
+         * @param  string  $email
+         * @return \nickurt\StopForumSpam\StopForumSpam
+         *
+         * @static
+         */
+        public static function setEmail($email)
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->setEmail($email);
+        }
+
+        /**
+         * @return string
+         *
+         * @static
+         */
+        public static function getApiUrl()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->getApiUrl();
+        }
+
+        /**
+         * @param  string  $apiUrl
+         * @return \nickurt\StopForumSpam\StopForumSpam
+         *
+         * @static
+         */
+        public static function setApiUrl($apiUrl)
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->setApiUrl($apiUrl);
+        }
+
+        /**
+         * @return int
+         *
+         * @static
+         */
+        public static function getFrequency()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->getFrequency();
+        }
+
+        /**
+         * @param  int  $frequency
+         * @return \nickurt\StopForumSpam\StopForumSpam
+         *
+         * @static
+         */
+        public static function setFrequency($frequency)
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->setFrequency($frequency);
+        }
+
+        /**
+         * @return bool
+         *
+         * @throws Exception
+         *
+         * @static
+         */
+        public static function isSpamIp()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->isSpamIp();
+        }
+
+        /**
+         * @return string
+         *
+         * @static
+         */
+        public static function getIp()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->getIp();
+        }
+
+        /**
+         * @param  string  $ip
+         * @return \nickurt\StopForumSpam\StopForumSpam
+         *
+         * @static
+         */
+        public static function setIp($ip)
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->setIp($ip);
+        }
+
+        /**
+         * @return bool
+         *
+         * @throws Exception
+         *
+         * @static
+         */
+        public static function isSpamUsername()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->isSpamUsername();
+        }
+
+        /**
+         * @return string
+         *
+         * @static
+         */
+        public static function getUsername()
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->getUsername();
+        }
+
+        /**
+         * @param  string  $username
+         * @return \nickurt\StopForumSpam\StopForumSpam
+         *
+         * @static
+         */
+        public static function setUsername($username)
+        {
+            /** @var \nickurt\StopForumSpam\StopForumSpam $instance */
+            return $instance->setUsername($username);
+        }
+    }
+}
+
 namespace Omaressaouaf\LaravelIdGenerator {
     /**
      * @see \Omaressaouaf\LaravelIdGenerator\IdGeneratorFactory
@@ -37288,6 +37453,7 @@ namespace {
     class Livewire extends \Livewire\Livewire {}
     class Purifier extends \Mews\Purifier\Facades\Purifier {}
     class Akismet extends \nickurt\Akismet\Facade {}
+    class StopForumSpam extends \nickurt\StopForumSpam\Facade {}
     class IdGenerator extends \Omaressaouaf\LaravelIdGenerator\IdGenerator {}
     class Health extends \Spatie\Health\Facades\Health {}
     class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
