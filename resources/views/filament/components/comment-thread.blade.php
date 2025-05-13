@@ -5,7 +5,17 @@
     <div class="border-b pb-4">
         <div class="text-sm text-gray-500">
             <strong>{{ $comment->commentedBy->name ?? '—' }}</strong>
-            • {{ $comment->created_at->diffForHumans() }}
+            <span>•</span>
+
+            {{-- original post time --}}
+            <span>{{ $comment->created_at->diffForHumans() }}</span>
+
+            {{-- show “edited” only if updated_at > created_at --}}
+            @if($comment->updated_at->gt($comment->created_at))
+                <span class="italic text-gray-400">
+                    (edited {{ $comment->updated_at->diffForHumans() }})
+                </span>
+            @endif
         </div>
         <div class="mt-2">{{ $comment->text }}</div>
     </div>
