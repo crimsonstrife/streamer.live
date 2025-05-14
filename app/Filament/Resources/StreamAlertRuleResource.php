@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\StreamAlertRuleResource\Pages;
 use App\Models\StreamAlertRule;
+use App\Rules\IsRegex;
 use App\Services\DiscordBotService;
 use App\Settings\TwitchSettings;
 use Filament\Forms\Components\Select;
@@ -44,7 +45,8 @@ class StreamAlertRuleResource extends Resource
             ->schema([
                 TextInput::make('category_pattern')
                     ->label('Twitch Category (Regex)')
-                    ->required(),
+                    ->required()
+                    ->rules(['required', new IsRegex]),
 
                 Select::make('discord_channel_id')
                     ->label('Discord Channel')
@@ -79,7 +81,7 @@ class StreamAlertRuleResource extends Resource
                     ->label('Discord Channel')
                     ->getStateUsing(
                         fn ($record) => app(DiscordBotService::class)
-                        ->getChannelNameById($record->discord_channel_id)
+                            ->getChannelNameById($record->discord_channel_id)
                         ?? "Unknown ({$record->discord_channel_id})"
                     ),
 
@@ -87,12 +89,12 @@ class StreamAlertRuleResource extends Resource
                     ->label('Mention Roles')
                     ->formatStateUsing(
                         fn ($state) => collect($state ?? [])
-                        ->map(
-                            fn ($id) => app(DiscordBotService::class)
-                            ->getRoleNameById($id)
-                            ?? "Unknown ({$id})"
-                        )
-                        ->implode(', ')
+                            ->map(
+                                fn ($id) => app(DiscordBotService::class)
+                                    ->getRoleNameById($id)
+                                    ?? "Unknown ({$id})"
+                            )
+                            ->implode(', ')
                     )
                     ->wrap()
                     ->tooltip(fn ($state) => is_array($state) ? implode(', ', $state) : $state),
