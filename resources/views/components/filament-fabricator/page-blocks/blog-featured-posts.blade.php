@@ -11,8 +11,8 @@
             @foreach($featured as $post)
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm h-100">
-                        @if ($post->featured_image)
-                            <img src="{{ asset($post->featured_image) }}" class="card-img-top" alt="{{ $post->title }}">
+                        @if ($post->hasBanner())
+                            <img src="{{ $post->banner_url }}" class="card-img-top" alt="{{ $post->title }}">
                         @endif
                         <div class="card-body">
                             <h5 class="card-title">{{ $post->title }}</h5>

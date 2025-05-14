@@ -1,5 +1,41 @@
 @aware(['page', 'post'])
+@push('styles')
+    <style>
+        .post-comments {
+            padding-bottom: 9px;
+            margin: 5px 0 5px;
+        }
 
+        .comments-nav {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+        }
+
+        .post-comments .comment-meta {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+        }
+
+        .post-comments .media {
+            border-left: 1px dotted #000;
+            border-bottom: 1px dotted #000;
+            margin-bottom: 5px;
+            padding-left: 10px;
+        }
+
+        .post-comments .media-heading {
+            font-size: 12px;
+            color: grey;
+        }
+
+        .post-comments .comment-meta a {
+            font-size: 12px;
+            color: grey;
+            font-weight: bolder;
+            margin-right: 5px;
+        }
+    </style>
+@endpush
 @if (! isset($post))
     <div class="alert alert-danger">Comments block requires a post context.</div>
 @else
@@ -8,7 +44,7 @@
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
-        @auth
+        <div class="collapse" id="replyCommentT">
             {{-- Replying To Info --}}
             <div id="replyingToContainer" class="mb-3 d-none">
                 <div class="alert alert-info py-2 px-3 mb-2">
@@ -17,24 +53,26 @@
                             onclick="clearReply()"></button>
                 </div>
             </div>
-
-            <form method="POST" action="{{ route('blog.comment.submit', ['post' => $post->slug]) }}">
-                @csrf
-                <input type="hidden" name="reply_id" id="reply_id" value="">
-                <input type="hidden" name="post_id" value="{{ $post->id }}">
-
-                <div class="mb-3">
-                    <label for="text">Your Comment</label>
-                    <textarea name="text" class="form-control" required></textarea>
+        </div>
+        <form method="POST" action="{{ route('blog.comment.submit', ['post' => $post->slug]) }}">
+            @csrf
+            <input type="hidden" name="reply_id" id="reply_id" value="">
+            <input type="hidden" name="post_id" value="{{ $post->id }}">
+            <div class="form-group">
+                <label for="text">Your Comment</label>
+                <textarea name="text" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+        <div class="post-comments">
+            <div class="comments-nav">
+            </div>
+            @foreach ($post->comments->whereNull('reply_id') as $comment)
+                <div class="row">
+                    @include('filament.components.comment-thread', ['comment' => $comment])
                 </div>
-
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        @endauth
-
-        @foreach ($post->comments->whereNull('reply_id') as $comment)
-            @include('filament.components.comment-thread', ['comment' => $comment])
-        @endforeach
+            @endforeach
+        </div>
     </div>
 @endif
 @push('scripts')

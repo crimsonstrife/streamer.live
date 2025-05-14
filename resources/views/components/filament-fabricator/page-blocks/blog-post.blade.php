@@ -93,8 +93,8 @@
             @foreach ($summary as $type => $count)
                 <span class="badge bg-secondary">{{ ucfirst($type) }}: {{ $count }}</span>
             @endforeach
-            @if ($post->featured_image)
-                <img src="{{ asset($post->featured_image) }}" class="img-fluid mb-4 rounded shadow"
+            @if ($post->hasBanner())
+                <img src="{{ $post->banner_url }}" class="img-fluid mb-4 rounded shadow"
                      alt="{{ $post->title }}">
             @endif
 

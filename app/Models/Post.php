@@ -110,6 +110,7 @@ class Post extends BasePost implements CommentableContract, Searchable
      */
     protected $appends = [
         'banner_url',
+        'has_banner',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -176,6 +177,11 @@ class Post extends BasePost implements CommentableContract, Searchable
     public function bannerUrl(): Attribute
     {
         return Attribute::get(fn () => $this->banner ? asset(Storage::url($this->banner)) : '');
+    }
+
+    public function hasBanner(): bool
+    {
+        return $this->banner !== null;
     }
 
     public function scopePublished(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB

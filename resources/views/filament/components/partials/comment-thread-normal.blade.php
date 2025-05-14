@@ -1,41 +1,90 @@
 @props(['comment', 'post'])
+@push('styles')
+    <style>
+        .post-comments {
+            padding-bottom: 9px;
+            margin: 5px 0 5px;
+        }
 
-<x-filament::card class="space-y-4">
+        .comments-nav {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+        }
+
+        .post-comments .comment-meta {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 5px;
+        }
+
+        .post-comments .media {
+            border-left: 1px dotted #000;
+            border-bottom: 1px dotted #000;
+            margin-bottom: 5px;
+            padding-left: 10px;
+        }
+
+        .post-comments .media-heading {
+            font-size: 12px;
+            color: grey;
+        }
+
+        .post-comments .comment-meta a {
+            font-size: 12px;
+            color: grey;
+            font-weight: bolder;
+            margin-right: 5px;
+        }
+    </style>
+@endpush
+@php
+    $isManualSpam = $comment->is_spam;
+    $isAutoSpam   = ! $isManualSpam && $comment->is_spam_auto;
+    $highSpamRisk = $comment->spam_score > 4;
+@endphp
+@if ($isManualSpam)
+    {{-- Manual spam: fully hidden by default --}}
+    <div class="bg-red-50 border border-red-200 rounded p-4">
+        <div class="flex justify-between items-center">
+            <span class="text-red-700 font-semibold">Comment hidden (marked as spam)</span>
+            <button
+                @click="spamCommentOpen = ! spamCommentOpen"
+                class="text-blue-600 underline text-sm"
+            >
+                <span x-text="spamCommentOpen ? 'Hide' : 'Show comment'"></span>
+            </button>
+        </div>
+        <div
+            x-show="spamCommentOpen"
+            x-collapse
+            class="panel-collapse mt-2 space-y-2"
+            id="comment-{{ $comment->id }}">
+            @elseif ($isAutoSpam || $highSpamRisk)
+                {{-- Auto-spam: collapsed but labelled as potential --}}
+                <div class="bg-yellow-50 border border-yellow-200 rounded p-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-yellow-800 font-semibold">Potential spam comment</span>
+                        <button
+                            @click="spamCommentOpen = ! spamCommentOpen"
+                            class="text-blue-600 underline text-sm"
+                        >
+                            <span x-text="spamCommentOpen ? 'Hide' : 'Show comment'"></span>
+                        </button>
+                    </div>
+                    <div
+                        x-show="spamCommentOpen"
+                        x-collapse
+                        class="panel-collapse mt-2 space-y-2"
+                        id="comment-{{ $comment->id }}">
+                        @else
+                            <div>
+                                <div>
+                                    @endif
     {{-- The parent comment --}}
-    <div class="border-b pb-4">
-        <div class="text-sm text-gray-500">
-            <strong>{{ $comment->commentedBy->name ?? '—' }}</strong>
-            <span>•</span>
-
-            {{-- original post time --}}
-            <span>{{ $comment->created_at->diffForHumans() }}</span>
-
-            {{-- show “edited” only if updated_at > created_at --}}
-            @if($comment->updated_at->gt($comment->created_at))
-                <span class="italic text-gray-400">
-                    (edited {{ $comment->updated_at->diffForHumans() }})
-                </span>
-            @endif
-        </div>
-        <div class="mt-2">{{ $comment->text }}</div>
-
-        <div class="mb-3">
-            <form method="POST"
-                  action="{{ route('blog.comment.reaction.toggle', ['type' => 'like', 'comment' => $comment->id]) }}">
-                @csrf
-                <button class="btn btn-sm btn-outline-primary" type="submit">
-                    👍 Like ({{ $comment->countReactions('like') }})
-                </button>
-            </form>
-            <form method="POST"
-                  action="{{ route('blog.comment.reaction.toggle', ['type' => 'dislike', 'comment' => $comment->id]) }}">
-                @csrf
-                <button class="btn btn-sm btn-outline-primary" type="submit">
-                    👎 Dislike ({{ $comment->countReactions('dislike') }})
-                </button>
-            </form>
-        </div>
+                                    <div class="comment-body">
+                                        {!! nl2br(e($comment->text)) !!}
     </div>
+                                </div>
+                            </div>
 
     {{-- Recursively render replies --}}
     @if($comment->replies->isNotEmpty())
@@ -46,7 +95,4 @@
                 </li>
             @endforeach
         </ul>
-    @else
-        <p class="text-sm text-gray-500 italic">No replies.</p>
     @endif
-</x-filament::card>

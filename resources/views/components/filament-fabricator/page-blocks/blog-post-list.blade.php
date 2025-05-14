@@ -86,9 +86,9 @@
             <div class="col-md-6">
                 <div
                     class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                    @if ($post->featured_image)
+                    @if ($post->hasBanner())
                         <div class="col-auto d-none d-lg-block">
-                            <img src="{{ asset($post->featured_image) }}" class="card-img-top" width="200" height="250"
+                            <img src="{{ $post->banner_url }}" class="card-img-top" width="200" height="250"
                                  alt="{{ $post->title }}" preserveAspectRatio="xMidYMid slice" focusable="false">
                         </div>
                     @endif
