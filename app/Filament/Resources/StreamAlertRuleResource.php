@@ -46,7 +46,7 @@ class StreamAlertRuleResource extends Resource
                 TextInput::make('category_pattern')
                     ->label('Twitch Category (Regex)')
                     ->required()
-                    ->rules(['required', new IsRegex]),
+                    ->rules(['required', new IsRegex()]),
 
                 Select::make('discord_channel_id')
                     ->label('Discord Channel')
