@@ -73,7 +73,6 @@ class Post extends BasePost implements CommentableContract, Searchable
 {
     use HasComments;
     use HasReactions;
-    use HasReactions;
     use HasSlug;
     use HasTags;
 

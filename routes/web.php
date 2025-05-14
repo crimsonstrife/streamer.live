@@ -104,7 +104,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
             ->middleware('auth');
 
         // Comment reactions
-        Route::post('/comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
+        Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
             ->name('comment.reaction.toggle')
             ->middleware('auth');
     });

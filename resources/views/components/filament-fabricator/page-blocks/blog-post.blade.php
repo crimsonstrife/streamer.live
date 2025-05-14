@@ -31,6 +31,15 @@
                 </button>
             </form>
         </div>
+        <div class="mb-3">
+            <form method="POST"
+                  action="{{ route('blog.reaction.toggle', ['type' => 'dislike', 'post' => $post->slug]) }}">
+                @csrf
+                <button class="btn btn-sm btn-outline-primary" type="submit">
+                    👎 Dislike ({{ $post->countReactions('dislike') }})
+                </button>
+            </form>
+        </div>
 
     </div>
 @endif

@@ -1,4 +1,4 @@
-@props(['comment'])
+@props(['comment', 'post'])
 
 <x-filament::card class="space-y-4">
     {{-- The parent comment --}}
@@ -18,6 +18,23 @@
             @endif
         </div>
         <div class="mt-2">{{ $comment->text }}</div>
+
+        <div class="mb-3">
+            <form method="POST"
+                  action="{{ route('blog.comment.reaction.toggle', ['type' => 'like', 'comment' => $comment->id]) }}">
+                @csrf
+                <button class="btn btn-sm btn-outline-primary" type="submit">
+                    👍 Like ({{ $comment->countReactions('like') }})
+                </button>
+            </form>
+            <form method="POST"
+                  action="{{ route('blog.comment.reaction.toggle', ['type' => 'dislike', 'comment' => $comment->id]) }}">
+                @csrf
+                <button class="btn btn-sm btn-outline-primary" type="submit">
+                    👎 Dislike ({{ $comment->countReactions('dislike') }})
+                </button>
+            </form>
+        </div>
     </div>
 
     {{-- Recursively render replies --}}

@@ -9,7 +9,6 @@ use App\Utilities\ModelResolver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -50,19 +49,6 @@ class Comment extends Message
     public function replies(): HasMany
     {
         return $this->hasMany(self::class, 'reply_id')->with('replies');
-    }
-
-    public function replyReactions(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            ModelResolver::reactionModel(), // Reaction class
-            self::class,                    // through Comment (as Reply)
-            'reply_id',                     // replies.reply_id → parent comment id
-            'reactable_id',                 // reactions.reactable_id → reply comment id
-            'id',                           // parent comment PK
-            'id'                            // reply comment PK
-        )
-            ->where('reactable_type', self::class);
     }
 
     public function scopeAddScore(Builder $query): Builder
