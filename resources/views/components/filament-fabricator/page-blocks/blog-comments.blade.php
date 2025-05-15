@@ -155,7 +155,8 @@
                 <h4>Comments ({{ $post->comments->count() }})</h4>
             </div>
             <div class="dropdown">
-                <button class="sort-btn btn btn-link hstack align-items-center gap-2 py-1 px-2 fw-normal"
+                <button
+                    class="btn sort-btn btn-link dropdown-toggle hstack align-items-center gap-2 py-1 px-2 fw-normal"
                         data-bs-toggle="dropdown" role="button" aria-expanded="false">
                     <span class="ski" style="font-size:1.5em;"><svg aria-hidden="true"
                                                                     class="svg-icon mdi-outlined mdi-sort"
@@ -164,10 +165,10 @@
                                 d="M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z"></path></svg></span>
                     <span>Sort by</span>
                 </button>
-                <div class="dropdown-menu mt-1">
-                    <div><a class="dropdown-item" href="#">Top comments</a></div>
-                    <div><a class="dropdown-item" href="#">Newest first</a></div>
-                </div>
+                <ul class="dropdown-menu mt-1">
+                    <li><a class="dropdown-item" href="#">Top comments</a></li>
+                    <li><a class="dropdown-item" href="#">Newest first</a></li>
+                </ul>
             </div>
         </div>
         @if (session('success'))

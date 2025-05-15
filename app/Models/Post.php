@@ -179,7 +179,7 @@ class Post extends BasePost implements CommentableContract, Searchable
         return Attribute::get(fn () => $this->banner ? asset(Storage::url($this->banner)) : '');
     }
 
-    public function hasBanner(): bool
+    public function getHasBannerAttribute(): bool
     {
         return $this->banner !== null;
     }

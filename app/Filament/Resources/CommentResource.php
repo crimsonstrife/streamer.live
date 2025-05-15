@@ -39,7 +39,7 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         // Instantiate the class held by static::$model and get its table name.
-        $table = (new static::$model())->getTable();
+        $table = (new static::$model)->getTable();
 
         return parent::getEloquentQuery()
             // make sure to still pull in all comment columns
@@ -271,7 +271,7 @@ class CommentResource extends Resource
                     ->successNotificationTitle('Comments marked as spam'),
                 BulkAction::make('not_spam')
                     ->label('Not Spam')
-                    ->action(fn ($records) => $records->each->update(['is_spam' => false]))
+                    ->action(fn ($records) => $records->each->update(['is_spam' => false, 'is_spam_auto' => false]))
                     ->deselectRecordsAfterCompletion()
                     ->successNotificationTitle('Comments un‐flagged as spam'),
                 BulkAction::make('destroy')
