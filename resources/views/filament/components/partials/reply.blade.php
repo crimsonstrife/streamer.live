@@ -47,31 +47,20 @@
         </div>
         <div class="hstack align-items-center mb-0" style="margin-left:-.25rem;">
             @auth
-                <form method="POST"
-                      action="{{ route('blog.comment.reaction.toggle', ['type' => 'like', 'comment' => $comment->id]) }}">
-                    @csrf
-                    <button class="icon-btn me-1" href="#">👍 Like</button>
-                </form>
-                <span
-                    class="me-3 small">({{ $comment->countReactions('like') - $comment->countReactions('dislike') }})</span>
-                <form method="POST"
-                      action="{{ route('blog.comment.reaction.toggle', ['type' => 'dislike', 'comment' => $comment->id]) }}">
-                    @csrf
-                    <button class="icon-btn me-4">👎 Dislike</button>
-                </form>
-                <span><a class="btn btn-sm btn-secondary rounded-pill small" role="button" data-toggle="collapse"
+                @include('filament.components.partials.likes', ['comment' => $comment, 'post' => $post])
+                <span><a class="btn btn-link small" role="button" data-toggle="collapse"
                          href="#replyCommentT" aria-expanded="false" aria-controls="collapseExample">Reply</a></span>
                 @if(Auth::getUser()->id !== $commentByID)
-                    <button class="btn btn-sm btn-danger rounded-pill small">Report</button>
+                    <button class="btn btn btn-link small">Report</button>
                 @endif
                 @if((count($comment->replies) === 0) || Auth::getUser()->id === $commentByID)
-                    <button class="btn btn-sm btn-danger rounded-pill small">Delete</button>
+                    <button class="btn btn btn-link small">Delete</button>
                 @endif
             @endauth
         </div>
         <div style="margin-left:-.769rem;">
             @if($comment->replies->isNotEmpty())
-                <button class="btn btn-primary rounded-pill d-inline-flex align-items-center collapsed"
+                <button class="btn d-inline-flex align-items-center collapsed"
                         data-bs-toggle="collapse" data-bs-target="#collapse-comment{{ $comment->id }}"
                         aria-expanded="true" aria-controls="collapse-comment{{ $comment->id }}">
                     <i class="chevron-down zmdi zmdi-chevron-down fs-4 me-2"></i>

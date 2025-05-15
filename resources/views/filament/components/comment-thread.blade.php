@@ -113,6 +113,6 @@
     </symbol>
 </svg>
 {{-- Alpine for toggling hidden comments --}}
-<div x-data="{ commentOpen: true, spamCommentOpen: false }" class="mb-4 comment">
+<div x-data="{ commentOpen: true, spamCommentOpen: false, hideContent: false }" class="mb-4 comment">
     @include('filament.components.partials.thread', ['comment' => $comment, 'post' => $post])
 </div>

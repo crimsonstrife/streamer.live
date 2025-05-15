@@ -155,7 +155,7 @@
                 <h4>Comments ({{ $post->comments->count() }})</h4>
             </div>
             <div class="dropdown">
-                <button class="sort-btn btn btn-secondary hstack align-items-center gap-2 py-1 px-2 fw-normal"
+                <button class="sort-btn btn btn-link hstack align-items-center gap-2 py-1 px-2 fw-normal"
                         data-bs-toggle="dropdown" role="button" aria-expanded="false">
                     <span class="ski" style="font-size:1.5em;"><svg aria-hidden="true"
                                                                     class="svg-icon mdi-outlined mdi-sort"
