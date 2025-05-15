@@ -184,6 +184,11 @@ class Post extends BasePost implements CommentableContract, Searchable
         return $this->banner !== null;
     }
 
+    public function hasBanner(): bool
+    {
+        return $this->banner !== null;
+    }
+
     public function scopePublished(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
     {
         return $query->whereNotNull('published_at');
