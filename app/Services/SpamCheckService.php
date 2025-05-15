@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Contracts\SpamEvaluator;
 use App\Models\Comment;
+use App\Models\SpamFilterPattern;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Log;
@@ -10,42 +12,29 @@ use nickurt\Akismet\Facade as Akismet;
 use nickurt\Akismet\Rules\AkismetRule;
 use nickurt\StopForumSpam\Rules\IsSpamEmail;
 use nickurt\StopForumSpam\Rules\IsSpamUsername;
+use RuntimeException;
 
 class SpamCheckService
 {
     /**
-     * Returns an integer “spam score”: 1 for spam, 0 for ham.
-     * could extend this to include StopForumSpam lookups
-     * or counts of suspicious keywords/links.
-     *
-     * @throws Exception
+     * @param  SpamEvaluator[]  $evaluators
      */
+    public function __construct(protected array $evaluators) {}
+
     public function getScore(Comment $comment): int
     {
-        // Based on Akismet
-        $score = $this->checkAkismet($comment) ? 1 : 0;
-        // Based on StopForumSpam
-        $score += $this->checkStopForumSpam($comment) ? 2 : 0;  // +2 if SFS flags it
-        // Additional heuristics
-        $score += substr_count($comment->text, 'http');  // +1 per link
+        $total = 0;
+        foreach ($this->evaluators as $eval) {
+            $total += $eval->evaluate($comment);
+        }
 
-        return $score;
+        return $total;
     }
 
-    /**
-     * @throws Exception
-     */
     public function isSpam(Comment $comment): bool
     {
-        // Akismet and StopForumSpam are used to regularly check a commenters username and email for known spammers, i.e. re-checking at each comment
-        $akismetResult = $this->checkAkismet($comment);
-        $stopSpamResult = $this->checkStopForumSpam($comment);
-
-        // TODO: Add message evaluation
-
-        // TODO: Add any other evaluations
-
-        return $akismetResult && $stopSpamResult;
+        // pick a threshold—e.g. 5 points or more is “spam”
+        return $this->getScore($comment) >= 5;
     }
 
     /**
@@ -110,5 +99,54 @@ class SpamCheckService
         Log::error('Akismet API KEY is not configured, skipping Akismet check.');
 
         return false;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function checkWordBlacklists(Comment $comment): bool
+    {
+        // Load all patterns once
+        $patterns = SpamFilterPattern::pluck('pattern');
+
+        // Get Comment text
+        $text = $comment->text;
+
+        foreach ($patterns as $regex) {
+            $ok = @preg_match("#{$regex}#i", $text);
+            if ($ok === false) {
+                throw new RuntimeException("Invalid regex: /{$regex}/");
+            }
+            if ($ok === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Count how many distinct patterns match the given text.
+     *
+     * @throws Exception
+     */
+    public function countBlacklistMatches(string $text): int
+    {
+        // load all patterns once
+        $patterns = SpamFilterPattern::pluck('pattern');
+
+        $matches = 0;
+
+        foreach ($patterns as $regex) {
+            $ok = @preg_match("#{$regex}#i", $text);
+            if ($ok === false) {
+                throw new RuntimeException("Invalid spam regex: /{$regex}/");
+            }
+            if ($ok === 1) {
+                $matches++;
+            }
+        }
+
+        return $matches;
     }
 }

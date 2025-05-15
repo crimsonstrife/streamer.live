@@ -6,6 +6,11 @@ use App\Filament\Resources\PostResource;
 use App\Models\Comment;
 use App\Observers\CommentObserver;
 use App\Services\FourthwallService;
+use App\Services\Spam\AkismetEvaluator;
+use App\Services\Spam\BlacklistEvaluator;
+use App\Services\Spam\StopForumSpamEvaluator;
+use App\Services\Spam\UrlEvaluator;
+use App\Services\SpamCheckService;
 use App\Services\TwitchService;
 use App\Settings\LookFeelSettings;
 use App\Settings\SEOSettings;
@@ -42,6 +47,16 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(StreamHelper::class, function ($app) {
             return new StreamHelper($app->make(TwitchService::class));
+        });
+
+        $this->app->bind(SpamCheckService::class, function ($app) {
+            return new SpamCheckService([
+                $app->make(AkismetEvaluator::class),
+                $app->make(StopForumSpamEvaluator::class),
+                $app->make(BlacklistEvaluator::class),
+                $app->make(UrlEvaluator::class),
+                // add new evaluators here...
+            ]);
         });
     }
 

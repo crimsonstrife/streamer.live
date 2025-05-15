@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            SpamFilterPatternsSeeder::class,
             FabricatorStorePagesSeeder::class,
             FabricatorBlogPagesSeeder::class,
             MenuSeeder::class,
