@@ -9,7 +9,9 @@ use Exception;
 
 class BlacklistEvaluator implements SpamEvaluator
 {
-    public function __construct(protected SpamCheckService $checker) {}
+    public function __construct(protected SpamCheckService $checker)
+    {
+    }
 
     /**
      * @throws Exception

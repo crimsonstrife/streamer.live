@@ -19,7 +19,9 @@ class SpamCheckService
     /**
      * @param  SpamEvaluator[]  $evaluators
      */
-    public function __construct(protected array $evaluators) {}
+    public function __construct(protected array $evaluators)
+    {
+    }
 
     public function getScore(Comment $comment): int
     {
