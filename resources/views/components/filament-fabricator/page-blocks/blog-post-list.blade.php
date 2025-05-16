@@ -88,11 +88,12 @@
                     class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                     @if ($post->hasBanner())
                         <div class="col-auto d-none d-lg-block">
-                            <div
-                                style="overflow: hidden;width: 100%; max-width: 250px;position: relative;margin: 0 auto; height: 250px;">
-                                <img src="{{ $post->banner_url }}" class="card-img-top" alt="{{ $post->title }}"
-                                     preserveAspectRatio="xMidYMid slice" focusable="false"
-                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            <div class="overflow-hidden mx-auto" style="max-width:250px; height:250px;">
+                                <img
+                                    src="{{ $post->banner_url }}"
+                                    alt="{{ $post->title }}" focusable="false"
+                                    class="card-img-top w-100 h-100 object-fit-cover"
+                                >
                             </div>
                         </div>
                     @endif
