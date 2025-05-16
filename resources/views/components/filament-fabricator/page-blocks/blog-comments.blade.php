@@ -150,12 +150,27 @@
     <div class="alert alert-danger">Comments block requires a post context.</div>
 @else
     @php
-        $comments = $post->comments->where('approved', true);
+        // Grab sort from query-string (default = newest)
+        $sort = request()->query('sort', 'newest');
+        // Filter only approved top-level comments
+        $comments = $post
+            ->comments
+            ->where('approved', true)
+            ->whereNull('reply_id');
+
+        // Perform collection-based sort
+        if ($sort === 'top') {
+            $comments = $comments->sortByDesc('score');
+        } elseif ($sort === 'oldest') {
+            $comments = $comments->sortBy('created_at');
+        } else { // newest
+            $comments = $comments->sortByDesc('created_at');
+        }
     @endphp
     <div class="container mt-5">
         <div class="mb-5 hstack gap-3 align-items-center">
             <div class="fs-5">
-                <h4>Comments ({{ $comments->count() }})</h4>
+                <h4>Comments ({{ count($comments) }})</h4>
             </div>
             <div class="dropdown">
                 <button
@@ -169,8 +184,18 @@
                     <span>Sort by</span>
                 </button>
                 <ul class="dropdown-menu mt-1">
-                    <li><a class="dropdown-item" href="#">Top comments</a></li>
-                    <li><a class="dropdown-item" href="#">Newest first</a></li>
+                    <li>
+                        <a class="dropdown-item @if($sort==='top') active @endif"
+                           href="{{ request()->fullUrlWithQuery(['sort' => 'top']) }}">Top comments</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item @if($sort==='newest') active @endif"
+                           href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}">Newest first</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item @if($sort==='oldest') active @endif"
+                           href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}">Oldest first</a>
+                    </li>
                 </ul>
             </div>
         </div>
