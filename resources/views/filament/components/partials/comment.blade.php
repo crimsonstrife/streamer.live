@@ -56,7 +56,7 @@
         <div class="hstack align-items-center mb-0" style="margin-left:-.25rem;">
             @auth
                 @include('filament.components.partials.likes', ['comment' => $comment, 'post' => $post])
-                <span><a class="btn btn-link small" role="button" data-toggle="collapse"
+                <span><a class="btn btn-link small reply-link" role="button" data-toggle="collapse"
                          href="#replyCommentT" aria-expanded="false" aria-controls="collapseExample">Reply</a></span>
                 @if(Auth::getUser()->id !== $commentByID)
                     <button class="btn btn btn-link small">Report</button>
