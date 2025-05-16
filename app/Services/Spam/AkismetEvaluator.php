@@ -4,14 +4,11 @@ namespace App\Services\Spam;
 
 use App\Contracts\SpamEvaluator;
 use App\Models\Comment;
-use App\Services\SpamCheckService;
 use Exception;
-
-// your existing wrapper
 
 class AkismetEvaluator implements SpamEvaluator
 {
-    public function __construct(protected SpamCheckService $checker) {}
+    public function __construct(protected AkismentSpamService $checker) {}
 
     /**
      * @throws Exception

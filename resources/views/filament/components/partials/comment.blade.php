@@ -38,7 +38,7 @@
             <div class="mb-1">
                 @if($isManualSpam)
                     <span class="text-red-700 font-semibold"><s>Comment hidden (marked as spam)</s></span>
-                @elseif($isAutoSpam || $highSpamRisk)
+                @elseif($isAutoSpam && $highSpamRisk)
                     <span class="text-yellow-800 font-semibold">Potential spam comment</span>
                     <button @click="hideContent = ! hideContent" :aria-expanded="hideContent" type="button"
                             class="btn btn-default btn-xs">
@@ -73,7 +73,7 @@
                         aria-expanded="true" aria-controls="collapse-comment{{ $comment->id }}">
                     <i class="chevron-down zmdi zmdi-chevron-down fs-4 me-2"></i>
                     <i class="chevron-up zmdi zmdi-chevron-up fs-4 me-2"></i>
-                    <span>{{ count($comment->replies) }} replies</span>
+                    <span>{{ count($comment->replies->where('approved', true)) }} replies</span>
                 </button>
             @endif
         </div>

@@ -1,4 +1,4 @@
-@aware(['page', 'post'])
+@aware(['page', 'post', 'comments'])
 @push('styles')
     <style>
         .post-comments {
@@ -149,10 +149,13 @@
 @if (! isset($post))
     <div class="alert alert-danger">Comments block requires a post context.</div>
 @else
+    @php
+        $comments = $post->comments->where('approved', true);
+    @endphp
     <div class="container mt-5">
         <div class="mb-5 hstack gap-3 align-items-center">
             <div class="fs-5">
-                <h4>Comments ({{ $post->comments->count() }})</h4>
+                <h4>Comments ({{ $comments->count() }})</h4>
             </div>
             <div class="dropdown">
                 <button
@@ -217,7 +220,7 @@
             <div class="comments-nav">
             </div>
             <div class="vstack gap-4" style="--sk-icon-btn-size:1.25em;--sk-icon-btn-padding:.25rem;">
-                @foreach ($post->comments->whereNull('reply_id') as $comment)
+                @foreach ($comments->whereNull('reply_id') as $comment)
                     <div class="row">
                         @include('filament.components.comment-thread', ['comment' => $comment])
                     </div>

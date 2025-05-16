@@ -49,15 +49,21 @@ class AppServiceProvider extends ServiceProvider
             return new StreamHelper($app->make(TwitchService::class));
         });
 
-        $this->app->bind(SpamCheckService::class, function ($app) {
-            return new SpamCheckService([
-                $app->make(AkismetEvaluator::class),
-                $app->make(StopForumSpamEvaluator::class),
-                $app->make(BlacklistEvaluator::class),
-                $app->make(UrlEvaluator::class),
-                // add new evaluators here...
-            ]);
+        $this->app->singleton(SpamCheckService::class, function ($app) {
+            return new SpamCheckService(
+                $app->tagged('spam.evaluator')
+            );
         });
+
+        $this->app->tag(
+            [
+                AkismetEvaluator::class,
+                StopForumSpamEvaluator::class,
+                BlacklistEvaluator::class,
+                UrlEvaluator::class,
+            ],
+            'spam.evaluator'
+        );
     }
 
     /**

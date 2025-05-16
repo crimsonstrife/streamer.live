@@ -92,10 +92,10 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
     Route::get('/search', SearchController::class)->name('search');
 
-    Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () use ($blogSlug) {
+    Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () {
         Route::get('/', FabricatorPageController::class)->name('index');
         Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
-        Route::post("$blogSlug/{post}/comment", [BlogCommentController::class, 'store'])
+        Route::post('/{post}/comment', [BlogCommentController::class, 'store'])
             ->middleware('auth')
             ->name('comment.submit');
         // Post reactions

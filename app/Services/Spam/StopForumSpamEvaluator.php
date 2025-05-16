@@ -4,12 +4,11 @@ namespace App\Services\Spam;
 
 use App\Contracts\SpamEvaluator;
 use App\Models\Comment;
-use App\Services\SpamCheckService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class StopForumSpamEvaluator implements SpamEvaluator
 {
-    public function __construct(protected SpamCheckService $checker) {}
+    public function __construct(protected StopForumSpamService $checker) {}
 
     /**
      * @throws BindingResolutionException
