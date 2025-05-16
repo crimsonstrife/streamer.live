@@ -88,8 +88,12 @@
                     class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                     @if ($post->hasBanner())
                         <div class="col-auto d-none d-lg-block">
-                            <img src="{{ $post->banner_url }}" class="card-img-top" width="200" height="250"
-                                 alt="{{ $post->title }}" preserveAspectRatio="xMidYMid slice" focusable="false">
+                            <div
+                                style="overflow: hidden;width: 100%; max-width: 250px;position: relative;margin: 0 auto; height: 250px;">
+                                <img src="{{ $post->banner_url }}" class="card-img-top" alt="{{ $post->title }}"
+                                     preserveAspectRatio="xMidYMid slice" focusable="false"
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
                         </div>
                     @endif
                     <div class="col p-4 d-flex flex-column position-static">
@@ -97,7 +101,7 @@
                         <h3 class="mb-0">{{ $post->title }}</h3>
                         <div class="mb-1 text-body-secondary">{{ $post->created_at->format('F j, Y') }}</div>
                         <p class="mb-auto text-muted">
-                            {{ Illuminate\Support\Str::limit(strip_tags($post->excerpt ?? $post->content), 100) }}
+                            {{ Illuminate\Support\Str::limit(strip_tags($post->excerpt ?? $post->content), 30) }}
                         </p>
                         <p class="text-muted mb-1">
                             <i class="bi bi-chat-left-text"></i>
