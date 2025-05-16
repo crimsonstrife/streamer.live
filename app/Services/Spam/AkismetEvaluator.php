@@ -8,7 +8,9 @@ use Exception;
 
 class AkismetEvaluator implements SpamEvaluator
 {
-    public function __construct(protected AkismentSpamService $checker) {}
+    public function __construct(protected AkismentSpamService $checker)
+    {
+    }
 
     /**
      * @throws Exception
