@@ -49,7 +49,9 @@
             @auth
                 @include('filament.components.partials.likes', ['comment' => $comment, 'post' => $post])
                 <span><a class="btn btn-link small reply-link" role="button" data-toggle="collapse"
-                         href="#replyCommentT" aria-expanded="false" aria-controls="collapseExample">Reply</a></span>
+                         data-reply-id="{{ $comment->id }}"
+                         aria-expanded="false"
+                         aria-controls="replyCommentT">Reply</a></span>
                 @if(Auth::getUser()->id !== $commentByID)
                     <button class="btn btn btn-link small">Report</button>
                 @endif

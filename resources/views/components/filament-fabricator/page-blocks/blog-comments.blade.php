@@ -181,16 +181,13 @@
             @php
                 $user = Auth::getUser();
             @endphp
-        <div class="collapse" id="replyCommentT">
-            {{-- Replying To Info --}}
-            <div id="replyingToContainer" class="mb-3 d-none">
-                <div class="alert alert-info py-2 px-3 mb-2">
-                    Replying to <strong id="replyingToName">someone</strong>
+            {{-- Reply Banner (bootstrap collapse toggles “show” on this element) --}}
+            <div class="collapse mb-3" id="replyCommentT">
+                <div class="alert alert-info py-2 px-3 mb-2">Replying to <strong id="replyingToName">someone</strong>
                     <button type="button" class="btn-close float-end" aria-label="Cancel reply"
                             onclick="clearReply()"></button>
                 </div>
             </div>
-        </div>
             <div class="comment-box">
                 <div class="d-flex comment">
                     <img class="rounded-circle comment-img" src="{{ $user->profile_photo_url }}" height="50px"
@@ -231,32 +228,29 @@
 @endif
 @push('scripts')
     <script>
+        // When you click any “Reply” link...
         document.querySelectorAll('.reply-link').forEach(link => {
             link.addEventListener('click', function (e) {
                 e.preventDefault();
+                // 1) Grab the ID & the author’s name
                 const replyId = this.dataset.replyId;
-                const replyTo = this.closest('.comment')?.querySelector('strong')?.textContent?.trim() || 'someone';
-
-                // Set reply ID
+                const replyingTo = this.closest('.comment')
+                    .querySelector('.fw-bold')
+                    .textContent.trim();
+                // 2) Populate the hidden field + banner text
                 document.getElementById('reply_id').value = replyId;
-
-                // Set visual reply context
-                document.getElementById('replyingToName').textContent = replyTo;
-                document.getElementById('replyingToContainer').classList.remove('d-none');
-
-                // Scroll into view
-                const textarea = document.querySelector('textarea[name="text"]');
-                if (textarea) {
-                    textarea.focus();
-                    textarea.scrollIntoView({behavior: 'smooth', block: 'center'});
-                }
+                document.getElementById('replyingToName').textContent = replyingTo;
+                // 3) Show the banner (Bootstrap collapse just toggles 'show')
+                const banner = document.getElementById('replyCommentT');
+                banner.classList.add('show');
             });
         });
 
         // Clear reply state
         window.clearReply = function () {
             document.getElementById('reply_id').value = '';
-            document.getElementById('replyingToContainer').classList.add('d-none');
+            const banner = document.getElementById('replyCommentT');
+            banner.classList.remove('show');
         };
     </script>
 @endpush
