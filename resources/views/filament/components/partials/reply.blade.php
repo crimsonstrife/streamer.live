@@ -8,13 +8,10 @@
     $commentByAuthor = $commentByID === $postAuthorID;
 @endphp
 <div class="d-flex">
-    @if ($isManualSpam)
-        {{-- Manually flagged as spam: message contents fully hidden --}}
-    @elseif ($isAutoSpam || $highSpamRisk)
+    @if ($isManualSpam || $isAutoSpam || $highSpamRisk)
         {{-- Auto-spam detection: collapsed by default to hide the message, labelled as potential spam to warn users --}}
-        <span class="text-yellow-800 font-semibold">Potential spam comment</span>
         <button @click="spamCommentOpen = ! spamCommentOpen" :aria-expanded="spamCommentOpen" type="button"
-                class="btn btn-outline-secondary">
+                class="btn btn-default btn-xs">
             <span x-text="spamCommentOpen ? '-' : '+'"></span>
         </button>
     @else
@@ -35,11 +32,22 @@
                     (edited {{ $comment->updated_at->diffForHumans() }})
                 @endif</span>
         </div>
-        <div x-show="@if($isAutoSpam || $highSpamRisk) spamCommentOpen @else commentOpen @endif" x-collapse
+        <div x-show="@if($isManualSpam || ($isAutoSpam || $highSpamRisk)) spamCommentOpen @else commentOpen @endif"
+             x-collapse
              class="panel-collapse mt-2 space-y-2" id="comment-{{ $comment->id }}">
             <div class="mb-1">
                 @if($isManualSpam)
                     <span class="text-red-700 font-semibold"><s>Comment hidden (marked as spam)</s></span>
+                @elseif(($isAutoSpam && !$highSpamRisk) || ($isAutoSpam && $highSpamRisk))
+                    <span class="text-yellow-800 font-semibold">Potential spam comment</span>
+                    <button @click="hideContent = ! hideContent" :aria-expanded="hideContent" type="button"
+                            class="btn btn-default btn-xs">
+                        <span x-text="hideContent ? 'Hide' : 'Show Content'"></span>
+                    </button>
+                    <div x-show="hideContent" x-collapse class="panel-collapse mt-2 space-y-2"
+                         id="comment-{{ $comment->id }}">
+                        {!! nl2br(e($comment->text)) !!}
+                    </div>
                 @else
                     {!! nl2br(e($comment->text)) !!}
                 @endif

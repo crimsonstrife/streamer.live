@@ -32,13 +32,13 @@
                     (edited {{ $comment->updated_at->diffForHumans() }})
                 @endif</span>
         </div>
-        <div x-show="@if($isManualSpam || $isAutoSpam || $highSpamRisk) spamCommentOpen @else commentOpen @endif"
+        <div x-show="@if($isManualSpam || ($isAutoSpam || $highSpamRisk)) spamCommentOpen @else commentOpen @endif"
              x-collapse
              class="panel-collapse mt-2 space-y-2" id="comment-{{ $comment->id }}">
             <div class="mb-1">
                 @if($isManualSpam)
                     <span class="text-red-700 font-semibold"><s>Comment hidden (marked as spam)</s></span>
-                @elseif($isAutoSpam && $highSpamRisk)
+                @elseif(($isAutoSpam && !$highSpamRisk) || ($isAutoSpam && $highSpamRisk))
                     <span class="text-yellow-800 font-semibold">Potential spam comment</span>
                     <button @click="hideContent = ! hideContent" :aria-expanded="hideContent" type="button"
                             class="btn btn-default btn-xs">
