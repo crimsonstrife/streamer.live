@@ -1159,16 +1159,16 @@
         },
         {
             "name": "asosick/filament-layout-manager",
-            "version": "v1.1.1",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/asosick/filament-layout-manager.git",
-                "reference": "dd465b65cc1d235dace9506ee58ffc1ad478549b"
+                "reference": "e36bcbef701d799376ae3b681b4bef89e91123d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/asosick/filament-layout-manager/zipball/dd465b65cc1d235dace9506ee58ffc1ad478549b",
-                "reference": "dd465b65cc1d235dace9506ee58ffc1ad478549b",
+                "url": "https://api.github.com/repos/asosick/filament-layout-manager/zipball/e36bcbef701d799376ae3b681b4bef89e91123d3",
+                "reference": "e36bcbef701d799376ae3b681b4bef89e91123d3",
                 "shasum": ""
             },
             "require": {
@@ -1238,7 +1238,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-06T19:22:32+00:00"
+            "time": "2025-05-16T00:18:03+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -5628,16 +5628,16 @@
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
-            "version": "4.2.3",
+            "version": "4.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kirschbaum-development/eloquent-power-joins.git",
-                "reference": "d04e06b12e5e7864c303b8a8c6045bfcd4e2c641"
+                "reference": "4a8012cef7abed8ac3633a180c69138a228b6c4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kirschbaum-development/eloquent-power-joins/zipball/d04e06b12e5e7864c303b8a8c6045bfcd4e2c641",
-                "reference": "d04e06b12e5e7864c303b8a8c6045bfcd4e2c641",
+                "url": "https://api.github.com/repos/kirschbaum-development/eloquent-power-joins/zipball/4a8012cef7abed8ac3633a180c69138a228b6c4c",
+                "reference": "4a8012cef7abed8ac3633a180c69138a228b6c4c",
                 "shasum": ""
             },
             "require": {
@@ -5685,9 +5685,9 @@
             ],
             "support": {
                 "issues": "https://github.com/kirschbaum-development/eloquent-power-joins/issues",
-                "source": "https://github.com/kirschbaum-development/eloquent-power-joins/tree/4.2.3"
+                "source": "https://github.com/kirschbaum-development/eloquent-power-joins/tree/4.2.4"
             },
-            "time": "2025-04-01T14:41:56+00:00"
+            "time": "2025-05-19T14:14:41+00:00"
         },
         {
             "name": "lakm/laravel-comments",
@@ -23456,5 +23456,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
