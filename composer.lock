@@ -3830,16 +3830,16 @@
         },
         {
             "name": "filament/spatie-laravel-tags-plugin",
-            "version": "v3.3.14",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-tags-plugin.git",
-                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1"
+                "reference": "7763c2bab92c619cdd9294c69004f89e136c0afc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
-                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
+                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/7763c2bab92c619cdd9294c69004f89e136c0afc",
+                "reference": "7763c2bab92c619cdd9294c69004f89e136c0afc",
                 "shasum": ""
             },
             "require": {
@@ -3863,7 +3863,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-04-30T09:16:35+00:00"
+            "time": "2025-05-19T07:27:08+00:00"
         },
         {
             "name": "filament/spatie-laravel-translatable-plugin",
@@ -23456,5 +23456,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
