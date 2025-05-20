@@ -3830,16 +3830,16 @@
         },
         {
             "name": "filament/spatie-laravel-tags-plugin",
-            "version": "v3.3.14",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-tags-plugin.git",
-                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1"
+                "reference": "7763c2bab92c619cdd9294c69004f89e136c0afc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
-                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
+                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/7763c2bab92c619cdd9294c69004f89e136c0afc",
+                "reference": "7763c2bab92c619cdd9294c69004f89e136c0afc",
                 "shasum": ""
             },
             "require": {
@@ -3863,7 +3863,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-04-30T09:16:35+00:00"
+            "time": "2025-05-19T07:27:08+00:00"
         },
         {
             "name": "filament/spatie-laravel-translatable-plugin",
@@ -14205,16 +14205,16 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "6.17.0",
+            "version": "6.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "02ada8f638b643713fa2fb543384738e27346ddb"
+                "reference": "3c05f04d12275dfbe462c8b4aae3290e586c2dde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/02ada8f638b643713fa2fb543384738e27346ddb",
-                "reference": "02ada8f638b643713fa2fb543384738e27346ddb",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/3c05f04d12275dfbe462c8b4aae3290e586c2dde",
+                "reference": "3c05f04d12275dfbe462c8b4aae3290e586c2dde",
                 "shasum": ""
             },
             "require": {
@@ -14276,7 +14276,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-permission/issues",
-                "source": "https://github.com/spatie/laravel-permission/tree/6.17.0"
+                "source": "https://github.com/spatie/laravel-permission/tree/6.18.0"
             },
             "funding": [
                 {
@@ -14284,7 +14284,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-08T15:06:14+00:00"
+            "time": "2025-05-14T03:32:23+00:00"
         },
         {
             "name": "spatie/laravel-searchable",
