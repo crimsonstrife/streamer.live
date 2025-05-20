@@ -34,6 +34,7 @@
         "commerceguys/addressing": "^2.2",
         "commerceguys/intl": "^2.0",
         "doctrine/dbal": "^4.2",
+        "enshrined/svg-sanitize": "^0.21.0",
         "filament/actions": "^3.3",
         "filament/filament": "^3.3",
         "filament/forms": "^3.3",
