@@ -17974,16 +17974,16 @@
         },
         {
             "name": "team-reflex/discord-php",
-            "version": "v10.7.3",
+            "version": "v10.8.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/discord-php/DiscordPHP.git",
-                "reference": "a85ee4d4d2f5635eaea60acff43df62f7e58d0d0"
+                "reference": "6ed0ae1a62b105ec1553cc3232ebaae3144e7d6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/discord-php/DiscordPHP/zipball/a85ee4d4d2f5635eaea60acff43df62f7e58d0d0",
-                "reference": "a85ee4d4d2f5635eaea60acff43df62f7e58d0d0",
+                "url": "https://api.github.com/repos/discord-php/DiscordPHP/zipball/6ed0ae1a62b105ec1553cc3232ebaae3144e7d6b",
+                "reference": "6ed0ae1a62b105ec1553cc3232ebaae3144e7d6b",
                 "shasum": ""
             },
             "require": {
@@ -18008,6 +18008,7 @@
             "require-dev": {
                 "davidcole1340/reactsh": "dev-master",
                 "friendsofphp/php-cs-fixer": "^3",
+                "laravel/pint": "^1.21",
                 "phpunit/phpunit": "^9.4.4",
                 "symfony/cache": "^5.4",
                 "symfony/var-dumper": "*",
@@ -18045,7 +18046,7 @@
                 "chat": "https://discord.gg/dphp",
                 "docs": "https://discord-php.github.io/DiscordPHP/",
                 "issues": "https://github.com/discord-php/DiscordPHP/issues",
-                "source": "https://github.com/discord-php/DiscordPHP/tree/v10.7.3",
+                "source": "https://github.com/discord-php/DiscordPHP/tree/v10.8.5",
                 "wiki": "https://github.com/discord-php/DiscordPHP/wiki"
             },
             "funding": [
@@ -18062,7 +18063,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2025-05-06T11:42:52+00:00"
+            "time": "2025-05-18T20:07:26+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
