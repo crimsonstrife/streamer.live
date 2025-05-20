@@ -1,5 +1,6 @@
-import {defineConfig} from 'vite'
-import laravel from 'laravel-vite-plugin'
+import {defineConfig} from 'vite';
+import laravel from 'laravel-vite-plugin';
+import {viteStaticCopy} from 'vite-plugin-static-copy';
 
 export default defineConfig({
   define: {
@@ -23,6 +24,15 @@ export default defineConfig({
         'resources/css/filament/moderation/theme.css'
       ],
       refresh: true
-    })
+    }),
+      viteStaticCopy({
+          targets: [
+              {
+                  src: 'resources/icons/',
+                  // this will drop into public/build/assets/icons/
+                  dest: 'assets/',
+              },
+          ],
+      }),
   ]
 })
