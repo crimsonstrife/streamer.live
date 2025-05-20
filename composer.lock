@@ -1159,16 +1159,16 @@
         },
         {
             "name": "asosick/filament-layout-manager",
-            "version": "v1.1.1",
+            "version": "v1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/asosick/filament-layout-manager.git",
-                "reference": "dd465b65cc1d235dace9506ee58ffc1ad478549b"
+                "reference": "e36bcbef701d799376ae3b681b4bef89e91123d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/asosick/filament-layout-manager/zipball/dd465b65cc1d235dace9506ee58ffc1ad478549b",
-                "reference": "dd465b65cc1d235dace9506ee58ffc1ad478549b",
+                "url": "https://api.github.com/repos/asosick/filament-layout-manager/zipball/e36bcbef701d799376ae3b681b4bef89e91123d3",
+                "reference": "e36bcbef701d799376ae3b681b4bef89e91123d3",
                 "shasum": ""
             },
             "require": {
@@ -1238,7 +1238,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-06T19:22:32+00:00"
+            "time": "2025-05-16T00:18:03+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -3746,7 +3746,7 @@
         },
         {
             "name": "filament/spatie-laravel-media-library-plugin",
-            "version": "v3.3.14",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-media-library-plugin.git",
@@ -3830,16 +3830,16 @@
         },
         {
             "name": "filament/spatie-laravel-tags-plugin",
-            "version": "v3.3.14",
+            "version": "v3.3.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/spatie-laravel-tags-plugin.git",
-                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1"
+                "reference": "7763c2bab92c619cdd9294c69004f89e136c0afc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
-                "reference": "c604cb09809f4c54503bd9bbbf53eb1749bd99f1",
+                "url": "https://api.github.com/repos/filamentphp/spatie-laravel-tags-plugin/zipball/7763c2bab92c619cdd9294c69004f89e136c0afc",
+                "reference": "7763c2bab92c619cdd9294c69004f89e136c0afc",
                 "shasum": ""
             },
             "require": {
@@ -3863,7 +3863,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2025-04-30T09:16:35+00:00"
+            "time": "2025-05-19T07:27:08+00:00"
         },
         {
             "name": "filament/spatie-laravel-translatable-plugin",
@@ -5628,16 +5628,16 @@
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
-            "version": "4.2.3",
+            "version": "4.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kirschbaum-development/eloquent-power-joins.git",
-                "reference": "d04e06b12e5e7864c303b8a8c6045bfcd4e2c641"
+                "reference": "4a8012cef7abed8ac3633a180c69138a228b6c4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kirschbaum-development/eloquent-power-joins/zipball/d04e06b12e5e7864c303b8a8c6045bfcd4e2c641",
-                "reference": "d04e06b12e5e7864c303b8a8c6045bfcd4e2c641",
+                "url": "https://api.github.com/repos/kirschbaum-development/eloquent-power-joins/zipball/4a8012cef7abed8ac3633a180c69138a228b6c4c",
+                "reference": "4a8012cef7abed8ac3633a180c69138a228b6c4c",
                 "shasum": ""
             },
             "require": {
@@ -5685,9 +5685,9 @@
             ],
             "support": {
                 "issues": "https://github.com/kirschbaum-development/eloquent-power-joins/issues",
-                "source": "https://github.com/kirschbaum-development/eloquent-power-joins/tree/4.2.3"
+                "source": "https://github.com/kirschbaum-development/eloquent-power-joins/tree/4.2.4"
             },
-            "time": "2025-04-01T14:41:56+00:00"
+            "time": "2025-05-19T14:14:41+00:00"
         },
         {
             "name": "lakm/laravel-comments",
@@ -14205,16 +14205,16 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "6.17.0",
+            "version": "6.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "02ada8f638b643713fa2fb543384738e27346ddb"
+                "reference": "3c05f04d12275dfbe462c8b4aae3290e586c2dde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/02ada8f638b643713fa2fb543384738e27346ddb",
-                "reference": "02ada8f638b643713fa2fb543384738e27346ddb",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/3c05f04d12275dfbe462c8b4aae3290e586c2dde",
+                "reference": "3c05f04d12275dfbe462c8b4aae3290e586c2dde",
                 "shasum": ""
             },
             "require": {
@@ -14276,7 +14276,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-permission/issues",
-                "source": "https://github.com/spatie/laravel-permission/tree/6.17.0"
+                "source": "https://github.com/spatie/laravel-permission/tree/6.18.0"
             },
             "funding": [
                 {
@@ -14284,7 +14284,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-08T15:06:14+00:00"
+            "time": "2025-05-14T03:32:23+00:00"
         },
         {
             "name": "spatie/laravel-searchable",
@@ -17974,16 +17974,16 @@
         },
         {
             "name": "team-reflex/discord-php",
-            "version": "v10.7.3",
+            "version": "v10.8.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/discord-php/DiscordPHP.git",
-                "reference": "a85ee4d4d2f5635eaea60acff43df62f7e58d0d0"
+                "reference": "6ed0ae1a62b105ec1553cc3232ebaae3144e7d6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/discord-php/DiscordPHP/zipball/a85ee4d4d2f5635eaea60acff43df62f7e58d0d0",
-                "reference": "a85ee4d4d2f5635eaea60acff43df62f7e58d0d0",
+                "url": "https://api.github.com/repos/discord-php/DiscordPHP/zipball/6ed0ae1a62b105ec1553cc3232ebaae3144e7d6b",
+                "reference": "6ed0ae1a62b105ec1553cc3232ebaae3144e7d6b",
                 "shasum": ""
             },
             "require": {
@@ -18008,6 +18008,7 @@
             "require-dev": {
                 "davidcole1340/reactsh": "dev-master",
                 "friendsofphp/php-cs-fixer": "^3",
+                "laravel/pint": "^1.21",
                 "phpunit/phpunit": "^9.4.4",
                 "symfony/cache": "^5.4",
                 "symfony/var-dumper": "*",
@@ -18045,7 +18046,7 @@
                 "chat": "https://discord.gg/dphp",
                 "docs": "https://discord-php.github.io/DiscordPHP/",
                 "issues": "https://github.com/discord-php/DiscordPHP/issues",
-                "source": "https://github.com/discord-php/DiscordPHP/tree/v10.7.3",
+                "source": "https://github.com/discord-php/DiscordPHP/tree/v10.8.5",
                 "wiki": "https://github.com/discord-php/DiscordPHP/wiki"
             },
             "funding": [
@@ -18062,7 +18063,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2025-05-06T11:42:52+00:00"
+            "time": "2025-05-18T20:07:26+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",
@@ -23456,5 +23457,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
