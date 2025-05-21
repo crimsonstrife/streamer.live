@@ -3,6 +3,7 @@
 use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FabricatorPageController;
+use App\Http\Controllers\IconController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
@@ -152,6 +153,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         ->where('slug', '.*')
         ->name('fabricator.page.global.fallback');
 });
+
+Route::resource('icons', IconController::class)
+    ->only(['store', 'index']);
 
 /**
  * Define a fallback route that will be executed when no other routes match.

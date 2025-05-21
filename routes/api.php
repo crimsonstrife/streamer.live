@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\IconController;
 use App\Http\Controllers\Webhook\FourthwallWebhookController;
 use App\Models\Icon;
 use Illuminate\Http\Request;
@@ -31,8 +30,3 @@ Route::get('/icon/{id}/svg', static function (?int $id) {
         'svg_file_path' => $icon->svg_file_path,
     ]);
 })->name('icon.svg');
-
-/**
- *  API route for fetching all icons in the application.
- */
-Route::get('/icons', [IconController::class, 'fetchIcons']);

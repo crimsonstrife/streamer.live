@@ -8,13 +8,14 @@ use App\Services\SvgSanitizerService;
 use Exception;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 use function pathinfo;
@@ -26,7 +27,9 @@ use function pathinfo;
  */
 class Icon extends BaseModel
 {
-    public string $storagePath;
+    protected static Filesystem $filesystem;
+
+    protected static string $storagePath;
 
     protected $fillable = [
         'name',
@@ -40,20 +43,11 @@ class Icon extends BaseModel
         'is_builtin',
     ];
 
-    private Filesystem $filesystem;
+    protected static array $bladeSets;
 
-    /**
-     * Constructor
-     */
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
+    protected static array $prefixMap;
 
-        // Initialize the filesystem
-        $this->filesystem = new Filesystem;
-        // Initialize the storage path
-        $this->storagePath = storage_path('app/public/build/assets/icons');
-    }
+    protected static array $classMap;
 
     /**
      * Save uploaded file to the appropriate directory.
@@ -71,7 +65,7 @@ class Icon extends BaseModel
         $sanitizer = app(SvgSanitizerService::class);
 
         // Set the directory based on the type and style
-        $directory = "public/build/assets/icons/custom/{$type}/{$style}";
+        $directory = static::$storagePath."/custom/{$type}/{$style}";
 
         // Is the uploaded file an instance of an uploaded file or a string of SVG code?
         if (is_string($uploadedFile)) {
@@ -124,44 +118,12 @@ class Icon extends BaseModel
                 throw new RuntimeException('Invalid SVG code.');
             }
 
+            Storage::disk('local')->put("{$directory}/{$uniqueFileName}", $sanitized);
+
             return "{$directory}/{$uniqueFileName}";
         }
 
         return null;
-    }
-
-    /**
-     * Boot the model.
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        // Clear the cache when Icons are saved or deleted
-        static::saved(static function () {
-            cache()->forget('icons.all');
-        });
-
-        // Clear the cache when Icons are saved or deleted
-        static::deleted(static function () {
-            cache()->forget('icons.all');
-        });
-
-        static::saving(static function ($model) {
-            $query = static::where('name', $model->name)
-                ->where('type', $model->type)
-                ->where('style', $model->style);
-
-            if ($model->exists) {
-                $query->where('id', '!=', $model->id);
-            }
-
-            if ($query->exists()) {
-                throw ValidationException::withMessages([
-                    'name' => 'The name has already been taken for this type and style.',
-                ]);
-            }
-        });
     }
 
     /**
@@ -218,39 +180,6 @@ class Icon extends BaseModel
     }
 
     /**
-     * Load all icons from the {type}/{style} sub-directories.
-     */
-    public function loadAllIcons()
-    {
-        // Load all icons from the database, cache the results for 1 hour (60 minutes) before refreshing.
-        return cache()->remember('icons.all', 60 * 60, function () {
-            return self::all();
-        });
-    }
-
-    /**
-     * Load all icon types from the database.
-     * Only return unique types, no duplicates.
-     */
-    public function loadTypes()
-    {
-        return self::select('type')
-            ->distinct()
-            ->pluck('type');
-    }
-
-    /**
-     * Load all icon styles from the database.
-     * Only return unique styles, no duplicates.
-     */
-    public function loadStyles()
-    {
-        return self::select('style')
-            ->distinct()
-            ->pluck('style');
-    }
-
-    /**
      * Get the style class for the icon.
      */
     public function getStyleClass(Icon $icon): string
@@ -284,7 +213,7 @@ class Icon extends BaseModel
      */
     public function save(array $options = []): void
     {
-        $directory = $this->storagePath;
+        $directory = static::$storagePath;
         $filename = null;
         $temporaryFile = null;
 
@@ -436,57 +365,14 @@ class Icon extends BaseModel
         }
     }
 
-    /**
-     * Make the icon prefix based on the icon type and style.
-     * This method is used to set the icon prefix based on the icon type and style, ensuring the correct prefix is used for the icon.
-     *
-     * @param  string  $type  - The icon type, e.g., "fontawesome", "heroicon", "octicons", etc.
-     * @param  string  $style  - The icon style, e.g., "brands", "solid", "regular", etc.
-     * @return string - The icon prefix based on the icon type and style.
-     */
     public function makeIconPrefix(string $type, string $style): string
     {
-        // Get the config for the blade-icons package
-        $bladeIcons = Config::get('blade-icons', []);
-
-        // Get the sets from the blade-icons configuration
-        $sets = $bladeIcons['sets'] ?? [];
-
-        // Get the prefixes from the sets, and pair them with the set name/key
-        $prefixes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['prefix']]);
-
-        // The prefixes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
-        $setName = "{$type}-{$style}";
-
-        // Get the prefix for the set name, or return an empty string if it doesn't exist
-        // Return the prefix for the icon
-        return $prefixes[$setName] ?? '';
+        return static::$prefixMap["{$type}-{$style}"] ?? '';
     }
 
-    /**
-     * Make the icon class based on the icon type, style
-     *
-     * @param  string  $type  - The icon type, e.g., "fontawesome", "heroicon", "octicons", etc.
-     * @param  string  $style  - The icon style, e.g., "brands", "solid", "regular", etc.
-     * @return string - The icon class based on the icon type and style.
-     */
     public function makeIconClass(string $type, string $style): string
     {
-        // Get the config for the blade-icons package
-        $bladeIcons = Config::get('blade-icons', []);
-
-        // Get the sets from the blade-icons configuration
-        $sets = $bladeIcons['sets'] ?? [];
-
-        // Get the classes from the sets, and pair them with the set name/key
-        $classes = collect($sets)->mapWithKeys(fn ($set, $key) => [$key => $set['class']]);
-
-        // The classes are stored on the set name, which is a combination of the type and style (e.g., "fontawesome-solid")
-        $setName = "{$type}-{$style}";
-
-        // Get the class for the set name, or return an empty string if it doesn't exist
-        // Return the class for the icon
-        return $classes[$setName] ?? '';
+        return static::$classMap["{$type}-{$style}"] ?? '';
     }
 
     /**
@@ -518,174 +404,89 @@ class Icon extends BaseModel
     }
 
     /**
-     * Get the icon SVG
-     * Returns the SVG file path, or the SVG code - else a null value. An alias for the getSvgUrlAttribute and getSvgCodeAttribute methods.
-     *
-     * @param  Icon|int  $icon  - The icon object or icon id.
-     *
-     * @see getSvgUrlAttribute
-     * @see getSvgCodeAttribute
-     */
-    public function getSvg(Icon|int $icon): ?string
-    {
-        // If the icon is an integer, assume it's an icon id and attempt to load the icon from the database
-        if (is_int($icon)) {
-            $icon = self::findOrFail($icon);
-        }
-
-        // Check if the icon is an instance of the Icon model
-        if (! $icon instanceof self) {
-            // Log a warning if the icon is not an instance of the Icon model
-            logger()->warning('The icon is not an instance of the Icon model.');
-
-            // Return a null value if the icon is not an instance of the Icon model
-            return null;
-        }
-
-        // Check if the icon is built-in
-        if ($icon->is_builtin) {
-            // Check if the icon has an SVG file path, if so prioritize the SVG file path, else return the SVG code
-            $svgFile = $icon->getSvgUrlAttribute();
-            if (! empty($svgFile)) {
-                return $svgFile;
-            }
-
-            // Get the SVG code if the SVG file path is empty
-            $svgCode = $icon->getSvgCodeAttribute();
-            if (! empty($svgCode)) {
-                return $svgCode;
-            }
-
-            // Return a null value if the icon has no SVG file path or SVG code
-            return null;
-        }
-
-        // If it's a user-uploaded icon, use the storage path if the SVG file path is not empty, else return the SVG code
-        $svgFile = $icon->getSvgUrlAttribute();
-        if (! empty($svgFile)) {
-            return $svgFile;
-        }
-
-        // Get the SVG code if the SVG file path is empty
-        $svgCode = $icon->getSvgCodeAttribute();
-        if (! empty($svgCode)) {
-            return $svgCode;
-        }
-
-        // Return a null value if the icon has no SVG file path or SVG code
-        return null;
-    }
-
-    /**
      * Get the full URL for the icon's SVG file path.
      */
     public function getSvgUrlAttribute(): ?string
     {
-        $path = $this->svg_file_path;
-
-        if ($this->is_builtin) {
-            // Check if the svg_file_path is valid (not null and not empty)
-            if (! empty($path) && file_exists(public_path($path))) {
-                // Pre-append the public path to the file path
-                $fullPath = 'public/'.$path;
-
-                // Check if the file path exists, if so return the URL
-                if (File::exists($path)) {
-                    return asset($fullPath);
-                }
-
-                // If the file path does not exist, return null and log a warning
-                logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has an invalid file path. Path: {$path}");
-
-                return null;
-            }
-
-            // If the icon has no valid file path, return an empty string and log a warning
-            logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has no valid file path.");
-
-            return '';
-        }
-
-        // If it's a user-uploaded icon, use the storage path
-        return ! empty($path) ? Storage::url($path) : '';
+        return $this->svg_file_path
+            ? Storage::url($this->svg_file_path)
+            : null;
     }
 
     /**
      * Get the SVG code for the icon.
      */
-    public function getSvgCodeAttribute()
+    public function getSvgCodeAttribute(): ?string
     {
-        if ($this->is_builtin) {
-            // Check if the svg_code is valid (not null and not empty)
-            if (! empty($this->svg_code)) {
-                // Instantiate the SVG sanitizer service
-                $sanitizer = app(SvgSanitizerService::class);
-
-                // Sanitize the SVG code before returning it
-                $sanitizedSvg = $sanitizer->sanitize($this->svg_code);
-
-                // Return the sanitized SVG code if it's not empty
-                if (! empty($sanitizedSvg)) {
-                    return $sanitizedSvg;
-                }
-
-                // If the sanitized SVG code is empty, return an empty string and log a warning
-                logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has invalid SVG code.");
-
-                return '';
-            }
-
-            // If the icon has no valid SVG code, return an empty string and log a warning
-            logger()->warning("Built-in icon {$this->type}/{$this->style}/{$this->name} has no SVG code.");
-
-            return '';
-        }
-
-        // If the svg_code is empty, return empty without sanitizing
-        if (empty($this->svg_code)) {
-            // If the icon has no SVG code, return an empty string and log a warning
-            logger()->warning("User-uploaded icon {$this->type}/{$this->style}/{$this->name} has no SVG code.");
-
-            return '';
-        }
-
-        // If it's a user-uploaded icon, sanitize the SVG code before returning it
-        $sanitizer = app(SvgSanitizerService::class);
-
-        // Sanitize the SVG code before returning it
-        return $sanitizer->sanitize($this->svg_code);
+        return $this->attributes['svg_code'] ?? null;
     }
 
-    /**
-     * Should the svg file or code be used?
-     * Returns a boolean value based on if the icon is built-in or user-uploaded, and if the icon has an SVG file path or SVG code.
-     * It will prioritize the SVG file path over the SVG code.
-     *
-     * @param  Icon|int  $icon  - The icon object or icon id.
-     */
-    public function isFile(Icon|int $icon): bool
+    public static function allIcons(): Collection
     {
-        // If the icon is an integer, assume it's an icon id and attempt to load the icon from the database
-        if (is_int($icon)) {
-            $icon = self::findOrFail($icon);
-        }
+        return Cache::remember('icons.all', 3600, fn () => static::all());
+    }
 
-        // Check if the icon is an instance of the Icon model
-        if (! $icon instanceof self) {
-            // Log a warning if the icon is not an instance of the Icon model
-            logger()->warning('The icon is not an instance of the Icon model.');
+    public static function types(): Collection
+    {
+        return Cache::remember('icons.types', 3600, fn () => static::distinct()->pluck('type'));
+    }
 
-            // Return false if the icon is not an instance of the Icon model
-            return false;
-        }
+    public static function styles(): Collection
+    {
+        return Cache::remember('icons.styles', 3600, fn () => static::distinct()->pluck('style'));
+    }
 
-        // Check if the icon is built-in
-        if ($icon->is_builtin) {
-            // Check if the icon has an SVG file path, if so return true, else return false
-            return ! empty($icon->getSvgUrlAttribute());
-        }
+    protected static function booted(): void
+    {
+        parent::booted();
 
-        // If it's a user-uploaded icon, return true if the SVG file path is not empty, else return false
-        return ! empty($icon->getSvgUrlAttribute());
+        // one-time…
+        static::$filesystem = new Filesystem;
+        static::$storagePath = storage_path('app/public/build/assets/icons');
+
+        // Load your blade-icons config once
+        static::$bladeSets = Config::get('blade-icons.sets', []);
+
+        // Build prefixMap = [ 'heroicon-outline' => 'h-o', … ]
+        static::$prefixMap = array_column(
+            array_map(
+                // callback receives ($setConfig, $setName)
+                static fn (array $set, string $key) => [
+                    'key' => $key,
+                    'prefix' => $set['prefix'] ?? '',
+                ],
+                static::$bladeSets,
+                array_keys(static::$bladeSets)
+            ),
+            'prefix', // the value column
+            'key'     // the index column
+        );
+
+        // Build classMap = [ 'heroicon-outline' => 'h-o-icon', … ]
+        static::$classMap = array_column(
+            array_map(
+                static fn (array $set, string $key) => [
+                    'key' => $key,
+                    'class' => $set['class'] ?? '',
+                ],
+                static::$bladeSets,
+                array_keys(static::$bladeSets)
+            ),
+            'class',
+            'key'
+        );
+
+        // sanitize only on dirty svg_code
+        static::saving(static function (Icon $icon) {
+            if ($icon->svg_code && $icon->isDirty('svg_code')) {
+                $icon->svg_code = app(SvgSanitizerService::class)
+                    ->sanitize($icon->svg_code)
+                    ?? throw new RuntimeException('Invalid SVG code.');
+            }
+        });
+
+        // cache-clearing hooks
+        static::saved(static fn () => Cache::forget('icons.all'));
+        static::deleted(static fn () => Cache::forget('icons.all'));
     }
 }
