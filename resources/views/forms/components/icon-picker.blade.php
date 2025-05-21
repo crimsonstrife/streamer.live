@@ -1,7 +1,5 @@
 @props([
-    // initial page of icons passed from controller, or empty array
     'initialIcons' => [],
-    // route name for fetching more icons
     'fetchUrl'     => route('icons.fetch'),
 ])
 
@@ -26,8 +24,8 @@
                 class="p-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700"
             >
                 <x-icon-display
-                    :icon="null"
-                    x-bind:icon="icon"
+                    x-bind:svg_url="icon.svg_url"
+                    x-bind:svg_code="icon.svg_code"
                     class="w-6 h-6"
                 />
             </button>
@@ -56,7 +54,6 @@
             searchTerm: '',
             fetchUrl: url,
 
-            // Initialize with the server-rendered batch
             loadInitial() {
                 if (initial.data) {
                     this.icons = initial.data;
@@ -66,20 +63,17 @@
                 }
             },
 
-            // Fetch first page or search results
             async search() {
                 this.page = 1;
                 await this.fetchIcons();
             },
 
-            // Fetch the “next” page
             async loadMore() {
                 if (this.page >= this.lastPage) return;
                 this.page++;
                 await this.fetchIcons(true);
             },
 
-            // Core fetch logic
             async fetchIcons(append = false) {
                 const params = new URLSearchParams({
                     page: this.page,
@@ -98,7 +92,6 @@
                 this.lastPage = json.last_page;
             },
 
-            // Emit the selected icon ID back to your Livewire/Filament field
             select(id) {
                 this.$dispatch('input', id);
                 this.$dispatch('change', id);

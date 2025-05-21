@@ -1,10 +1,12 @@
-@props(['icon']) {{-- an instance of App\Models\Icon --}}
+@props([
+    'svg_url'  => null,
+    'svg_code' => null,
+])
 
-@if ($icon->svg_url)
-    <img src="{{ $icon->svg_url }}" alt="{{ $icon->name }}" {{ $attributes }} />
-@elseif ($icon->svg_code)
-    {!! $icon->svg_code !!}
+@if ($svg_url)
+    <img src="{{ $svg_url }}" alt="" {{ $attributes }} />
+@elseif ($svg_code)
+    {!! $svg_code !!}
 @else
     <span class="text-xs text-gray-500">No icon</span>
 @endif
-
