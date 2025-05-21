@@ -222,14 +222,6 @@ class Icon extends BaseModel
      */
     public function loadAllIcons()
     {
-        /* // Load built-in icons from resources/icons/builtin/{type}/{style}
-        $builtinIcons = $this->loadIconsFromDirectory(resource_path('icons/builtin'));
-
-        // Load user-uploaded icons from public/icons/{type}/{style}
-        $userIcons = $this->loadIconsFromDirectory(storage_path('app/public/icons'));
-
-        return $builtinIcons->merge($userIcons); */
-
         // Load all icons from the database, cache the results for 1 hour (60 minutes) before refreshing.
         return cache()->remember('icons.all', 60 * 60, function () {
             return self::all();

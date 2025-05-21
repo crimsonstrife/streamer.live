@@ -25,6 +25,8 @@ class SEOSettings extends SettingsPage
 
     protected static string $settings = \App\Settings\SEOSettings::class;
 
+    protected static ?string $slug = 'seo-settings';
+
     public function getTitle(): string
     {
         return trans('filament-seo::messages.title');

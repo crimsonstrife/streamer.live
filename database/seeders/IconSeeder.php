@@ -211,7 +211,6 @@ class IconSeeder extends Seeder
      * @return array $icons
      *
      * @throws FileNotFoundException
-     * @throws SvgNotFound
      */
     private function getIcons(string $iconSetPath): array
     {
