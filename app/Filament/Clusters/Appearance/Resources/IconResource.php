@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Appearance\Resources;
 
-use App\Filament\Clusters\Settings;
-use App\Filament\Resources\IconResource\Pages;
+use App\Filament\Clusters\Appearance\Resources\IconResource\Pages;
 use App\Models\Icon;
 use App\Services\SvgSanitizerService;
 use Filament\Forms;
@@ -30,9 +29,7 @@ class IconResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-information-circle';
 
-    protected static ?string $cluster = Settings::class;
-
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Appearance';
 
     protected static ?int $navigationSort = 5;
 

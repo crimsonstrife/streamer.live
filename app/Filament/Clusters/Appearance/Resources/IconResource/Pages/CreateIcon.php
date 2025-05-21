@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\IconResource\Pages;
+namespace App\Filament\Clusters\Appearance\Resources\IconResource\Pages;
 
-use App\Filament\Resources\IconResource;
+use App\Filament\Clusters\Appearance\Resources\IconResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateIcon extends CreateRecord
