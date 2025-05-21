@@ -148,20 +148,41 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 ->name('product.review.submit');
         });
 
-    // Global fallback for all other Fabricator pages
+    // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
-        ->where('slug', '.*')
+        ->where('slug', '^(?!public\/|storage\/|build\/).*$')
         ->name('fabricator.page.global.fallback');
 });
 
 Route::resource('icons', IconController::class)
     ->only(['store', 'index']);
 
-/**
- * Define a fallback route that will be executed when no other routes match.
- * This is useful for handling 404 errors and displaying a custom error page.
- */
-Route::fallback(function () {
+Route::get('/{slug}', FabricatorPageController::class)
+    // don’t match any system URI
+    ->where('slug', '^(?!public\/|storage\/|build\/).*$')
+    ->name('fabricator.page.global.fallback');
+
+Route::fallback(static function () {
+    $path = request()->path();
+
+    // if it’s an asset under public/ or build/, we don’t want to handle it here
+    if (Str::startsWith($path, 'public/') || Str::startsWith($path, 'build/') || Str::startsWith($path, 'storage/')) {
+        $path = request()->path();                 // e.g. "build/assets/icons/…"
+
+        // If it begins with "public/", remove that so it points at the public/ folder correctly
+        if (Str::startsWith($path, 'public/')) {
+            $path = substr($path, strlen('public/'));
+        }
+
+        $file = public_path($path);                // resolves to /full/project/public/build/…
+
+        if (file_exists($file) && is_file($file)) {
+            // Let Laravel serve the static asset
+            return Response::file($file);
+        }
+    }
+
+    // otherwise it really is a missing “page”
     Log::error('Fallback route triggered', ['url' => request()->url()]);
     abort(404);
 });

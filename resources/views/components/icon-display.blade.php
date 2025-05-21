@@ -1,6 +1,6 @@
 @props([
-    'svg_url'  => null,
-    'svg_code' => null,
+    'svg_url',
+    'svg_code',
 ])
 
 @if ($svg_url)

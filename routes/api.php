@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\IconController;
 use App\Http\Controllers\Webhook\FourthwallWebhookController;
 use App\Models\Icon;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ Route::post('/webhooks/fourthwall', FourthwallWebhookController::class);
  * @param  int|null  $id
  * @return \Illuminate\Http\Response
  */
-Route::get('/icon/{id}/svg', static function (?int $id) {
+Route::get('/icon/{id}/svg', function (?int $id) {
     $icon = Icon::find($id);
     if (! $icon) {
         return response()->json(['error' => 'Icon not found'], 404);
@@ -30,3 +31,8 @@ Route::get('/icon/{id}/svg', static function (?int $id) {
         'svg_file_path' => $icon->svg_file_path,
     ]);
 })->name('icon.svg');
+
+/**
+ *  API route for fetching all icons in the application.
+ */
+Route::get('/icons', [IconController::class, 'fetchIcons']);

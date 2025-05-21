@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -119,13 +120,16 @@ class IconResource extends Resource
                     ->disabled(fn ($get) => $get('is_builtin')),
 
                 // Live preview
-                Forms\Components\ViewField::make('preview')
+                Forms\Components\Placeholder::make('preview')
                     ->label('Live Preview')
-                    ->view('components.icon-display')
-                    ->extraAttributes(fn ($get) => [
-                        'svg_url' => $get('svg_file_path') ? Storage::url($get('svg_file_path')[0]) : null,
-                        'svg_code' => $get('svg_code'),
-                    ]),
+                    ->content(fn (callable $get): HtmlString => new HtmlString(
+                        view('components.icon-display', [
+                            'svg_url' => $get('svg_file_path')
+                                ? asset($get('svg_file_path')[0])
+                                : null,
+                            'svg_code' => $get('svg_code'),
+                        ])->render()
+                    )),
             ]);
     }
 
@@ -136,13 +140,11 @@ class IconResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('Icon Name')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('type')->label('Type')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('style')->label('Style')->sortable()->searchable(),
-                Tables\Columns\ViewColumn::make('preview')
+                Tables\Columns\TextColumn::make('preview')
                     ->label('Preview')
-                    ->view('components.icon-display')
-                    ->extraAttributes(fn ($record) => [
-                        'svg_url' => $record->svg_file_path ? Storage::url($record->svg_file_path) : null,
-                        'svg_code' => $record->svg_code,
-                    ]),
+                    ->html()  // it’s already fully formed HTML
+                    ->sortable(false)
+                    ->searchable(false),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')

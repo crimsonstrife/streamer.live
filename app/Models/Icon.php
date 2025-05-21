@@ -115,7 +115,7 @@ class Icon extends BaseModel
     {
         $built = array_keys(static::$bladeSets);
         $custom = static::types()
-            ->filter(fn ($t) => ! in_array($t, $built))
+            ->filter(fn ($t) => ! in_array($t, $built, true))
             ->mapWithKeys(fn ($t) => [$t => Str::title($t)])
             ->toArray();
 
@@ -137,14 +137,33 @@ class Icon extends BaseModel
     // ——————————————————————————————
     public function getSvgUrlAttribute(): ?string
     {
-        return $this->svg_file_path
-            ? Storage::url($this->svg_file_path)
-            : null;
+        if (! $this->svg_file_path) {
+            return null;
+        }
+
+        // strip the leading "public/" if it’s there:
+        $webPath = preg_replace('#^public/#', '', $this->svg_file_path);
+
+        return asset($webPath);
     }
 
     public function getSvgCodeAttribute(): ?string
     {
         return $this->attributes['svg_code'] ?? null;
+    }
+
+    public function getPreviewAttribute(): string
+    {
+        // prefer the URL, fall back to inline code
+        if ($this->svg_url) {
+            return '<img src="'.e($this->svg_url).'" alt="" style="height:1rem"/>';
+        }
+
+        if ($this->svg_code) {
+            return $this->svg_code;
+        }
+
+        return '<span class="text-xs text-gray-400">No icon</span>';
     }
 
     // ——————————————————————————————
