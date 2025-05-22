@@ -39,20 +39,17 @@
             <p>© <?php echo date("Y"); ?> <?php echo config('app.name') ?></p>
             <p>Powered by Streamer © 2025 <?php if(date("Y") > date("Y", strtotime("2025"))) { echo " - " . date("Y"); }; ?> by CrimsonStrife, All rights reserved.</p>
             <ul class="list-unstyled d-flex">
-                <li class="ms-3"><a class="link-body-emphasis" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#twitter"></use>
-                        </svg>
+                <li class="ms-4"><a class="link-body-emphasis" href="#">
+                        <x-fab-x-twitter width="25" height="25"/>
                     </a></li>
-                <li class="ms-3"><a class="link-body-emphasis" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#instagram"></use>
-                        </svg>
+                <li class="ms-4"><a class="link-body-emphasis" href="#">
+                        <x-fab-bluesky width="25" height="25"/>
                     </a></li>
-                <li class="ms-3"><a class="link-body-emphasis" href="#">
-                        <svg class="bi" width="24" height="24">
-                            <use xlink:href="#facebook"></use>
-                        </svg>
+                <li class="ms-4"><a class="link-body-emphasis" href="#">
+                        <x-fab-instagram width="25" height="25"/>
+                    </a></li>
+                <li class="ms-4"><a class="link-body-emphasis" href="#">
+                        <x-fab-facebook width="25" height="25"/>
                     </a></li>
             </ul>
         </div>
