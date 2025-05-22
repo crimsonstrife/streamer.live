@@ -5,6 +5,7 @@ namespace App\Utilities;
 use App\Models\OrderItem;
 use App\Models\Page;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class ShopHelper
 {
@@ -53,12 +54,20 @@ class ShopHelper
      */
     private static function fetchShopSlug(): string
     {
-        return Page::where('type', 'shop')->value('slug') ?? self::DEFAULT_SHOP_SLUG;
+        if (Schema::hasTable('pages')) {
+            return Page::where('type', 'shop')->value('slug') ?? self::DEFAULT_SHOP_SLUG;
+        }
+
+        return self::DEFAULT_SHOP_SLUG;
     }
 
     private static function fetchCollectionSlug(): string
     {
-        return Page::where('type', 'collection_detail')->value('slug') ?? self::DEFAULT_COLLECTION_SLUG;
+        if (Schema::hasTable('pages')) {
+            return Page::where('type', 'collection_detail')->value('slug') ?? self::DEFAULT_COLLECTION_SLUG;
+        }
+
+        return self::DEFAULT_COLLECTION_SLUG;
     }
 
     /**
@@ -66,7 +75,11 @@ class ShopHelper
      */
     private static function fetchProductSlug(): string
     {
-        return Page::where('type', 'product_detail')->value('slug') ?? self::DEFAULT_PRODUCT_SLUG;
+        if (Schema::hasTable('pages')) {
+            return Page::where('type', 'product_detail')->value('slug') ?? self::DEFAULT_PRODUCT_SLUG;
+        }
+
+        return self::DEFAULT_PRODUCT_SLUG;
     }
 
     public static function product(string $slug, string $prefix = self::DEFAULT_SHOP_SLUG): string

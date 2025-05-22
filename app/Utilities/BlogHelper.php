@@ -4,6 +4,7 @@ namespace App\Utilities;
 
 use App\Models\Page;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 class BlogHelper
 {
@@ -28,6 +29,10 @@ class BlogHelper
 
     private static function fetchSlug(): string
     {
-        return Page::where('type', 'blog')->value('slug') ?? self::DEFAULT_BLOG_SLUG;
+        if (Schema::hasTable('pages')) {
+            return Page::where('type', 'blog')->value('slug') ?? self::DEFAULT_BLOG_SLUG;
+        }
+
+        return self::DEFAULT_BLOG_SLUG;
     }
 }

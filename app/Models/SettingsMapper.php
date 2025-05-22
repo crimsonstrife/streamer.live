@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use Spatie\LaravelSettings\Events\LoadingSettings;
 use Spatie\LaravelSettings\Exceptions\MissingSettings;
@@ -79,10 +80,20 @@ class SettingsMapper extends SpatieSettingsMapper
 
     public function fetchProperties(string $settingsClass, Collection $names): Collection
     {
+        // 1) If the settings table isn't there yet, bail out immediately.
+        if (! Schema::hasTable('settings')) {
+            return collect();
+        }
+
+        // 2) Now that we know the table exists, go ahead and load from the repo.
         $config = $this->getConfig($settingsClass);
 
-        return collect($config->getRepository()->getPropertiesInGroup($config->getGroup()))
-            ->filter(fn ($payload, string $name) => $names->contains($name))
+        $raw = $config
+            ->getRepository()
+            ->getPropertiesInGroup($config->getGroup());
+
+        return collect($raw)
+            ->filter(fn($payload, string $name) => $names->contains($name))
             ->map(function ($payload, string $name) use ($config) {
                 if ($config->isEncrypted($name)) {
                     $payload = Crypto::decrypt($payload);
@@ -95,6 +106,7 @@ class SettingsMapper extends SpatieSettingsMapper
                 return $payload;
             });
     }
+
 
     private function fillMissingSettingsWithDefaultValues(SettingsConfig $config, Collection $properties): Collection
     {

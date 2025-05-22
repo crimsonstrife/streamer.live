@@ -22,6 +22,7 @@ use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
@@ -37,6 +38,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Skip entirely when running in the console (i.e. Artisan commands)
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
+        // Double-check that the table exists
+        if (! Schema::hasTable('settings')) {
+            return;
+        }
+
         if ($this->app->isLocal()) {
             // Register additional local services
         }
@@ -73,6 +84,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Skip entirely when running in the console (i.e. Artisan commands)
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
+        // Double-check that the table exists
+        if (! Schema::hasTable('settings')) {
+            return;
+        }
+
         Comment::observe(CommentObserver::class);
 
         View::composer('*', function ($view) {
@@ -103,6 +124,8 @@ class AppServiceProvider extends ServiceProvider
             PostResource::class,
         ]);
 
-        view()->share('shopSlug', ShopHelper::getShopSlug());
+        if (Schema::hasTable('pages')) {
+            view()->share('shopSlug', ShopHelper::getShopSlug());
+        }
     }
 }
