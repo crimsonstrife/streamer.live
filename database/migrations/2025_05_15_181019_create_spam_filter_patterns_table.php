@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('list')->index();
             $table->text('pattern');
-            $table->string('description')->nullable;
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }
