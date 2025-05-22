@@ -36,22 +36,35 @@
         </div>
 
         <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-            <p>© <?php echo date("Y"); ?> <?php echo config('app.name') ?></p>
-            <p>Powered by Streamer © 2025 <?php if(date("Y") > date("Y", strtotime("2025"))) { echo " - " . date("Y"); }; ?> by CrimsonStrife, All rights reserved.</p>
-            <ul class="list-unstyled d-flex">
-                <li class="ms-4"><a class="link-body-emphasis" href="#">
-                        <x-fab-x-twitter width="25" height="25"/>
-                    </a></li>
-                <li class="ms-4"><a class="link-body-emphasis" href="#">
-                        <x-fab-bluesky width="25" height="25"/>
-                    </a></li>
-                <li class="ms-4"><a class="link-body-emphasis" href="#">
-                        <x-fab-instagram width="25" height="25"/>
-                    </a></li>
-                <li class="ms-4"><a class="link-body-emphasis" href="#">
-                        <x-fab-facebook width="25" height="25"/>
-                    </a></li>
-            </ul>
+            <span class="flex-sm-row justify-content-between">
+                <a href="{{ route('fabricator.page.home') }}"
+                   class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
+                    <x-application-logo height="48"/>
+                </a>
+            </span>
+            <span>
+                <p>Powered by Streamer.live © 2025 <?php if(date("Y") > date("Y", strtotime("2025"))) { echo " - " . date("Y"); }; ?> by CrimsonStrife, All rights reserved.</p>
+            </span>
+            <span>
+                <ul class="list-unstyled d-flex">
+                    <li class="ms-4">
+                        <a class="link-body-emphasis" href="#">
+                        <x-fab-x-twitter width="25" height="25"/></a>
+                    </li>
+                    <li class="ms-4">
+                        <a class="link-body-emphasis" href="#">
+                        <x-fab-bluesky width="25" height="25"/></a>
+                    </li>
+                    <li class="ms-4">
+                        <a class="link-body-emphasis" href="#">
+                        <x-fab-instagram width="25" height="25"/></a>
+                    </li>
+                    <li class="ms-4">
+                        <a class="link-body-emphasis" href="#">
+                        <x-fab-facebook width="25" height="25"/></a>
+                    </li>
+                </ul>
+            </span>
         </div>
     </footer>
 </div>

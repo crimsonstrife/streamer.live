@@ -36,7 +36,9 @@
         <div class="container d-flex flex-wrap justify-content-center">
             <a href="{{ route('fabricator.page.home') }}"
                class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
-                LOGO HERE
+                <span class="fs-4" style="margin-right: 10%;">
+                    <x-application-mark height="40" width="40"/>
+                </span>
                 <span class="fs-4">{{ config('app.name', 'Streamer.live') }}</span>
             </a>
             <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search" method="GET" action="{{ route('search') }}">
