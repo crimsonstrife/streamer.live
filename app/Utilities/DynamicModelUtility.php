@@ -92,8 +92,8 @@ class DynamicModelUtility extends Utility
         // match the namespace using a regular expression
         preg_match('/namespace\s+(.*);/', $contents, $matches); // match the namespace
 
-        // return the namespace
-        return $matches[1];
+        // check if a match was found and return the namespace, or return an empty string if no match
+        return isset($matches[1]) ? $matches[1] : '';
     }
 
     /**
