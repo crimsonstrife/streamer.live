@@ -93,7 +93,7 @@ class SettingsMapper extends SpatieSettingsMapper
             ->getPropertiesInGroup($config->getGroup());
 
         return collect($raw)
-            ->filter(fn($payload, string $name) => $names->contains($name))
+            ->filter(fn ($payload, string $name) => $names->contains($name))
             ->map(function ($payload, string $name) use ($config) {
                 if ($config->isEncrypted($name)) {
                     $payload = Crypto::decrypt($payload);
