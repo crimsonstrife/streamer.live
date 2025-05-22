@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Appearance\Resources;
 
+use App\Filament\Clusters\Appearance;
 use App\Filament\Clusters\Appearance\Resources\IconResource\Pages;
 use App\Models\Icon;
 use Filament\Forms;
@@ -17,9 +18,11 @@ class IconResource extends Resource
 {
     protected static ?string $model = Icon::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-information-circle';
+    protected static ?string $navigationIcon = 'fas-icons';
 
     protected static ?string $navigationGroup = 'Appearance';
+
+    protected static ?string $cluster = Appearance::class;
 
     protected static ?int $navigationSort = 5;
 
@@ -124,10 +127,7 @@ class IconResource extends Resource
                     ->label('Live Preview')
                     ->content(fn (callable $get): HtmlString => new HtmlString(
                         view('components.icon-display', [
-                            'svg_url' => $get('svg_file_path')
-                                ? asset($get('svg_file_path')[0])
-                                : null,
-                            'svg_code' => $get('svg_code'),
+                            'icon_id' => $get('id'),
                         ])->render()
                     )),
             ]);
@@ -140,11 +140,17 @@ class IconResource extends Resource
                 Tables\Columns\TextColumn::make('name')->label('Icon Name')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('type')->label('Type')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('style')->label('Style')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('preview')
-                    ->label('Preview')
-                    ->html()  // it’s already fully formed HTML
-                    ->sortable(false)
-                    ->searchable(false),
+                Tables\Columns\TextColumn::make('blade_snippet')
+                    ->label('Blade Tag Snippet')
+                    ->badge()
+                    ->formatStateUsing(fn (Icon $record): string => $record->blade_snippet)
+                    ->copyable()
+                    ->copyMessage('Tag copied')
+                    ->copyMessageDuration(1500)
+                    ->tooltip('Click to copy this Blade tag, used to render the icon in blade files.'),
+                Tables\Columns\IconColumn::make('blade_code')
+                    ->icon(fn (Icon $record): string => $record->blade_code)
+                    ->label('Preview'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('type')
@@ -162,8 +168,8 @@ class IconResource extends Resource
     {
         return [
             'index' => Pages\ListIcons::route('/'),
-            'create' => Pages\CreateIcon::route('/create'),
-            'edit' => Pages\EditIcon::route('/{record}/edit'),
+            // 'create' => Pages\CreateIcon::route('/create'),
+            // 'edit' => Pages\EditIcon::route('/{record}/edit'),
         ];
     }
 }

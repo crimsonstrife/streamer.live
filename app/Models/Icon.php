@@ -10,6 +10,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -24,6 +25,13 @@ class Icon extends BaseModel
         'name', 'type', 'style',
         'prefix', 'set', 'class',
         'svg_code', 'svg_file_path', 'is_builtin',
+    ];
+
+    protected $appends = [
+        'svg_url',
+        'svg_file_code',
+        'blade_code',
+        'preview',
     ];
 
     protected static array $bladeSets;
@@ -132,6 +140,21 @@ class Icon extends BaseModel
         return static::$classMap;
     }
 
+    public static function bladeCode($id): string
+    {
+        $icon = self::find($id);
+
+        if (! $icon) {
+            return '';
+        }
+
+        if (! empty($icon->prefix) && ! empty($icon->name)) {
+            return $icon->prefix.'-'.$icon->name;
+        }
+
+        return '';
+    }
+
     // ——————————————————————————————
     // Accessors
     // ——————————————————————————————
@@ -147,23 +170,75 @@ class Icon extends BaseModel
         return asset($webPath);
     }
 
+    /**
+     * Read raw SVG markup from disk, for file-based icons.
+     */
+    public function getSvgFileCodeAttribute(): ?string
+    {
+        if (! $this->svg_file_path) {
+            return null;
+        }
+
+        // Strip leading "public/" if stored there
+        $relative = ltrim(preg_replace('#^public/#', '', $this->svg_file_path), '/');
+
+        // Resolve to the public/ folder
+        $fullPath = public_path($relative);
+
+        if (File::exists($fullPath)) {
+            return file_get_contents($fullPath);
+        }
+
+        return null;
+    }
+
+    /**
+     * Override the SVG code accessor so that:
+     * 1) DB-stored code (user-entered) takes priority
+     * 2) Otherwise we fall back to reading the file’s contents
+     */
     public function getSvgCodeAttribute(): ?string
     {
-        return $this->attributes['svg_code'] ?? null;
+        // 1) If inline code was saved in the DB, return it
+        if (! empty($this->attributes['svg_code'])) {
+            return $this->attributes['svg_code'];
+        }
+
+        // 2) Otherwise pull it from the file
+        return $this->svg_file_code;
     }
 
     public function getPreviewAttribute(): string
     {
         // prefer the URL, fall back to inline code
         if ($this->svg_url) {
-            return '<img src="'.e($this->svg_url).'" alt="" style="height:1rem"/>';
+            return $this->svg_file_code;
         }
 
         if ($this->svg_code) {
             return $this->svg_code;
         }
 
-        return '<span class="text-xs text-gray-400">No icon</span>';
+        return 'No icon';
+    }
+
+    public function getBladeCodeAttribute(): ?string
+    {
+        if (! empty($this->attributes['prefix']) && ! empty($this->attributes['name'])) {
+            return $this->attributes['prefix'].'-'.$this->attributes['name'];
+        }
+
+        return null;
+    }
+
+    /**
+     * The Blade UI component invocation for this icon,
+     * e.g. `<x-heroicon-o-information-circle class="w-6 h-6" />`.
+     */
+    public function getBladeSnippetAttribute(): string
+    {
+        // assumes the record already has a blade_code property like "heroicon-o-information-circle"
+        return "<x-{$this->blade_code}/>";
     }
 
     // ——————————————————————————————

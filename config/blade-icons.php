@@ -96,10 +96,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'fontawesome-solid' => [
@@ -179,10 +181,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'fontawesome-brands' => [
@@ -262,10 +266,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'fontawesome-duotone' => [
@@ -345,10 +351,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'fontawesome-thin' => [
@@ -428,10 +436,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'fontawesome-light' => [
@@ -511,10 +521,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'heroicon-outline' => [
@@ -594,10 +606,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'none',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'heroicon-solid' => [
@@ -677,10 +691,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'octicon-regular' => [
@@ -760,10 +776,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'octicon-solid' => [
@@ -843,10 +861,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'octicon-outline' => [
@@ -926,10 +946,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'none',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'octicon-brands' => [
@@ -1009,10 +1031,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'misc' => [
@@ -1092,10 +1116,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-solid' => [
@@ -1175,10 +1201,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-regular' => [
@@ -1258,10 +1286,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-brands' => [
@@ -1341,10 +1371,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-duotone' => [
@@ -1424,10 +1456,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-thin' => [
@@ -1507,10 +1541,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-light' => [
@@ -1590,10 +1626,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-outline' => [
@@ -1673,10 +1711,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'none',
+                'stroke' => 'currentColor',
+            ],
 
         ],
         'custom-custom' => [
@@ -1756,10 +1796,12 @@ return [
             |
             */
 
-            // 'attributes' => [
-            // 'width' => 50,
-            // 'height' => 50,
-            // ],
+            'attributes' => [
+                'width' => 50,
+                'height' => 50,
+                'fill' => 'currentColor',
+                'stroke' => 'currentColor',
+            ],
 
         ],
     ],
@@ -1786,10 +1828,12 @@ return [
     |
     */
 
-    // 'attributes' => [
-    // 'width' => 50,
-    // 'height' => 50,
-    // ],
+    'attributes' => [
+        'width' => 50,
+        'height' => 50,
+        'fill' => 'none',
+        'stroke' => 'currentColor',
+    ],
 
     /*
     |--------------------------------------------------------------------------
