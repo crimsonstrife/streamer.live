@@ -21,4 +21,26 @@ class NewsletterController extends Controller
 
         return back()->with('success', 'Thanks for subscribing!');
     }
+
+    /** Show a simple “enter your email to unsubscribe” form */
+    public function showUnsubscribeForm()
+    {
+        return view('newsletter.unsubscribe');
+    }
+
+    /** Process the unsubscribe request */
+    public function unsubscribe(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        if (! Newsletter::isSubscribed($request->email)) {
+            return back()->with('error', 'That address is not subscribed.');
+        }
+
+        Newsletter::unsubscribe($request->email);
+
+        return back()->with('success', 'You’ve been unsubscribed.');
+    }
 }

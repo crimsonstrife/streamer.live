@@ -36,6 +36,12 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::post('newsletter/subscribe', [NewsletterController::class, 'subscribe'])
         ->name('newsletter.subscribe');
 
+    Route::get('newsletter/unsubscribe', [NewsletterController::class, 'showUnsubscribeForm'])
+        ->name('newsletter.unsubscribe.form');
+
+    Route::post('newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])
+        ->name('newsletter.unsubscribe');
+
     // User Dashboard
     Route::middleware([
         'auth:sanctum',

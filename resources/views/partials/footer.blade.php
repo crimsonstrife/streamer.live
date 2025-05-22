@@ -29,6 +29,9 @@
                         <button class="btn btn-primary" type="button">Subscribe</button>
                     </div>
                 </form>
+                <p class="mt-3 small">
+                    Already subscribed, but changed your mind? <a href="{{ route('newsletter.unsubscribe.form') }}">Unsubscribe</a>.
+                </p>
             </div>
         </div>
 
