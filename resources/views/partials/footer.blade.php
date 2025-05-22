@@ -19,12 +19,13 @@
             </div>
 
             <div class="col-md-5 offset-md-1 mb-3">
-                <form>
+                <form action="{{ route('newsletter.subscribe') }}" method="POST">
+                    @csrf
                     <h5>Subscribe to the newsletter</h5>
-                    <p>Monthly digest of what's new and exciting from us.</p>
+                    <p>Keep up with what's new and exciting.</p>
                     <div class="d-flex flex-column flex-sm-row w-100 gap-2">
-                        <label for="newsletter1" class="visually-hidden">Email address</label>
-                        <input id="newsletter1" type="text" class="form-control" placeholder="Email address">
+                        <label for="newsletter-email" class="visually-hidden">Email address</label>
+                        <input id="newsletter-email" name="email" type="email" class="form-control" placeholder="Email address" required>
                         <button class="btn btn-primary" type="button">Subscribe</button>
                     </div>
                 </form>
@@ -32,7 +33,8 @@
         </div>
 
         <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-            <p>© 2025 Company, Inc. All rights reserved.</p>
+            <p>© <?php echo date("Y"); ?> <?php echo config('app.name') ?></p>
+            <p>Powered by Streamer © 2025 <?php if(date("Y") > date("Y", strtotime("2025"))) { echo " - " . date("Y"); }; ?> by CrimsonStrife, All rights reserved.</p>
             <ul class="list-unstyled d-flex">
                 <li class="ms-3"><a class="link-body-emphasis" href="#">
                         <svg class="bi" width="24" height="24">

@@ -4,6 +4,7 @@ use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
@@ -31,6 +32,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
     // Homepage
     Route::get('/', FabricatorPageController::class)->name('fabricator.page.home');
+
+    Route::post('newsletter/subscribe', [NewsletterController::class, 'subscribe'])
+        ->name('newsletter.subscribe');
 
     // User Dashboard
     Route::middleware([
