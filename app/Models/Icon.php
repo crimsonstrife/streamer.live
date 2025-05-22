@@ -47,7 +47,7 @@ class Icon extends BaseModel
     {
         parent::booted();
 
-        static::$filesystem = new Filesystem;
+        static::$filesystem = new Filesystem();
         static::$storagePath = storage_path('app/public/build/assets/icons');
 
         static::$bladeSets = Config::get('blade-icons.sets', []);
@@ -58,7 +58,8 @@ class Icon extends BaseModel
                 static::$bladeSets,
                 array_keys(static::$bladeSets)
             ),
-            'prefix', 'key'
+            'prefix',
+            'key'
         );
 
         static::$classMap = array_column(
@@ -67,7 +68,8 @@ class Icon extends BaseModel
                 static::$bladeSets,
                 array_keys(static::$bladeSets)
             ),
-            'class', 'key'
+            'class',
+            'key'
         );
 
         // Sanitize on change of svg_code

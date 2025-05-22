@@ -11,7 +11,7 @@ class SvgSanitizerService
     public function __construct()
     {
         // Initialize the sanitizer
-        $this->sanitizer = new Sanitizer;
+        $this->sanitizer = new Sanitizer();
     }
 
     /**

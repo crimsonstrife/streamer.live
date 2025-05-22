@@ -235,7 +235,7 @@ class DynamicModelUtility extends Utility
             // Check if the class is the Model we are looking for
             if ($class === $modelName) {
                 // return the Model object
-                return new $class;
+                return new $class();
             }
         }
 

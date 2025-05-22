@@ -50,9 +50,9 @@ class IconSeeder extends Seeder
     public function __construct()
     {
         // Initialize the SVG sanitizer service
-        $this->svgSanitizer = new SvgSanitizerService;
+        $this->svgSanitizer = new SvgSanitizerService();
         // Initialize the filesystem
-        $this->filesystem = new Filesystem;
+        $this->filesystem = new Filesystem();
         // Initialize the storage path
         $this->storagePath = storage_path('app/public/build/assets/icons');
     }

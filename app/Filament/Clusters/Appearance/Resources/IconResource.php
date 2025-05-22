@@ -40,8 +40,10 @@ class IconResource extends Resource
                     ->disabled(fn ($get) => $get('is_builtin'))
                     ->helperText('Lowercase, hyphens for spaces.')
                     ->afterStateUpdated(fn ($state, callable $set) => $set('name', Str::slug($state, '-')))
-                    ->rule(fn ($get) => Rule::unique('icons', 'name')
-                        ->where(fn ($query) => $query
+                    ->rule(
+                        fn ($get) => Rule::unique('icons', 'name')
+                        ->where(
+                            fn ($query) => $query
                             ->when($get('type'), fn ($q) => $q->where('type', $get('type')))
                             ->when($get('style'), fn ($q) => $q->where('style', $get('style')))
                         )
