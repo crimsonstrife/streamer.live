@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Clusters\Settings;
+use App\Filament\Clusters\Appearance;
 use App\Settings\LookFeelSettings;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,7 +14,7 @@ class ThemeSettings extends SettingsPage
 
     protected static string $settings = LookFeelSettings::class;
 
-    protected static ?string $cluster = Settings::class;
+    protected static ?string $cluster = Appearance::class;
 
     protected static ?string $navigationGroup = 'Settings';
 
