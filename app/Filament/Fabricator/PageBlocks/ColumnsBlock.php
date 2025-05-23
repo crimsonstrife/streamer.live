@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Fabricator\PageBlocks;
 
 use Filament\Forms\Components\Builder\Block;
@@ -51,4 +52,3 @@ class ColumnsBlock extends PageBlock
         return $data;
     }
 }
-
