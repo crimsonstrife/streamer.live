@@ -32,6 +32,7 @@ class SocialSettings extends Settings
     public ?string $social_kofi_handle;
     public ?string $social_soundcloud_handle;
     public ?string $social_spotify_handle;
+    public ?array $social_display_order;
 
     public static function group(): string
     {

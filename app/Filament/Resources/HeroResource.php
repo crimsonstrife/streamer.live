@@ -44,6 +44,9 @@ class HeroResource extends Resource
                 Forms\Components\TextInput::make('sort_order')
                     ->numeric()
                     ->default(0),
+                Forms\Components\Toggle::make('show_socials')
+                    ->label('Show Social Links')
+                    ->default(false),
             ]);
     }
 

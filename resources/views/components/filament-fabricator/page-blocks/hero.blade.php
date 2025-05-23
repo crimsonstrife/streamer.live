@@ -55,6 +55,11 @@
                 max-width:600px; padding:0;
             }
         }
+        .hero__socials-container.hero__socials-container--center {
+            padding: 0 10rem;
+            text-align: center;
+            margin: 5% auto 0;
+        }
     </style>
 
     <section data-section-id="{{ $blockId }}" class="hero hero--{{ $blockId }}">
@@ -100,6 +105,53 @@
                                                                 {{ $hero->secondary_cta_text }}
                                                             </a>
                                                         </div>
+                                                    @endif
+                                                </div>
+                                                <div class="hero__socials-container hero__socials-container--center">
+                                                    @if($hero->show_socials)
+                                                        @php
+                                                            /** @var \App\Settings\SocialSettings $settings */
+                                                            $settings = app(\App\Settings\SocialSettings::class);
+
+                                                            // allow caller to override, otherwise default to 5
+                                                            $limit = 6;
+
+                                                            // determine the order (saved or fallback)
+                                                            $order = $settings->social_display_order;
+                                                            if (empty($order)) {
+                                                                $order = collect([
+                                                                    'twitter','facebook','instagram','linkedin','youtube',
+                                                                    'twitch','tiktok','bluesky','kick','threads',
+                                                                    'github','gitlab','discord','reddit','mastodon',
+                                                                    'pinterest','snapchat','tumblr','medium','dribbble',
+                                                                    'behance','stackoverflow','patreon','kofi','soundcloud','spotify',
+                                                                ])
+                                                                ->filter(fn($key) => filled($settings->{"social_{$key}_" . ($key === 'discord' ? 'invite' : 'handle')}))
+                                                                ->toArray();
+                                                            }
+
+                                                            // only show up to the requested number
+                                                            $order = collect($order)->take($limit)->toArray();
+                                                        @endphp
+
+                                                        <ul class="hero__socials list-unstyled d-flex" style="color:#fff;">
+                                                            @foreach($order as $key)
+                                                                @php
+                                                                    $prop   = "social_{$key}_" . ($key === 'discord' ? 'invite' : 'handle');
+                                                                    $handle = $settings->{$prop} ?? null;
+                                                                    $url    = \App\Utilities\SocialUrlGenerator::url($key, $handle);
+                                                                    $key    = ($key === 'twitter' ? 'x-twitter' : $key);
+                                                                @endphp
+
+                                                                @if($url)
+                                                                    <li class="ms-4 hero__social-item">
+                                                                        <a class="link-body-emphasis hero__social-link" href="{{ $url }}" target="_blank" rel="noopener">
+                                                                            <x-dynamic-component :component="'fab-'.$key" width="20" height="20" fill="#fff" />
+                                                                        </a>
+                                                                    </li>
+                                                                @endif
+                                                            @endforeach
+                                                        </ul>
                                                     @endif
                                                 </div>
                                             </div>

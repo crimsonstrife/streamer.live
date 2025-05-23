@@ -32,6 +32,7 @@ return new class extends SettingsMigration
         $this->migrator->add('social.social_kofi_handle', null);
         $this->migrator->add('social.social_soundcloud_handle', null);
         $this->migrator->add('social.social_spotify_handle', null);
+        $this->migrator->add('social.social_display_order', null);
     }
 
     public function down(): void
@@ -62,5 +63,6 @@ return new class extends SettingsMigration
         $this->migrator->delete('social.social_kofi_handle');
         $this->migrator->delete('social.social_soundcloud_handle');
         $this->migrator->delete('social.social_spotify_handle');
+        $this->migrator->delete('social.social_display_order');
     }
 };

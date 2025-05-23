@@ -20,6 +20,7 @@ class Hero extends Model
         'sort_order',
         'is_active',
         'full_width',
+        'show_socials',
     ];
 
     protected $table = 'hero_banners';

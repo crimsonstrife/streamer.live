@@ -48,24 +48,7 @@
                 }; ?> by CrimsonStrife, All rights reserved.</p>
             </span>
             <span>
-                <ul class="list-unstyled d-flex">
-                    <li class="ms-4">
-                        <a class="link-body-emphasis" href="#">
-                        <x-fab-x-twitter width="25" height="25"/></a>
-                    </li>
-                    <li class="ms-4">
-                        <a class="link-body-emphasis" href="#">
-                        <x-fab-bluesky width="25" height="25"/></a>
-                    </li>
-                    <li class="ms-4">
-                        <a class="link-body-emphasis" href="#">
-                        <x-fab-instagram width="25" height="25"/></a>
-                    </li>
-                    <li class="ms-4">
-                        <a class="link-body-emphasis" href="#">
-                        <x-fab-facebook width="25" height="25"/></a>
-                    </li>
-                </ul>
+                @include('partials._socials', ['limit' => 4])
             </span>
         </div>
     </footer>
