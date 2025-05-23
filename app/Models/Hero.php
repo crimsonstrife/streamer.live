@@ -19,7 +19,17 @@ class Hero extends Model
         'secondary_cta_url',
         'sort_order',
         'is_active',
+        'full_width',
     ];
 
     protected $table = 'hero_banners';
+
+    protected $appends = [
+        'background_image_url',
+    ];
+
+    public function getBackgroundImageURLAttribute(): object|string
+    {
+        return url($this->background_image);
+    }
 }

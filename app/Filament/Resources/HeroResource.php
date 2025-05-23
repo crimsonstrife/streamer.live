@@ -27,6 +27,9 @@ class HeroResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Toggle::make('full_width')
+                    ->label('Full-width (edge-to-edge)')
+                    ->default(false),
                 Forms\Components\TextInput::make('title')->required(),
                 Forms\Components\TextInput::make('subtitle'),
                 Forms\Components\FileUpload::make('background_image')
