@@ -2,76 +2,140 @@
 @php
     /** @var \Illuminate\Support\Collection $heroes */
     $first = $heroes->first();
-    $full_width = $first->full_width;
-    // Decide whether to wrap in a container or go edge-to-edge
-    $wrapperClass = $full_width ? '' : 'container';
+    $blockId = 'section-hero-' . uniqid();
+    $full_width   = $first->full_width;
+    $wrapperClass = $full_width ? 'hero__container--full' : 'hero__container--regular';
 @endphp
 
-@if($first)
-    <section id="hero-block" class="hero-banner w-100 position-relative d-flex align-items-center justify-content-center"
-        style="background-image:url('{{ $first->background_image_url }}'); background-size:cover; background-position:center;"
-    >
-        <div class="section-background__overlay" style="background-color:#000000;opacity:0.5;"></div>
-        @if($mode === 'single')
-            <div class="{{ $wrapperClass }} hero-content text-center text-white d-flex flex-column align-items-center justify-content-center h-100">
-                <h1>{{ $first->title }}</h1>
-                @if(! empty($first->subtitle))
-                    <p class="lead">{{ $first->subtitle }}</p>
-                @endif
-                <a href="{{ $first->primary_cta_url }}" class="btn btn-lg btn-primary">
-                    {{ $first->primary_cta_text }}
-                </a>
-                @if(! empty($first->secondary_cta_text))
-                    <a href="{{ $first->secondary_cta_url }}" class="btn btn-lg btn-outline-light ms-2">
-                        {{ $first->secondary_cta_text }}
-                    </a>
-                @endif
-            </div>
-        @else
-            <div id="heroCarousel" class="carousel slide w-100 h-100" data-bs-ride="carousel">
-                <div class="carousel-inner h-100">
-                    @foreach($heroes as $i => $hero)
-                        <div
-                            class="carousel-item {{ $i === 0 ? 'active' : '' }} h-100"
-                            style="background-image:url('{{ $hero->background_image_url }}'); background-size:cover; background-position:center;"
-                        >
-                            <div class="{{ $wrapperClass }} hero-content text-center text-white d-flex flex-column align-items-center justify-content-center h-100">
-                                <h2>{{ $hero->title }}</h2>
-                                @if($hero->subtitle)
-                                    <p class="lead">{{ $hero->subtitle }}</p>
-                                @endif
-                                <a href="{{ $hero->primary_cta_url }}" class="btn btn-primary">
-                                    {{ $hero->primary_cta_text }}
-                                </a>
-                                @if($hero->secondary_cta_text)
-                                    <a href="{{ $hero->secondary_cta_url }}" class="btn btn-outline-light ms-2">
-                                        {{ $hero->secondary_cta_text }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
+<div id="{{ $blockId }}" class="block-section">
+    <style>
+        /* 1) Aspect‐ratio box */
+        .hero--{{ $blockId }} .hero__adapt {
+            position: relative;
+            overflow: hidden;
+        }
+        .hero--{{ $blockId }} .hero__adapt::before {
+            content: '';
+            padding-bottom: 56.25%; /* patched by JS */
+            display: block;
+        }
+
+        /* 2) Fill box */
+        .hero--{{ $blockId }} .section-background__image,
+        .hero--{{ $blockId }} .section-background__overlay {
+            position: absolute; top:0; left:0;
+            width:100%; height:100%;
+        }
+        .hero--{{ $blockId }} .section-background__image {
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* 3) Layering */
+        .hero--{{ $blockId }} .hero__container {
+            position: relative;
+        }
+        .hero--{{ $blockId }} .hero__inner {
+            position: absolute; inset:0;
+            display: flex; align-items:center; justify-content:center;
+            z-index:1;
+        }
+        .hero--{{ $blockId }} .section-background__adapt,
+        .hero--{{ $blockId }} .section-background__image,
+        .hero--{{ $blockId }} .section-background__overlay {
+            z-index:0;
+        }
+
+        /* 4) Content centering */
+        .hero--{{ $blockId }} .hero__content.hero__content--center {
+            margin:0 auto; padding:0 1rem; text-align:center;
+        }
+        @media (min-width:768px) {
+            .hero--{{ $blockId }} .hero__content.hero__content--center {
+                max-width:600px; padding:0;
+            }
+        }
+    </style>
+
+    <section data-section-id="{{ $blockId }}" class="hero hero--{{ $blockId }}">
+        <div class="hero__container {{ $wrapperClass }}">
+            @if($mode === 'single')
+                @php $items = collect([$first]); @endphp
+            @else
+                @php $items = $heroes; @endphp
+                <div id="{{ $blockId }}-carousel" class="carousel slide h-100" data-bs-ride="carousel">
+                    <div class="carousel-inner h-100">
+                        @endif
+
+                        @foreach($items as $i => $hero)
+                            @php $isActive = ($i === 0) ? ' active' : ''; @endphp
+
+                            @if($mode === 'carousel')
+                                <div class="carousel-item{{ $isActive }} h-100">
+                                    @endif
+
+                                    <div class="section-background">
+                                        <div class="section-background__adapt hero__adapt">
+                                            <div class="section-background__image" style="background-image:url('{{ $hero->background_image_url }}');"></div>
+                                            <div class="section-background__overlay" style="background-color:rgba(0,0,0,0.5)"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="hero__inner hero__inner--center">
+                                        <div class="container wrapper">
+                                            <div class="hero__content hero__content--center" style="color:#fff;">
+                                                <h1 class="hero__heading">{{ $hero->title }}</h1>
+                                                @if($hero->subtitle)
+                                                    <p class="hero__text">{{ $hero->subtitle }}</p>
+                                                @endif
+                                                <div class="hero__cta-container hero__cta-container--center">
+                                                    <div class="hero__cta hero__cta--primary">
+                                                        <a href="{{ $hero->primary_cta_url }}" class="btn btn-primary">
+                                                            {{ $hero->primary_cta_text }}
+                                                        </a>
+                                                    </div>
+                                                    @if($hero->secondary_cta_text)
+                                                        <div class="hero__cta hero__cta--secondary ms-2">
+                                                            <a href="{{ $hero->secondary_cta_url }}" class="btn btn-outline-light">
+                                                                {{ $hero->secondary_cta_text }}
+                                                            </a>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if($mode === 'carousel')
+                                </div>
+                            @endif
+                        @endforeach
+
+                        @if($mode === 'carousel')
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#{{ $blockId }}-carousel" data-bs-slide="prev">‹</button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#{{ $blockId }}-carousel" data-bs-slide="next">›</button>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">‹</button>
-                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">›</button>
-            </div>
-        @endif
+            @endif
+        </div>
     </section>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const banner = document.getElementById('hero-block');
-            if (!banner) return;
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const blockId  = '{{ $blockId }}';
+        const sect     = document.getElementById(blockId);
+        const imgUrl   = '{{ $first->background_image_url }}';
+        const styleTag = sect.querySelector('style');
 
-            const img = new Image();
-            img.src = '{{ $first->background_image_url }}';
-            img.onload = () => {
-                const ratio = img.naturalHeight / img.naturalWidth;
-                const width = banner.clientWidth;
-                const maxHeight = 600;
-                const calculated = width * ratio;
-                banner.style.height = Math.min(calculated, maxHeight) + 'px';
-            };
-        });
-    </script>
-@endif
+        const img = new Image();
+        img.src = imgUrl;
+        img.onload = () => {
+            const pct = (img.naturalHeight / img.naturalWidth) * 100;
+            styleTag.textContent = styleTag.textContent.replace(
+                /padding-bottom:\s*[\d\.]+%/,
+                `padding-bottom: ${pct.toFixed(6)}%`
+            );
+        };
+    });
+</script>
