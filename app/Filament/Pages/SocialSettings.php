@@ -115,7 +115,7 @@ class SocialSettings extends SettingsPage
                         ];
 
                         return collect($labels)
-                            ->filter(fn($_, $key) => filled(
+                            ->filter(fn ($_, $key) => filled(
                                 $settings->{
                                 'social_' . $key . '_' .
                                 ($key === 'discord' ? 'invite' : 'handle')
