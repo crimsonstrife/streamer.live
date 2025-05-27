@@ -48,11 +48,11 @@ class FourthwallService
      */
     public function __construct()
     {
-        $this->enabled = app(FourthwallSettings::class)->enable_integration;
-        $this->baseUrl = app(FourthwallSettings::class)->base_url ?? 'https://storefront-api.fourthwall.com';
-        $this->storefrontToken = app(FourthwallSettings::class)->storefront_token;
-        $this->storefrontUrl = app(FourthwallSettings::class)->storefront_url;
-        $this->verify_ssl = app(FourthwallSettings::class)->ssl_verify;
+        $this->enabled = app(FourthwallSettings::class)->enable_integration ?? config('services.fourthwall.enabled');
+        $this->baseUrl = app(FourthwallSettings::class)->base_url ?? config('services.fourthwall.base_url');
+        $this->storefrontToken = app(FourthwallSettings::class)->storefront_token ?? config('services.fourthwall.storefront_token');
+        $this->storefrontUrl = app(FourthwallSettings::class)->storefront_url ?? config('services.fourthwall.storefront_url');
+        $this->verify_ssl = app(FourthwallSettings::class)->ssl_verify ?? config('services.fourthwall.verify');
         $this->enable_garbage_collection = config('fourthwall.enable_gc', true);
         $this->collectionsChunkSize = config('fourthwall.chunk_size.collections', 10);
         $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);

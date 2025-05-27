@@ -48,7 +48,7 @@
         "filament/tables": "^3.3",
         "filament/widgets": "^3.3",
         "gerenuk/filament-banhammer": "^1.1",
-        "guava/calendar": "^1.13",
+        "guava/calendar": "^1.14",
         "guava/tutorials": "^1.1",
         "guzzlehttp/guzzle": "^7.9",
         "ibrahim-bougaoua/filaprogress": "^0.1.0",

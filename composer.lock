@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d741ed4269b314c3323c63ee77dd49a3",
+    "content-hash": "a8f49ad45a746a8f3d055a8518b56a02",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
