@@ -48,11 +48,24 @@ class FourthwallService
      */
     public function __construct()
     {
-        $this->enabled = app(FourthwallSettings::class)->enable_integration ?? config('services.fourthwall.enabled');
-        $this->baseUrl = app(FourthwallSettings::class)->base_url ?? config('services.fourthwall.base_url');
-        $this->storefrontToken = app(FourthwallSettings::class)->storefront_token ?? config('services.fourthwall.storefront_token');
-        $this->storefrontUrl = app(FourthwallSettings::class)->storefront_url ?? config('services.fourthwall.storefront_url');
-        $this->verify_ssl = app(FourthwallSettings::class)->ssl_verify ?? config('services.fourthwall.verify');
+        // Read the config first, then allow the Filament setting to override it if it's true
+        $configEnabled  = config('services.fourthwall.enabled');
+        $settingEnabled = app(FourthwallSettings::class)->enable_integration;
+        $configBaseUrl = config('services.fourthwall.base_url');
+        $settingBaseUrl = app(FourthwallSettings::class)->base_url;
+        $configStorefrontToken = config('services.fourthwall.storefront_token');
+        $settingStorefrontToken = app(FourthwallSettings::class)->storefront_token;
+        $configStorefrontUrl = config('services.fourthwall.storefront_url');
+        $settingStorefrontUrl = app(FourthwallSettings::class)->storefront_url;
+        $configSSLVerify = config('services.fourthwall.verify');
+        $settingSSLVerify = app(FourthwallSettings::class)->ssl_verify;
+
+        // Fallback to config only if the setting is false
+        $this->enabled = $settingEnabled || $configEnabled;
+        $this->baseUrl = $settingBaseUrl || $configBaseUrl;
+        $this->storefrontToken = $settingStorefrontToken || $configStorefrontToken;
+        $this->storefrontUrl = $settingStorefrontUrl || $configStorefrontUrl;
+        $this->verify_ssl = $settingSSLVerify || $configSSLVerify;
         $this->enable_garbage_collection = config('fourthwall.enable_gc', true);
         $this->collectionsChunkSize = config('fourthwall.chunk_size.collections', 10);
         $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);
