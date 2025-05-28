@@ -168,7 +168,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 });
 
 // Kick off the OAuth flow, saving your “context” in session
-Route::get('auth/twitch/redirect', function(Request $request) {
+Route::get('auth/twitch/redirect', function (Request $request) {
     $context = $request->query('context', 'user');
     session(['twitch_oauth_context' => $context]);
 
@@ -177,7 +177,7 @@ Route::get('auth/twitch/redirect', function(Request $request) {
         ->redirect();
 })->name('twitch.oauth.redirect');
 
-Route::get('auth/twitch/callback', function(Request $request) {
+Route::get('auth/twitch/callback', function (Request $request) {
     // Grab and clear your own context
     $context = session('twitch_oauth_context', 'user');
     session()->forget('twitch_oauth_context');

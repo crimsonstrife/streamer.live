@@ -33,7 +33,7 @@ class TwitchSettings extends SettingsPage
                         Placeholder::make('connection_status')
                             ->label('Twitch OAuth Status')
                             ->dehydrated(false)
-                            ->content(function(): HtmlString {
+                            ->content(function (): HtmlString {
                                 $rows = DB::table('settings')
                                     ->where('group', 'twitch')
                                     ->get(['name','payload']);
@@ -43,8 +43,8 @@ class TwitchSettings extends SettingsPage
                                 }
 
                                 $settings = $rows
-                                    ->pluck('payload','name')
-                                    ->map(fn($p) => json_decode($p, true))
+                                    ->pluck('payload', 'name')
+                                    ->map(fn ($p) => json_decode($p, true))
                                     ->toArray();
 
                                 $token   = $settings['user_access_token']   ?? null;

@@ -257,7 +257,7 @@ class TwitchService
         $response = Http::withOptions(['verify' => $this->ssl_verify])
             ->withHeaders([
                 'Client-ID'    => $this->client_id,
-                'Authorization'=> 'Bearer ' . $this->access_token,
+                'Authorization' => 'Bearer ' . $this->access_token,
             ])
             ->get('https://api.twitch.tv/helix/users', [
                 'id' => $broadcasterId,
@@ -280,7 +280,7 @@ class TwitchService
         $response = Http::withOptions(['verify' => $this->ssl_verify])
             ->withHeaders([
                 'Client-ID'    => $this->client_id,
-                'Authorization'=> 'Bearer ' . $this->access_token,
+                'Authorization' => 'Bearer ' . $this->access_token,
             ])
             ->get('https://api.twitch.tv/helix/channels/followers', [
                 'broadcaster_id' => $broadcasterId,
@@ -305,7 +305,7 @@ class TwitchService
 
         $resp = Http::withHeaders([
             'Client-ID'    => $this->client_id,
-            'Authorization'=> "Bearer {$token}",
+            'Authorization' => "Bearer {$token}",
         ])->get('https://api.twitch.tv/helix/subscriptions', [
             'broadcaster_id' => $broadcasterId,
             'first'          => 1,
