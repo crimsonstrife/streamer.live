@@ -49,6 +49,7 @@ return [
         'channel_name' => env('TWITCH_CHANNEL'),
         'client_id' => env('TWITCH_CLIENT_ID'),
         'client_secret' => env('TWITCH_CLIENT_SECRET'),
+        'redirect'      => env('TWITCH_OAUTH_REDIRECT'), // e.g. https://your.app/auth/twitch/callback
         'verify' => env('TWITCH_VERIFY', true),
     ],
 ];

@@ -128,6 +128,7 @@ class User extends Authenticatable implements HasAvatar
         'birthdate' => 'date',
         'email_verified_at' => 'datetime',
         'pronouns' => 'string',
+        'twitch_user_expires_at' => 'datetime',
     ];
 
     /**
@@ -248,5 +249,14 @@ class User extends Authenticatable implements HasAvatar
     public function blogAuthor(): HasOne
     {
         return $this->hasOne(Author::class);
+    }
+
+    public function getTwitchToken(): ?string
+    {
+        if ($this->twitch_user_token && now()->lt($this->twitch_user_expires_at)) {
+            return $this->twitch_user_token;
+        }
+
+        return null;
     }
 }

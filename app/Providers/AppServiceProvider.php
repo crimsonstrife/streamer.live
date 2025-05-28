@@ -22,6 +22,7 @@ use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -93,6 +94,10 @@ class AppServiceProvider extends ServiceProvider
         if (! Schema::hasTable('settings')) {
             return;
         }
+
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('twitch', \SocialiteProviders\Twitch\Provider::class);
+        });
 
         Comment::observe(CommentObserver::class);
 

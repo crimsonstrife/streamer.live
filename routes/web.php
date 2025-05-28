@@ -9,11 +9,14 @@ use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Session\Middleware\AuthenticateSession;
+use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\TeamInvitationController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -160,23 +163,73 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
-        ->where('slug', '^(?!public\/|storage\/|build\/).*$')
+        ->where('slug', '^(?!public\/|storage\/|auth\/|build\/).*$')
         ->name('fabricator.page.global.fallback');
 });
+
+// Kick off the OAuth flow, saving your “context” in session
+Route::get('auth/twitch/redirect', function(Request $request) {
+    $context = $request->query('context', 'user');
+    session(['twitch_oauth_context' => $context]);
+
+    return Socialite::driver('twitch')
+        ->scopes(['user:read:subscriptions','channel:read:subscriptions'])
+        ->redirect();
+})->name('twitch.oauth.redirect');
+
+Route::get('auth/twitch/callback', function(Request $request) {
+    // Grab and clear your own context
+    $context = session('twitch_oauth_context', 'user');
+    session()->forget('twitch_oauth_context');
+
+    // Attempt to get the user from Socialite
+    try {
+        $twitchUser = Socialite::driver('twitch')->user();
+    } catch (\Exception $e) {
+        Log::error('Socialite error', ['message' => $e->getMessage()]);
+        throw $e; // or redirect with error
+    }
+
+    if ($context === 'admin') {
+        // Admin (streamer) flow: save into settings
+        /** @var TwitchSettings $settings */
+        $settings = app(TwitchSettings::class);
+        $settings->user_access_token  = $twitchUser->token;
+        $settings->user_refresh_token = $twitchUser->refreshToken;
+        $settings->user_token_expires = now()->addSeconds($twitchUser->expiresIn);
+
+        $saved = $settings->save();
+    } else {
+        // Visitor flow: save on the User model
+        $user = Auth::user();
+        if ($user) {
+            $user->twitch_user_token      = $twitchUser->token;
+            $user->twitch_user_refresh    = $twitchUser->refreshToken;
+            $user->twitch_user_expires_at = now()->addSeconds($twitchUser->expiresIn);
+
+            $saved = $user->save();
+        } else {
+            Log::warning('Twitch callback: no authenticated user to save visitor token.');
+        }
+    }
+
+    return redirect($context === 'admin' ? '/admin' : '/')
+        ->with('success', 'Twitch account linked successfully!');
+})->name('twitch.oauth.callback');
 
 Route::resource('icons', IconController::class)
     ->only(['store', 'index']);
 
 Route::get('/{slug}', FabricatorPageController::class)
     // don’t match any system URI
-    ->where('slug', '^(?!public\/|storage\/|build\/).*$')
+    ->where('slug', '^(?!public\/|storage\/|auth\/|build\/).*$')
     ->name('fabricator.page.global.fallback');
 
 Route::fallback(static function () {
     $path = request()->path();
 
     // if it’s an asset under public/ or build/, we don’t want to handle it here
-    if (Str::startsWith($path, 'public/') || Str::startsWith($path, 'build/') || Str::startsWith($path, 'storage/')) {
+    if (Str::startsWith($path, 'public/') || Str::startsWith($path, 'build/') || Str::startsWith($path, 'storage/') || Str::startsWith($path, 'auth/')) {
         $path = request()->path();                 // e.g. "build/assets/icons/…"
 
         // If it begins with "public/", remove that so it points at the public/ folder correctly

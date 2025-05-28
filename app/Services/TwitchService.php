@@ -7,6 +7,8 @@ use App\Settings\TwitchSettings;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Log;
 use RuntimeException;
@@ -290,6 +292,7 @@ class TwitchService
     /**
      * Fetch total subscriber count for the channel
      * @throws ConnectionException
+     * @throws RequestException
      */
     public function getSubscriberCount(): int
     {
@@ -298,15 +301,79 @@ class TwitchService
             return 0;
         }
 
-        $response = Http::withOptions(['verify' => $this->ssl_verify])
-            ->withHeaders([
-                'Client-ID'    => $this->client_id,
-                'Authorization'=> 'Bearer ' . $this->access_token,
-            ])
-            ->get('https://api.twitch.tv/helix/subscriptions', [
-                'broadcaster_id' => $broadcasterId,
-            ]);
+        $token = $this->getAuthToken('admin');
 
-        return $response->json('total') ?? 0;
+        $resp = Http::withHeaders([
+            'Client-ID'    => $this->client_id,
+            'Authorization'=> "Bearer {$token}",
+        ])->get('https://api.twitch.tv/helix/subscriptions', [
+            'broadcaster_id' => $broadcasterId,
+            'first'          => 1,
+        ])->json();
+
+        return $resp['total'] ?? 0;
+    }
+
+    /**
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    private function getAuthToken(?string $context = null): ?string
+    {
+        if ($context === 'admin') {
+            return $this->getAdminAuthToken();
+        }
+
+        if ($context === 'user' && Auth::check()) {
+            return Auth::user()->getTwitchToken();
+        }
+
+        // fallback to app‐token for public endpoints
+        return $this->access_token;
+    }
+
+    /**
+     * If we have a user token that’s expired (or about to), refresh it.
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    protected function refreshAdminUserTokenIfNeeded(): void
+    {
+        $settings = app(TwitchSettings::class);
+
+        // if no user token at all, or it hasn’t expired, nothing to do
+        if (! $settings->user_refresh_token || now()->lt($settings->user_token_expires)) {
+            return;
+        }
+
+        $response = Http::asForm()->post('https://id.twitch.tv/oauth2/token', [
+            'grant_type'    => 'refresh_token',
+            'refresh_token' => $settings->user_refresh_token,
+            'client_id'     => $this->client_id,
+            'client_secret' => $this->client_secret,
+        ]);
+
+        $json = $response->throw()->json();
+
+        if (! isset($json['access_token'], $json['refresh_token'], $json['expires_in'])) {
+            throw new RuntimeException('Failed to refresh Twitch user token: '.json_encode($json));
+        }
+
+        $settings->user_access_token  = $json['access_token'];
+        $settings->user_refresh_token = $json['refresh_token'];
+        $settings->user_token_expires = now()->addSeconds($json['expires_in']);
+        $settings->save();
+    }
+
+    /**
+     * Grab the “admin” (streamer) token, refreshing if expired.
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    protected function getAdminAuthToken(): ?string
+    {
+        $this->refreshAdminUserTokenIfNeeded();
+        return app(TwitchSettings::class)->user_access_token
+            ?? $this->access_token;
     }
 }
