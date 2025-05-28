@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Event;
-use \Guava\Calendar\Widgets\CalendarWidget;
+use Guava\Calendar\Widgets\CalendarWidget;
 use Guava\Calendar\ValueObjects\CalendarEvent;
 use Illuminate\Database\Eloquent\Collection;
 
