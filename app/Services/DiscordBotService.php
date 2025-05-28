@@ -57,10 +57,10 @@ class DiscordBotService
         $settingSSLVerify = app(DiscordSettings::class)->verify_ssl;
 
         // Fallback to config only if the setting is false
-        $this->enabled = $settingEnabled || $configEnabled;
-        $this->apiToken = $settingApiToken || $configApiToken;
-        $this->guild_id = $settingGuildID || $configGuildID;
-        $this->verify_ssl = $settingSSLVerify || $configSSLVerify;
+        $this->enabled = $settingEnabled ?? $configEnabled;
+        $this->apiToken = $settingApiToken ?? $configApiToken;
+        $this->guild_id = $settingGuildID ?? $configGuildID;
+        $this->verify_ssl = $settingSSLVerify ?? $configSSLVerify;
     }
 
     /**

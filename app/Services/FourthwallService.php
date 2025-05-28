@@ -61,11 +61,11 @@ class FourthwallService
         $settingSSLVerify = app(FourthwallSettings::class)->ssl_verify;
 
         // Fallback to config only if the setting is false
-        $this->enabled = $settingEnabled || $configEnabled;
-        $this->baseUrl = $settingBaseUrl || $configBaseUrl;
-        $this->storefrontToken = $settingStorefrontToken || $configStorefrontToken;
-        $this->storefrontUrl = $settingStorefrontUrl || $configStorefrontUrl;
-        $this->verify_ssl = $settingSSLVerify || $configSSLVerify;
+        $this->enabled = $settingEnabled ?? $configEnabled;
+        $this->baseUrl = $settingBaseUrl ?? $configBaseUrl;
+        $this->storefrontToken = $settingStorefrontToken ?? $configStorefrontToken;
+        $this->storefrontUrl = $settingStorefrontUrl ?? $configStorefrontUrl;
+        $this->verify_ssl = $settingSSLVerify ?? $configSSLVerify;
         $this->enable_garbage_collection = config('fourthwall.enable_gc', true);
         $this->collectionsChunkSize = config('fourthwall.chunk_size.collections', 10);
         $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);

@@ -32,7 +32,7 @@ class TwitchService
     public function __construct()
     {
         // Read the config first, then allow the Filament setting to override it if it's true
-        $configEnabled  = config('services.twitch.enabled', false);
+        $configEnabled  = config('services.twitch.enabled');
         $settingEnabled = app(TwitchSettings::class)->enable_integration;
         $configChannelName = config('services.twitch.channel_name');
         $settingChannelName = app(TwitchSettings::class)->channel_name;
@@ -44,11 +44,11 @@ class TwitchService
         $settingSSLVerify = app(TwitchSettings::class)->ssl_verify;
 
         // Fallback to config only if the setting is false
-        $this->enabled = $settingEnabled || $configEnabled;
-        $this->channel_name = $settingChannelName || $configChannelName;
-        $this->client_id = $settingClientID || $configClientID;
-        $this->client_secret = $settingClientSecret || $configClientSecret;
-        $this->ssl_verify = $settingSSLVerify || $configSSLVerify;
+        $this->enabled = $settingEnabled ?? $configEnabled;
+        $this->channel_name = $settingChannelName ?? $configChannelName;
+        $this->client_id = $settingClientID ?? $configClientID;
+        $this->client_secret = $settingClientSecret ?? $configClientSecret;
+        $this->ssl_verify = $settingSSLVerify ?? $configSSLVerify;
 
         $this->authenticate();
     }
