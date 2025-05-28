@@ -241,4 +241,72 @@ class TwitchService
 
         Log::info('TwitchService: Synced ' . count($segments) . ' Twitch segments to events.');
     }
+
+    /**
+     * Fetch the channel's profile info (includes created_at, view_count, etc.)
+     */
+    public function getUserProfile(): array
+    {
+        $broadcasterId = $this->getBroadcasterId();
+        if (! $broadcasterId) {
+            return [];
+        }
+
+        $response = Http::withOptions(['verify' => $this->ssl_verify])
+            ->withHeaders([
+                'Client-ID'    => $this->client_id,
+                'Authorization'=> 'Bearer ' . $this->access_token,
+            ])
+            ->get('https://api.twitch.tv/helix/users', [
+                'id' => $broadcasterId,
+            ]);
+
+        return $response->json('data.0') ?? [];
+    }
+
+    /**
+     * Fetch total follower count for the channel
+     * @throws ConnectionException
+     */
+    public function getFollowerCount(): int
+    {
+        $broadcasterId = $this->getBroadcasterId();
+        if (! $broadcasterId) {
+            return 0;
+        }
+
+        $response = Http::withOptions(['verify' => $this->ssl_verify])
+            ->withHeaders([
+                'Client-ID'    => $this->client_id,
+                'Authorization'=> 'Bearer ' . $this->access_token,
+            ])
+            ->get('https://api.twitch.tv/helix/channels/followers', [
+                'broadcaster_id' => $broadcasterId,
+            ]);
+
+        return $response->json('total') ?? 0;
+    }
+
+    /**
+     * Fetch total subscriber count for the channel
+     * @throws ConnectionException
+     */
+    public function getSubscriberCount(): int
+    {
+        $broadcasterId = $this->getBroadcasterId();
+        if (! $broadcasterId) {
+            return 0;
+        }
+
+        $response = Http::withOptions(['verify' => $this->ssl_verify])
+            ->withHeaders([
+                'Client-ID'    => $this->client_id,
+                'Authorization'=> 'Bearer ' . $this->access_token,
+            ])
+            ->get('https://api.twitch.tv/helix/subscriptions', [
+                'broadcaster_id' => $broadcasterId,
+            ]);
+
+        return $response->json('total') ?? 0;
+    }
 }
