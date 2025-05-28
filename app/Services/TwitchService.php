@@ -140,7 +140,7 @@ class TwitchService
         $response = Http::withOptions(['verify' => $this->ssl_verify])
             ->withHeaders([
                 'Client-ID'    => $this->client_id,
-                'Authorization'=> 'Bearer '.$this->access_token,
+                'Authorization' => 'Bearer '.$this->access_token,
             ])
             ->get('https://api.twitch.tv/helix/users', [
                 'login' => $this->channel_name,
@@ -174,7 +174,7 @@ class TwitchService
         $response = Http::withOptions(['verify' => $this->ssl_verify])
             ->withHeaders([
                 'Client-ID'    => $this->client_id,
-                'Authorization'=> 'Bearer '.$this->access_token,
+                'Authorization' => 'Bearer '.$this->access_token,
             ])
             ->get('https://api.twitch.tv/helix/schedule', $query);
 

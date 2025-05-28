@@ -43,7 +43,7 @@ class ScheduleCalendarBlock extends PageBlock
         $reqYear  = (int) request()->query('scheduleYear', 0);
 
         $month = $reqMonth ?: ((int) ($data['month'] ?? now()->month));
-        $year  = $reqYear  ?: ((int) ($data['year']  ?? now()->year));
+        $year  = $reqYear ?: ((int) ($data['year']  ?? now()->year));
 
         // build first/last day
         $start         = Carbon::create($year, $month, 1)->startOfDay();
@@ -58,7 +58,7 @@ class ScheduleCalendarBlock extends PageBlock
 
         // map into a simple array and group by day of month
         $grouped = $rawEvents
-            ->map(fn($e) => [
+            ->map(fn ($e) => [
                 'day'   => $e->starts_at->day,
                 'iso'   => $e->starts_at->toIso8601String(),
                 'label' => $e->starts_at->format('g:ia'),  // time only
