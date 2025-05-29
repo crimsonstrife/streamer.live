@@ -47,7 +47,7 @@ class DiscordBotService
     public function __construct()
     {
         // Read the config first, then allow the Filament setting to override it if it's true
-        $configEnabled  = config('discord.enabled', false);
+        $configEnabled = config('discord.enabled', false);
         $settingEnabled = app(DiscordSettings::class)->enable_integration;
         $configApiToken = config('discord.token');
         $settingApiToken = app(DiscordSettings::class)->bot_token;
@@ -60,7 +60,7 @@ class DiscordBotService
         $this->enabled = $settingEnabled ?? $configEnabled;
         $this->apiToken = $settingApiToken ?? $configApiToken;
         $this->guild_id = $settingGuildID ?? $configGuildID;
-        $this->ssl_verify = $settingSSLVerify ?? $configSSLVerify;
+        $this->verify_ssl = $settingSSLVerify ?? $configSSLVerify;
     }
 
     /**
