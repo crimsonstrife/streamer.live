@@ -7,6 +7,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Class DiscordBotService
@@ -170,5 +171,43 @@ class DiscordBotService
     public function getRoleNameById(string $id): ?string
     {
         return collect($this->getRoleList())->get($id);
+    }
+
+    /**
+     * Expose the configured guild ID.
+     */
+    public function getGuildId(): ?string
+    {
+        return $this->guild_id;
+    }
+
+    /**
+     * Fetch & cache the Discord widget.json for your guild.
+     *
+     * @return array|null
+     */
+    public function getGuildWidget(): ?array
+    {
+        $guildId = $this->getGuildId();
+        if (! $guildId) {
+            return null;
+        }
+
+        $cacheKey = "discord.widget.{$guildId}";
+
+        return Cache::remember($cacheKey, now()->addMinutes(15), function () use ($guildId) {
+            try {
+                return Http::withOptions(['verify' => $this->verify_ssl])
+                    ->withToken($this->apiToken, 'Bot')
+                    ->get("{$this->baseUrl}/guilds/{$guildId}/widget.json")
+                    ->throw()
+                    ->json();
+            } catch (Throwable $e) {
+                Log::error("DiscordBotService::getGuildWidget failed for guild {$guildId}", [
+                    'error' => $e->getMessage(),
+                ]);
+                return null;
+            }
+        });
     }
 }
