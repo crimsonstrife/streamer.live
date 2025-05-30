@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Models\Event;
+use App\Models\TwitchMetric;
 use App\Settings\TwitchSettings;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Log;
 use RuntimeException;
@@ -245,7 +247,8 @@ class TwitchService
     }
 
     /**
-     * Fetch the channel's profile info (includes created_at, view_count, etc.)
+     * Fetch the channel's profile info (includes created_at, etc.),
+     * caching it for 24 hours and falling back on cache if the API fails.
      */
     public function getUserProfile(): array
     {
@@ -254,17 +257,35 @@ class TwitchService
             return [];
         }
 
-        $response = Http::withOptions(['verify' => $this->ssl_verify])
-            ->withHeaders([
-                'Client-ID'    => $this->client_id,
-                'Authorization' => 'Bearer ' . $this->access_token,
-            ])
-            ->get('https://api.twitch.tv/helix/users', [
-                'id' => $broadcasterId,
-            ]);
+        // Use a per‐channel cache key in case changes are made to support multiple
+        $cacheKey = "twitch.profile.{$broadcasterId}";
 
-        return $response->json('data.0') ?? [];
+        return Cache::remember($cacheKey, now()->addHours(24), function () use ($broadcasterId, $cacheKey) {
+            try {
+                $response = Http::withOptions(['verify' => $this->ssl_verify])
+                    ->withHeaders([
+                        'Client-ID'    => $this->client_id,
+                        'Authorization'=> 'Bearer '.$this->access_token,
+                    ])
+                    ->get('https://api.twitch.tv/helix/users', [
+                        'id' => $broadcasterId,
+                    ])
+                    ->throw();
+
+                return $response->json('data.0') ?? [];
+            } catch (Throwable $e) {
+                Log::error('TwitchService::getUserProfile failed, returning last cached value', [
+                    'broadcaster_id' => $broadcasterId,
+                    'error'          => $e->getMessage(),
+                ]);
+
+                // If the cache closure threw before setting any value,
+                // Cache::remember will return null — so fallback explicitly:
+                return Cache::get($cacheKey, []);
+            }
+        });
     }
+
 
     /**
      * Fetch total follower count for the channel
@@ -277,16 +298,29 @@ class TwitchService
             return 0;
         }
 
-        $response = Http::withOptions(['verify' => $this->ssl_verify])
-            ->withHeaders([
-                'Client-ID'    => $this->client_id,
-                'Authorization' => 'Bearer ' . $this->access_token,
-            ])
-            ->get('https://api.twitch.tv/helix/channels/followers', [
-                'broadcaster_id' => $broadcasterId,
-            ]);
+        // Cache key per channel
+        $cacheKey = "twitch.followers.{$broadcasterId}";
 
-        return $response->json('total') ?? 0;
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($broadcasterId) {
+            try {
+                $resp  = Http::withOptions(['verify' => $this->ssl_verify])
+                ->withHeaders([
+                    'Client-ID'     => $this->client_id,
+                    'Authorization' => "Bearer {$this->access_token}",
+                ])->get('https://api.twitch.tv/helix/channels/followers', [
+                    'broadcaster_id' => $broadcasterId,
+                ])->throw()->json();
+
+                $value = (int) ($resp['total'] ?? 0);
+                $this->recordMetric('followers', $value);
+                return $value;
+            } catch (Throwable $e) {
+                Log::error('TwitchService:getFollowerCount failed, using fallback', ['error'=>$e->getMessage()]);
+                return (int) TwitchMetric::where('metric','followers')
+                    ->orderByDesc('recorded_at')
+                    ->value('value') ?? 0;
+            }
+        });
     }
 
     /**
@@ -301,18 +335,97 @@ class TwitchService
             return 0;
         }
 
-        $token = $this->getAuthToken('admin');
+        // Cache key per channel
+        $cacheKey = "twitch.subscribers.{$broadcasterId}";
 
-        $resp = Http::withHeaders([
-            'Client-ID'    => $this->client_id,
-            'Authorization' => "Bearer {$token}",
-        ])->get('https://api.twitch.tv/helix/subscriptions', [
-            'broadcaster_id' => $broadcasterId,
-            'first'          => 1,
-        ])->json();
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($broadcasterId) {
+            try {
+                $token = $this->getAdminAuthToken();
+                $resp  = Http::withOptions(['verify' => $this->ssl_verify])
+                ->withHeaders([
+                    'Client-ID'     => $this->client_id,
+                    'Authorization' => "Bearer {$token}",
+                ])->get('https://api.twitch.tv/helix/subscriptions', [
+                    'broadcaster_id' => $broadcasterId,
+                    'first'          => 1,
+                ])->throw()->json();
 
-        return $resp['total'] ?? 0;
+                $value = (int) ($resp['total'] ?? 0);
+                $this->recordMetric('subscribers', $value);
+                return $value;
+            } catch (Throwable $e) {
+                Log::error('TwitchService:getSubscriberCount failed, using fallback', ['error'=>$e->getMessage()]);
+                return (int) TwitchMetric::where('metric','subscribers')
+                    ->orderByDesc('recorded_at')
+                    ->value('value') ?? 0;
+            }
+        });
     }
+
+    /**
+     * Fetch total view count by paging through the broadcaster's videos.
+     * Caches the result for 6 hours, records a metric snapshot on a live fetch,
+     * and falls back to the last stored metric on error.
+     */
+    public function getTotalVideoViews(): int
+    {
+        $broadcasterId = $this->getBroadcasterId();
+        if (! $broadcasterId) {
+            return 0;
+        }
+
+        // Cache key per channel
+        $cacheKey = "twitch.total_views.{$broadcasterId}";
+
+        return Cache::remember($cacheKey, now()->addHours(6), function () use ($broadcasterId) {
+            try {
+                $cursor     = null;
+                $totalViews = 0;
+
+                do {
+                    $query = [
+                        'user_id' => $broadcasterId,
+                        'first'   => 100,            // max per page
+                    ];
+                    if ($cursor) {
+                        $query['after'] = $cursor;
+                    }
+
+                    $response = Http::withOptions(['verify' => $this->ssl_verify])
+                    ->withHeaders([
+                        'Client-ID'     => $this->client_id,
+                        'Authorization' => "Bearer {$this->access_token}",
+                    ])
+                        ->get('https://api.twitch.tv/helix/videos', $query)
+                        ->throw()
+                        ->json();
+
+                    // Sum up this page’s views
+                    foreach ($response['data'] as $video) {
+                        $totalViews += (int) ($video['view_count'] ?? 0);
+                    }
+
+                    // Move to next page (or null to end)
+                    $cursor = $response['pagination']['cursor'] ?? null;
+                } while ($cursor);
+
+                // Record a snapshot for historical tracking
+                $this->recordMetric('total_views', $totalViews);
+
+                return $totalViews;
+            } catch (\Throwable $e) {
+                Log::error('TwitchService::getTotalVideoViews failed, falling back to last metric', [
+                    'error' => $e->getMessage(),
+                ]);
+
+                return (int) TwitchMetric::where('metric', 'total_views')
+                    ->orderByDesc('recorded_at')
+                    ->value('value')
+                    ?? 0;
+            }
+        });
+    }
+
 
     /**
      * @throws RequestException
@@ -375,5 +488,17 @@ class TwitchService
         $this->refreshAdminUserTokenIfNeeded();
         return app(TwitchSettings::class)->user_access_token
             ?? $this->access_token;
+    }
+
+    /**
+     * Record a new snapshot.
+     */
+    protected function recordMetric(string $name, int $value): void
+    {
+        TwitchMetric::create([
+            'metric'      => $name,
+            'value'       => $value,
+            'recorded_at' => now(),
+        ]);
     }
 }

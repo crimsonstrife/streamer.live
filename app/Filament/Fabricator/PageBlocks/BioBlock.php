@@ -9,6 +9,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Builder\Block;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 
 class BioBlock extends PageBlock
@@ -35,6 +36,7 @@ class BioBlock extends PageBlock
 
     /**
      * @throws ConnectionException
+     * @throws RequestException
      */
     public static function mutateData(array $data): array
     {
@@ -48,6 +50,7 @@ class BioBlock extends PageBlock
         $profile   = $twitch->getUserProfile();
         $followers = $twitch->getFollowerCount();
         $subscribers = $twitch->getSubscriberCount();
+        $views = $twitch->getTotalVideoViews();
 
         $createdAt = isset($profile['created_at'])
             ? Carbon::parse($profile['created_at'])
@@ -57,7 +60,7 @@ class BioBlock extends PageBlock
             'years_streaming' => round($createdAt->diffInYears(now())),
             'followers'       => $followers,
             'subscribers'     => $subscribers,
-            'total_views'     => $profile['view_count'] ?? 0,
+            'total_views'     => $views ?? 0,
         ];
 
         return $data;

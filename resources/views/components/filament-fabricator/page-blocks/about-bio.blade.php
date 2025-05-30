@@ -34,6 +34,10 @@
             <strong>{{ number_format($stats['subscribers']) }}</strong><br>
             <small>Subscribers</small>
         </div>
+        <div>
+            <strong>{{ number_format($stats['total_views']) }}</strong><br>
+            <small>Total Views</small>
+        </div>
     </div>
 
     @if($readMore)
