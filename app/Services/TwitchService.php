@@ -265,7 +265,7 @@ class TwitchService
                 $response = Http::withOptions(['verify' => $this->ssl_verify])
                     ->withHeaders([
                         'Client-ID'    => $this->client_id,
-                        'Authorization'=> 'Bearer '.$this->access_token,
+                        'Authorization' => 'Bearer '.$this->access_token,
                     ])
                     ->get('https://api.twitch.tv/helix/users', [
                         'id' => $broadcasterId,
@@ -315,8 +315,8 @@ class TwitchService
                 $this->recordMetric('followers', $value);
                 return $value;
             } catch (Throwable $e) {
-                Log::error('TwitchService:getFollowerCount failed, using fallback', ['error'=>$e->getMessage()]);
-                return (int) TwitchMetric::where('metric','followers')
+                Log::error('TwitchService:getFollowerCount failed, using fallback', ['error' => $e->getMessage()]);
+                return (int) TwitchMetric::where('metric', 'followers')
                     ->orderByDesc('recorded_at')
                     ->value('value') ?? 0;
             }
@@ -354,8 +354,8 @@ class TwitchService
                 $this->recordMetric('subscribers', $value);
                 return $value;
             } catch (Throwable $e) {
-                Log::error('TwitchService:getSubscriberCount failed, using fallback', ['error'=>$e->getMessage()]);
-                return (int) TwitchMetric::where('metric','subscribers')
+                Log::error('TwitchService:getSubscriberCount failed, using fallback', ['error' => $e->getMessage()]);
+                return (int) TwitchMetric::where('metric', 'subscribers')
                     ->orderByDesc('recorded_at')
                     ->value('value') ?? 0;
             }
