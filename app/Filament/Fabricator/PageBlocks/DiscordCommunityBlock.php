@@ -42,7 +42,7 @@ class DiscordCommunityBlock extends PageBlock
 
         // Compute outputs (falling back to form inputs or nulls)
         $liveInvite    = $widget['instant_invite']      ?? ($data['invite_url'] ?? null);
-        $memberCount   = isset($widget['members'])      ? count($widget['members']) : null;
+        $memberCount   = isset($widget['members']) ? count($widget['members']) : null;
         $presenceCount = $widget['presence_count']      ?? null;
         $embedWidget   = (bool) ($data['embed_widget'] ?? false);
 
