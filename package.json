@@ -19,7 +19,7 @@
         "vite-plugin-static-copy": "^3.0.0"
     },
     "dependencies": {
-        "@floating-ui/dom": "^1.7.0",
+        "@floating-ui/dom": "^1.7.1",
         "@popperjs/core": "^2.11.8",
         "bootstrap": "^5.3.6",
         "bootstrap-icons": "^1.13.1",
