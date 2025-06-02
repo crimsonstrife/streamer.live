@@ -230,8 +230,8 @@ trait HasAdvancedPermissions
         // Get the name of the model without the namespace, lowercase
         $modelName = strtolower(class_basename($model));
 
-        // Set the table name for the relationship table, based on the model name and the relationship, i.e. permission_set_user for User model
-        $tableName = "permission_set_{$modelName}";
+        // Set the table name for the relationship table, based on the model name and the relationship, i.e. user_has_permission_set for User model
+        $tableName = "{$modelName}_has_permission_set";
 
         // Return the relationship
         return $this->belongsToMany(\App\Models\PermissionSet::class, $tableName);
@@ -250,8 +250,8 @@ trait HasAdvancedPermissions
         // Get the name of the model without the namespace, lowercase
         $modelName = strtolower(class_basename($model));
 
-        // Set the table name for the relationship table, based on the model name and the relationship, i.e. permission_group_user for User model
-        $tableName = "permission_group_{$modelName}";
+        // Set the table name for the relationship table, based on the model name and the relationship, i.e. user_has_permission_group for User model
+        $tableName = "{$modelName}_has_permission_group";
 
         // Return the relationship
         return $this->belongsToMany(\App\Models\PermissionGroup::class, $tableName);
