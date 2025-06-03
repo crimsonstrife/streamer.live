@@ -8,6 +8,7 @@ use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
 use Spatie\Permission\Models\Permission;
 
@@ -264,36 +265,43 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * After loading the permissions, it sets the alias, hydrates the roles cache, and prepares the hydrated permission collection.
      * Finally, it resets the cached roles, alias, and except properties.
      *
+     * @param int $retryLimit // How many times to attempt to load permissions - prevents recursion
      * @return void
      */
-    private function loadPermissions(): void
-    {
-        if ($this->permissions) {
-            return;
+        private function loadPermissions(int $retryLimit = 0): void
+        {
+            if ($this->permissions) {
+                return;
+            }
+
+            $this->permissions = $this->cache->remember(
+                $this->cacheKey,
+                $this->cacheExpirationTime,
+                fn () => $this->getSerializedPermissionsForCache()
+            );
+
+            $retryCount = 0; // Initialize the retry counter
+
+            // fallback for old cache method, must be removed on next major version
+            if (!isset($this->permissions['alias'])) {
+                if ($retryCount >= $retryLimit) {
+                    throw new RuntimeException('Failed to load permissions after retrying ('.$retryCount.') times.');
+                }
+
+                $this->forgetCachedPermissions();
+                $this->loadPermissions($retryCount + 1);
+
+                return;
+            }
+
+            $this->alias = $this->permissions['alias'];
+
+            $this->hydrateRolesCache();
+
+            $this->permissions = $this->getHydratedPermissionCollection();
+
+            $this->cachedRoles = $this->alias = $this->except = [];
         }
-
-        $this->permissions = $this->cache->remember(
-            $this->cacheKey,
-            $this->cacheExpirationTime,
-            fn () => $this->getSerializedPermissionsForCache()
-        );
-
-        // fallback for old cache method, must be removed on next mayor version
-        if (!isset($this->permissions['alias'])) {
-            $this->forgetCachedPermissions();
-            $this->loadPermissions();
-
-            return;
-        }
-
-        $this->alias = $this->permissions['alias'];
-
-        $this->hydrateRolesCache();
-
-        $this->permissions = $this->getHydratedPermissionCollection();
-
-        $this->cachedRoles = $this->alias = $this->except = [];
-    }
 
     /**
      * Get all permissions from the database.
