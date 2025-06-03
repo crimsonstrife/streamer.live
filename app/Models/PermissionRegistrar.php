@@ -160,7 +160,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     public function registerPermissions(Gate $gate): bool
     {
-        $gate->before(function (\App\Models\User $user, string $ability, array &$args = []) {
+        $gate->before(function (\Illuminate\Contracts\Auth\Authenticatable $user, string $ability, array &$args = []) {
             if (is_string($args[0] ?? null) && !class_exists($args[0])) {
                 $guard = array_shift($args);
             }
