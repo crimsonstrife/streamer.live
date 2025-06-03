@@ -41,17 +41,18 @@ trait HasAdvancedPermissions
         }
 
         // If permission is muted for the user, deny access
-        if ($mutedPermissions->contains($permission)) {
+        if ($mutedPermissions->contains($permission instanceof Permission ? $permission->name : $permission)) {
             // Log the muted permission
-            logger()->debug('Permission is muted: '.$permission);
+            logger()->debug('Permission is muted: '.($permission instanceof Permission ? $permission->name : $permission));
 
             return false;
         }
 
         // Check if user has permission directly
-        if ($this->permissions->contains('name', $permission)) {
+        $permissionName = $permission instanceof Permission ? $permission->name : $permission;
+        if ($this->permissions->contains('name', $permissionName)) {
             // Log the permission
-            logger()->debug('Permission found: '.$permission.' (directly)');
+            logger()->debug('Permission found: '.$permissionName.' (directly)');
 
             return true;
         }
@@ -102,7 +103,8 @@ trait HasAdvancedPermissions
         // For each role, check for the permission, as well as under related PermissionSets and PermissionGroups, and ensure it is not muted in any of them
         foreach ($roles as $role) {
             // Check if the role has the permission directly
-            if ($role->permissions->contains('name', $permission)) {
+            $permissionName = $permission instanceof Permission ? $permission->name : $permission;
+            if ($role->permissions->contains('name', $permissionName)) {
                 return true;
             }
 
