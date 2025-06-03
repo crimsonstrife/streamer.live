@@ -21,7 +21,7 @@ trait HasAdvancedPermissions
     public function hasPermissionTo($permission, ?string $guardName = null): bool
     {
         // Eager load the Permission objects/relations before checking
-        $this->load('permissions', 'permissionSets.permissions', 'permissionGroups.permissions', 'permissionGroups.permissions');
+        $this->load('permissions', 'permissionSets.permissions', 'permissionGroups.permissions', 'permissionGroups.permissionSets.permissions');
 
         // Check if any PermissionSet has the given permission and it is not muted
         $mutedPermissions = $this->getMutedPermissions();
