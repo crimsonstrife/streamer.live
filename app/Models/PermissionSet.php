@@ -328,9 +328,18 @@ class PermissionSet extends BaseModel
         //check if the permission is assigned to the permission set
         if ($this->permissions()->contains($permission)) {
             //check if the permission is muted in the permission set
-            return $this->isMuted($permission);
+            $isMuted = $this->isMuted($permission);
+
+            if (!$isMuted) {
+                // If the permission is NOT muted, return as true
+                return true;
+            }
+
+            // The permission exists, but is marked as muted
+            return false;
         }
 
+        // The permission was not found or the object does not have the permission
         return false;
     }
 }
