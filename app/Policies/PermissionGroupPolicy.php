@@ -24,7 +24,7 @@ class PermissionGroupPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('list-permission-set');
+        return $user->can('list-permission-group');
     }
 
     /**
