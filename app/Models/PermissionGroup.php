@@ -145,12 +145,12 @@ class PermissionGroup extends BaseModel
 
         return $allPermissions;
     }
-/**
-* Check if a permission is granted to the permission set group, either directly or through a permission set it contains.
-*
-* @param Permission $permission The permission to check
-* @return bool True if the permission is granted, false if it is not
-*/
+    /**
+    * Check if a permission is granted to the permission set group, either directly or through a permission set it contains.
+    *
+    * @param Permission $permission The permission to check
+    * @return bool True if the permission is granted, false if it is not
+    */
     public function hasPermissionTo(Permission $permission): bool
     {
         // Check if the permission is assigned to the permission set group directly
