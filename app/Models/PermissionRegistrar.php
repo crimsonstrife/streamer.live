@@ -267,6 +267,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      *
      * @param int $retryCount
      * @return void
+     * @throws RuntimeException
      */
     private function loadPermissions(int $retryCount = 0): void
     {
