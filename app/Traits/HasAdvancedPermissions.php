@@ -40,18 +40,20 @@ trait HasAdvancedPermissions
             }
         }
 
+        $permissionName = $permission instanceof Permission ? $permission->name : $permission;
+
         // If permission is muted for the user, deny access
-        if ($mutedPermissions->contains($permission)) {
+        if ($mutedPermissions->contains('name', $permissionName)) {
             // Log the muted permission
-            logger()->debug('Permission is muted: '.$permission);
+            logger()->debug('Permission is muted: '.$permissionName);
 
             return false;
         }
 
         // Check if user has permission directly
-        if ($this->permissions->contains('name', $permission)) {
+        if ($this->permissions->contains('name', $permissionName)) {
             // Log the permission
-            logger()->debug('Permission found: '.$permission.' (directly)');
+            logger()->debug('Permission found: '.$permissionName.' (directly)');
 
             return true;
         }
@@ -96,13 +98,15 @@ trait HasAdvancedPermissions
      */
     public function hasPermissionViaRoles(int|string|Permission $permission): bool
     {
+        $permissionName = $permission instanceof Permission ? $permission->name : $permission;
+
         // Get the roles associated with the user
         $roles = $this->roles;
 
         // For each role, check for the permission, as well as under related PermissionSets and PermissionGroups, and ensure it is not muted in any of them
         foreach ($roles as $role) {
             // Check if the role has the permission directly
-            if ($role->permissions->contains('name', $permission)) {
+            if ($role->permissions->contains('name', $permissionName)) {
                 return true;
             }
 
@@ -167,9 +171,8 @@ trait HasAdvancedPermissions
      */
     private function hasPermissionViaRolePermissionSets(mixed $role, mixed $permission): bool
     {
+        $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
         foreach ($role->permissionSets as $permissionSet) {
-            $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
-
             if ($permissionSet->permissions->contains('name', $normalizedPermission) && ! $permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
                 return true;
             }
