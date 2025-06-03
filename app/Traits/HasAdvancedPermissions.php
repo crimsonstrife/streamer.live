@@ -137,6 +137,8 @@ trait HasAdvancedPermissions
         }
 
         // Check if the permission is in PermissionGroups (including sets within groups)
+        $permissionName = $permission instanceof Permission ? $permission->name : strtolower(trim($permission));
+
         foreach ($this->permissionGroups as $permissionGroup) {
             foreach ($permissionGroup->permissionSets as $permissionSet) {
                 if ($this->checkPermissionInSet($permissionSet, $permission)) {
@@ -144,7 +146,7 @@ trait HasAdvancedPermissions
                 }
             }
 
-            if ($permissionGroup->permissions->contains('name', $permission)) {
+            if ($permissionGroup->permissions->contains('name', $permissionName)) {
                 return true;
             }
         }
