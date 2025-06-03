@@ -265,10 +265,10 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * After loading the permissions, it sets the alias, hydrates the roles cache, and prepares the hydrated permission collection.
      * Finally, it resets the cached roles, alias, and except properties.
      *
-     * @param int $retryLimit // How many times to attempt to load permissions - prevents recursion
+     * @param int $retryCount
      * @return void
      */
-    private function loadPermissions(int $retryLimit = 0): void
+    private function loadPermissions(int $retryCount = 0): void
     {
         if ($this->permissions) {
             return;
@@ -280,11 +280,9 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
             fn () => $this->getSerializedPermissionsForCache()
         );
 
-        $retryCount = 0; // Initialize the retry counter
-
         // fallback for old cache method, must be removed on next major version
         if (!isset($this->permissions['alias'])) {
-            if ($retryCount >= $retryLimit) {
+            if ($retryCount >= 3) { // Set a maximum retry limit (e.g., 3 attempts)
                 throw new RuntimeException('Failed to load permissions after retrying ('.$retryCount.') times.');
             }
 
