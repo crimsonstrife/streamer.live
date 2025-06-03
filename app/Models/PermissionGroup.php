@@ -145,35 +145,33 @@ class PermissionGroup extends BaseModel
 
         return $allPermissions;
     }
-
-    /**
-     * Check if a permission is granted to the permission set group, either directly or through a permission set it contains.
-     *
-     * @param Permission $permission The permission to check
-     * @return bool True if the permission is granted, false if it is not
-     */
+/**
+* Check if a permission is granted to the permission set group, either directly or through a permission set it contains.
+*
+* @param Permission $permission The permission to check
+* @return bool True if the permission is granted, false if it is not
+*/
     public function hasPermissionTo(Permission $permission): bool
     {
-        //check if the permission is assigned to the permission set group directly
+        // Check if the permission is assigned to the permission set group directly
         if ($this->permissions()->contains($permission)) {
             return true;
         }
 
-        //check if the permission is assigned to any of the permission sets assigned to the permission set group
-        foreach ($this->permissionSets() as $permissionSet) {
-            //if the permission is in the permission set, and it is not muted, return true
-            if ($permissionSet->hasPermissionTo($permission)) {
-                //continue to the next permission set if the permission is not muted in the set
-                continue;
-            } elseif ($permissionSet->isMuted($permission)) {
-                //if the permission is muted in the set, return false
+        // Check if the permission is assigned to any of the permission sets assigned to the permission set group
+        foreach ($this->permissionSets as $permissionSet) {
+            // If the permission is muted in the set, return false
+            if ($permissionSet->isMuted($permission)) {
                 return false;
-            } else {
-                //if the permission is not in the set, continue to the next set
-                continue;
+            }
+
+            // If the permission is in the permission set and not muted, return true
+            if ($permissionSet->hasPermissionTo($permission)) {
+                return true;
             }
         }
 
+        // If no conditions are met, return false
         return false;
     }
 }
