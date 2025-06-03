@@ -268,40 +268,40 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * @param int $retryLimit // How many times to attempt to load permissions - prevents recursion
      * @return void
      */
-        private function loadPermissions(int $retryLimit = 0): void
-        {
-            if ($this->permissions) {
-                return;
-            }
-
-            $this->permissions = $this->cache->remember(
-                $this->cacheKey,
-                $this->cacheExpirationTime,
-                fn () => $this->getSerializedPermissionsForCache()
-            );
-
-            $retryCount = 0; // Initialize the retry counter
-
-            // fallback for old cache method, must be removed on next major version
-            if (!isset($this->permissions['alias'])) {
-                if ($retryCount >= $retryLimit) {
-                    throw new RuntimeException('Failed to load permissions after retrying ('.$retryCount.') times.');
-                }
-
-                $this->forgetCachedPermissions();
-                $this->loadPermissions($retryCount + 1);
-
-                return;
-            }
-
-            $this->alias = $this->permissions['alias'];
-
-            $this->hydrateRolesCache();
-
-            $this->permissions = $this->getHydratedPermissionCollection();
-
-            $this->cachedRoles = $this->alias = $this->except = [];
+    private function loadPermissions(int $retryLimit = 0): void
+    {
+        if ($this->permissions) {
+            return;
         }
+
+        $this->permissions = $this->cache->remember(
+            $this->cacheKey,
+            $this->cacheExpirationTime,
+            fn () => $this->getSerializedPermissionsForCache()
+        );
+
+        $retryCount = 0; // Initialize the retry counter
+
+        // fallback for old cache method, must be removed on next major version
+        if (!isset($this->permissions['alias'])) {
+            if ($retryCount >= $retryLimit) {
+                throw new RuntimeException('Failed to load permissions after retrying ('.$retryCount.') times.');
+            }
+
+            $this->forgetCachedPermissions();
+            $this->loadPermissions($retryCount + 1);
+
+            return;
+        }
+
+        $this->alias = $this->permissions['alias'];
+
+        $this->hydrateRolesCache();
+
+        $this->permissions = $this->getHydratedPermissionCollection();
+
+        $this->cachedRoles = $this->alias = $this->except = [];
+    }
 
     /**
      * Get all permissions from the database.
