@@ -41,7 +41,7 @@ trait HasAdvancedPermissions
         }
 
         // If permission is muted for the user, deny access
-        if ($mutedPermissions->contains($permission instanceof Permission ? $permission->name : $permission)) {
+        if ($mutedPermissions->contains('name', $permission instanceof Permission ? $permission->name : $permission)) {
             // Log the muted permission
             logger()->debug('Permission is muted: '.($permission instanceof Permission ? $permission->name : $permission));
 
