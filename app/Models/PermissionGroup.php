@@ -119,18 +119,18 @@ class PermissionGroup extends BaseModel
      */
     public function getAllPermissions(): ?array
     {
-        $permissions = $this->permissions()->get();
-        $permissionSets = $this->permissionSets()->get();
+        $permissions = $this->permissions()->get()->all();
+        $permissionSets = $this->permissionSets()->get()->all();
         $allPermissions = array();
 
         //go through each permission assigned to the permission set group directly, these will always be unmuted
-        foreach ($permissions as $permission) {
+        foreach (collect($permissions) as $permission) {
             $allPermissions[$permission->name] = false;
         }
 
         //go through each permission set assigned to the permission set group, and get the permissions from each set. keep permissions unique, and if a permission is muted in the set, mark it as muted.
-        foreach ($permissionSets as $permissionSet) {
-            foreach ($permissionSet->permissions as $permission) {
+        foreach (collect($permissionSets) as $permissionSet) {
+            foreach (collect($permissionSet->permissions) as $permission) {
                 //if the permission is already in the array, check if it is muted in the set, and if it is, mark it as muted if it is not already
                 if (array_key_exists($permission->name, $allPermissions)) {
                     if ($permissionSet->isMuted($permission)) {
