@@ -119,8 +119,8 @@ class PermissionGroup extends BaseModel
      */
     public function getAllPermissions(): ?array
     {
-        $permissions = $this->permissions();
-        $permissionSets = $this->permissionSets();
+        $permissions = $this->permissions()->get();
+        $permissionSets = $this->permissionSets()->get();
         $allPermissions = array();
 
         //go through each permission assigned to the permission set group directly, these will always be unmuted
