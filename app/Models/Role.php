@@ -79,7 +79,7 @@ class Role extends SpatieRole implements RoleContract
             if (array_key_exists($teamsKey, $attributes)) {
                 $params[$teamsKey] = $attributes[$teamsKey];
             } else {
-                $attributes[$teamsKey] = getPermissionsTeamId();
+                $attributes[$teamsKey] = app(PermissionRegistrar::class)->getPermissionsTeamId();
             }
         }
         if (static::findByParam($params)) {
