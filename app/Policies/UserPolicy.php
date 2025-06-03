@@ -58,7 +58,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return $user->can('update-user');
+        return $user->can('update-user', $model);
     }
 
     /**
@@ -70,6 +70,6 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->can('delete-user');
+        return $user->can('delete-user', $model);
     }
 }
