@@ -2,11 +2,12 @@
 
 namespace App\Traits;
 
+use App\Models\PermissionGroup;
 use App\Models\PermissionSet;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
-use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Traits\HasRoles;
 
 trait HasAdvancedPermissions
 {
@@ -15,9 +16,7 @@ trait HasAdvancedPermissions
     /**
      * Override the hasPermissionTo method to handle advanced permission logic.
      *
-     * @param string|int|Permission $permission
-     * @param string|null $guardName
-     * @return bool
+     * @param  string|int|Permission  $permission
      */
     public function hasPermissionTo($permission, ?string $guardName = null): bool
     {
@@ -29,7 +28,7 @@ trait HasAdvancedPermissions
 
         // If there are muted permissions, log them
         if ($mutedPermissions->isNotEmpty()) {
-            logger()->debug('Muted permissions: ' . $mutedPermissions->implode(', '));
+            logger()->debug('Muted permissions: '.$mutedPermissions->implode(', '));
         }
 
         // Check if the provided permission is a string, or an integer, if so, find the permission object instead
@@ -44,28 +43,32 @@ trait HasAdvancedPermissions
         // If permission is muted for the user, deny access
         if ($mutedPermissions->contains($permission)) {
             // Log the muted permission
-            logger()->debug('Permission is muted: ' . $permission);
+            logger()->debug('Permission is muted: '.$permission);
+
             return false;
         }
 
         // Check if user has permission directly
         if ($this->permissions->contains('name', $permission)) {
             // Log the permission
-            logger()->debug('Permission found: ' . $permission . ' (directly)');
+            logger()->debug('Permission found: '.$permission.' (directly)');
+
             return true;
         }
 
         // Check if the user has the permission via their roles
         if ($this->hasPermissionViaRoles($permission)) {
             // Log the permission
-            logger()->debug('Permission found: ' . $permission . ' (via roles)');
+            logger()->debug('Permission found: '.$permission.' (via roles)');
+
             return true;
         }
 
         // Check if permission exists in PermissionSets or PermissionGroups
         if ($this->hasPermissionViaSetsOrGroups($permission)) {
             // Log the permission
-            logger()->debug('Permission found: ' . $permission . ' (via PermissionSets or PermissionGroups)');
+            logger()->debug('Permission found: '.$permission.' (via PermissionSets or PermissionGroups)');
+
             return true;
         }
 
@@ -75,8 +78,6 @@ trait HasAdvancedPermissions
 
     /**
      * Get a list of muted permissions from the permission sets.
-     *
-     * @return Collection
      */
     public function getMutedPermissions(): Collection
     {
@@ -92,9 +93,6 @@ trait HasAdvancedPermissions
 
     /**
      * Check if the user has a permission via their roles
-     *
-     * @param int|string|Permission $permission
-     * @return bool
      */
     public function hasPermissionViaRoles(int|string|Permission $permission): bool
     {
@@ -124,9 +122,6 @@ trait HasAdvancedPermissions
 
     /**
      * Check if the user has a permission via their PermissionSets or PermissionGroups.
-     *
-     * @param int|string|Permission $permission
-     * @return bool
      */
     public function hasPermissionViaSetsOrGroups(int|string|Permission $permission): bool
     {
@@ -156,10 +151,6 @@ trait HasAdvancedPermissions
     /**
      * Helper method to check if a permission exists in a permission set.
      * Excludes muted permissions.
-     *
-     * @param PermissionSet $permissionSet
-     * @param int|string|Permission $permission
-     * @return bool
      */
     private function checkPermissionInSet(PermissionSet $permissionSet, int|string|Permission $permission): bool
     {
@@ -173,16 +164,13 @@ trait HasAdvancedPermissions
 
     /**
      * Helper method to check if a role has a permission via a PermissionSet.
-     * @param mixed $role
-     * @param mixed $permission
-     * @return bool
      */
     private function hasPermissionViaRolePermissionSets(mixed $role, mixed $permission): bool
     {
         foreach ($role->permissionSets as $permissionSet) {
             $normalizedPermission = is_string($permission) ? strtolower(trim($permission)) : strtolower($permission->name);
 
-            if ($permissionSet->permissions->contains('name', $normalizedPermission) && !$permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
+            if ($permissionSet->permissions->contains('name', $normalizedPermission) && ! $permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
                 return true;
             }
         }
@@ -192,9 +180,6 @@ trait HasAdvancedPermissions
 
     /**
      * Helper method to check if a role has a permission via a PermissionGroup.
-     * @param mixed $role
-     * @param mixed $permission
-     * @return bool
      */
     private function hasPermissionViaRolePermissionGroups(mixed $role, mixed $permission): bool
     {
@@ -208,7 +193,7 @@ trait HasAdvancedPermissions
 
             // Check if the permission is in the PermissionSets within the PermissionGroup
             foreach ($permissionGroup->permissionSets as $permissionSet) {
-                if ($permissionSet->permissions->contains('name', $normalizedPermission) && !$permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
+                if ($permissionSet->permissions->contains('name', $normalizedPermission) && ! $permissionSet->permissions->where('name', $normalizedPermission)->first()->pivot->muted) {
                     return true;
                 }
             }
@@ -219,8 +204,6 @@ trait HasAdvancedPermissions
 
     /**
      * Define relationship with PermissionSets.
-     *
-     * @return BelongsToMany
      */
     public function permissionSets(): BelongsToMany
     {
@@ -234,13 +217,11 @@ trait HasAdvancedPermissions
         $tableName = "{$modelName}_has_permission_set";
 
         // Return the relationship
-        return $this->belongsToMany(\App\Models\PermissionSet::class, $tableName);
+        return $this->belongsToMany(PermissionSet::class, $tableName);
     }
 
     /**
      * Define relationship with PermissionGroups.
-     *
-     * @return BelongsToMany
      */
     public function permissionGroups(): BelongsToMany
     {
@@ -254,13 +235,11 @@ trait HasAdvancedPermissions
         $tableName = "{$modelName}_has_permission_group";
 
         // Return the relationship
-        return $this->belongsToMany(\App\Models\PermissionGroup::class, $tableName);
+        return $this->belongsToMany(PermissionGroup::class, $tableName);
     }
 
     /**
      * Define relationship with Permissions.
-     *
-     * @return BelongsToMany
      */
     public function permissions(): BelongsToMany
     {
