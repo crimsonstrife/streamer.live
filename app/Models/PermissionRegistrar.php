@@ -2,22 +2,25 @@
 
 namespace App\Models;
 
+use DateInterval;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
+use RuntimeException;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
+
+use function array_key_exists;
 
 /**
  * Class PermissionRegistrar
  *
  * This class extends the SpatiePermissionRegistrar and is responsible for
  * registering permissions within the application.
- *
- * @package App\Models\Auth
  */
 class PermissionRegistrar extends SpatiePermissionRegistrar
 {
@@ -40,7 +43,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
 
     public string $pivotPermissionSetGroup;
 
-    /** @var \DateInterval|int */
+    /** @var DateInterval|int */
     public $cacheExpirationTime;
 
     public bool $teams;
@@ -59,10 +62,11 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
 
     private array $wildcardPermissionsIndex = [];
 
+    private const RETRY_LIMIT = 3;
+
     /**
      * PermissionRegistrar constructor.
      *
-     * @param \Illuminate\Cache\CacheManager $cacheManager
      * @return void
      */
     public function __construct(CacheManager $cacheManager)
@@ -72,6 +76,8 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
 
         $this->cacheManager = $cacheManager;
         $this->initializeCache();
+
+        parent::__construct($cacheManager);
     }
 
     /**
@@ -80,12 +86,10 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * This method sets up various cache-related configurations for permissions,
      * including cache expiration time, team settings, cache key, and pivot keys
      * for roles and permissions. It also initializes the cache store.
-     *
-     * @return void
      */
     public function initializeCache(): void
     {
-        $this->cacheExpirationTime = config('permission.cache.expiration_time') ?: \DateInterval::createFromDateString('24 hours');
+        $this->cacheExpirationTime = config('permission.cache.expiration_time') ?: DateInterval::createFromDateString('24 hours');
 
         $this->teams = config('permission.teams', false);
         $this->teamsKey = config('permission.column_names.team_foreign_key', 'team_id');
@@ -121,7 +125,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
         }
 
         // if an undefined cache store is specified, fallback to 'array' which is Laravel's closest equiv to 'none'
-        if (!\array_key_exists($cacheDriver, config('cache.stores'))) {
+        if (! array_key_exists($cacheDriver, config('cache.stores'))) {
             $cacheDriver = 'array';
         }
 
@@ -132,8 +136,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * Set the team id for teams/groups support, this id is used when querying permissions/roles
      *
      * @param  int|string|Model|null  $id
-     *
-     * @return void
      */
     public function setPermissionsTeamId($id): void
     {
@@ -143,25 +145,21 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
         $this->teamId = $id;
     }
 
-    /**
-     * @return int|string|null
-     */
-    public function getPermissionsTeamId()
+    public function getPermissionsTeamId(): int|string|null
     {
         return $this->teamId;
     }
 
-
     /**
      * Registers permissions with the given Gate instance.
      *
-     * @param Gate $gate The Gate instance to register permissions with.
+     * @param  Gate  $gate  The Gate instance to register permissions with.
      * @return bool Always returns true.
      */
     public function registerPermissions(Gate $gate): bool
     {
-        $gate->before(function (\Illuminate\Contracts\Auth\Authenticatable $user, string $ability, array &$args = []) {
-            if (is_string($args[0] ?? null) && !class_exists($args[0])) {
+        $gate->before(function (Authenticatable $user, string $ability, array &$args = []) {
+            if (is_string($args[0] ?? null) && ! class_exists($args[0])) {
                 $guard = array_shift($args);
             }
             if (method_exists($user, 'checkPermissionTo')) {
@@ -193,8 +191,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * If a record is provided, it will remove the wildcard permission index for that specific record.
      * If no record is provided, it will clear the entire wildcard permission index.
      *
-     * @param Model|null $record The record for which to forget the wildcard permission index, or null to clear the entire index.
-     * @return void
+     * @param  Model|null  $record  The record for which to forget the wildcard permission index, or null to clear the entire index.
      */
     public function forgetWildcardPermissionIndex(?Model $record = null): void
     {
@@ -214,7 +211,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * is already set. If it is, it returns the existing index. If not, it creates a new index
      * using the record's wildcard class and returns it.
      *
-     * @param Model $record The record for which to get the wildcard permission index.
+     * @param  Model  $record  The record for which to get the wildcard permission index.
      * @return array The wildcard permission index for the given record.
      */
     public function getWildcardPermissionIndex(Model $record): array
@@ -241,10 +238,10 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * Clear the cached roles and permissions.
      * This is only intended to be called by the PermissionServiceProvider on boot,
      * so that long-running instances don't keep old data in memory.
+     *
      * @deprecated - use clearPermissionsCollection() instead
      *
      * @alias of clearPermissionsCollection()
-     * @return void
      */
     public function clearClassPermissions(): void
     {
@@ -264,9 +261,9 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * After loading the permissions, it sets the alias, hydrates the roles cache, and prepares the hydrated permission collection.
      * Finally, it resets the cached roles, alias, and except properties.
      *
-     * @return void
+     * @throws RuntimeException
      */
-    private function loadPermissions(): void
+    private function loadPermissions(int $retryCount = 0): void
     {
         if ($this->permissions) {
             return;
@@ -278,10 +275,14 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
             fn () => $this->getSerializedPermissionsForCache()
         );
 
-        // fallback for old cache method, must be removed on next mayor version
-        if (!isset($this->permissions['alias'])) {
+        // fallback for old cache method, must be removed on next major version
+        if (! isset($this->permissions['alias'])) {
+            if ($retryCount >= self::RETRY_LIMIT) { // Set a maximum retry limit (e.g., 3 attempts)
+                throw new RuntimeException('Failed to load permissions after retrying ('.$retryCount.') times.');
+            }
+
             $this->forgetCachedPermissions();
-            $this->loadPermissions();
+            $this->loadPermissions($retryCount + 1);
 
             return;
         }
@@ -310,7 +311,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
 
         $permissions = $this->permissions->$method(static function ($permission) use ($params) {
             foreach ($params as $attr => $value) {
-                if ($permission->getAttribute($attr) != $value) {
+                if ($permission->getAttribute($attr) !== $value) {
                     return false;
                 }
             }
@@ -328,8 +329,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
     /**
      * Get the class name of the permission model.
      * This method returns the class name of the permission model, which is stored in the permissionClass property.
-     *
-     * @return string
      */
     public function getPermissionClass(): string
     {
@@ -339,7 +338,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
     /**
      * Set the class name of the permission model.
      *
-     * @param string $permissionClass
+     * @param  string  $permissionClass
      * @return $this
      */
     public function setPermissionClass($permissionClass): static
@@ -355,8 +354,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * Get the class name of the role model.
      * This method returns the class name of the
      * role model, which is stored in the roleClass property.
-     *
-     * @return string
      */
     public function getRoleClass(): string
     {
@@ -366,7 +363,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
     /**
      * Set the class name of the role model.
      *
-     * @param string $roleClass
+     * @param  string  $roleClass
      * @return $this
      */
     public function setRoleClass($roleClass): static
@@ -382,8 +379,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * Get the cache repository instance.
      *
      * This method returns the cache repository instance, which is stored in the cache property.
-     *
-     * @return Repository
      */
     public function getCacheRepository(): Repository
     {
@@ -394,8 +389,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * Get the cache store instance.
      *
      * This method returns the cache store instance, which is stored in the cache property.
-     *
-     * @return Store
      */
     public function getCacheStore(): Store
     {
@@ -406,8 +399,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * Get the cache expiration time.
      *
      * This method returns the cache expiration time, which is stored in the cacheExpirationTime property.
-     *
-     * @return Collection
      */
     protected function getPermissionsWithRoles(): Collection
     {
@@ -420,7 +411,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * This method aliases the keys of the given model array using the alias property.
      * It excludes any keys that are in the except property.
      *
-     * @param array|Model $model The model or array to alias.
+     * @param  array|Model  $model  The model or array to alias.
      * @return array The aliased array.
      */
     private function aliasedArray(Model|array $model): array
@@ -439,13 +430,12 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * aliases exist, otherwise from 'j' to 'p'. If an alias already exists for a field, it
      * is not changed. Finally, it removes any aliases that are in the $except array.
      *
-     * @param object|array $newKeys An array of new keys or an object with a getAttributes method.
-     * @return void
+     * @param  object|array  $newKeys  An array of new keys or an object with a getAttributes method.
      */
     private function aliasModelFields(object|array $newKeys = []): void
     {
         $i = 0;
-        $alphas = !count($this->alias) ? range('a', 'h') : range('j', 'p');
+        $alphas = ! count($this->alias) ? range('a', 'h') : range('j', 'p');
 
         // Check if $newKeys is an object and has getAttributes method
         if (is_object($newKeys) && method_exists($newKeys, 'getAttributes')) {
@@ -455,7 +445,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
         }
 
         foreach (array_keys($attributes) as $value) {
-            if (!isset($this->alias[$value])) {
+            if (! isset($this->alias[$value])) {
                 $this->alias[$value] = $alphas[$i++] ?? $value;
             }
         }
@@ -477,7 +467,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
 
         $permissions = $this->getPermissionsWithRoles()
             ->map(function ($permission) {
-                if (!$this->alias) {
+                if (! $this->alias) {
                     $this->aliasModelFields($permission);
                 }
 
@@ -497,23 +487,23 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * ensures that the alias for roles is set and then maps the roles to their
      * respective keys, caching the aliased array of each role.
      *
-     * @param Permission $permission The permission instance.
+     * @param  Permission  $permission  The permission instance.
      * @return array The serialized role relation.
      */
     private function getSerializedRoleRelation(Permission $permission): array
     {
-        if (!$permission->roles->count()) {
+        if (! $permission->roles->count()) {
             return [];
         }
 
-        if (!isset($this->alias['roles'])) {
+        if (! isset($this->alias['roles'])) {
             $this->alias['roles'] = 'r';
             $this->aliasModelFields($permission->roles[0]);
         }
 
         return [
             'r' => $permission->roles->map(function ($role) {
-                if (!isset($this->cachedRoles[$role->getKey()])) {
+                if (! isset($this->cachedRoles[$role->getKey()])) {
                     $this->cachedRoles[$role->getKey()] = $this->aliasedArray($role);
                 }
 
@@ -549,7 +539,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * This method takes an array of role identifiers and returns a collection
      * of roles that are present in the cached roles.
      *
-     * @param array $roles An array of role identifiers.
+     * @param  array  $roles  An array of role identifiers.
      * @return Collection A collection of hydrated roles.
      */
     private function getHydratedRoleCollection(array $roles): Collection
@@ -565,8 +555,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      * This method creates a new instance of the role class and iterates over the roles in the permissions array.
      * For each role, it creates a new instance with raw attributes and stores it in the cachedRoles array.
      * Finally, it clears the roles in the permissions array.
-     *
-     * @return void
      */
     private function hydrateRolesCache(): void
     {
@@ -586,12 +574,12 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      *
      * This method checks if the given value is either a valid UUID/GUID or a valid ULID.
      *
-     * @param mixed $value The value to check.
+     * @param  mixed  $value  The value to check.
      * @return bool True if the value is a valid UID, false otherwise.
      */
     public static function isUid($value): bool
     {
-        if (!is_string($value) || empty(trim($value))) {
+        if (! is_string($value) || empty(trim($value))) {
             return false; // not a string or empty
         }
 
@@ -602,7 +590,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
         }
 
         // check if is ULID
-        $ulid = strlen($value) == 26 && strspn($value, '0123456789ABCDEFGHJKMNPQRSTVWXYZabcdefghjkmnpqrstvwxyz') == 26 && $value[0] <= '7'; // ULID
+        $ulid = strlen($value) === 26 && strspn($value, '0123456789ABCDEFGHJKMNPQRSTVWXYZabcdefghjkmnpqrstvwxyz') === 26 && $value[0] <= '7'; // ULID
         if ($ulid) {
             return true;
         }
