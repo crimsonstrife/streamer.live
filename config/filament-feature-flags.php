@@ -12,7 +12,7 @@ return [
     /*
      * Default scope: User::class, Team::class
      */
-    'scope' => App\Models\User::class,
+    'scope' => \App\Models\AuthObjects\User::class,
 
     /*
      * Column names and data source that can be used to activate or deactivate for a segment of users.
@@ -26,7 +26,7 @@ return [
         [
             'column' => 'email',
             'source' => [
-                'model' => App\Models\User::class,
+                'model' => \App\Models\AuthObjects\User::class,
                 'value' => 'email',
                 'key' => 'email',
             ],

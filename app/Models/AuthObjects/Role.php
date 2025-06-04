@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\AuthObjects;
 
 use App\Contracts\Role as RoleContract;
+use App\Models\AuthObjects\PermissionGroup;
+use App\Models\AuthObjects\PermissionSet;
 use App\Traits\HasAdvancedPermissions;
 use App\Traits\IsPermissible;
 use Exception;

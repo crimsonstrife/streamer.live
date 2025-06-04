@@ -1,7 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\AuthObjects;
 
+use App\Models\AuthObjects;
+use App\Models\AuthObjects\PermissionSet;
+use App\Models\AuthObjects\Role;
+use App\Models\BaseModel;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -84,7 +88,7 @@ class PermissionGroup extends BaseModel
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(\App\Models\User::class, 'user_has_permission_group')->withTimestamps();
+        return $this->belongsToMany(AuthObjects\User::class, 'user_has_permission_group')->withTimestamps();
     }
 
     /**

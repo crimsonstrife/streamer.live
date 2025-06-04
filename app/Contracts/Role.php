@@ -12,9 +12,9 @@ use Spatie\Permission\Exceptions\RoleDoesNotExist;
  * @property string $name
  * @property string|null $guard_name
  *
- * @mixin \App\Models\Role
+ * @mixin \App\Models\AuthObjects\Role
  *
- * @phpstan-require-extends \App\Models\Role
+ * @phpstan-require-extends \App\Models\AuthObjects\Role
  */
 interface Role extends SpatieRole
 {

@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
-use App\Models\PermissionGroup;
-use App\Models\PermissionSet;
+use App\Models\AuthObjects\PermissionGroup;
+use App\Models\AuthObjects\PermissionSet;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;

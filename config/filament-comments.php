@@ -64,7 +64,7 @@ return [
     /*
      * Authenticatable model class
      */
-    'authenticatable' => \App\Models\User::class,
+    'authenticatable' => \App\Models\AuthObjects\User::class,
 
 
     /*

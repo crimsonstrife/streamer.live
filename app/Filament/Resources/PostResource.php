@@ -102,7 +102,7 @@ class PostResource extends Resource
                                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->name) // Uses accessor safely
                                     ->disabled(fn (?Author $record) => $record?->user_id && ! auth()->user()->can('updateUserLink'))
                                     ->options(function (?Author $record) {
-                                        $query = \App\Models\User::query();
+                                        $query = \App\Models\AuthObjects\User::query();
 
                                         // Exclude users already linked to other authors
                                         if ($record) {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ReactionType;
+use App\Models\AuthObjects\User;
 use App\Models\BaseModel as Model;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;

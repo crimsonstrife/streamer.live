@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\AuthObjects;
 
+use App\Models\AuthObjects\Role;
+use App\Models\AuthObjects\User;
+use App\Models\BaseModel;
 use App\Traits\IsPermissible;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\Role;
-use App\Models\User;
+use App\Models\AuthObjects\Role;
+use App\Models\AuthObjects\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**

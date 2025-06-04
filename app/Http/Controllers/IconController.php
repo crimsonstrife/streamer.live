@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreIconRequest;
 use App\Models\Icon;
-use App\Models\User;
+use App\Models\AuthObjects\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

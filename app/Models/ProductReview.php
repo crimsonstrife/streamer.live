@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\AuthObjects\User;
 use App\Utilities\Helpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

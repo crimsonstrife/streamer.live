@@ -2,7 +2,7 @@
 
 return [
     'mentionable' => [
-        'model' => \App\Models\User::class,
+        'model' => \App\Models\AuthObjects\User::class,
         'column' => [
             'id' => 'id',
             'display_name' => 'name',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\AuthObjects\User;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

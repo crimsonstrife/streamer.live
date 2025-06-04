@@ -2616,7 +2616,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Get the currently authenticated user.
          *
-         * @return \App\Models\User|null
+         * @return \App\Models\AuthObjects\User|null
          *
          * @static
          */
@@ -2657,7 +2657,7 @@ namespace Illuminate\Support\Facades {
          * Log the given user ID into the application without sessions or cookies.
          *
          * @param  mixed  $id
-         * @return \App\Models\User|false
+         * @return \App\Models\AuthObjects\User|false
          *
          * @static
          */
@@ -2751,7 +2751,7 @@ namespace Illuminate\Support\Facades {
          *
          * @param  mixed  $id
          * @param  bool  $remember
-         * @return \App\Models\User|false
+         * @return \App\Models\AuthObjects\User|false
          *
          * @static
          */
@@ -2810,7 +2810,7 @@ namespace Illuminate\Support\Facades {
          * The application must be using the AuthenticateSession middleware.
          *
          * @param  string  $password
-         * @return \App\Models\User|null
+         * @return \App\Models\AuthObjects\User|null
          *
          * @throws \Illuminate\Auth\AuthenticationException
          *
@@ -2839,7 +2839,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Get the last user we attempted to authenticate.
          *
-         * @return \App\Models\User
+         * @return \App\Models\AuthObjects\User
          *
          * @static
          */
@@ -2974,7 +2974,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Return the currently cached user.
          *
-         * @return \App\Models\User|null
+         * @return \App\Models\AuthObjects\User|null
          *
          * @static
          */
@@ -3041,7 +3041,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Determine if the current user is authenticated. If not, throw an exception.
          *
-         * @return \App\Models\User
+         * @return \App\Models\AuthObjects\User
          *
          * @throws \Illuminate\Auth\AuthenticationException
          *

@@ -4,7 +4,7 @@ namespace App\Filament\Resources\OrderResource\Pages;
 
 use App\Filament\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\User;
+use App\Models\AuthObjects\User;
 use Filament\Forms\Components\FileUpload;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\Page;

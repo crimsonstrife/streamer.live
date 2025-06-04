@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Role;
+use App\Models\AuthObjects\Role;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use RuntimeException;
 

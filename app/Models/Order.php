@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MoneyValueCast;
+use App\Models\AuthObjects\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

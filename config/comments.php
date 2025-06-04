@@ -2,9 +2,9 @@
 
 use App\Enums\Sort;
 use App\Models\Comment;
-use App\Models\Guest;
+use App\Models\AuthObjects\Guest;
 use App\Models\Reaction;
-use App\Models\User;
+use App\Models\AuthObjects\User;
 use LakM\Comments\Policies\CommentPolicy;
 use LakM\Comments\Policies\ReplyPolicy;
 

@@ -3,9 +3,9 @@
 namespace App\Utilities;
 
 use App\Models\Comment;
-use App\Models\Guest;
+use App\Models\AuthObjects\Guest;
 use App\Models\Reaction;
-use App\Models\User;
+use App\Models\AuthObjects\User;
 use Illuminate\Database\Eloquent\Builder;
 
 final class ModelResolver

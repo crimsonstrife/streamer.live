@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\AuthObjects;
 
+use App\Models\AuthObjects\Role;
 use App\Services\Permissions\PermissionCacheService;
 use App\Services\Permissions\PermissionLoaderService;
 use App\Services\Permissions\PermissionSerializationService;

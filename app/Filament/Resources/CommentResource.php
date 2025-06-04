@@ -6,7 +6,7 @@ use App\Filament\Resources\CommentResource\Pages;
 use App\Filament\Resources\CommentResource\RelationManagers\ActivityLogsRelationManager;
 use App\Models\Comment;
 use App\Models\Post;
-use App\Models\User;
+use App\Models\AuthObjects\User;
 use Exception;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;

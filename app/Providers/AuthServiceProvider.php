@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\PermissionGroup;
-use App\Models\PermissionSet;
-use App\Models\Role;
-use App\Models\User;
+use App\Models\AuthObjects\PermissionGroup;
+use App\Models\AuthObjects\PermissionSet;
+use App\Models\AuthObjects\Role;
+use App\Models\AuthObjects\User;
 use App\Policies\PermissionGroupPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\PermissionSetPolicy;

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\AuthObjects;
 
 use App\Contracts\CommenterContract;
+use App\Models\Comment;
 use App\Traits\CanComment;
 use App\Data\GuestData;
 use App\Facades\SecureGuestMode;

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
-use App\Models\PermissionGroup;
+use App\Models\AuthObjects\User;
+use App\Models\AuthObjects\PermissionGroup;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
