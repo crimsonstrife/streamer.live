@@ -155,7 +155,7 @@ class Role extends SpatieRole implements RoleContract
     {
         $guardName = $guardName ?? Guard::getDefaultName(static::class);
 
-        $role = static::findByParam([(new static)->getKeyName() => $id, 'guard_name' => $guardName]);
+        $role = static::findByParam([(new static())->getKeyName() => $id, 'guard_name' => $guardName]);
 
         if (! $role) {
             throw RoleDoesNotExist::withId($id, $guardName);
