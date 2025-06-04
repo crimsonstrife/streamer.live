@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\Permissions\PermissionCacheService;
+use App\Services\Permissions\PermissionLoaderService;
+use App\Services\Permissions\PermissionSerializationService;
 use DateInterval;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Auth\Access\Gate;
@@ -13,11 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
-use App\Services\Permissions\PermissionCacheService;
-use App\Services\Permissions\PermissionLoaderService;
-use App\Services\Permissions\PermissionSerializationService;
-
-use function array_key_exists;
 
 /**
  * Class PermissionRegistrar
@@ -57,14 +55,11 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
 
     public string $cacheKey;
 
-
     private PermissionCacheService $cacheService;
 
     private PermissionSerializationService $serializationService;
 
     private PermissionLoaderService $loaderService;
-
-    private const RETRY_LIMIT = 3;
 
     private function syncCacheProperties(): void
     {
@@ -346,7 +341,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
     {
         return $this->permissionClass::select()->with('roles')->get();
     }
-
 
     /**
      * Check if the given value is a valid UID.

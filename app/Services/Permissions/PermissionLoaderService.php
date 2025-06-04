@@ -19,8 +19,7 @@ class PermissionLoaderService
         private PermissionSerializationService $serializer,
         private string $permissionClass,
         private string $roleClass
-    ) {
-    }
+    ) {}
 
     public function clearLoadedPermissions(): void
     {

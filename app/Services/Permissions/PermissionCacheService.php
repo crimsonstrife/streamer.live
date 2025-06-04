@@ -19,8 +19,7 @@ class PermissionCacheService
 
     protected CacheManager $cacheManager;
 
-    /** @var DateInterval|int */
-    public $cacheExpirationTime;
+    public int|DateInterval $cacheExpirationTime;
 
     public string $cacheKey;
 
