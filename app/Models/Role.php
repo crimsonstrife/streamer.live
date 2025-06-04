@@ -41,12 +41,6 @@ class Role extends SpatieRole implements RoleContract
     public static function boot(): void
     {
         parent::boot();
-
-        static::deleting(static function ($role) {
-            if ($role->protected) {
-                throw new RuntimeException("The {$role->name} role cannot be deleted for security reasons.");
-            }
-        });
     }
 
     /**
@@ -161,7 +155,7 @@ class Role extends SpatieRole implements RoleContract
     {
         $guardName = $guardName ?? Guard::getDefaultName(static::class);
 
-        $role = static::findByParam([(new static())->getKeyName() => $id, 'guard_name' => $guardName]);
+        $role = static::findByParam([(new static)->getKeyName() => $id, 'guard_name' => $guardName]);
 
         if (! $role) {
             throw RoleDoesNotExist::withId($id, $guardName);
