@@ -6,7 +6,7 @@ use App\Abstracts\AbstractQueries;
 use App\Enums\Sort;
 use App\Exceptions\CommentLimitExceededException;
 use App\Facades\SecureGuestMode;
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use App\Utilities\Helpers;
 use App\Utilities\ModelResolver;
 use Illuminate\Auth\AuthenticationException;

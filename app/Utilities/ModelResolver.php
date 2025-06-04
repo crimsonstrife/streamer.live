@@ -2,9 +2,9 @@
 
 namespace App\Utilities;
 
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use App\Models\AuthObjects\Guest;
-use App\Models\Reaction;
+use App\Models\BlogObjects\Reaction;
 use App\Models\AuthObjects\User;
 use Illuminate\Database\Eloquent\Builder;
 

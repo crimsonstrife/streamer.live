@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\BlogObjects;
 
 use App\Models\AuthObjects\User;
+use App\Models\BlogObjects\Post;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

@@ -2,7 +2,7 @@
 
 namespace App\Search\Aspects;
 
-use App\Models\Product;
+use App\Models\StoreObjects\Product;
 use Illuminate\Support\Collection;
 use Spatie\Searchable\SearchAspect;
 

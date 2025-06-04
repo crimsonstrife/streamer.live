@@ -1,8 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\StoreObjects;
 
 use App\Casts\MoneyValueCast;
+use App\Models\BaseModel;
+use App\Models\SharedObjects\Category;
+use App\Models\StoreObjects\Collection;
+use App\Models\StoreObjects\ProductImage;
+use App\Models\StoreObjects\ProductReview;
+use App\Models\StoreObjects\ProductVariant;
 use App\Utilities\ShopHelper;
 use DB;
 use Eloquent;

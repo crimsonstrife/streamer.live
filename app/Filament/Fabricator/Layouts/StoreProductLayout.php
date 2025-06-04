@@ -3,7 +3,7 @@
 namespace App\Filament\Fabricator\Layouts;
 
 use App\Models\Page;
-use App\Models\Product;
+use App\Models\StoreObjects\Product;
 use App\Utilities\ShopHelper;
 use Z3d0X\FilamentFabricator\Layouts\Layout;
 

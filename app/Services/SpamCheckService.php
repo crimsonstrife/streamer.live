@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\SpamEvaluator;
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 
 class SpamCheckService
 {

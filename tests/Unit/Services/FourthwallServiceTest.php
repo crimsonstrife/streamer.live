@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\Collection;
-use App\Models\Product;
-use App\Models\ProductVariant;
+use App\Models\StoreObjects\Collection;
+use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\ProductVariant;
 use App\Services\FourthwallService;
 use Exception;
 use Illuminate\Support\Facades\Http;

@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AuthorResource\Pages;
-use App\Models\Author;
+use App\Models\BlogObjects\Author;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

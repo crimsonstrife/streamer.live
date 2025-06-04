@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
-use App\Models\Comment;
-use App\Models\Reply;
+use App\Models\BlogObjects\Comment;
+use App\Models\BlogObjects\Reply;
 use App\Traits\HasReactions;
 use App\Traits\HasOwnerAvatar as HasProfilePhoto;
 use App\Utilities\ModelResolver;

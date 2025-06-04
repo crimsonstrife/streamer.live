@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use App\Services\SpamCheckService;
 use Exception;
 use Illuminate\Support\Facades\Log;

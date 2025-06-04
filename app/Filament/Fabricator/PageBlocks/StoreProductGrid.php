@@ -2,8 +2,8 @@
 
 namespace App\Filament\Fabricator\PageBlocks;
 
-use App\Models\Category;
-use App\Models\Product;
+use App\Models\SharedObjects\Category;
+use App\Models\StoreObjects\Product;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;

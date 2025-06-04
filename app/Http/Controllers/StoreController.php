@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Collection;
-use App\Models\Product;
+use App\Models\StoreObjects\Collection;
+use App\Models\StoreObjects\Product;
 use App\Services\FourthwallService;
 use App\Settings\FourthwallSettings;
 use App\Utilities\CartHelper;

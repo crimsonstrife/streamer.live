@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Product;
+use App\Models\StoreObjects\Product;
 use App\Services\FourthwallService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -2,7 +2,7 @@
 
 namespace App\Services\Spam;
 
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use App\Models\SpamFilterPattern;
 use Exception;
 use RuntimeException;

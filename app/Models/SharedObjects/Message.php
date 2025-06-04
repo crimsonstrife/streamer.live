@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\SharedObjects;
 
 use App\Models\BaseModel as Model;
+use App\Models\BlogObjects\Reaction;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Utilities\ModelResolver as M;

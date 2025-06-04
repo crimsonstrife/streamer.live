@@ -2,7 +2,7 @@
 
 namespace App\Search\Aspects;
 
-use App\Models\Post;
+use App\Models\BlogObjects\Post;
 use Illuminate\Support\Collection;
 use Spatie\Searchable\SearchAspect;
 

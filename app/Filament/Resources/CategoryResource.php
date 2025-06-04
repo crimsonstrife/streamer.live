@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Category;
+use App\Models\SharedObjects\Category;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;

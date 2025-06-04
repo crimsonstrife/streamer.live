@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Filament\Resources\PostResource;
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use App\Observers\CommentObserver;
 use App\Services\FourthwallService;
 use App\Services\Spam\AkismetEvaluator;

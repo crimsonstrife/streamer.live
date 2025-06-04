@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\StoreObjects;
 
 use App\Models\BaseModel;
+use App\Models\StoreObjects\Product;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $description
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreObjects\Product> $products
  * @property-read int|null $products_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection newQuery()

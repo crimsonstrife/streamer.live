@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\StoreObjects;
 
 use App\Casts\MoneyValueCast;
+use App\Models\StoreObjects\Order;
+use App\Models\StoreObjects\ProductVariant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

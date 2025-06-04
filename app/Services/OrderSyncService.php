@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\ProductVariant;
+use App\Models\StoreObjects\Order;
+use App\Models\StoreObjects\OrderItem;
+use App\Models\StoreObjects\ProductVariant;
 use App\Models\AuthObjects\User;
 use Log;
 

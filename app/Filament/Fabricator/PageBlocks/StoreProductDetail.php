@@ -3,7 +3,7 @@
 namespace App\Filament\Fabricator\PageBlocks;
 
 use App\Models\Page;
-use App\Models\Product;
+use App\Models\StoreObjects\Product;
 use Filament\Forms\Components\Builder\Block;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 

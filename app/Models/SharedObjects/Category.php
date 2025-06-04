@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\SharedObjects;
 
+use App\Models\BlogObjects;
+use App\Models\StoreObjects\Product;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -34,7 +36,7 @@ class Category extends BaseCategory
 
     public function posts(): HasMany
     {
-        return $this->hasMany(\App\Models\Post::class, 'category_id', 'id');
+        return $this->hasMany(BlogObjects\Post::class, 'category_id', 'id');
     }
 
     public function products(): MorphToMany

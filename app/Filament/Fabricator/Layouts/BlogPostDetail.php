@@ -2,7 +2,7 @@
 
 namespace App\Filament\Fabricator\Layouts;
 
-use App\Models\Post;
+use App\Models\BlogObjects\Post;
 use Z3d0X\FilamentFabricator\Layouts\Layout;
 
 class BlogPostDetail extends Layout

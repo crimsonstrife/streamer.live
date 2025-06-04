@@ -2,7 +2,7 @@
 
 namespace App\Utilities;
 
-use App\Models\ProductVariant;
+use App\Models\StoreObjects\ProductVariant;
 use App\Services\FourthwallService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;

@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Author;
-use App\Models\Category;
-use App\Models\Comment;
-use App\Models\Post;
+use App\Models\BlogObjects\Author;
+use App\Models\SharedObjects\Category;
+use App\Models\BlogObjects\Comment;
+use App\Models\BlogObjects\Post;
 use App\Models\AuthObjects\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -53,7 +53,7 @@ class BlogSeeder extends Seeder
         // Seed a comment to the post
         if (! empty($hello_world_post->id)) {
             $dummyComment = Comment::updateOrCreate([
-                'commented_on_type' => 'App\Models\Post',
+                'commented_on_type' => 'App\Models\BlogObjects\Post',
                 'commented_on_id' => $hello_world_post->id,
                 'commented_by_type' => 'App\Models\AuthObjects\User',
                 'commented_by_id' => $adminUser->id,

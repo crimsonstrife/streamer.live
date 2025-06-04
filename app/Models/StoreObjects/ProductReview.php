@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\StoreObjects;
 
 use App\Models\AuthObjects\User;
+use App\Models\StoreObjects\OrderItem;
+use App\Models\StoreObjects\Product;
 use App\Utilities\Helpers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

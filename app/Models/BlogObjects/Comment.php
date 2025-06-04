@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\BlogObjects;
 
+use App\Models\SharedObjects\Message;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Traits\HasReactions;

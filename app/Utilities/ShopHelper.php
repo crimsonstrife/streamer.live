@@ -2,7 +2,7 @@
 
 namespace App\Utilities;
 
-use App\Models\OrderItem;
+use App\Models\StoreObjects\OrderItem;
 use App\Models\Page;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;

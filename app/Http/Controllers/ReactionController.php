@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
-use App\Models\Post;
+use App\Models\BlogObjects\Comment;
+use App\Models\BlogObjects\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 

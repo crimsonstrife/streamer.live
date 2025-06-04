@@ -2,7 +2,7 @@
 
 namespace App\Filament\Fabricator\PageBlocks;
 
-use App\Models\Category;
+use App\Models\SharedObjects\Category;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\TextInput;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;

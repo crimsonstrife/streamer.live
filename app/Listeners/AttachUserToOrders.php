@@ -2,7 +2,7 @@
 
 namespace App\Listeners;
 
-use App\Models\Order;
+use App\Models\StoreObjects\Order;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;

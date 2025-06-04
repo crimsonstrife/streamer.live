@@ -2,7 +2,7 @@
 
 namespace App\Models\AuthObjects;
 
-use App\Models\Author;
+use App\Models\BlogObjects\Author;
 use App\Traits\HasAdvancedPermissions;
 use App\Traits\IsPermissible;
 use Database\Factories\UserFactory;

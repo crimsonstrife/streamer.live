@@ -1,9 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\BlogObjects;
 
 use App\Contracts\CommentableContract;
 use App\Enums\Sort;
+use App\Models\BlogObjects\Author;
+use App\Models\SharedObjects\Category;
+use App\Models\BlogObjects\Comment;
 use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;

@@ -1,9 +1,9 @@
 <?php
 
 use App\Enums\Sort;
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use App\Models\AuthObjects\Guest;
-use App\Models\Reaction;
+use App\Models\BlogObjects\Reaction;
 use App\Models\AuthObjects\User;
 use LakM\Comments\Policies\CommentPolicy;
 use LakM\Comments\Policies\ReplyPolicy;

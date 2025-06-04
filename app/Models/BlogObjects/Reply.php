@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\BlogObjects;
 
+use App\Models\SharedObjects\Message;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Traits\HasReactions;
@@ -56,7 +57,7 @@ class Reply extends Message
     public function replyReactions(): HasManyThrough
     {
         return $this->hasManyThrough(
-            ModelResolver::reactionModel(), // Reaction class
+            M::reactionModel(), // Reaction class
             self::class,                    // through Comment (as Reply)
             'reply_id',                     // replies.reply_id → parent comment id
             'reactable_id',                 // reactions.reactable_id → reply comment id

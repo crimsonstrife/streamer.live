@@ -3,7 +3,7 @@
 namespace App\Models\AuthObjects;
 
 use App\Contracts\CommenterContract;
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use App\Traits\CanComment;
 use App\Data\GuestData;
 use App\Facades\SecureGuestMode;
@@ -27,7 +27,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property int|null $deleted_by
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reaction> $reactions
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BlogObjects\Reaction> $reactions
  * @property-read int|null $reactions_count
  * @method static Builder<static>|Guest createOrUpdate(\App\Data\GuestData $data)
  * @method static Builder<static>|Guest newModelQuery()

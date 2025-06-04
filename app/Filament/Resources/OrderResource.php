@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderResource\Pages;
-use App\Models\Order;
+use App\Models\StoreObjects\Order;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;

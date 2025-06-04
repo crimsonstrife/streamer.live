@@ -4,7 +4,7 @@ namespace App\Contracts;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 
 /**
  * Interface CommenterContract

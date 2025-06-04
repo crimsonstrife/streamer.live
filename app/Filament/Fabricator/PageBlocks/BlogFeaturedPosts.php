@@ -2,7 +2,7 @@
 
 namespace App\Filament\Fabricator\PageBlocks;
 
-use App\Models\Post;
+use App\Models\BlogObjects\Post;
 use Filament\Forms\Components\Builder\Block;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 

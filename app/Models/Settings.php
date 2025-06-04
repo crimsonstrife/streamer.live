@@ -112,8 +112,8 @@ abstract class Settings extends SpatieSettings
 
     public function __serialize(): array
     {
-        /** @var Collection $encrypted */
-        /** @var Collection $nonEncrypted */
+        /** @var \App\Models\StoreObjects\Collection $encrypted */
+        /** @var \App\Models\StoreObjects\Collection $nonEncrypted */
         [$encrypted, $nonEncrypted] = $this->toCollection()->partition(
             fn ($value, string $name) => $this->config->isEncrypted($name)
         );
@@ -130,8 +130,8 @@ abstract class Settings extends SpatieSettings
 
         $this->ensureConfigIsLoaded();
 
-        /** @var Collection $encrypted */
-        /** @var Collection $nonEncrypted */
+        /** @var \App\Models\StoreObjects\Collection $encrypted */
+        /** @var \App\Models\StoreObjects\Collection $nonEncrypted */
         [$encrypted, $nonEncrypted] = collect($data)->partition(
             fn ($value, string $name) => $this->config->isEncrypted($name)
         );
@@ -145,7 +145,7 @@ abstract class Settings extends SpatieSettings
     }
 
     /**
-     * @param  Collection|array  $properties
+     * @param  \App\Models\StoreObjects\Collection|array  $properties
      * @return $this
      */
     public function fill($properties): self

@@ -2,9 +2,9 @@
 
 namespace App\View\Helpers;
 
-use App\Models\Collection;
-use App\Models\Post;
-use App\Models\Product;
+use App\Models\StoreObjects\Collection;
+use App\Models\BlogObjects\Post;
+use App\Models\StoreObjects\Product;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
 

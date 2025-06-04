@@ -22,19 +22,19 @@ namespace App\Models{
      * @property string|null $description
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Product> $products
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreObjects\Product> $products
      * @property-read int|null $products_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereDescription($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereName($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereProvider($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereProviderId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereSlug($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Collection whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereProvider($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereProviderId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Collection whereUpdatedAt($value)
      * @mixin \Eloquent
      */
     class Collection extends \Eloquent
@@ -76,7 +76,7 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $deleted_at
      * @property int|null $deleted_by
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reaction> $reactions
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BlogObjects\Reaction> $reactions
      * @property-read int|null $reactions_count
      * @method static Builder<static>|AuthObjects\Guest createOrUpdate(\App\Data\GuestData $data)
      * @method static Builder<static>|AuthObjects\Guest newModelQuery()
@@ -120,32 +120,32 @@ namespace App\Models{
      * @property-read mixed $banner_url
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \LakM\Comments\Models\Comment> $comments
      * @property-read int|null $comments_count
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Reaction> $reactions
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\BlogObjects\Reaction> $reactions
      * @property-read int|null $reactions_count
      * @property \Illuminate\Database\Eloquent\Collection<int, \Spatie\Tags\Tag> $tags
      * @property-read int|null $tags_count
-     * @method static Builder<static>|Post draft()
-     * @method static Builder<static>|Post newModelQuery()
-     * @method static Builder<static>|Post newQuery()
-     * @method static Builder<static>|Post published()
-     * @method static Builder<static>|Post query()
-     * @method static Builder<static>|Post whereBanner($value)
-     * @method static Builder<static>|Post whereBlogAuthorId($value)
-     * @method static Builder<static>|Post whereBlogCategoryId($value)
-     * @method static Builder<static>|Post whereContent($value)
-     * @method static Builder<static>|Post whereCreatedAt($value)
-     * @method static Builder<static>|Post whereExcerpt($value)
-     * @method static Builder<static>|Post whereId($value)
-     * @method static Builder<static>|Post wherePublishedAt($value)
-     * @method static Builder<static>|Post whereSlug($value)
-     * @method static Builder<static>|Post whereTitle($value)
-     * @method static Builder<static>|Post whereUpdatedAt($value)
-     * @method static Builder<static>|Post withAllTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
-     * @method static Builder<static>|Post withAllTagsOfAnyType($tags)
-     * @method static Builder<static>|Post withAnyTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
-     * @method static Builder<static>|Post withAnyTagsOfAnyType($tags)
-     * @method static Builder<static>|Post withAnyTagsOfType(array|string $type)
-     * @method static Builder<static>|Post withoutTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+     * @method static Builder<static>|BlogObjects\Post draft()
+     * @method static Builder<static>|BlogObjects\Post newModelQuery()
+     * @method static Builder<static>|BlogObjects\Post newQuery()
+     * @method static Builder<static>|BlogObjects\Post published()
+     * @method static Builder<static>|BlogObjects\Post query()
+     * @method static Builder<static>|BlogObjects\Post whereBanner($value)
+     * @method static Builder<static>|BlogObjects\Post whereBlogAuthorId($value)
+     * @method static Builder<static>|BlogObjects\Post whereBlogCategoryId($value)
+     * @method static Builder<static>|BlogObjects\Post whereContent($value)
+     * @method static Builder<static>|BlogObjects\Post whereCreatedAt($value)
+     * @method static Builder<static>|BlogObjects\Post whereExcerpt($value)
+     * @method static Builder<static>|BlogObjects\Post whereId($value)
+     * @method static Builder<static>|BlogObjects\Post wherePublishedAt($value)
+     * @method static Builder<static>|BlogObjects\Post whereSlug($value)
+     * @method static Builder<static>|BlogObjects\Post whereTitle($value)
+     * @method static Builder<static>|BlogObjects\Post whereUpdatedAt($value)
+     * @method static Builder<static>|BlogObjects\Post withAllTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+     * @method static Builder<static>|BlogObjects\Post withAllTagsOfAnyType($tags)
+     * @method static Builder<static>|BlogObjects\Post withAnyTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
+     * @method static Builder<static>|BlogObjects\Post withAnyTagsOfAnyType($tags)
+     * @method static Builder<static>|BlogObjects\Post withAnyTagsOfType(array|string $type)
+     * @method static Builder<static>|BlogObjects\Post withoutTags(\ArrayAccess|\Spatie\Tags\Tag|array|string $tags, ?string $type = null)
      * @mixin \Eloquent
      */
     class Post extends \Eloquent implements \App\Contracts\CommentableContract
@@ -170,29 +170,29 @@ namespace App\Models{
      * @property string|null $external_url
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Collection> $collections
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreObjects\Collection> $collections
      * @property-read int|null $collections_count
      * @property-read string $primary_image_url
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductImage> $images
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreObjects\ProductImage> $images
      * @property-read int|null $images_count
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductVariant> $variants
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreObjects\ProductVariant> $variants
      * @property-read int|null $variants_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereAccess($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCompareAtPrice($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDescription($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereExternalUrl($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereName($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product wherePrice($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProvider($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProviderId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSlug($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereState($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereAccess($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereCompareAtPrice($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereExternalUrl($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product wherePrice($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereProvider($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereProviderId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereState($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\Product whereUpdatedAt($value)
      * @mixin \Eloquent
      */
     class Product extends \Eloquent
@@ -215,21 +215,21 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property-read string $image_url
-     * @property-read \App\Models\Product|null $product
-     * @property-read \App\Models\ProductVariant|null $variant
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereHeight($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereLocalPath($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereProductId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereProviderId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereUpdatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereUrl($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereVariantId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductImage whereWidth($value)
+     * @property-read \App\Models\StoreObjects\Product|null $product
+     * @property-read \App\Models\StoreObjects\ProductVariant|null $variant
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereHeight($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereLocalPath($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereProductId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereProviderId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereUrl($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereVariantId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductImage whereWidth($value)
      * @mixin \Eloquent
      */
     class ProductImage extends \Eloquent
@@ -258,29 +258,29 @@ namespace App\Models{
      * @property string|null $dimension_unit
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProductImage> $images
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StoreObjects\ProductImage> $images
      * @property-read int|null $images_count
-     * @property-read \App\Models\Product $product
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereCompareAtPrice($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereDimensionUnit($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereHeight($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereLength($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereName($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant wherePrice($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereProductId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereProviderId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereSku($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereStockCount($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereStockStatus($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUpdatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWeight($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWeightUnit($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereWidth($value)
+     * @property-read \App\Models\StoreObjects\Product $product
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereCompareAtPrice($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereDimensionUnit($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereHeight($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereLength($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant wherePrice($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereProductId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereProviderId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereSku($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereStockCount($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereStockStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereWeight($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereWeightUnit($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|StoreObjects\ProductVariant whereWidth($value)
      * @mixin \Eloquent
      */
     class ProductVariant extends \Eloquent
@@ -307,18 +307,18 @@ namespace App\Models{
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $owner
      * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $reactable
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereOwnerId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereOwnerType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction wherePointValue($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereReactableId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereReactableType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Reaction whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereOwnerId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereOwnerType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction wherePointValue($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereReactableId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereReactableType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|BlogObjects\Reaction whereUpdatedAt($value)
      * @mixin \Eloquent
      */
     class Reaction extends \Eloquent

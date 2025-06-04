@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductVariant;
+use App\Models\StoreObjects\ProductVariant;
 use App\Services\FourthwallService;
 use App\Settings\FourthwallSettings;
 use App\Utilities\CartHelper;

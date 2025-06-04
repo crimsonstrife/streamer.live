@@ -2,7 +2,7 @@
 
 namespace App\Filament\Fabricator\Layouts;
 
-use App\Models\Collection;
+use App\Models\StoreObjects\Collection;
 use App\Models\Page;
 use App\Utilities\ShopHelper;
 use Z3d0X\FilamentFabricator\Layouts\Layout;

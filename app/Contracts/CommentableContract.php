@@ -3,7 +3,7 @@
 namespace App\Contracts;
 
 use App\Enums\Sort;
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 

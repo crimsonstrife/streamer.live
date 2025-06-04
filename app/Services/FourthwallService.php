@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Jobs\ProcessProductImage;
-use App\Models\Collection;
-use App\Models\Product;
-use App\Models\ProductImage;
-use App\Models\ProductVariant;
+use App\Models\StoreObjects\Collection;
+use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\ProductImage;
+use App\Models\StoreObjects\ProductVariant;
 use App\Settings\FourthwallSettings;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;

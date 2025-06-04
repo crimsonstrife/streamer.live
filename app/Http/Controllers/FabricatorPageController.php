@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
+use App\Models\BlogObjects\Post;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Http\Request;

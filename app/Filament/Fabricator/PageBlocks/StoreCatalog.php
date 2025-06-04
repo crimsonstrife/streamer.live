@@ -2,10 +2,10 @@
 
 namespace App\Filament\Fabricator\PageBlocks;
 
-use App\Models\Category;
-use App\Models\Collection;
-use App\Models\Product;
-use App\Models\ProductVariant;
+use App\Models\SharedObjects\Category;
+use App\Models\StoreObjects\Collection;
+use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\ProductVariant;
 use Filament\Forms\Components\Builder\Block;
 use Spatie\Tags\Tag;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;

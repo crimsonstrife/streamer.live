@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\ProductReview;
+use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\ProductReview;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 

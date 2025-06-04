@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 
 interface SpamEvaluator
 {

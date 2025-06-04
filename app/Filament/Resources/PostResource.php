@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\Author;
-use App\Models\Post;
+use App\Models\BlogObjects\Author;
+use App\Models\BlogObjects\Post;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Form;

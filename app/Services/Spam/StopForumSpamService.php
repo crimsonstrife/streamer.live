@@ -2,7 +2,7 @@
 
 namespace App\Services\Spam;
 
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use nickurt\StopForumSpam\Rules\IsSpamEmail;
 use nickurt\StopForumSpam\Rules\IsSpamUsername;

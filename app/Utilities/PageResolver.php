@@ -2,8 +2,8 @@
 
 namespace App\Utilities;
 
-use App\Models\Product;
-use App\Models\Collection;
+use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\Collection;
 use Illuminate\Support\Str;
 
 class PageResolver

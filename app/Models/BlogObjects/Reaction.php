@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\BlogObjects;
 
 use App\Enums\ReactionType;
 use App\Models\AuthObjects\User;

@@ -2,7 +2,7 @@
 
 namespace App\Services\Spam;
 
-use App\Models\Comment;
+use App\Models\BlogObjects\Comment;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Log;
