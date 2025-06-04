@@ -8,7 +8,9 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 
 class StopForumSpamEvaluator implements SpamEvaluator
 {
-    public function __construct(protected StopForumSpamService $checker) {}
+    public function __construct(protected StopForumSpamService $checker)
+    {
+    }
 
     /**
      * @throws BindingResolutionException
