@@ -9,7 +9,9 @@ use nickurt\StopForumSpam\Rules\IsSpamUsername;
 
 class StopForumSpamService
 {
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * @throws BindingResolutionException

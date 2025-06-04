@@ -9,7 +9,9 @@ use RuntimeException;
 
 class WordBlacklistService
 {
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * @throws Exception

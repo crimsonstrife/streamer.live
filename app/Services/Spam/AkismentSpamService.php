@@ -10,7 +10,9 @@ use nickurt\Akismet\Rules\AkismetRule;
 
 class AkismentSpamService
 {
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     /**
      * Returns true if Akismet considers this comment to be spam.
