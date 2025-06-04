@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar as SpatiePermissionRegistrar;
+use App\Services\Permissions\PermissionCacheService;
+use App\Services\Permissions\PermissionLoaderService;
+use App\Services\Permissions\PermissionSerializationService;
 
 use function array_key_exists;
 
@@ -54,15 +57,27 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
 
     public string $cacheKey;
 
-    private array $cachedRoles = [];
 
-    private array $alias = [];
+    private PermissionCacheService $cacheService;
 
-    private array $except = [];
+    private PermissionSerializationService $serializationService;
 
-    private array $wildcardPermissionsIndex = [];
+    private PermissionLoaderService $loaderService;
 
     private const RETRY_LIMIT = 3;
+
+    private function syncCacheProperties(): void
+    {
+        $this->cacheExpirationTime = $this->cacheService->cacheExpirationTime;
+        $this->teams = $this->cacheService->teams;
+        $this->teamsKey = $this->cacheService->teamsKey;
+        $this->cacheKey = $this->cacheService->cacheKey;
+        $this->pivotRole = $this->cacheService->pivotRole;
+        $this->pivotPermission = $this->cacheService->pivotPermission;
+        $this->pivotPermissionSet = $this->cacheService->pivotPermissionSet;
+        $this->pivotPermissionSetGroup = $this->cacheService->pivotPermissionSetGroup;
+        $this->cache = $this->cacheService->getCacheRepository();
+    }
 
     /**
      * PermissionRegistrar constructor.
@@ -75,7 +90,17 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
         $this->roleClass = config('permission.models.role');
 
         $this->cacheManager = $cacheManager;
-        $this->initializeCache();
+
+        $this->cacheService = new PermissionCacheService($cacheManager);
+        $this->serializationService = new PermissionSerializationService($this->permissionClass, $this->roleClass);
+        $this->loaderService = new PermissionLoaderService(
+            $this->cacheService,
+            $this->serializationService,
+            $this->permissionClass,
+            $this->roleClass
+        );
+
+        $this->syncCacheProperties();
 
         parent::__construct($cacheManager);
     }
@@ -89,19 +114,8 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     public function initializeCache(): void
     {
-        $this->cacheExpirationTime = config('permission.cache.expiration_time') ?: DateInterval::createFromDateString('24 hours');
-
-        $this->teams = config('permission.teams', false);
-        $this->teamsKey = config('permission.column_names.team_foreign_key', 'team_id');
-
-        $this->cacheKey = config('permission.cache.key');
-
-        $this->pivotRole = config('permission.column_names.role_pivot_key') ?: 'role_id';
-        $this->pivotPermission = config('permission.column_names.permission_pivot_key') ?: 'permission_id';
-        $this->pivotPermissionSet = config('permission.column_names.permission_set_pivot_key') ?: 'set_id';
-        $this->pivotPermissionSetGroup = config('permission.column_names.permission_set_group_pivot_key') ?: 'group_id';
-
-        $this->cache = $this->getCacheStoreFromConfig();
+        $this->cacheService->initialize();
+        $this->syncCacheProperties();
     }
 
     /**
@@ -115,21 +129,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     protected function getCacheStoreFromConfig(): Repository
     {
-        // the 'default' fallback here is from the permission.php config file,
-        // where 'default' means to use config(cache.default)
-        $cacheDriver = config('permission.cache.store', 'default');
-
-        // when 'default' is specified, no action is required since we already have the default instance
-        if ($cacheDriver === 'default') {
-            return $this->cacheManager->store();
-        }
-
-        // if an undefined cache store is specified, fallback to 'array' which is Laravel's closest equiv to 'none'
-        if (! array_key_exists($cacheDriver, config('cache.stores'))) {
-            $cacheDriver = 'array';
-        }
-
-        return $this->cacheManager->store($cacheDriver);
+        return $this->cacheService->getCacheRepository();
     }
 
     /**
@@ -139,15 +139,13 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     public function setPermissionsTeamId($id): void
     {
-        if ($id instanceof Model) {
-            $id = $id->getKey();
-        }
-        $this->teamId = $id;
+        $this->cacheService->setTeamId($id);
+        $this->teamId = $this->cacheService->getTeamId();
     }
 
     public function getPermissionsTeamId(): int|string|null
     {
-        return $this->teamId;
+        return $this->cacheService->getTeamId();
     }
 
     /**
@@ -180,9 +178,9 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
     public function forgetCachedPermissions(): bool
     {
         $this->permissions = null;
-        $this->forgetWildcardPermissionIndex();
+        $this->cacheService->forgetWildcardPermissionIndex();
 
-        return $this->cache->forget($this->cacheKey);
+        return $this->cacheService->forgetCachedPermissions();
     }
 
     /**
@@ -195,13 +193,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     public function forgetWildcardPermissionIndex(?Model $record = null): void
     {
-        if ($record) {
-            unset($this->wildcardPermissionsIndex[get_class($record)][$record->getKey()]);
-
-            return;
-        }
-
-        $this->wildcardPermissionsIndex = [];
+        $this->cacheService->forgetWildcardPermissionIndex($record);
     }
 
     /**
@@ -216,11 +208,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     public function getWildcardPermissionIndex(Model $record): array
     {
-        if (isset($this->wildcardPermissionsIndex[get_class($record)][$record->getKey()])) {
-            return $this->wildcardPermissionsIndex[get_class($record)][$record->getKey()];
-        }
-
-        return $this->wildcardPermissionsIndex[get_class($record)][$record->getKey()] = app($record->getWildcardClass(), ['record' => $record])->getIndex();
+        return $this->cacheService->getWildcardPermissionIndex($record);
     }
 
     /**
@@ -231,7 +219,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
     public function clearPermissionsCollection(): void
     {
         $this->permissions = null;
-        $this->wildcardPermissionsIndex = [];
+        $this->cacheService->forgetWildcardPermissionIndex();
     }
 
     /**
@@ -265,35 +253,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     private function loadPermissions(int $retryCount = 0): void
     {
-        if ($this->permissions) {
-            return;
-        }
-
-        $this->permissions = $this->cache->remember(
-            $this->cacheKey,
-            $this->cacheExpirationTime,
-            fn () => $this->getSerializedPermissionsForCache()
-        );
-
-        // fallback for old cache method, must be removed on next major version
-        if (! isset($this->permissions['alias'])) {
-            if ($retryCount >= self::RETRY_LIMIT) { // Set a maximum retry limit (e.g., 3 attempts)
-                throw new RuntimeException('Failed to load permissions after retrying ('.$retryCount.') times.');
-            }
-
-            $this->forgetCachedPermissions();
-            $this->loadPermissions($retryCount + 1);
-
-            return;
-        }
-
-        $this->alias = $this->permissions['alias'];
-
-        $this->hydrateRolesCache();
-
-        $this->permissions = $this->getHydratedPermissionCollection();
-
-        $this->cachedRoles = $this->alias = $this->except = [];
+        $this->permissions = $this->loaderService->loadPermissions($retryCount);
     }
 
     /**
@@ -305,25 +265,7 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
      */
     public function getPermissions(array $params = [], bool $onlyOne = false): Collection
     {
-        $this->loadPermissions();
-
-        $method = $onlyOne ? 'first' : 'filter';
-
-        $permissions = $this->permissions->$method(static function ($permission) use ($params) {
-            foreach ($params as $attr => $value) {
-                if ($permission->getAttribute($attr) !== $value) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        if ($onlyOne) {
-            $permissions = new Collection($permissions ? [$permissions] : []);
-        }
-
-        return $permissions;
+        return $this->loaderService->getPermissions($params, $onlyOne);
     }
 
     /**
@@ -405,169 +347,6 @@ class PermissionRegistrar extends SpatiePermissionRegistrar
         return $this->permissionClass::select()->with('roles')->get();
     }
 
-    /**
-     * Alias an array of model fields.
-     *
-     * This method aliases the keys of the given model array using the alias property.
-     * It excludes any keys that are in the except property.
-     *
-     * @param  array|Model  $model  The model or array to alias.
-     * @return array The aliased array.
-     */
-    private function aliasedArray(Model|array $model): array
-    {
-        return collect(is_array($model) ? $model : $model->getAttributes())->except($this->except)
-            ->keyBy(fn ($value, $key) => $this->alias[$key] ?? $key)
-            ->all();
-    }
-
-    /**
-     * Alias model fields with new keys.
-     *
-     * This method assigns aliases to model fields. If the $newKeys parameter is an object
-     * with a getAttributes method, it uses the attributes from that method. Otherwise, it
-     * uses the $newKeys array directly. The method assigns aliases from 'a' to 'h' if no
-     * aliases exist, otherwise from 'j' to 'p'. If an alias already exists for a field, it
-     * is not changed. Finally, it removes any aliases that are in the $except array.
-     *
-     * @param  object|array  $newKeys  An array of new keys or an object with a getAttributes method.
-     */
-    private function aliasModelFields(object|array $newKeys = []): void
-    {
-        $i = 0;
-        $alphas = ! count($this->alias) ? range('a', 'h') : range('j', 'p');
-
-        // Check if $newKeys is an object and has getAttributes method
-        if (is_object($newKeys) && method_exists($newKeys, 'getAttributes')) {
-            $attributes = $newKeys->getAttributes();
-        } else {
-            $attributes = $newKeys;
-        }
-
-        foreach (array_keys($attributes) as $value) {
-            if (! isset($this->alias[$value])) {
-                $this->alias[$value] = $alphas[$i++] ?? $value;
-            }
-        }
-
-        $this->alias = array_diff_key($this->alias, array_flip($this->except));
-    }
-
-    /**
-     * Get the serialized permissions for caching.
-     *
-     * This method retrieves permissions with their associated roles, processes them by aliasing model fields,
-     * and returns an array containing the aliased permissions and roles. It also handles caching of roles.
-     *
-     * @return array The serialized permissions and roles for caching.
-     */
-    private function getSerializedPermissionsForCache(): array
-    {
-        $this->except = config('permission.cache.column_names_except', ['created_at', 'updated_at', 'deleted_at']);
-
-        $permissions = $this->getPermissionsWithRoles()
-            ->map(function ($permission) {
-                if (! $this->alias) {
-                    $this->aliasModelFields($permission);
-                }
-
-                return $this->aliasedArray($permission) + $this->getSerializedRoleRelation($permission);
-            })->all();
-        $roles = array_values($this->cachedRoles);
-        $this->cachedRoles = [];
-
-        return ['alias' => array_flip($this->alias)] + compact('permissions', 'roles');
-    }
-
-    /**
-     * Get the serialized role relation for a given permission.
-     *
-     * This method checks if the given permission has any roles associated with it.
-     * If no roles are found, it returns an empty array. If roles are found, it
-     * ensures that the alias for roles is set and then maps the roles to their
-     * respective keys, caching the aliased array of each role.
-     *
-     * @param  Permission  $permission  The permission instance.
-     * @return array The serialized role relation.
-     */
-    private function getSerializedRoleRelation(Permission $permission): array
-    {
-        if (! $permission->roles->count()) {
-            return [];
-        }
-
-        if (! isset($this->alias['roles'])) {
-            $this->alias['roles'] = 'r';
-            $this->aliasModelFields($permission->roles[0]);
-        }
-
-        return [
-            'r' => $permission->roles->map(function ($role) {
-                if (! isset($this->cachedRoles[$role->getKey()])) {
-                    $this->cachedRoles[$role->getKey()] = $this->aliasedArray($role);
-                }
-
-                return $role->getKey();
-            })->all(),
-        ];
-    }
-
-    /**
-     * Get a collection of hydrated permission instances.
-     *
-     * This method creates a new instance of the permission class and populates it
-     * with the raw attributes from the permissions array, excluding the 'r' key.
-     * It also sets the relation 'roles' with a hydrated collection of roles.
-     *
-     * @return Collection A collection of hydrated permission instances.
-     */
-    private function getHydratedPermissionCollection(): Collection
-    {
-        $permissionInstance = new ($this->getPermissionClass())();
-
-        return Collection::make(array_map(
-            fn ($item) => $permissionInstance->newInstance([], true)
-                ->setRawAttributes($this->aliasedArray(array_diff_key($item, ['r' => 0])), true)
-                ->setRelation('roles', $this->getHydratedRoleCollection($item['r'] ?? [])),
-            $this->permissions['permissions']
-        ));
-    }
-
-    /**
-     * Get a hydrated collection of roles.
-     *
-     * This method takes an array of role identifiers and returns a collection
-     * of roles that are present in the cached roles.
-     *
-     * @param  array  $roles  An array of role identifiers.
-     * @return Collection A collection of hydrated roles.
-     */
-    private function getHydratedRoleCollection(array $roles): Collection
-    {
-        return Collection::make(array_values(
-            array_intersect_key($this->cachedRoles, array_flip($roles))
-        ));
-    }
-
-    /**
-     * Hydrates the roles cache by creating instances of the role class and setting their attributes.
-     *
-     * This method creates a new instance of the role class and iterates over the roles in the permissions array.
-     * For each role, it creates a new instance with raw attributes and stores it in the cachedRoles array.
-     * Finally, it clears the roles in the permissions array.
-     */
-    private function hydrateRolesCache(): void
-    {
-        $roleInstance = new ($this->getRoleClass())();
-
-        array_map(function ($item) use ($roleInstance) {
-            $role = $roleInstance->newInstance([], true)
-                ->setRawAttributes($this->aliasedArray($item), true);
-            $this->cachedRoles[$role->getKey()] = $role;
-        }, $this->permissions['roles']);
-
-        $this->permissions['roles'] = [];
-    }
 
     /**
      * Check if the given value is a valid UID.
