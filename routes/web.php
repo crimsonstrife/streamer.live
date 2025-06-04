@@ -12,11 +12,11 @@ use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
+use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\TeamInvitationController;
-use Illuminate\Http\Request;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -173,7 +173,7 @@ Route::get('auth/twitch/redirect', function (Request $request) {
     session(['twitch_oauth_context' => $context]);
 
     return Socialite::driver('twitch')
-        ->scopes(['user:read:subscriptions','channel:read:subscriptions'])
+        ->scopes(['user:read:subscriptions', 'channel:read:subscriptions'])
         ->redirect();
 })->name('twitch.oauth.redirect');
 
@@ -185,7 +185,7 @@ Route::get('auth/twitch/callback', function (Request $request) {
     // Attempt to get the user from Socialite
     try {
         $twitchUser = Socialite::driver('twitch')->user();
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         Log::error('Socialite error', ['message' => $e->getMessage()]);
         throw $e; // or redirect with error
     }
@@ -194,7 +194,7 @@ Route::get('auth/twitch/callback', function (Request $request) {
         // Admin (streamer) flow: save into settings
         /** @var TwitchSettings $settings */
         $settings = app(TwitchSettings::class);
-        $settings->user_access_token  = $twitchUser->token;
+        $settings->user_access_token = $twitchUser->token;
         $settings->user_refresh_token = $twitchUser->refreshToken;
         $settings->user_token_expires = now()->addSeconds($twitchUser->expiresIn);
 
@@ -203,8 +203,8 @@ Route::get('auth/twitch/callback', function (Request $request) {
         // Visitor flow: save on the User model
         $user = Auth::user();
         if ($user) {
-            $user->twitch_user_token      = $twitchUser->token;
-            $user->twitch_user_refresh    = $twitchUser->refreshToken;
+            $user->twitch_user_token = $twitchUser->token;
+            $user->twitch_user_refresh = $twitchUser->refreshToken;
             $user->twitch_user_expires_at = now()->addSeconds($twitchUser->expiresIn);
 
             $saved = $user->save();

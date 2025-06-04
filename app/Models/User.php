@@ -2,16 +2,25 @@
 
 namespace App\Models;
 
+use App\Traits\HasAdvancedPermissions;
+use App\Traits\IsPermissible;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\HasAvatar;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use Mchev\Banhammer\Models\Ban;
 use Mchev\Banhammer\Traits\Bannable;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -22,8 +31,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $last_name
  * @property string $display_name
  * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property \Illuminate\Support\Carbon $birthdate
+ * @property Carbon|null $email_verified_at
+ * @property Carbon $birthdate
  * @property string|null $pronouns
  * @property string|null $location
  * @property string $password
@@ -33,27 +42,27 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $remember_token
  * @property int|null $current_team_id
  * @property string|null $profile_photo_path
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property string|null $custom_fields
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Mchev\Banhammer\Models\Ban> $bans
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Ban> $bans
  * @property-read int|null $bans_count
  * @property-read string $filament_banhammer_title
  * @property-read string|null $full_name
  * @property-read string $name
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
  * @property-read string $profile_photo_url
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User banned(bool $banned = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User bannedByType(string $className)
- * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User notBanned()
@@ -91,15 +100,19 @@ class User extends Authenticatable implements HasAvatar
 {
     use Bannable;
     use HasApiTokens;
-    use HasApiTokens;
 
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory;
 
     use HasProfilePhoto;
-    use HasRoles;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasAdvancedPermissions, HasRoles {
+        HasAdvancedPermissions::permissions insteadof HasRoles;
+        HasAdvancedPermissions::hasPermissionTo insteadof HasRoles;
+    }
+    use IsPermissible;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -167,7 +180,7 @@ class User extends Authenticatable implements HasAvatar
      *
      * @return string
      */
-    public function getFilamentBanhammerTitleAttribute()
+    public function getFilamentBanhammerTitleAttribute(): string
     {
         return $this->getDisplayNameAttribute();
     }
@@ -189,7 +202,7 @@ class User extends Authenticatable implements HasAvatar
     /**
      * Get the user's full name.
      *
-     * @return string|null The user's full name.
+     * @return string The user's full name.
      */
     public function getFullNameAttribute(): string
     {
