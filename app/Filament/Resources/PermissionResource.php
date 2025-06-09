@@ -20,8 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;
-    protected static ?string $navigationIcon = 'far-shield-check';
-    protected static ?string $activeNavigationIcon = 'fas-shield-check';
+    protected static ?string $navigationIcon = 'fas-key';
     protected static ?string $slug = 'permissions';
     protected ?string $heading = 'Manage Permissions';
     protected ?string $subheading = 'Permissions are used to control access to certain parts of the application.';

@@ -22,8 +22,7 @@ use Spatie\Permission\Models\Permission;
 class PermissionGroupResource extends Resource
 {
     protected static ?string $model = PermissionGroup::class;
-    protected static ?string $navigationIcon = 'far-layer-group';
-    protected static ?string $activeNavigationIcon = 'fas-layer-group';
+    protected static ?string $navigationIcon = 'fas-shield';
     protected static ?string $slug = 'permission-groups';
     protected ?string $heading = 'Manage Permission Groups';
     protected ?string $subheading = 'Permission groups are used to group permissions together.';

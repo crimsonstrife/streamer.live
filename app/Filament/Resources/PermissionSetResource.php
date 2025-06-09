@@ -21,8 +21,7 @@ use Spatie\Permission\Models\Permission;
 class PermissionSetResource extends Resource
 {
     protected static ?string $model = PermissionSet::class;
-    protected static ?string $navigationIcon = 'far-layer-plus';
-    protected static ?string $activeNavigationIcon = 'fas-layer-plus';
+    protected static ?string $navigationIcon = 'fas-shield-halved';
     protected static ?string $slug = 'permission-sets';
     protected ?string $heading = 'Manage Permission Sets';
     protected ?string $subheading = 'Permission sets are used to group permissions together in an advanced way, allowing the muting of permissions for a user.';
