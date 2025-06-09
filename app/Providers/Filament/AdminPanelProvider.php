@@ -109,10 +109,9 @@ class AdminPanelProvider extends PanelProvider
                 FilamentMediaManagerPlugin::make(),
                 FilamentSettingsHubPlugin::make()
                     ->allowSiteSettings(false)
-                    ->allowShield()
                     ->allowSocialMenuSettings(false),
                 FilamentBanhammerPlugin::make(),
-                FilamentSeoPlugin::make()->allowShield(),
+                FilamentSeoPlugin::make(),
             ]);
 
         if (Features::hasApiFeatures()) {
