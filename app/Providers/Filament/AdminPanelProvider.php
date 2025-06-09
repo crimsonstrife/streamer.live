@@ -46,7 +46,7 @@ use TomatoPHP\FilamentSeo\FilamentSeoPlugin;
 use TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin;
 use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
-class AppPanelProvider extends PanelProvider
+class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
@@ -96,7 +96,6 @@ class AppPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
                 FilamentShortUrlPlugin::make(),
                 FilamentFabricatorPlugin::make(),
                 BlogPlugin::make(),
