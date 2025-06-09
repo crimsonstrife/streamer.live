@@ -1,0 +1,64 @@
+{
+    "groups": [
+        {
+            "name": "Super Admin Group",
+            "sets": [
+                "Permission Management",
+                "Permission Set Management",
+                "Permission Group Management",
+                "User Management",
+                "Role Management"
+            ],
+            "permissions": [
+                "access-filament",
+                "access-jetstream",
+                "access-horizon",
+                "access-telescope",
+                "manage-settings",
+                "manage-general-settings",
+                "manage-integration-settings",
+                "manage-discord-settings",
+                "manage-fourthwall-settings",
+                "manage-twitch-settings",
+                "view-analytics",
+                "view-settings",
+                "is-admin",
+                "is-super-admin",
+                "is-moderator"
+            ]
+        },
+        {
+            "name": "Admin Group",
+            "sets": [
+                "Permission Management",
+                "Permission Set Management",
+                "Permission Group Management",
+                "User Management",
+                "Role Management"
+            ],
+            "permissions": [
+                "access-filament",
+                "access-jetstream",
+                "access-horizon",
+                "access-telescope",
+                "manage-settings",
+                "manage-general-settings",
+                "view-analytics",
+                "view-settings",
+                "is-admin",
+                "is-moderator"
+            ]
+        },
+        {
+            "name": "Moderator Group",
+            "sets": [
+                "User Management"
+            ],
+            "permissions": [
+                "access-filament",
+                "view-analytics",
+                "is-moderator"
+            ]
+        }
+    ]
+}

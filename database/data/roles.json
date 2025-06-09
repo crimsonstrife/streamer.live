@@ -1,0 +1,63 @@
+{
+    "roles": [
+        {
+            "name": "super-admin",
+            "groups": [
+                "Super Admin Group",
+                "Admin Group"
+            ],
+            "sets": [
+            ],
+            "permissions": [
+                "manage-settings",
+                "view-analytics",
+                "access-filament",
+                "is-super-admin"
+            ]
+        },
+        {
+            "name": "admin",
+            "groups": [
+                "Admin Group"
+            ],
+            "sets": [
+            ],
+            "permissions": [
+                "manage-settings",
+                "view-analytics",
+                "access-filament",
+                "is-admin"
+            ]
+        },
+        {
+            "name": "moderator",
+            "groups": [
+                "Moderator Group"
+            ],
+            "sets": [
+            ],
+            "permissions": [
+                "manage-settings",
+                "view-analytics",
+                "access-filament",
+                "is-moderator"
+            ]
+        },
+        {
+            "name": "comment-manager",
+            "groups": [
+            ],
+            "sets": [],
+            "permissions": []
+        },
+        {
+            "name": "user",
+            "groups": [
+            ],
+            "sets": ["User Management"],
+            "permissions": [
+                "viewAny"
+            ]
+        }
+    ]
+}
