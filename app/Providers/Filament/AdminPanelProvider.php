@@ -104,9 +104,6 @@ class AdminPanelProvider extends PanelProvider
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
                 FilamentMenusPlugin::make(),
                 FilamentMediaManagerPlugin::make(),
-                FilamentSettingsHubPlugin::make()
-                    ->allowSiteSettings(false)
-                    ->allowSocialMenuSettings(false),
                 FilamentBanhammerPlugin::make(),
                 FilamentSeoPlugin::make(),
             ]);
