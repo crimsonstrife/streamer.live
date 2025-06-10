@@ -10,7 +10,6 @@ use App\Filament\Pages\EditTeam;
 use App\Listeners\SwitchTeam;
 use App\Models\Team;
 use App\Plugins\BlogPlugin;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Filament\Events\TenantSet;
 use Filament\Facades\Filament;
