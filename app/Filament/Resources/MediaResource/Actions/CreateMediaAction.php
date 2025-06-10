@@ -12,7 +12,7 @@ class CreateMediaAction
     public static function make(int $folder_id): Actions\Action
     {
         return Actions\Action::make('create_media')
-            ->mountUsing(function () use ($folder_id){
+            ->mountUsing(function () use ($folder_id) {
                 session()->put('folder_id', $folder_id);
             })
             ->label(trans('filament-media-manager::messages.media.actions.create.label'))
@@ -33,16 +33,15 @@ class CreateMediaAction
             ])
             ->action(function (array $data) use ($folder_id) {
                 $folder = Folder::find($folder_id);
-                if($folder){
-                    if($folder->model){
+                if ($folder) {
+                    if ($folder->model) {
                         $folder->model->addMedia($data['file'])
                             ->withCustomProperties([
                                 'title' => $data['title'],
                                 'description' => $data['description']
                             ])
                             ->toMediaCollection($folder->collection);
-                    }
-                    else {
+                    } else {
                         $folder->addMedia($data['file'])
                             ->withCustomProperties([
                                 'title' => $data['title'],
