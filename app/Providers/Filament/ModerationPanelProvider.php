@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Plugins\MediaManagerPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,8 +20,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
-use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
-use TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin;
 
 class ModerationPanelProvider extends PanelProvider
 {
@@ -69,7 +68,7 @@ class ModerationPanelProvider extends PanelProvider
             ->plugins([
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
-                FilamentMediaManagerPlugin::make(),
+                MediaManagerPlugin::make(),
                 FilamentBanhammerPlugin::make(),
             ]);
     }

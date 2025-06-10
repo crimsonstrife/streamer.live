@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Listeners\SwitchTeam;
 use App\Plugins\BlogPlugin;
+use App\Plugins\MediaManagerPlugin;
 use App\Plugins\MenusPlugin;
 use App\Plugins\ShortUrlPlugin;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
@@ -34,7 +35,6 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Laravel\Fortify\Fortify;
 use Laravel\Jetstream\Jetstream;
-use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
 use TomatoPHP\FilamentSeo\FilamentSeoPlugin;
 use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
@@ -72,10 +72,6 @@ class AdminPanelProvider extends PanelProvider
             'notifications::notification.success' => 'fas-circle-check',
             'notifications::notification.warning' => 'fas-circle-exclamation',
             'notifications::notification.close-button' => 'fas-circle-xmark',
-        ]);
-        // Register CSS files
-        FilamentAsset::register([
-            Css::make('icons-stylesheet', __DIR__ . '/../../../resources/css/icons.css'),
         ]);
 
         /**
@@ -154,7 +150,7 @@ class AdminPanelProvider extends PanelProvider
                 MaintenanceSwitchPlugin::make(),
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
                 MenusPlugin::make(),
-                FilamentMediaManagerPlugin::make(),
+                MediaManagerPlugin::make(),
                 FilamentBanhammerPlugin::make(),
                 FilamentSeoPlugin::make(),
             ]);

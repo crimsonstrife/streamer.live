@@ -32,7 +32,7 @@ class CommentResource extends Resource
 
     protected static ?string $slug = 'blog/comments';
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    protected static ?string $navigationIcon = 'fas-comments';
 
     protected static ?string $navigationGroup = 'Blog';
 

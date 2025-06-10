@@ -74,6 +74,7 @@
         "nesbot/carbon": "^3.8",
         "nickurt/laravel-akismet": "^2.0",
         "nickurt/laravel-stopforumspam": "^2.0",
+        "nwidart/laravel-modules": "*",
         "omaressaouaf/laravel-id-generator": "^1.2",
         "parallax/filament-comments": "^1.4",
         "pxlrbt/filament-activity-log": "^1.1",
@@ -189,7 +190,8 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "wikimedia/composer-merge-plugin": true
         }
     },
     "minimum-stability": "stable",
