@@ -4,20 +4,19 @@ namespace App\Providers\Filament;
 
 use A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin;
 use App\Filament\Pages\ApiTokens;
-use App\Filament\Pages\CreateTeam;
 use App\Filament\Pages\EditProfile;
-use App\Filament\Pages\EditTeam;
 use App\Listeners\SwitchTeam;
 use App\Models\Team;
 use App\Plugins\BlogPlugin;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
+use Exception;
 use Filament\Events\TenantSet;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
-use Filament\Pages;
+use App\Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
@@ -47,6 +46,9 @@ use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
+    /**
+     * @throws Exception
+     */
     public function panel(Panel $panel): Panel
     {
         $panel
@@ -69,11 +71,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-                EditProfile::class,
-                ApiTokens::class,
-            ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -124,25 +121,10 @@ class AdminPanelProvider extends PanelProvider
             ]);
         }
 
-        if (Features::hasTeamFeatures()) {
-            $panel
-                ->tenant(Team::class)
-                ->tenantRegistration(CreateTeam::class)
-                ->tenantProfile(EditTeam::class)
-                ->userMenuItems([
-                    MenuItem::make()
-                        ->label(fn () => __('Team Settings'))
-                        ->icon('heroicon-o-cog-6-tooth')
-                        ->url(fn () => $this->shouldRegisterMenuItem()
-                            ? url(EditTeam::getUrl())
-                            : url($panel->getPath())),
-                ]);
-        }
-
         return $panel;
     }
 
-    public function boot()
+    public function boot(): void
     {
         /**
          * Disable Fortify routes

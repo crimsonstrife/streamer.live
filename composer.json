@@ -42,7 +42,7 @@
         "filament/infolists": "^3.3",
         "filament/notifications": "^3.3",
         "filament/spatie-laravel-media-library-plugin": "^3.3",
-        "filament/spatie-laravel-settings-plugin": "^3.3",
+        "filament/spatie-laravel-settings-plugin": "*",
         "filament/spatie-laravel-tags-plugin": "^3.3",
         "filament/tables": "^3.3",
         "filament/widgets": "^3.3",
