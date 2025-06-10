@@ -13,19 +13,19 @@ class EditCurrentFolderAction
 {
     public static function make(int $folder_id): Actions\Action
     {
-        $form = config('filament-media-manager.model.folder')::query()->where('id',$folder_id)->with('users')->first()?->toArray();
+        $form = config('filament-media-manager.model.folder')::query()->where('id', $folder_id)->with('users')->first()?->toArray();
         $form['users'] = collect($form['users'])->pluck('id')->toArray();
 
         return Actions\Action::make('edit_current_folder')
             ->hiddenLabel()
-            ->mountUsing(function () use ($folder_id){
+            ->mountUsing(function () use ($folder_id) {
                 session()->put('folder_id', $folder_id);
             })
             ->tooltip(trans('filament-media-manager::messages.media.actions.edit.label'))
             ->label(trans('filament-media-manager::messages.media.actions.edit.label'))
             ->icon('heroicon-o-pencil-square')
             ->color('warning')
-            ->form(function (){
+            ->form(function () {
                 return [
                     Grid::make([
                         "sm" => 1,
@@ -51,7 +51,7 @@ class EditCurrentFolderAction
                                 ->columnSpanFull(),
                             Forms\Components\TextInput::make('password')
                                 ->label(trans('filament-media-manager::messages.folders.columns.password'))
-                                ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                                ->hidden(fn (Forms\Get $get) => !$get('is_protected'))
                                 ->confirmed()
                                 ->password()
                                 ->revealable()
@@ -59,7 +59,7 @@ class EditCurrentFolderAction
                                 ->maxLength(255),
                             Forms\Components\TextInput::make('password_confirmation')
                                 ->label(trans('filament-media-manager::messages.folders.columns.password_confirmation'))
-                                ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                                ->hidden(fn (Forms\Get $get) => !$get('is_protected'))
                                 ->password()
                                 ->required()
                                 ->revealable()
@@ -71,14 +71,14 @@ class EditCurrentFolderAction
                                 ->columnSpanFull(),
                             Forms\Components\Toggle::make('has_user_access')
                                 ->visible(filament('filament-media-manager')->allowUserAccess)
-                                ->hidden(fn(Forms\Get $get) => $get('is_public'))
+                                ->hidden(fn (Forms\Get $get) => $get('is_public'))
                                 ->label(trans('filament-media-manager::messages.folders.columns.has_user_access'))
                                 ->live()
                                 ->columnSpanFull(),
                             Forms\Components\Select::make('users')
                                 ->required()
                                 ->visible(filament('filament-media-manager')->allowUserAccess)
-                                ->hidden(fn(Forms\Get $get) => !$get('has_user_access'))
+                                ->hidden(fn (Forms\Get $get) => !$get('has_user_access'))
                                 ->label(trans('filament-media-manager::messages.folders.columns.users'))
                                 ->searchable()
                                 ->multiple()
@@ -87,11 +87,11 @@ class EditCurrentFolderAction
                 ];
             })
             ->fillForm($form)
-            ->action(function (array $data) use ($folder_id){
+            ->action(function (array $data) use ($folder_id) {
                 $folder = config('filament-media-manager.model.folder')::find($folder_id);
                 $folder->update($data);
 
-                if(isset($data['users'])){
+                if (isset($data['users'])) {
                     $folder->users()->sync($data['users']);
                 }
 

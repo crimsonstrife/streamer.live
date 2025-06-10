@@ -10,7 +10,6 @@ use TomatoPHP\FilamentMediaManager\Pages\FoldersPage;
 use App\Filament\Resources\FolderResource;
 use App\Filament\Resources\MediaResource;
 
-
 class MediaManagerPlugin implements Plugin
 {
     private bool $isActive = false;
@@ -38,14 +37,13 @@ class MediaManagerPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        if(class_exists(Module::class) && \Nwidart\Modules\Facades\Module::find('FilamentMediaManager')?->isEnabled()){
+        if (class_exists(Module::class) && \Nwidart\Modules\Facades\Module::find('FilamentMediaManager')?->isEnabled()) {
             $this->isActive = true;
-        }
-        else {
+        } else {
             $this->isActive = true;
         }
 
-        if($this->isActive) {
+        if ($this->isActive) {
             $panel->resources([
                 FolderResource::class,
                 MediaResource::class

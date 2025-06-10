@@ -14,8 +14,8 @@ class CreateSubFolderAction
     public static function make(int $folder_id): Actions\Action
     {
         return Actions\Action::make('create_sub_folder')
-            ->hidden(fn()=> !filament('filament-media-manager')->allowSubFolders)
-            ->mountUsing(function () use ($folder_id){
+            ->hidden(fn () => !filament('filament-media-manager')->allowSubFolders)
+            ->mountUsing(function () use ($folder_id) {
                 session()->put('folder_id', $folder_id);
             })
             ->color('info')
@@ -53,14 +53,14 @@ class CreateSubFolderAction
                     ->columnSpanFull(),
                 Forms\Components\TextInput::make('password')
                     ->label(trans('filament-media-manager::messages.folders.columns.password'))
-                    ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                    ->hidden(fn (Forms\Get $get) => !$get('is_protected'))
                     ->password()
                     ->revealable()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password_confirmation')
                     ->label(trans('filament-media-manager::messages.folders.columns.password_confirmation'))
-                    ->hidden(fn(Forms\Get $get) => !$get('is_protected'))
+                    ->hidden(fn (Forms\Get $get) => !$get('is_protected'))
                     ->password()
                     ->required()
                     ->revealable()
@@ -68,7 +68,7 @@ class CreateSubFolderAction
             ])
             ->action(function (array $data) use ($folder_id) {
                 $folder = Folder::find($folder_id);
-                if($folder){
+                if ($folder) {
                     $data['user_id'] = auth()->user()->id;
                     $data['user_type'] = get_class(auth()->user());
                     $data['model_id'] = $folder_id;

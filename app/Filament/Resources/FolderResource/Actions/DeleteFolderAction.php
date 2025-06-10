@@ -11,7 +11,7 @@ class DeleteFolderAction
     public static function make(int $folder_id): Actions\Action
     {
         return Actions\Action::make('delete_folder')
-            ->mountUsing(function () use ($folder_id){
+            ->mountUsing(function () use ($folder_id) {
                 session()->put('folder_id', $folder_id);
             })
             ->hiddenLabel()
@@ -20,7 +20,7 @@ class DeleteFolderAction
             ->label(trans('filament-media-manager::messages.media.actions.delete.label'))
             ->icon('heroicon-o-trash')
             ->color('danger')
-            ->action(function () use ($folder_id){
+            ->action(function () use ($folder_id) {
                 $folder = config('filament-media-manager.model.folder')::find($folder_id);
                 $folder->delete();
                 session()->forget('folder_id');
