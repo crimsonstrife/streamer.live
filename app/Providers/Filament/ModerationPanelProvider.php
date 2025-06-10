@@ -70,9 +70,6 @@ class ModerationPanelProvider extends PanelProvider
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
                 FilamentMediaManagerPlugin::make(),
-                FilamentSettingsHubPlugin::make()
-                    ->allowSiteSettings()
-                    ->allowSocialMenuSettings(),
                 FilamentBanhammerPlugin::make(),
             ]);
     }

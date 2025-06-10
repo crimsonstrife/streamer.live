@@ -3,15 +3,11 @@
 namespace App\Providers\Filament;
 
 use A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin;
-use App\Filament\Pages\ApiTokens;
-use App\Filament\Pages\EditProfile;
 use App\Listeners\SwitchTeam;
-use App\Models\Team;
 use App\Plugins\BlogPlugin;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Exception;
 use Filament\Events\TenantSet;
-use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -32,16 +28,11 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Event;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
-use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 use Laravel\Fortify\Fortify;
-use Laravel\Jetstream\Features;
 use Laravel\Jetstream\Jetstream;
-use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
-use Stephenjude\FilamentDebugger\DebuggerPlugin;
 use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
 use TomatoPHP\FilamentMenus\FilamentMenusPlugin;
 use TomatoPHP\FilamentSeo\FilamentSeoPlugin;
-use TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin;
 use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
 class AdminPanelProvider extends PanelProvider
