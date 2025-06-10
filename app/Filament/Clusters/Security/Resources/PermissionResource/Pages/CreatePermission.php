@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\PermissionResource\Pages;
+namespace App\Filament\Clusters\Security\Resources\PermissionResource\Pages;
 
-use App\Filament\Resources\PermissionResource;
+use App\Filament\Clusters\Security\Resources\PermissionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 

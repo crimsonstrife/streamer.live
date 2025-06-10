@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\PermissionSetResource\Pages;
+namespace App\Filament\Clusters\Security\Resources\PermissionSetResource\Pages;
 
-use App\Filament\Resources\PermissionSetResource;
+use App\Filament\Clusters\Security\Resources\PermissionSetResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

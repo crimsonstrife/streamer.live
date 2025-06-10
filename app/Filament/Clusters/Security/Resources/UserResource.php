@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Security\Resources;
 
 use App\Filament\Clusters\Security;
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\AuthObjects\Role;
 use App\Models\AuthObjects\User;
 use Filament\Forms;
@@ -74,9 +72,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => UserResource\Pages\ListUsers::route('/'),
+            'create' => UserResource\Pages\CreateUser::route('/create'),
+            'edit' => UserResource\Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }

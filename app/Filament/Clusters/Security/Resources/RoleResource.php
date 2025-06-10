@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Security\Resources;
 
 use App\Filament\Clusters\Security;
-use App\Filament\Resources\PermissionGroupResource\Pages;
-use App\Filament\Resources\PermissionGroupResource\RelationManagers;
 use App\Models\AuthObjects\PermissionGroup;
 use App\Models\AuthObjects\PermissionSet;
+use App\Models\AuthObjects\Role;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -19,15 +18,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Spatie\Permission\Models\Permission;
 
-class PermissionGroupResource extends Resource
+class RoleResource extends Resource
 {
-    protected static ?string $model = PermissionGroup::class;
-    protected static ?string $navigationIcon = 'fas-shield';
-    protected static ?string $slug = 'permission-groups';
-    protected ?string $heading = 'Manage Permission Groups';
-    protected ?string $subheading = 'Permission groups are used to group permissions together.';
+    protected static ?string $model = Role::class;
+    protected static ?string $navigationIcon = 'fas-user-shield';
+    protected static ?string $slug = 'roles';
+    protected ?string $heading = 'Manage Roles';
+    protected ?string $subheading = 'Roles are used to assign permissions to users.';
     protected static ?string $navigationGroup = 'Access Control';
-    protected static ?string $navigationLabel = 'Permission Groups';
+    protected static ?string $navigationLabel = 'Roles';
     protected static ?string $cluster = Security::class;
 
     public static function form(Form $form): Form
@@ -35,15 +34,20 @@ class PermissionGroupResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->required()->maxLength(255),
+                Select::make('permissions')
+                    ->multiple()
+                    ->relationship('permissions', 'name')
+                    ->options(Permission::all()->pluck('name', 'id'))
+                    ->preload(),
                 Select::make('permission_sets')
                     ->multiple()
                     ->relationship('permissionSets', 'name')
                     ->options(PermissionSet::all()->pluck('name', 'id'))
                     ->preload(),
-                Select::make('permissions')
+                Select::make('permission_groups')
                     ->multiple()
-                    ->relationship('permissions', 'name')
-                    ->options(Permission::all()->pluck('name', 'id'))
+                    ->relationship('permissionGroups', 'name')
+                    ->options(PermissionGroup::all()->pluck('name', 'id'))
                     ->preload(),
             ]);
     }
@@ -53,8 +57,9 @@ class PermissionGroupResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('permission_sets_count')->counts('permissionSets')->label('Permission Sets')->badge(),
                 TextColumn::make('permissions_count')->counts('permissions')->label('Permissions')->badge(),
+                TextColumn::make('permission_sets_count')->counts('permissionSets')->label('Permission Sets')->badge(),
+                TextColumn::make('permission_groups_count')->counts('permissionGroups')->label('Permission Groups')->badge(),
             ])
             ->filters([
                 //
@@ -77,9 +82,9 @@ class PermissionGroupResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPermissionGroups::route('/'),
-            'create' => Pages\CreatePermissionGroup::route('/create'),
-            'edit' => Pages\EditPermissionGroup::route('/{record}/edit'),
+            'index' => RoleResource\Pages\ListRoles::route('/'),
+            'create' => RoleResource\Pages\CreateRole::route('/create'),
+            'edit' => RoleResource\Pages\EditRole::route('/{record}/edit'),
         ];
     }
 }

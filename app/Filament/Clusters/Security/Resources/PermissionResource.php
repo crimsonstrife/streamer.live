@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Security\Resources;
 
 use App\Filament\Clusters\Security;
-use App\Filament\Resources\PermissionResource\Pages;
-use App\Filament\Resources\PermissionResource\RelationManagers;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
@@ -69,9 +67,9 @@ class PermissionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPermissions::route('/'),
-            'create' => Pages\CreatePermission::route('/create'),
-            'edit' => Pages\EditPermission::route('/{record}/edit'),
+            'index' => PermissionResource\Pages\ListPermissions::route('/'),
+            'create' => PermissionResource\Pages\CreatePermission::route('/create'),
+            'edit' => PermissionResource\Pages\EditPermission::route('/{record}/edit'),
         ];
     }
 }

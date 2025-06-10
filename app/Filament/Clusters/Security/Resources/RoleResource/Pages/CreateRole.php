@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\RoleResource\Pages;
+namespace App\Filament\Clusters\Security\Resources\RoleResource\Pages;
 
-use App\Filament\Resources\RoleResource;
+use App\Filament\Clusters\Security\Resources\RoleResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 

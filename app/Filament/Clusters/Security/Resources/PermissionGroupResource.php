@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Clusters\Security\Resources;
 
 use App\Filament\Clusters\Security;
-use App\Filament\Resources\PermissionSetResource\Pages;
-use App\Filament\Resources\PermissionSetResource\RelationManagers;
+use App\Models\AuthObjects\PermissionGroup;
 use App\Models\AuthObjects\PermissionSet;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -18,15 +17,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Spatie\Permission\Models\Permission;
 
-class PermissionSetResource extends Resource
+class PermissionGroupResource extends Resource
 {
-    protected static ?string $model = PermissionSet::class;
-    protected static ?string $navigationIcon = 'fas-shield-halved';
-    protected static ?string $slug = 'permission-sets';
-    protected ?string $heading = 'Manage Permission Sets';
-    protected ?string $subheading = 'Permission sets are used to group permissions together in an advanced way, allowing the muting of permissions for a user.';
+    protected static ?string $model = PermissionGroup::class;
+    protected static ?string $navigationIcon = 'fas-shield';
+    protected static ?string $slug = 'permission-groups';
+    protected ?string $heading = 'Manage Permission Groups';
+    protected ?string $subheading = 'Permission groups are used to group permissions together.';
     protected static ?string $navigationGroup = 'Access Control';
-    protected static ?string $navigationLabel = 'Permission Sets';
+    protected static ?string $navigationLabel = 'Permission Groups';
     protected static ?string $cluster = Security::class;
 
     public static function form(Form $form): Form
@@ -34,6 +33,11 @@ class PermissionSetResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->required()->maxLength(255),
+                Select::make('permission_sets')
+                    ->multiple()
+                    ->relationship('permissionSets', 'name')
+                    ->options(PermissionSet::all()->pluck('name', 'id'))
+                    ->preload(),
                 Select::make('permissions')
                     ->multiple()
                     ->relationship('permissions', 'name')
@@ -47,6 +51,7 @@ class PermissionSetResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->sortable()->searchable(),
+                TextColumn::make('permission_sets_count')->counts('permissionSets')->label('Permission Sets')->badge(),
                 TextColumn::make('permissions_count')->counts('permissions')->label('Permissions')->badge(),
             ])
             ->filters([
@@ -70,9 +75,9 @@ class PermissionSetResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPermissionSets::route('/'),
-            'create' => Pages\CreatePermissionSet::route('/create'),
-            'edit' => Pages\EditPermissionSet::route('/{record}/edit'),
+            'index' => PermissionGroupResource\Pages\ListPermissionGroups::route('/'),
+            'create' => PermissionGroupResource\Pages\CreatePermissionGroup::route('/create'),
+            'edit' => PermissionGroupResource\Pages\EditPermissionGroup::route('/{record}/edit'),
         ];
     }
 }
