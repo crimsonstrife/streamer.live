@@ -17,7 +17,7 @@ use Illuminate\Support\HtmlString;
 
 class TwitchSettings extends SettingsPage
 {
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static ?string $navigationIcon = 'fab-twitch';
 
     protected static string $settings = \App\Settings\TwitchSettings::class;
 

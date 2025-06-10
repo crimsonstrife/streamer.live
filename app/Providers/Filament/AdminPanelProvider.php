@@ -2,9 +2,10 @@
 
 namespace App\Providers\Filament;
 
-use A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin;
 use App\Listeners\SwitchTeam;
 use App\Plugins\BlogPlugin;
+use App\Plugins\MenusPlugin;
+use App\Plugins\ShortUrlPlugin;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Exception;
 use Filament\Events\TenantSet;
@@ -16,7 +17,10 @@ use App\Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
+use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets;
 use Gerenuk\FilamentBanhammer\FilamentBanhammerPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -31,12 +35,68 @@ use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Laravel\Fortify\Fortify;
 use Laravel\Jetstream\Jetstream;
 use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
-use TomatoPHP\FilamentMenus\FilamentMenusPlugin;
 use TomatoPHP\FilamentSeo\FilamentSeoPlugin;
 use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
+    /**
+     * Boot the panel provider.
+     */
+    public function boot(): void
+    {
+        // Register the icon overrides for the Filament admin panel.
+        FilamentIcon::register([
+            'panels::global-search.field' => 'fas-magnifying-glass',
+            'panels::global-search.clear' => 'fas-circle-xmark',
+            'panels::pages.dashboard.actions.filter' => 'fas-filter',
+            'panels::pages.dashboard.actions.sort' => 'fas-sort',
+            'panels::pages.dashboard.actions.view' => 'fas-eye',
+            'panels::pages.dashboard.filters.clear' => 'fas-times',
+            'panels::pages.dashboard.filters.apply' => 'fas-check',
+            'panels::user-menu.profile-item' => 'fas-circle-user',
+            'panels::user-menu.account-item' => 'fas-user-gear',
+            'panels::user-menu.logout-button' => 'fas-right-to-bracket',
+            'panels::sidebar.group.collapse-button' => 'fas-angle-up',
+            'forms::components.checkbox-list.search-field' => 'fas-magnifying-glass',
+            'tables::search-field' => 'fas-magnifying-glass',
+            'tables::actions.view' => 'fas-eye',
+            'tables::actions.filter' => 'fas-filter',
+            'tables::actions.sort' => 'fas-sort',
+            'tables::header-cell.sort-asc-button' => 'fas-sort-up',
+            'tables::header-cell.sort-desc-button' => 'fas-sort-down',
+            'tables::columns.icon-column.false' => 'fas-circle-xmark',
+            'tables::columns.icon-column.true' => 'fas-circle-check',
+            'notifications::notification.danger' => 'fas-triangle-exclamation',
+            'notifications::notification.info' => 'fas-circle-info',
+            'notifications::notification.success' => 'fas-circle-check',
+            'notifications::notification.warning' => 'fas-circle-exclamation',
+            'notifications::notification.close-button' => 'fas-circle-xmark',
+        ]);
+        // Register CSS files
+        FilamentAsset::register([
+            Css::make('icons-stylesheet', __DIR__ . '/../../../resources/css/icons.css'),
+        ]);
+
+        /**
+         * Disable Fortify routes
+         */
+        Fortify::$registersRoutes = true;
+
+        /**
+         * Disable Jetstream routes
+         */
+        Jetstream::$registersRoutes = true;
+
+        /**
+         * Listen and switch team if tenant was changed
+         */
+        Event::listen(
+            TenantSet::class,
+            SwitchTeam::class,
+        );
+    }
+
     /**
      * @throws Exception
      */
@@ -86,40 +146,19 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                FilamentShortUrlPlugin::make(),
+                ShortUrlPlugin::make(),
                 FilamentFabricatorPlugin::make(),
                 BlogPlugin::make(),
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
                 MaintenanceSwitchPlugin::make(),
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
-                FilamentMenusPlugin::make(),
+                MenusPlugin::make(),
                 FilamentMediaManagerPlugin::make(),
                 FilamentBanhammerPlugin::make(),
                 FilamentSeoPlugin::make(),
             ]);
 
         return $panel;
-    }
-
-    public function boot(): void
-    {
-        /**
-         * Disable Fortify routes
-         */
-        Fortify::$registersRoutes = true;
-
-        /**
-         * Disable Jetstream routes
-         */
-        Jetstream::$registersRoutes = true;
-
-        /**
-         * Listen and switch team if tenant was changed
-         */
-        Event::listen(
-            TenantSet::class,
-            SwitchTeam::class,
-        );
     }
 }

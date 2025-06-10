@@ -12,7 +12,7 @@ use Illuminate\Contracts\Support\Htmlable;
 class Dashboard extends Page
 {
     protected static string $routePath = '/';
-
+    protected static ?string $navigationIcon = 'fas-house';
     protected static ?int $navigationSort = -2;
 
     /**
@@ -25,13 +25,6 @@ class Dashboard extends Page
         return static::$navigationLabel ??
             static::$title ??
             __('filament-panels::pages/dashboard.title');
-    }
-
-    public static function getNavigationIcon(): string | Htmlable | null
-    {
-        return static::$navigationIcon
-            ?? FilamentIcon::resolve('panels::pages.dashboard.navigation-item')
-            ?? (Filament::hasTopNavigation() ? 'heroicon-m-home' : 'heroicon-o-home');
     }
 
     public static function getRoutePath(): string

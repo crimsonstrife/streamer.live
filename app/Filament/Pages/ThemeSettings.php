@@ -10,7 +10,7 @@ use Filament\Pages\SettingsPage;
 
 class ThemeSettings extends SettingsPage
 {
-    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+    protected static ?string $navigationIcon = 'fas-swatchbook';
 
     protected static string $settings = LookFeelSettings::class;
 
