@@ -32,12 +32,19 @@ class ModerationPanelProvider extends PanelProvider
         return $panel
             ->id('moderation')
             ->path('moderation')
+            ->login()
+            ->registration()
+            ->passwordReset()
+            ->emailVerification()
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->viteTheme('resources/css/filament/moderation/theme.css')
             ->discoverResources(in: app_path('Filament/Moderation/Resources'), for: 'App\\Filament\\Moderation\\Resources')
             ->discoverPages(in: app_path('Filament/Moderation/Pages'), for: 'App\\Filament\\Moderation\\Pages')
+            ->pages([
+                Pages\Dashboard::class,
+            ])
             ->discoverWidgets(in: app_path('Filament/Moderation/Widgets'), for: 'App\\Filament\\Moderation\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,

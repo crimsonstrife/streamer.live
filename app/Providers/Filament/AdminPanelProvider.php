@@ -63,15 +63,12 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Gray,
             ])
-            ->userMenuItems([
-                'profile' => MenuItem::make()
-                    ->label(fn () => auth()->user()->name)
-                    ->icon('heroicon-o-user-circle')
-                    ->url(fn (): string => EditProfilePage::getUrl()),
+            ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
+            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
+            ->pages([
+                Pages\Dashboard::class,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
@@ -110,17 +107,6 @@ class AdminPanelProvider extends PanelProvider
                 FilamentSeoPlugin::make(),
             ]);
 
-        if (Features::hasApiFeatures()) {
-            $panel->userMenuItems([
-                MenuItem::make()
-                    ->label('API Tokens')
-                    ->icon('heroicon-o-key')
-                    ->url(fn () => $this->shouldRegisterMenuItem()
-                        ? url(ApiTokens::getUrl())
-                        : url($panel->getPath())),
-            ]);
-        }
-
         return $panel;
     }
 
@@ -143,14 +129,5 @@ class AdminPanelProvider extends PanelProvider
             TenantSet::class,
             SwitchTeam::class,
         );
-    }
-
-    public function shouldRegisterMenuItem(): bool
-    {
-        $hasVerifiedEmail = auth()->user()?->hasVerifiedEmail();
-
-        return Filament::hasTenancy()
-            ? $hasVerifiedEmail && Filament::getTenant()
-            : $hasVerifiedEmail;
     }
 }

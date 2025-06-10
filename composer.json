@@ -106,7 +106,7 @@
         "spatie/laravel-permission": "^6.15",
         "spatie/laravel-searchable": "^1.13",
         "spatie/laravel-settings": "^3.4",
-        "spatie/laravel-sitemap": "^7.3",
+        "spatie/laravel-sitemap": "^7.3.6",
         "spatie/laravel-sluggable": "^3.7",
         "spatie/laravel-tags": "^4.9",
         "stephenjude/filament-blog": "^4.0",
