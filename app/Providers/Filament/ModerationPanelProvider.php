@@ -9,6 +9,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use App\Filament\Pages;
+use App\Filament\Resources;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -40,6 +41,9 @@ class ModerationPanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/css/filament/moderation/theme.css')
             ->discoverResources(in: app_path('Filament/Moderation/Resources'), for: 'App\\Filament\\Moderation\\Resources')
+            ->resources([
+                Resources\UserResource::class,
+            ])
             ->discoverPages(in: app_path('Filament/Moderation/Pages'), for: 'App\\Filament\\Moderation\\Pages')
             ->pages([
                 Pages\Dashboard::class,
