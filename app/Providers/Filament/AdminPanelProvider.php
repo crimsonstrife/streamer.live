@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Listeners\SwitchTeam;
+use App\Livewire\CurrentStreamStatus;
+use App\Livewire\PanelCalendarWidget;
 use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
 use App\Plugins\MediaManagerPlugin;
@@ -136,6 +138,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                CurrentStreamStatus::class,
+                PanelCalendarWidget::class,
             ])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->middleware([
