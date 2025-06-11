@@ -5,6 +5,8 @@ namespace App\Providers\Filament;
 use App\Listeners\SwitchTeam;
 use App\Livewire\CurrentStreamStatus;
 use App\Livewire\PanelCalendarWidget;
+use App\Livewire\RecentFollowers;
+use App\Livewire\UpcomingStream;
 use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
 use App\Plugins\MediaManagerPlugin;
@@ -139,6 +141,8 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
                 CurrentStreamStatus::class,
+                UpcomingStream::class,
+                RecentFollowers::class,
                 PanelCalendarWidget::class,
             ])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')

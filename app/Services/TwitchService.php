@@ -501,4 +501,62 @@ class TwitchService
             'recorded_at' => now(),
         ]);
     }
+
+    /**
+     * Get the net change in follower count over the past $days days.
+     * @throws ConnectionException
+     */
+    public function getFollowerDelta(int $days = 7): int
+    {
+        $broadcasterId = $this->getBroadcasterId();
+        if (! $broadcasterId) {
+            return 0;
+        }
+
+        // Find the most recent metric at or before $days ago
+        $cutoff = Carbon::now()->subDays($days);
+        $pastValue = TwitchMetric::where('metric', 'followers')
+            ->where('recorded_at', '<=', $cutoff)
+            ->orderByDesc('recorded_at')
+            ->value('value');
+
+        // Current total (this also records a new metric)
+        $current = $this->getFollowerCount();
+
+        if (is_null($pastValue)) {
+            // No historical data → can’t compute change
+            return 0;
+        }
+
+        return $current - $pastValue;
+    }
+
+    /**
+     * Get the net change in subscriber count over the past $days days.
+     */
+    public function getSubscriberDelta(int $days = 7): int
+    {
+        $broadcasterId = $this->getBroadcasterId();
+        if (! $broadcasterId) {
+            return 0;
+        }
+
+        $cutoff = Carbon::now()->subDays($days);
+        $pastValue = TwitchMetric::where('metric', 'subscribers')
+            ->where('recorded_at', '<=', $cutoff)
+            ->orderByDesc('recorded_at')
+            ->value('value');
+
+        try {
+            $current = $this->getSubscriberCount();
+        } catch (ConnectionException|RequestException $e) {
+            Log::error('Error retrieving the Subscriber count: ' . $e->getMessage());
+        }
+
+        if (is_null($pastValue)) {
+            return 0;
+        }
+
+        return $current - $pastValue;
+    }
 }
