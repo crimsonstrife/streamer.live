@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Plugins\BanPlugin;
 use App\Plugins\MediaManagerPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -12,7 +13,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
-use Gerenuk\FilamentBanhammer\FilamentBanhammerPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -69,7 +69,7 @@ class ModerationPanelProvider extends PanelProvider
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
                 MediaManagerPlugin::make(),
-                FilamentBanhammerPlugin::make(),
+                BanPlugin::make(),
             ]);
     }
 }

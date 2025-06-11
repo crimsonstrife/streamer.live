@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Listeners\SwitchTeam;
+use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
 use App\Plugins\MediaManagerPlugin;
 use App\Plugins\MenusPlugin;
@@ -23,7 +24,6 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets;
-use Gerenuk\FilamentBanhammer\FilamentBanhammerPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -151,7 +151,7 @@ class AdminPanelProvider extends PanelProvider
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
                 MenusPlugin::make(),
                 MediaManagerPlugin::make(),
-                FilamentBanhammerPlugin::make(),
+                BanPlugin::make(),
                 FilamentSeoPlugin::make(),
             ]);
 
