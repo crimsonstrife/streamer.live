@@ -44,6 +44,7 @@ class ModerationPanelProvider extends PanelProvider
             ->resources([
                 Resources\UserResource::class,
                 Resources\RoleResource::class,
+                Resources\CommentResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Moderation/Pages'), for: 'App\\Filament\\Moderation\\Pages')
             ->pages([
