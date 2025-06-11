@@ -26,7 +26,7 @@ class ProductCategoryResource extends Resource
 
     protected static ?string $navigationGroup = 'Store';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'fas-tags';
 
     protected static ?int $navigationSort = 1;
 

@@ -115,6 +115,9 @@ class AdminPanelProvider extends PanelProvider
             ->resources([
                 Resources\UserResource::class,
                 Resources\RoleResource::class,
+                Resources\ProductResource::class,
+                Resources\ProductCategoryResource::class,
+                Resources\OrderResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
