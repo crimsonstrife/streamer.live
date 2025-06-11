@@ -4,7 +4,7 @@ namespace App\Filament\Resources\FolderResource\Actions;
 
 use Illuminate\Support\Str;
 use TomatoPHP\FilamentIcons\Components\IconPicker;
-use TomatoPHP\FilamentMediaManager\Models\Folder;
+use App\Models\Folder;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;

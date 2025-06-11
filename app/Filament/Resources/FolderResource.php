@@ -8,9 +8,7 @@ use TomatoPHP\FilamentMediaManager\Resources\FolderResource as BaseFolderResourc
 class FolderResource extends BaseFolderResource
 {
     protected static ?string $navigationGroup = 'CMS';
-    protected static ?string $slug = 'cms/folders';
     protected static ?string $navigationIcon = 'fas-folder-tree';
-
     public static function getPages(): array
     {
         return [

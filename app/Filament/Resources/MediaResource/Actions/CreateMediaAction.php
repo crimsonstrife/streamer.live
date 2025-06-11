@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\MediaResource\Actions;
 
-use TomatoPHP\FilamentMediaManager\Models\Folder;
+use App\Models\Folder;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
