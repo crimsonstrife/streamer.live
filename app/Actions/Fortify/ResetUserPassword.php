@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Models\AuthObjects\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laragear\Turnstile\Facades\Turnstile;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 
 class ResetUserPassword implements ResetsUserPasswords
@@ -20,6 +21,7 @@ class ResetUserPassword implements ResetsUserPasswords
     {
         Validator::make($input, [
             'password' => $this->passwordRules(),
+            Turnstile::rules(),
         ])->validate();
 
         $user->forceFill([

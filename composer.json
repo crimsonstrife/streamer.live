@@ -56,6 +56,7 @@
         "joaopaulolndev/filament-edit-profile": "^1.0",
         "kalnoy/nestedset": "^6.0",
         "lakm/laravel-comments": "^2.0",
+        "laragear/turnstile": "^1.4",
         "laravel/fortify": "^1.24",
         "laravel/framework": "^11.0",
         "laravel/horizon": "^5.30",

@@ -37,6 +37,8 @@
                     <input id="birthdate" type="date" name="birthdate" class="form-control" value="{{ old('birthdate') }}" required>
                 </div>
 
+                <x-turnstile::widget />
+
                 @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
