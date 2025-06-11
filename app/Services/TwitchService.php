@@ -53,8 +53,6 @@ class TwitchService
         $this->client_id = $settingClientID ?? $configClientID;
         $this->client_secret = $settingClientSecret ?? $configClientSecret;
         $this->ssl_verify = $settingSSLVerify ?? $configSSLVerify;
-
-        $this->authenticate();
     }
 
     /**
@@ -63,36 +61,55 @@ class TwitchService
      */
     private function authenticate(): void
     {
-        // Check if Twitch credentials are configured
-        if (empty($this->client_id) || empty($this->client_secret) || $this->client_id === 'your-client-id' || $this->client_secret === 'your-client-secret') {
-            Log::warning('Twitch authentication skipped: Missing client ID or secret.');
-
-            return; // Prevent further execution
+        if (empty($this->client_id) || empty($this->client_secret)) {
+            Log::warning('Twitch authentication skipped: Missing credentials.');
+            return;
         }
 
-        if (empty($this->channel_name)) {
-            Log::warning('Twitch authentication skipped: Missing channel or username.');
+        $cacheKey = "twitch.client_credentials_token";
 
-            return; // Prevent further execution
+        // Attempt to get a valid token from cache...
+        $this->access_token = Cache::get($cacheKey);
+
+        if ($this->access_token) {
+            return;
         }
 
-        $response = Http::withOptions(['verify' => $this->ssl_verify])->post('https://id.twitch.tv/oauth2/token', [
-            'client_id' => $this->client_id,
-            'client_secret' => $this->client_secret,
-            'grant_type' => 'client_credentials',
-        ]);
+        // Otherwise, fetch a fresh one
+        try {
+            $response = Http::withOptions(['verify' => $this->ssl_verify])
+                ->timeout(10)              // fail after 10s
+                ->retry(2, 100)            // optionally retry twice, 100ms apart
+                ->post('https://id.twitch.tv/oauth2/token', [
+                    'client_id'     => $this->client_id,
+                    'client_secret' => $this->client_secret,
+                    'grant_type'    => 'client_credentials',
+                ])
+                ->throw();                 // turn HTTP errors into exceptions
 
-        $json = $response->json();
+            $json = $response->json();
 
-        if (! isset($json['access_token'])) {
-            throw new RuntimeException('Failed to retrieve Twitch access token: '.json_encode($json, JSON_THROW_ON_ERROR));
+            if (! isset($json['access_token'], $json['expires_in'])) {
+                throw new RuntimeException('Invalid Twitch token response: ' . json_encode($json));
+            }
+
+            // Cache it a bit shorter than expires_in to avoid edge cases
+            Cache::put($cacheKey, $json['access_token'], $json['expires_in'] - 60);
+
+            $this->access_token = $json['access_token'];
+        } catch (ConnectionException $e) {
+            Log::error("TwitchService: Token request timed out or failed: {$e->getMessage()}");
+            throw $e;
         }
-
-        $this->access_token = $json['access_token'];
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function getStreamData($username = null)
     {
+        $this->authenticate();
+
         if (empty($username)) {
             $username = $this->channel_name;
         }
@@ -134,9 +151,12 @@ class TwitchService
 
     /**
      * Look up the numeric user ID for the configured channel_name.
+     * @throws ConnectionException
      */
     private function getBroadcasterId(): ?string
     {
+        $this->authenticate();
+
         if (! $this->enabled || ! $this->channel_name) {
             return null;
         }
@@ -249,6 +269,7 @@ class TwitchService
     /**
      * Fetch the channel's profile info (includes created_at, etc.),
      * caching it for 24 hours and falling back on cache if the API fails.
+     * @throws ConnectionException
      */
     public function getUserProfile(): array
     {
@@ -366,6 +387,7 @@ class TwitchService
      * Fetch total view count by paging through the broadcaster's videos.
      * Caches the result for 6 hours, records a metric snapshot on a live fetch,
      * and falls back to the last stored metric on error.
+     * @throws ConnectionException
      */
     public function getTotalVideoViews(): int
     {
@@ -459,6 +481,8 @@ class TwitchService
             return;
         }
 
+        $this->authenticate();
+
         $response = Http::asForm()->post('https://id.twitch.tv/oauth2/token', [
             'grant_type'    => 'refresh_token',
             'refresh_token' => $settings->user_refresh_token,
@@ -533,6 +557,7 @@ class TwitchService
 
     /**
      * Get the net change in subscriber count over the past $days days.
+     * @throws ConnectionException
      */
     public function getSubscriberDelta(int $days = 7): int
     {
@@ -546,6 +571,7 @@ class TwitchService
             ->where('recorded_at', '<=', $cutoff)
             ->orderByDesc('recorded_at')
             ->value('value');
+        $current = 0;
 
         try {
             $current = $this->getSubscriberCount();
