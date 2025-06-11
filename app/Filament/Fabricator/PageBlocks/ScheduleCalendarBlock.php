@@ -63,7 +63,6 @@ class ScheduleCalendarBlock extends PageBlock
                 'iso'   => $e->starts_at->toIso8601String(),
                 'label' => $e->starts_at->format('g:ia'),  // time only
                 'title' => $e->title,
-                'url'   => $e->url ?? null,
             ])
             ->groupBy('day')  // collection keyed by day number
             ->toArray();
