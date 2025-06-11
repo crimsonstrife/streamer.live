@@ -17,11 +17,11 @@ class HeroResource extends Resource
 {
     protected static ?string $model = Hero::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    protected static ?string $navigationGroup = 'Content';
-
+    protected static ?string $navigationIcon = 'fas-panorama';
+    protected static ?string $navigationGroup = 'CMS';
+    protected static ?string $slug = 'cms/banners';
     protected static ?string $navigationLabel = 'Hero Banners';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
