@@ -18,7 +18,8 @@ use Gerenuk\FilamentBanhammer\Resources\Actions\UnbanBulkAction;
 use Gerenuk\FilamentBanhammer\Resources\BanhammerResource\Pages;
 use Illuminate\Database\Eloquent\Builder;
 
-class BanhammerResource extends BaseBanhammerResource {
+class BanhammerResource extends BaseBanhammerResource
+{
     protected static ?string $label = 'Bans';
     protected static ?string $slug = 'bans';
     protected static ?string $navigationGroup = 'Users & Roles';
@@ -75,8 +76,10 @@ class BanhammerResource extends BaseBanhammerResource {
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query
-                            ->when($data['unbanned_at'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('expired_at', '=', $date));
+                            ->when(
+                                $data['unbanned_at'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('expired_at', '=', $date)
+                            );
                     }),
                 Filter::make('created_at')
                     ->form([
@@ -84,8 +87,10 @@ class BanhammerResource extends BaseBanhammerResource {
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query
-                            ->when($data['banned_at'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '=', $date));
+                            ->when(
+                                $data['banned_at'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '=', $date)
+                            );
                     }),
             ])
             ->actions([

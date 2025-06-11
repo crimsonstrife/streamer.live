@@ -7,7 +7,6 @@ use TomatoPHP\FilamentMediaManager\Resources\MediaResource as BaseMediaResource;
 
 class MediaResource extends BaseMediaResource
 {
-
     protected static ?string $navigationGroup = 'CMS';
     protected static ?string $navigationIcon = 'fas-photo-film';
     public static function getPages(): array
