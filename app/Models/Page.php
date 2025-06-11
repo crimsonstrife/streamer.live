@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use App\Utilities\ShopHelper;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +13,8 @@ use Z3d0X\FilamentFabricator\Models\Page as BasePage;
 
 class Page extends BasePage implements Searchable
 {
+    use IsPermissible;
+
     public function __construct(array $attributes = [])
     {
         if (blank($this->table)) {

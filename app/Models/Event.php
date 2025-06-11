@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\BaseModel as Model;
+use App\Traits\IsPermissible;
 use Eloquent;
 use Guava\Calendar\Contracts\Eventable;
 use Guava\Calendar\ValueObjects\CalendarEvent;
@@ -25,6 +26,8 @@ use Illuminate\Support\Carbon;
  */
 class Event extends Model implements Eventable
 {
+    use IsPermissible;
+
     protected $fillable = [
         'title',
         'starts_at',

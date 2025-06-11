@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Hero extends Model
 {
     use HasFactory;
+    use IsPermissible;
 
     protected $fillable = [
         'title',

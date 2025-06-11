@@ -7,6 +7,7 @@ use App\Models\BaseModel;
 use App\Models\StoreObjects\OrderItem;
 use App\Models\StoreObjects\ProductImage;
 use App\Models\StoreObjects\Product;
+use App\Traits\IsPermissible;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -67,6 +68,7 @@ use Spatie\Tags\HasTags;
 class ProductVariant extends BaseModel
 {
     use HasTags;
+    use IsPermissible;
 
     protected $fillable = [
         'provider_id',

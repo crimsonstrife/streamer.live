@@ -6,6 +6,7 @@ use App\Models\SharedObjects\Message;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Traits\HasReactions;
+use App\Traits\IsPermissible;
 use App\Utilities\ModelResolver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,6 +21,7 @@ class Comment extends Message
     use HasOwnerAvatar;
     use HasReactions;
     use LogsActivity;
+    use IsPermissible;
 
     protected $table = 'comments';
 

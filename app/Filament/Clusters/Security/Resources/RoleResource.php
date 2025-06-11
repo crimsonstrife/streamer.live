@@ -21,7 +21,7 @@ use Spatie\Permission\Models\Permission;
 class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
-    protected static ?string $navigationIcon = 'fas-user-shield';
+    protected static ?string $navigationIcon = 'fas-user-group';
     protected static ?string $slug = 'roles';
     protected ?string $heading = 'Manage Roles';
     protected ?string $subheading = 'Roles are used to assign permissions to users.';
