@@ -26,4 +26,5 @@ storage/debugbar/*
 .DS_Store
 /.rnd
 .phpstorm.meta.php
-/storage/shieldon_firewall/*
+/storage/shieldon_firewall
+/storage/shieldon_firewall/data_driver_file/shieldon_sessions
