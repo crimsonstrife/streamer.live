@@ -38,6 +38,9 @@
                 </div>
 
                 <x-turnstile::widget />
+                @error('turnstile')
+                    <div class="text-danger mt-2">{{ $message }}</div>
+                @enderror
 
                 @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
                     <div class="mb-3 form-check">
