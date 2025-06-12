@@ -23,7 +23,8 @@ class ShieldonFirewall
         $firewall = new Firewall();
 
         // The directory in where Shieldon Firewall will place its files.
-        $storage = storage_path('shieldon_firewall');;
+        $storage = storage_path('shieldon_firewall');
+        ;
 
         $firewall->configure($storage);
 
