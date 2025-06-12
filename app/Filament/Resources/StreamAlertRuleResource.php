@@ -23,8 +23,10 @@ use Illuminate\Database\Eloquent\Model;
 class StreamAlertRuleResource extends Resource
 {
     protected static ?string $model = StreamAlertRule::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Twitch';
+    protected static ?string $slug = 'twitch/alert-rules';
+    protected static ?string $navigationLabel = 'Discord Alert Rules';
+    protected static ?string $navigationIcon = 'fas-bell';
 
     /**
      * Hide the “Create” button (and disable the create page) if Twitch is disabled.

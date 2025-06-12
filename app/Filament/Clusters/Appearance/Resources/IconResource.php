@@ -3,7 +3,6 @@
 namespace App\Filament\Clusters\Appearance\Resources;
 
 use App\Filament\Clusters\Appearance;
-use App\Filament\Clusters\Appearance\Resources\IconResource\Pages;
 use App\Models\Icon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -23,8 +22,6 @@ class IconResource extends Resource
     protected static ?string $navigationGroup = 'Appearance';
 
     protected static ?string $cluster = Appearance::class;
-
-    protected static ?int $navigationSort = 5;
 
     protected static bool $search = true;
 
@@ -135,6 +132,9 @@ class IconResource extends Resource
             ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
@@ -169,7 +169,7 @@ class IconResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListIcons::route('/'),
+            'index' => IconResource\Pages\ListIcons::route('/'),
             // 'create' => Pages\CreateIcon::route('/create'),
             // 'edit' => Pages\EditIcon::route('/{record}/edit'),
         ];

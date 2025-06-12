@@ -5,6 +5,7 @@ namespace App\Models\StoreObjects;
 use App\Models\BaseModel;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -47,6 +48,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class ProductImage extends BaseModel
 {
+    use IsPermissible;
+
     protected $fillable = [
         'product_id',
         'variant_id',

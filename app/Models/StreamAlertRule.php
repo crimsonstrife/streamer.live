@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class StreamAlertRule extends BaseModel
 {
     use HasFactory;
+    use IsPermissible;
 
     protected $fillable = [
         'category_pattern',

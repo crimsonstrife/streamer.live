@@ -5,7 +5,7 @@ return [
     /*
      * The name of the resource which the plugin should use.
      */
-    'resource' => \Gerenuk\FilamentBanhammer\Resources\BanhammerResource::class,
+    'resource' => \App\Filament\Resources\BanhammerResource::class,
 
     /*
      * Whether an export action should be included on the resource.

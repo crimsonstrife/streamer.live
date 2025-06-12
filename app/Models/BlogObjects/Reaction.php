@@ -7,6 +7,7 @@ use App\Models\AuthObjects\User;
 use App\Models\BaseModel as Model;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
+use App\Traits\IsPermissible;
 use App\Utilities\ModelResolver;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -51,6 +52,7 @@ class Reaction extends Model
 {
     use HasOwner;
     use HasOwnerAvatar;
+    use IsPermissible;
 
     protected string $userRelationshipName = 'owner';
 

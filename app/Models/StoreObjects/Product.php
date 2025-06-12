@@ -9,6 +9,7 @@ use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\ProductImage;
 use App\Models\StoreObjects\ProductReview;
 use App\Models\StoreObjects\ProductVariant;
+use App\Traits\IsPermissible;
 use App\Utilities\ShopHelper;
 use DB;
 use Eloquent;
@@ -67,6 +68,7 @@ use Spatie\Tags\HasTags;
 class Product extends BaseModel implements Searchable
 {
     use HasTags;
+    use IsPermissible;
 
     protected $fillable = [
         'provider_id',

@@ -77,11 +77,7 @@
                                     <time datetime="{{ $evt['iso'] }}" class="event-time">
                                         {{ $evt['label'] }}
                                     </time><br>
-                                    @if($evt['url'])
-                                        <a href="{{ $evt['url'] }}" target="_blank">{{ $evt['title'] }}</a>
-                                    @else
                                         {{ $evt['title'] }}
-                                    @endif
                                 </div>
                             @endforeach
                         </td>

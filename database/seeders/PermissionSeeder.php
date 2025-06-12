@@ -20,9 +20,27 @@ class PermissionSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    private $basicActions = ['viewAny'];
-    private $crudActions = ['create', 'read', 'update', 'delete'];
-    private $advancedActions = ['list', 'restore', 'force-delete', 'export', 'import', 'reorder'];
+    private $basicActions = [
+        'view',
+        'viewAny',
+    ];
+    private $crudActions = [
+        'create',
+        'read',
+        'update',
+        'delete',
+        'deleteAny',
+    ];
+    private $advancedActions = [
+        'list',
+        'restore',
+        'force-delete',
+        'force-deleteAny',
+        'export',
+        'import',
+        'replicate',
+        'reorder',
+        'restoreAny'];
     private $specialPermissions = [
         'access-filament',
         'access-jetstream',
@@ -39,6 +57,7 @@ class PermissionSeeder extends Seeder
         'is-admin',
         'is-super-admin',
         'is-moderator',
+        'is-panel-user',
     ];
 
     /**

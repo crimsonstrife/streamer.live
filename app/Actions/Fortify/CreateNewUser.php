@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Models\AuthObjects\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Laragear\Turnstile\Facades\Turnstile;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 use Laravel\Jetstream\Jetstream;
 
@@ -25,6 +26,7 @@ class CreateNewUser implements CreatesNewUsers
             'birthdate' => ['required', 'date', 'before:today', 'before:-13 years'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
+            Turnstile::rules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
 

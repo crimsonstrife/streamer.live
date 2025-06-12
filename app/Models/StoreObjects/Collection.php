@@ -4,6 +4,7 @@ namespace App\Models\StoreObjects;
 
 use App\Models\BaseModel;
 use App\Models\StoreObjects\Product;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -34,6 +35,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Collection extends BaseModel
 {
+    use IsPermissible;
+
     protected $fillable = [
         'provider_id',
         'provider',

@@ -42,7 +42,7 @@
         "filament/infolists": "^3.3",
         "filament/notifications": "^3.3",
         "filament/spatie-laravel-media-library-plugin": "^3.3",
-        "filament/spatie-laravel-settings-plugin": "^3.3",
+        "filament/spatie-laravel-settings-plugin": "*",
         "filament/spatie-laravel-tags-plugin": "^3.3",
         "filament/tables": "^3.3",
         "filament/widgets": "^3.3",
@@ -56,6 +56,7 @@
         "joaopaulolndev/filament-edit-profile": "^1.0",
         "kalnoy/nestedset": "^6.0",
         "lakm/laravel-comments": "^2.0",
+        "laragear/turnstile": "^1.4",
         "laravel/fortify": "^1.24",
         "laravel/framework": "^11.0",
         "laravel/horizon": "^5.30",
@@ -74,6 +75,7 @@
         "nesbot/carbon": "^3.8",
         "nickurt/laravel-akismet": "^2.0",
         "nickurt/laravel-stopforumspam": "^2.0",
+        "nwidart/laravel-modules": "*",
         "omaressaouaf/laravel-id-generator": "^1.2",
         "parallax/filament-comments": "^1.4",
         "pxlrbt/filament-activity-log": "^1.1",
@@ -106,7 +108,7 @@
         "spatie/laravel-permission": "^6.15",
         "spatie/laravel-searchable": "^1.13",
         "spatie/laravel-settings": "^3.4",
-        "spatie/laravel-sitemap": "^7.3",
+        "spatie/laravel-sitemap": "^7.3.6",
         "spatie/laravel-sluggable": "^3.7",
         "spatie/laravel-tags": "^4.9",
         "stephenjude/filament-blog": "^4.0",
@@ -118,7 +120,6 @@
         "tomatophp/filament-media-manager": "^1.1",
         "tomatophp/filament-menus": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
-        "tomatophp/filament-settings-hub": "^2.0",
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
@@ -190,7 +191,8 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "wikimedia/composer-merge-plugin": true
         }
     },
     "minimum-stability": "stable",

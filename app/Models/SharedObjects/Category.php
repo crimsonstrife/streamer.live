@@ -4,6 +4,7 @@ namespace App\Models\SharedObjects;
 
 use App\Models\BlogObjects;
 use App\Models\StoreObjects\Product;
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -11,6 +12,8 @@ use Stephenjude\FilamentBlog\Models\Category as BaseCategory;
 
 class Category extends BaseCategory
 {
+    use IsPermissible;
+
     /**
      * @var string
      */

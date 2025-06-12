@@ -6,6 +6,7 @@ use App\Models\SharedObjects\Message;
 use App\Traits\HasOwner;
 use App\Traits\HasOwnerAvatar;
 use App\Traits\HasReactions;
+use App\Traits\IsPermissible;
 use App\Utilities\ModelResolver;
 use App\Utilities\ModelResolver as M;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,7 +21,7 @@ class Reply extends Message
     use HasOwnerAvatar;
     use HasReactions;
     use LogsActivity;
-
+    use IsPermissible;
     protected $table = 'comments';
 
     protected $fillable = [

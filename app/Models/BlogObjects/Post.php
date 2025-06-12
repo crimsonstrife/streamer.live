@@ -10,6 +10,7 @@ use App\Models\BlogObjects\Comment;
 use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;
+use App\Traits\IsPermissible;
 use App\Utilities\BlogHelper;
 use ArrayAccess;
 use Eloquent;
@@ -78,6 +79,7 @@ class Post extends BasePost implements CommentableContract, Searchable
     use HasReactions;
     use HasSlug;
     use HasTags;
+    use IsPermissible;
 
     /**
      * @var string

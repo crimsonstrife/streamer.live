@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Clusters\Security;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\AuthObjects\Role;
@@ -21,13 +20,10 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    protected static ?string $navigationIcon = 'far-user';
-    protected static ?string $slug = 'users';
+    protected static ?string $navigationGroup = 'Users & Roles';
+    protected static ?string $navigationIcon = 'fas-user';
     protected ?string $heading = 'Manage Users';
     protected ?string $subheading = 'Users are the people who use the application.';
-    protected static ?string $navigationGroup = 'Access Control';
-    protected static ?string $navigationLabel = 'Users';
-    protected static ?string $cluster = Security::class;
 
     public static function form(Form $form): Form
     {
@@ -54,13 +50,14 @@ class UserResource extends Resource
                 TextColumn::make('roles.name')->label('Roles')->sortable(),
             ])
             ->filters([
-                //
             ])
             ->actions([
-                //
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                //
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -74,9 +71,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => \App\Filament\Resources\UserResource\Pages\ListUsers::route('/'),
+            'create' => \App\Filament\Resources\UserResource\Pages\CreateUser::route('/create'),
+            'edit' => \App\Filament\Resources\UserResource\Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }

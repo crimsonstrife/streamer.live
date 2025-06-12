@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Clusters\Security;
 use App\Filament\Resources\RoleResource\Pages;
 use App\Filament\Resources\RoleResource\RelationManagers;
 use App\Models\AuthObjects\PermissionGroup;
@@ -23,13 +22,10 @@ use Spatie\Permission\Models\Permission;
 class RoleResource extends Resource
 {
     protected static ?string $model = Role::class;
-    protected static ?string $navigationIcon = 'fas-user-shield';
-    protected static ?string $slug = 'roles';
+    protected static ?string $navigationGroup = 'Users & Roles';
+    protected static ?string $navigationIcon = 'fas-user-group';
     protected ?string $heading = 'Manage Roles';
     protected ?string $subheading = 'Roles are used to assign permissions to users.';
-    protected static ?string $navigationGroup = 'Access Control';
-    protected static ?string $navigationLabel = 'Roles';
-    protected static ?string $cluster = Security::class;
 
     public static function form(Form $form): Form
     {
@@ -67,10 +63,12 @@ class RoleResource extends Resource
                 //
             ])
             ->actions([
-                //
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                //
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -84,9 +82,9 @@ class RoleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRoles::route('/'),
-            'create' => Pages\CreateRole::route('/create'),
-            'edit' => Pages\EditRole::route('/{record}/edit'),
+            'index' => \App\Filament\Resources\RoleResource\Pages\ListRoles::route('/'),
+            'create' => \App\Filament\Resources\RoleResource\Pages\CreateRole::route('/create'),
+            'edit' => \App\Filament\Resources\RoleResource\Pages\EditRole::route('/{record}/edit'),
         ];
     }
 }

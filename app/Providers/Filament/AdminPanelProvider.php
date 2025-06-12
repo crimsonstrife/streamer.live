@@ -2,29 +2,33 @@
 
 namespace App\Providers\Filament;
 
-use A21ns1g4ts\FilamentShortUrl\FilamentShortUrlPlugin;
-use App\Filament\Pages\ApiTokens;
-use App\Filament\Pages\CreateTeam;
-use App\Filament\Pages\EditProfile;
-use App\Filament\Pages\EditTeam;
 use App\Listeners\SwitchTeam;
-use App\Models\Team;
+use App\Livewire\CurrentStreamStatus;
+use App\Livewire\PanelCalendarWidget;
+use App\Livewire\RecentFollowers;
+use App\Livewire\UpcomingStream;
+use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use App\Plugins\MediaManagerPlugin;
+use App\Plugins\MenusPlugin;
+use App\Plugins\ShortUrlPlugin;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
+use Exception;
 use Filament\Events\TenantSet;
-use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
-use Filament\Pages;
+use App\Filament\Pages;
+use App\Filament\Resources;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
+use Filament\Support\Assets\Css;
 use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets;
-use Gerenuk\FilamentBanhammer\FilamentBanhammerPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -34,117 +38,47 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Event;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
-use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 use Laravel\Fortify\Fortify;
-use Laravel\Jetstream\Features;
 use Laravel\Jetstream\Jetstream;
-use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
-use Stephenjude\FilamentDebugger\DebuggerPlugin;
-use TomatoPHP\FilamentMediaManager\FilamentMediaManagerPlugin;
-use TomatoPHP\FilamentMenus\FilamentMenusPlugin;
 use TomatoPHP\FilamentSeo\FilamentSeoPlugin;
-use TomatoPHP\FilamentSettingsHub\FilamentSettingsHubPlugin;
 use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
-    public function panel(Panel $panel): Panel
+    /**
+     * Boot the panel provider.
+     */
+    public function boot(): void
     {
-        $panel
-            ->default()
-            ->id('admin')
-            ->path('admin')
-            ->login()
-            ->registration()
-            ->passwordReset()
-            ->emailVerification()
-            ->viteTheme('resources/css/filament/admin/theme.css')
-            ->colors([
-                'primary' => Color::Gray,
-            ])
-            ->userMenuItems([
-                'profile' => MenuItem::make()
-                    ->label(fn () => auth()->user()->name)
-                    ->icon('heroicon-o-user-circle')
-                    ->url(fn (): string => EditProfilePage::getUrl()),
-            ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
-            ->pages([
-                Pages\Dashboard::class,
-                EditProfile::class,
-                ApiTokens::class,
-            ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
-            ])
-            ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
-            ])
-            ->plugins([
-                FilamentShortUrlPlugin::make(),
-                FilamentFabricatorPlugin::make(),
-                BlogPlugin::make(),
-                DebuggerPlugin::make(),
-                FilamentSpatieLaravelHealthPlugin::make(),
-                FilamentEditProfilePlugin::make()
-                    ->shouldRegisterNavigation(false),
-                MaintenanceSwitchPlugin::make(),
-                SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
-                FilamentMenusPlugin::make(),
-                FilamentMediaManagerPlugin::make(),
-                FilamentSettingsHubPlugin::make()
-                    ->allowSiteSettings(false)
-                    ->allowSocialMenuSettings(false),
-                FilamentBanhammerPlugin::make(),
-                FilamentSeoPlugin::make(),
-            ]);
+        // Register the icon overrides for the Filament admin panel.
+        FilamentIcon::register([
+            'panels::global-search.field' => 'fas-magnifying-glass',
+            'panels::global-search.clear' => 'fas-circle-xmark',
+            'panels::pages.dashboard.actions.filter' => 'fas-filter',
+            'panels::pages.dashboard.actions.sort' => 'fas-sort',
+            'panels::pages.dashboard.actions.view' => 'fas-eye',
+            'panels::pages.dashboard.filters.clear' => 'fas-times',
+            'panels::pages.dashboard.filters.apply' => 'fas-check',
+            'panels::user-menu.profile-item' => 'fas-circle-user',
+            'panels::user-menu.account-item' => 'fas-user-gear',
+            'panels::user-menu.logout-button' => 'fas-right-to-bracket',
+            'panels::sidebar.group.collapse-button' => 'fas-angle-up',
+            'forms::components.checkbox-list.search-field' => 'fas-magnifying-glass',
+            'tables::search-field' => 'fas-magnifying-glass',
+            'tables::actions.view' => 'fas-eye',
+            'tables::actions.filter' => 'fas-filter',
+            'tables::actions.sort' => 'fas-sort',
+            'tables::header-cell.sort-asc-button' => 'fas-sort-up',
+            'tables::header-cell.sort-desc-button' => 'fas-sort-down',
+            'tables::columns.icon-column.false' => 'fas-circle-xmark',
+            'tables::columns.icon-column.true' => 'fas-circle-check',
+            'notifications::notification.danger' => 'fas-triangle-exclamation',
+            'notifications::notification.info' => 'fas-circle-info',
+            'notifications::notification.success' => 'fas-circle-check',
+            'notifications::notification.warning' => 'fas-circle-exclamation',
+            'notifications::notification.close-button' => 'fas-circle-xmark',
+        ]);
 
-        if (Features::hasApiFeatures()) {
-            $panel->userMenuItems([
-                MenuItem::make()
-                    ->label('API Tokens')
-                    ->icon('heroicon-o-key')
-                    ->url(fn () => $this->shouldRegisterMenuItem()
-                        ? url(ApiTokens::getUrl())
-                        : url($panel->getPath())),
-            ]);
-        }
-
-        if (Features::hasTeamFeatures()) {
-            $panel
-                ->tenant(Team::class)
-                ->tenantRegistration(CreateTeam::class)
-                ->tenantProfile(EditTeam::class)
-                ->userMenuItems([
-                    MenuItem::make()
-                        ->label(fn () => __('Team Settings'))
-                        ->icon('heroicon-o-cog-6-tooth')
-                        ->url(fn () => $this->shouldRegisterMenuItem()
-                            ? url(EditTeam::getUrl())
-                            : url($panel->getPath())),
-                ]);
-        }
-
-        return $panel;
-    }
-
-    public function boot()
-    {
         /**
          * Disable Fortify routes
          */
@@ -164,12 +98,82 @@ class AdminPanelProvider extends PanelProvider
         );
     }
 
-    public function shouldRegisterMenuItem(): bool
+    /**
+     * @throws Exception
+     */
+    public function panel(Panel $panel): Panel
     {
-        $hasVerifiedEmail = auth()->user()?->hasVerifiedEmail();
+        $panel
+            ->default()
+            ->id('admin')
+            ->path('admin')
+            ->login()
+            ->registration()
+            ->passwordReset()
+            ->emailVerification()
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->colors([
+                'primary' => Color::Gray,
+            ])
+            ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
+            ->resources([
+                Resources\UserResource::class,
+                Resources\RoleResource::class,
+                Resources\ProductResource::class,
+                Resources\ProductCategoryResource::class,
+                Resources\OrderResource::class,
+                Resources\CommentResource::class,
+                Resources\HeroResource::class,
+                Resources\StreamAlertRuleResource::class,
+            ])
+            ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
+            ->pages([
+                Pages\Dashboard::class,
+                Pages\ApiTokens::class,
+                Pages\EditProfile::class,
+                Pages\SEOSettings::class,
+                Pages\SiteSettings::class,
+                Pages\SocialSettings::class,
+                Pages\ThemeSettings::class,
+            ])
+            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
+            ->widgets([
+                Widgets\AccountWidget::class,
+                Widgets\FilamentInfoWidget::class,
+                CurrentStreamStatus::class,
+                UpcomingStream::class,
+                RecentFollowers::class,
+                PanelCalendarWidget::class,
+            ])
+            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
+            ->middleware([
+                EncryptCookies::class,
+                AddQueuedCookiesToResponse::class,
+                StartSession::class,
+                AuthenticateSession::class,
+                ShareErrorsFromSession::class,
+                VerifyCsrfToken::class,
+                SubstituteBindings::class,
+                DisableBladeIconComponents::class,
+                DispatchServingFilamentEvent::class,
+            ])
+            ->authMiddleware([
+                Authenticate::class,
+            ])
+            ->plugins([
+                ShortUrlPlugin::make(),
+                FilamentFabricatorPlugin::make(),
+                BlogPlugin::make(),
+                FilamentEditProfilePlugin::make()
+                    ->shouldRegisterNavigation(false),
+                MaintenanceSwitchPlugin::make(),
+                SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
+                MenusPlugin::make(),
+                MediaManagerPlugin::make(),
+                BanPlugin::make(),
+                FilamentSeoPlugin::make(),
+            ]);
 
-        return Filament::hasTenancy()
-            ? $hasVerifiedEmail && Filament::getTenant()
-            : $hasVerifiedEmail;
+        return $panel;
     }
 }

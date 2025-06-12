@@ -11,7 +11,7 @@ use Filament\Pages\SettingsPage;
 
 class DiscordSettings extends SettingsPage
 {
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static ?string $navigationIcon = 'fab-discord';
 
     protected static string $settings = \App\Settings\DiscordSettings::class;
 

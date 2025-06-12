@@ -15,7 +15,7 @@ use TomatoPHP\FilamentSeo\Jobs\GoogleIndexURLJob;
 
 class SEOSettings extends SettingsPage
 {
-    protected static ?string $navigationIcon = 'heroicon-o-magnifying-glass-circle';
+    protected static ?string $navigationIcon = 'fas-magnifying-glass';
 
     protected static ?string $navigationLabel = 'SEO Settings';
 
