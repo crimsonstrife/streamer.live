@@ -17,6 +17,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\TeamInvitationController;
 use Laravel\Socialite\Facades\Socialite;
+use Shieldon\Firewall\Panel;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,14 @@ use Laravel\Socialite\Facades\Socialite;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::any('/firewall/panel/{path?}', function() {
+
+    $panel = new Panel();
+    $panel->csrf(['_token' => csrf_token()]);
+    $panel->entry();
+
+})->where('path', '(.*)');
 
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {
@@ -50,6 +59,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         'auth:sanctum',
         config('jetstream.auth_session'),
         'verified',
+        'firewall'
     ])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard');

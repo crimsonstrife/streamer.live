@@ -1,9 +1,42 @@
 <?php
 
 use App\Http\Middleware\EnsureStoreEnabled;
+use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Shieldon\Firewall\Firewall;
+use Shieldon\Firewall\HttpResolver;
+
+/*
+|--------------------------------------------------------------------------
+| Run The Shieldon Firewall
+|--------------------------------------------------------------------------
+|
+| Shieldon Firewall will watch all HTTP requests coming to your website.
+| Running Shieldon Firewall before initializing Laravel will avoid possible
+| conflicts with Laravel's built-in functions.
+*/
+if (isset($_SERVER['REQUEST_URI'])) {
+
+    // This directory must be writable.
+    // We put it in the `storage/shieldon_firewall` directory.
+    $storage =  __DIR__ . '/../storage/shieldon_firewall';
+
+    $firewall = new Firewall();
+
+    $firewall->configure($storage);
+
+    // The base url for the control panel.
+    $firewall->controlPanel('/firewall/panel/');
+
+    $response = $firewall->run();
+
+    if ($response->getStatusCode() !== 200) {
+        $httpResolver = new HttpResolver();
+        $httpResolver($response);
+    }
+}
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'store.enabled' => EnsureStoreEnabled::class,
+            'firewall' => ShieldonFirewall::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
