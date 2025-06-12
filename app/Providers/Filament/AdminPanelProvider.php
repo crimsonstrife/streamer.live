@@ -29,6 +29,7 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets;
+use Guava\Tutorials\TutorialsPlugin;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -172,6 +173,7 @@ class AdminPanelProvider extends PanelProvider
                 MediaManagerPlugin::make(),
                 BanPlugin::make(),
                 FilamentSeoPlugin::make(),
+                TutorialsPlugin::make(),
             ]);
 
         return $panel;

@@ -9,7 +9,8 @@ export default {
     './vendor/laravel/jetstream/**/*.blade.php',
     './storage/framework/views/*.php',
     './resources/views/**/*.blade.php',
-    './vendor/guava/calendar/resources/**/*.blade.php'
+    './vendor/guava/calendar/resources/**/*.blade.php',
+      './vendor/guava/tutorials/resources/**/*.php',
   ],
 
   theme: {
