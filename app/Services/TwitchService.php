@@ -150,29 +150,56 @@ class TwitchService
     }
 
     /**
-     * Look up the numeric user ID for the configured channel_name.
+     * Look up (and cache) the numeric user ID for the configured channel_name.
      * @throws ConnectionException
      */
     private function getBroadcasterId(): ?string
     {
-        $this->authenticate();
-
         if (! $this->enabled || ! $this->channel_name) {
             return null;
         }
 
-        $response = Http::withOptions(['verify' => $this->ssl_verify])
-            ->withHeaders([
-                'Client-ID'    => $this->client_id,
-                'Authorization' => 'Bearer '.$this->access_token,
-            ])
-            ->get('https://api.twitch.tv/helix/users', [
-                'login' => $this->channel_name,
-            ]);
+        $cacheKey = "twitch.broadcaster_id.{$this->channel_name}";
 
-        $user = $response->json('data.0');
+        // Try cache first
+        $broadcasterId = Cache::get($cacheKey);
+        if ($broadcasterId) {
+            return $broadcasterId;
+        }
 
-        return $user['id'] ?? null;
+        // Make sure we have a valid token
+        $this->authenticate();
+
+        // Hit the Helix users endpoint with timeout & retries
+        try {
+            $response = Http::withOptions(['verify' => $this->ssl_verify])
+                ->timeout(5)           // fail after 5s
+                ->retry(2, 100)        // retry twice, 100ms backoff
+                ->withHeaders([
+                    'Client-ID'    => $this->client_id,
+                    'Authorization' => "Bearer {$this->access_token}",
+                ])
+                ->get('https://api.twitch.tv/helix/users', [
+                    'login' => $this->channel_name,
+                ])
+                ->throw();
+
+            $user = $response->json('data.0');
+            $broadcasterId = $user['id'] ?? null;
+
+            if (! $broadcasterId) {
+                throw new RuntimeException("Twitch Helix returned no user data for '{$this->channel_name}'");
+            }
+
+            // Cache it for 24 hours (or adjust TTL if you prefer)
+            Cache::put($cacheKey, $broadcasterId, now()->addHours(24));
+
+            return $broadcasterId;
+        } catch (ConnectionException|RequestException $e) {
+            Log::error("TwitchService: getBroadcasterId timed out or failed: {$e->getMessage()}");
+            // Decide: return null or rethrow. Here we return null so callers can fallback.
+            return null;
+        }
     }
 
     /**
