@@ -4,7 +4,8 @@ namespace App\Models\SecurityObjects;
 
 use App\Models\BaseModel;
 
-class IPFilter extends BaseModel {
+class IPFilter extends BaseModel
+{
     protected $fillable = ['ip_address', 'type', 'reason'];
 
     protected $table = 'ip_filters';

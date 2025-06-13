@@ -53,7 +53,7 @@ class GeoIpUpdate extends Command
         try {
             // Turn .tar.gz → .tar
             $phar = new PharData($archive);
-            $tar  = str_replace('.gz','',$archive);
+            $tar  = str_replace('.gz', '', $archive);
             $phar->decompress(); // leaves you with $tmpDir/GeoLite2-Country.tar
 
             // Extract .tar → mmdb files
