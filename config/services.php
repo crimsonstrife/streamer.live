@@ -79,4 +79,13 @@ return [
         'client_secret' => env('TWITTER_CLIENT_SECRET'),
         'redirect' => env('TWITTER_REDIRECT_URI')
     ],
+
+    'maxmind' => [
+        'license_key' => env('MAXMIND_KEY'),
+        'account_id' => env('MAXMIND_ACCOUNT_ID'),
+    ],
+
+    'abuseipdb' => [
+        'api_key' => env('ABUSEIP_DB_KEY'),
+    ],
 ];
