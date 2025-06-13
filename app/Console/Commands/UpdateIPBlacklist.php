@@ -59,7 +59,23 @@ class UpdateIPBlacklist extends Command
             return;
         }
 
-        $blacklist = $response->json('data', []);
+        // decode the full payload
+        $payload = $response->json();
+
+        // verify the “data” key is actually present and is an array
+        if (! is_array($payload) || ! array_key_exists('data', $payload)) {
+            Log::error(
+                '[update:blacklist] Unexpected AbuseIPDB response format, missing “data” key',
+                ['payload' => $payload]
+            );
+
+            // bail out cleanly...
+            $this->error('Unexpected API response, check logs for details.');
+            return;
+        }
+
+        // at this point we know it’s safe
+        $blacklist = $payload['data'];
         $batchSize = 500;
         $batch     = [];
         $count     = 0;
