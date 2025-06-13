@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::create('ip_filters', function (Blueprint $table) {
             $table->id();
-            $table->string('ip_address')->index();
+            $table->string('ip_address')->unique()->index();
             $table->enum('type', ['whitelist', 'blacklist']);
             $table->string('reason')->nullable(); // Reason for blacklisting/whitelisting
             $table->text('data')->nullable(); // Store additional data like logs or notes

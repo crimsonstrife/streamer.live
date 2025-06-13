@@ -50,11 +50,13 @@ class UpdateIPBlacklist extends Command
         } catch (ConnectionException $e) {
             Log::error('[update:blacklist] ConnectionException: ' . $e->getMessage());
             $this->error('Network error while fetching blacklist: ' . $e->getMessage());
+            return;
         }
 
         if (! $response->ok()) {
             Log::error("[update:blacklist] API error HTTP {$response->status()}: " . $response->body());
             $this->error('Failed to fetch blacklist: HTTP ' . $response->status());
+            return;
         }
 
         $blacklist = $response->json('data', []);
@@ -62,10 +64,21 @@ class UpdateIPBlacklist extends Command
         $batch     = [];
         $count     = 0;
 
+        // Collect all upstream IPs for comparison
+        $upstreamIpAddresses = collect($blacklist)->pluck('ipAddress')->all();
+
+        // Remove or mark as stale any blacklist IPs not present upstream
+        DB::table('ip_filters')
+            ->where('type', 'blacklist')
+            ->where('source', 'abuseipdb')
+            ->whereNotIn('ip_address', $upstreamIpAddresses)
+            ->delete();
+
         foreach ($blacklist as $ipData) {
             $batch[] = [
                 'ip_address' => $ipData['ipAddress'],
                 'type'       => 'blacklist',
+                'source'     => 'abuseipdb',
                 'reason'     => $ipData['abuseConfidenceScore'] . '% confidence score from AbuseIPDB',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -73,7 +86,7 @@ class UpdateIPBlacklist extends Command
 
             if (count($batch) >= $batchSize) {
                 DB::table('ip_filters')
-                    ->upsert($batch, ['ip_address'], ['type', 'reason', 'updated_at']);
+                    ->upsert($batch, ['ip_address'], ['type', 'reason', 'source', 'updated_at']);
 
                 $count += count($batch);
                 Log::info("[update:blacklist] Processed batch of {$batchSize}, total so far: {$count}.");

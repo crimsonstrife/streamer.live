@@ -6,7 +6,7 @@ use App\Models\BaseModel;
 
 class IPFilter extends BaseModel
 {
-    protected $fillable = ['ip_address', 'type', 'reason'];
+    protected $fillable = ['ip_address', 'type', 'reason', 'source'];
 
     protected $table = 'ip_filters';
 

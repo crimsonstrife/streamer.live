@@ -33,7 +33,7 @@ class CheckIPFilter
         }
 
         // Geo-lookup
-        if (config('ip_filter.geo_enabled')) {
+        if (config('ip-filter.geo_enabled')) {
             $geo = app(GeoLocationService::class)->getGeoData($request->ip());
             if ($geo) {
                 $cc = $geo['country']; // e.g. "US"
@@ -44,7 +44,7 @@ class CheckIPFilter
                 }
 
                 // country whitelist (only allow these when enabled)
-                if (config('ip_filter.country_whitelist_enabled')
+                if (config('ip-filter.country_whitelist_enabled')
                     && ! GeoFilter::where('type', 'whitelist')->where('country_code', $cc)->exists()
                 ) {
                     abort(403, "Access denied: Only selected countries are allowed.");

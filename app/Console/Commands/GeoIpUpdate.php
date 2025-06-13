@@ -26,8 +26,12 @@ class GeoIpUpdate extends Command
         $tmpDir     = storage_path('geoip/tmp');
 
         // Prepare
-        @mkdir($tmpDir, 0755, true);
-        @mkdir($dbDir, 0755, true);
+        if (!File::exists($tmpDir)) {
+            File::makeDirectory($tmpDir, 0755, true);
+        }
+        if (!File::exists($dbDir)) {
+            File::makeDirectory($dbDir, 0755, true);
+        }
 
         $url = 'https://download.maxmind.com/geoip/databases/'. $edition. '/download?suffix=tar.gz';
 

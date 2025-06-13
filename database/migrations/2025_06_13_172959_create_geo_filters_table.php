@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::create('geo_filters', function (Blueprint $table) {
             $table->id();
-            $table->string('country_code', 2)->index();    // ISO Alpha-2, e.g. "US"
+            $table->string('country_code', 2)->unique()->index();    // ISO Alpha-2, e.g. "US"
             $table->enum('type', ['whitelist', 'blacklist']);
             $table->string('reason')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->cascadeOnDelete();

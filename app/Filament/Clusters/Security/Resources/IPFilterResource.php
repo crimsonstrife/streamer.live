@@ -40,7 +40,7 @@ class IPFilterResource extends Resource
                     ->label('IP Address')
                     ->required()
                     ->ip()
-                    ->unique('ip_filters', 'ip_address'),
+                    ->unique('ip_filters', 'ip_address', fn ($record) => $record),
                 Forms\Components\Select::make('type')
                     ->label('Filter Type')
                     ->options([
@@ -48,6 +48,11 @@ class IPFilterResource extends Resource
                         'blacklist' => 'Blacklist',
                     ])
                     ->required(),
+                // on create: set “user” automatically
+                Forms\Components\Hidden::make('source')
+                    ->default('user')
+                    // hide on edit so it never overwrites existing values
+                    ->hiddenOn('edit'),
                 Forms\Components\TextInput::make('reason')
                     ->label('Reason')
                     ->nullable(),
@@ -64,6 +69,9 @@ class IPFilterResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Type')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('source')
+                    ->label('Source')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('reason')
                     ->label('Reason'),

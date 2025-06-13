@@ -32,6 +32,7 @@ class GeoFilterResource extends Resource
                 ->options(Countries::getNames())      // [ 'AD' => 'Andorra', 'AE' => 'United Arab Emirates', … ]
                 ->searchable()
                 ->preload()                           // load all options on page-load
+                ->unique(ignorable: fn ($record) => $record)
                 ->required(),
 
             Forms\Components\Select::make('type')
