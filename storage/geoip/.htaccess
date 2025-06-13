@@ -1,0 +1,27 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^.*$ - [F,L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    <FilesMatch ".*">
+        Order Allow,Deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+<FilesMatch "\.(php|php5|phtml|pl|py|jsp|asp|htm|html|cgi|sh|bash|exe|dll|bat|msi)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+Options -Indexes
+
+<Files .htaccess>
+    Order Allow,Deny
+    Deny from all
+</Files>

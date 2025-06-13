@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckIPFilter;
 use App\Http\Middleware\EnsureStoreEnabled;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
@@ -46,9 +47,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Apply to all "web" routes
+        $middleware->web(append: [
+            CheckIPFilter::class,
+        ]);
+
+        // Apply to all "api" routes
+        $middleware->api(append: [
+            CheckIPFilter::class,
+        ]);
+
         $middleware->alias([
             'store.enabled' => EnsureStoreEnabled::class,
             'firewall' => ShieldonFirewall::class,
+            'ip-filter' => CheckIPFilter::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
