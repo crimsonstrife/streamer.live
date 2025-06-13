@@ -17,6 +17,18 @@ class BlogCommentController extends Controller
             'text' => ['required', 'string', 'max:1000'],
         ]);
 
+        // Creating a top-level comment on $post:
+        if (! $post->canComment()) {
+            abort(403, 'Comments are locked for this post.');
+        }
+
+        $parentComment = Comment::where('id', $request->input('reply_id'))->first();
+
+        // Creating a reply to $parentComment on $post:
+        if (! $post->canReplyToComment($parentComment)) {
+            abort(403, 'Replies are locked for that comment thread.');
+        }
+
         try {
             Comment::create([
                 'text' => $data['text'],
