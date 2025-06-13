@@ -153,6 +153,10 @@ class PostResource extends Resource
                             ->content(fn (
                                 ?Post $record
                             ): string => $record ? $record->updated_at->diffForHumans() : '-'),
+                        Forms\Components\Toggle::make('comments_locked')
+                            ->label('Lock Comments')
+                            ->helperText('When enabled, no new comments can be added to this post.')
+                            ->columnSpan('full'),
                     ])
                     ->columnSpan(1),
             ])

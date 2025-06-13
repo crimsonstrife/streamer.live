@@ -36,12 +36,14 @@ class Comment extends Message
         'is_spam',
         'spam_score',
         'is_spam_auto',
+        'replies_locked',
     ];
 
     protected $casts = [
         'approved' => 'bool',
         'is_spam' => 'bool',
         'is_spam_auto' => 'bool',
+        'replies_locked' => 'bool',
     ];
 
     public function commentable(): MorphTo
@@ -128,5 +130,15 @@ class Comment extends Message
             ->logFillable()
             ->logOnlyDirty()                // only changed fields
             ->dontSubmitEmptyLogs();
+    }
+
+    public function lockReplies(): void
+    {
+        $this->update(['replies_locked' => true]);
+    }
+
+    public function unlockReplies(): void
+    {
+        $this->update(['replies_locked' => false]);
     }
 }

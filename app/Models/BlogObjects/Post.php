@@ -98,6 +98,7 @@ class Post extends BasePost implements CommentableContract, Searchable
         'published_at',
         'blog_author_id',
         'category_id',
+        'comments_locked',
     ];
 
     /**
@@ -108,6 +109,7 @@ class Post extends BasePost implements CommentableContract, Searchable
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
+        'comments_locked' => 'bool',
     ];
 
     /**
@@ -130,6 +132,14 @@ class Post extends BasePost implements CommentableContract, Searchable
         return Sort::NEWEST();
     }
 
+    /**
+     * Can someone post a comment on this post?
+     */
+    public function canComment(): bool
+    {
+        return $this->authCheck() && ! $this->comments_locked;
+    }
+
     public function canReportComment(Comment $comment): bool
     {
         return $this->authCheck();
@@ -137,7 +147,9 @@ class Post extends BasePost implements CommentableContract, Searchable
 
     public function canReplyToComment(Comment $comment): bool
     {
-        return $this->authCheck();
+        return $this->authCheck()
+            && ! $this->comments_locked    // post-level lock
+            && ! $comment->replies_locked; // comment-thread lock
     }
 
     public function canReactToComment(Comment $comment): bool

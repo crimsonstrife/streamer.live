@@ -308,6 +308,9 @@ class CommentResource extends Resource
                     ->label('Approved'),
                 Forms\Components\Toggle::make('is_spam')
                     ->label('Spam'),
+                Forms\Components\Toggle::make('replies_locked')
+                    ->label('Lock Replies')
+                    ->helperText('When enabled, no new replies can be added under this comment.'),
             ]);
     }
 
