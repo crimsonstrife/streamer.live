@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SecurityObjects\GeoFilter;
 use App\Services\GeoLocationService;
 use Closure;
 use App\Models\SecurityObjects\IPFilter;
@@ -25,32 +26,29 @@ class CheckIPFilter
         }
 
         // IP whitelist (if enabled)
-        if (config('ip_filter.whitelist_enabled')
+        if (config('ip-filter.whitelist_enabled')
             && ! IPFilter::where('type', 'whitelist')->where('ip_address', $ip)->exists()
         ) {
             abort(403, 'Access denied: Your IP isn’t whitelisted.');
         }
 
         // Geo-lookup
-        $geo = app(GeoLocationService::class)->getGeoData($ip);
-        if ($geo) {
-            $country = $geo['country']; // e.g. “US”
+        if (config('ip_filter.geo_enabled')) {
+            $geo = app(GeoLocationService::class)->getGeoData($request->ip());
+            if ($geo) {
+                $cc = $geo['country']; // e.g. "US"
 
-            // Country blacklist
-            if (IPFilter::where('type', 'country_blacklist')
-                ->where('ip_address', $country)
-                ->exists()
-            ) {
-                abort(403, "Access denied: Connections from {$geo['country_name']} are blocked.");
-            }
+                // country blacklist
+                if (GeoFilter::where('type', 'blacklist')->where('country_code', $cc)->exists()) {
+                    abort(403, "Access denied: Connections from {$geo['country_name']} are blocked.");
+                }
 
-            // Country whitelist (if you want)
-            if (config('ip_filter.country_whitelist_enabled', false)
-                && ! IPFilter::where('type', 'country_whitelist')
-                    ->where('ip_address', $country)
-                    ->exists()
-            ) {
-                abort(403, "Access denied: Only certain countries are allowed.");
+                // country whitelist (only allow these when enabled)
+                if (config('ip_filter.country_whitelist_enabled')
+                    && ! GeoFilter::where('type', 'whitelist')->where('country_code', $cc)->exists()
+                ) {
+                    abort(403, "Access denied: Only selected countries are allowed.");
+                }
             }
         }
 
