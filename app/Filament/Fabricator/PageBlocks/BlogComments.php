@@ -19,7 +19,7 @@ class BlogComments extends PageBlock
     {
         $post = data_get($data, 'post');
 
-        $comments = $post ? $post->comments->where('approved', true)->get() : collect();
+        $comments = $post ? $post->comments->where('approved', true) : collect();
 
         return [
             'comments' => $comments,
