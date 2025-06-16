@@ -20,13 +20,13 @@ class BlogCommentController extends Controller
         $parentComment = null;
 
         // Creating a top-level comment on $post:
-        if (! $post->canComment()) {
+        if ($post->isCommentingLocked()) {
             abort(403, 'Comments are locked for this post.');
         }
 
         // Ensure $parentComment exists before proceeding:
         if ($request->input('reply_id')) {
-            $parentComment = Comment::where('id', $request->input('reply_id'))->first();
+            $parentComment = $post->comments()->findOrFail($request->input('reply_id'));
 
             // Ensure $parentComment exists before proceeding:
             if (! $parentComment) {

@@ -203,9 +203,9 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
         @auth
-            @if($comments_locked)
+            @if($commentsLocked)
                 <div class="alert alert-warning">
-                    Comments have been locked for this post.
+                    {{ __('Comments have been locked for this post.') }}
                 </div>
             @else
                 @php

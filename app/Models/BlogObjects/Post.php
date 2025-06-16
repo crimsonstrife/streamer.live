@@ -137,7 +137,7 @@ class Post extends BasePost implements CommentableContract, Searchable
      */
     public function canComment(): bool
     {
-        return $this->authCheck() && ! $this->comments_locked;
+        return $this->authCheck() && ! $this->isCommentingLocked();
     }
 
     public function canReportComment(Comment $comment): bool
@@ -148,7 +148,7 @@ class Post extends BasePost implements CommentableContract, Searchable
     public function canReplyToComment(Comment $comment): bool
     {
         return $this->authCheck()
-            && ! $this->comments_locked    // post-level lock
+            && ! $this->isCommentingLocked()   // post-level lock
             && ! $comment->replies_locked; // comment-thread lock
     }
 
@@ -275,5 +275,10 @@ class Post extends BasePost implements CommentableContract, Searchable
             $this->title,
             $url
         );
+    }
+
+    public function isCommentingLocked(): bool
+    {
+        return $this->comments_locked ?? false;
     }
 }
