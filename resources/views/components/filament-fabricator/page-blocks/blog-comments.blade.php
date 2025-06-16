@@ -231,7 +231,7 @@
                                     <div class="form-floating comment-compose mb-2">
                                     <textarea id="commentMessage" name="text" class="form-control w-100" rows="3"
                                               placeholder="Leave a comment here" required></textarea>
-                                        <label for="text">Leave a comment here</label>
+                                        <label for="commentMessage">Leave a comment here</label>
                                     </div>
                                 </div>
                                 <div class="hstack justify-content-end gap-1">
