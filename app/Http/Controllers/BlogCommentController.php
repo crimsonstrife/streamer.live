@@ -38,7 +38,7 @@ class BlogCommentController extends Controller
         try {
             Comment::create([
                 'text' => $data['text'],
-                'reply_id' => $parentComment, // comment being replied to, null if top-level comment
+                'reply_id' => $parentComment ? $parentComment->id : null, // comment being replied to, null if top-level comment
                 'commented_on_type' => get_class($post),
                 'commented_on_id' => $post->id,
                 'commented_by_type' => get_class($request->user()),
