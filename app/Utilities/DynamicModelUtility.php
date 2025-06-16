@@ -82,7 +82,7 @@ class DynamicModelUtility extends Utility
      * @param  mixed  $file  The file to get the namespace from.
      * @return string The namespace of the file, e.g. 'App\Models\...'
      *
-     * @example DynamicModelUtils::getNamespaceFromFile('app/Models/User.php');
+     * @example DynamicModelUtils::getNamespaceFromFile('app/Models/AuthObjects/User.php');
      */
     public static function getNamespaceFromFile(string $file): string
     {
