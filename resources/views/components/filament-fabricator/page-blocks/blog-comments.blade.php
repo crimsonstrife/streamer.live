@@ -229,7 +229,7 @@
                                     <input type="hidden" name="reply_id" id="reply_id" value="">
                                     <input type="hidden" name="post_id" value="{{ $post->id }}">
                                     <div class="form-floating comment-compose mb-2">
-                                    <textarea name="text" class="form-control w-100" rows="3"
+                                    <textarea id="commentMessage" name="text" class="form-control w-100" rows="3"
                                               placeholder="Leave a comment here" required></textarea>
                                         <label for="text">Leave a comment here</label>
                                     </div>
