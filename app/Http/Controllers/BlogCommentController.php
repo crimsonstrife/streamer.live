@@ -21,7 +21,7 @@ class BlogCommentController extends Controller
 
         // Creating a top-level comment on $post:
         if ($post->isCommentingLocked()) {
-            abort(403, 'Comments are locked for this post.');
+            abort(403, __('Comments are locked for this post.'));
         }
 
         // Ensure $parentComment exists before proceeding:
