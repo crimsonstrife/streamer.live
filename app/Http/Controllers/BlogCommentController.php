@@ -17,10 +17,28 @@ class BlogCommentController extends Controller
             'text' => ['required', 'string', 'max:1000'],
         ]);
 
+        $parentComment = null;
+
+        // Creating a top-level comment on $post:
+        if ($post->isCommentingLocked()) {
+            abort(403, __('Comments are locked for this post.'));
+        }
+
+        // Ensure $parentComment exists before proceeding:
+        if ($request->input('reply_id')) {
+            $parentComment = $post->comments()->findOrFail($request->input('reply_id'));
+
+            // Ensure $parentComment exists before proceeding:
+            // Creating a reply to $parentComment on $post:
+            if (! $post->canReplyToComment($parentComment)) {
+                abort(403, 'Replies are locked.');
+            }
+        }
+
         try {
             Comment::create([
                 'text' => $data['text'],
-                'reply_id' => $request->input('reply_id'),
+                'reply_id' => $parentComment ? $parentComment->id : null, // comment being replied to, null if top-level comment
                 'commented_on_type' => get_class($post),
                 'commented_on_id' => $post->id,
                 'commented_by_type' => get_class($request->user()),

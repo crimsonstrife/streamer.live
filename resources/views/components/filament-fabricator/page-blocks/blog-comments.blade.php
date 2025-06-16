@@ -203,40 +203,46 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
         @auth
-            @php
-                $user = Auth::getUser();
-            @endphp
-            {{-- Reply Banner (bootstrap collapse toggles “show” on this element) --}}
-            <div class="collapse mb-3" id="replyCommentT">
-                <div class="alert alert-info py-2 px-3 mb-2">Replying to <strong id="replyingToName">someone</strong>
-                    <button type="button" class="btn-close float-end" aria-label="Cancel reply"
-                            onclick="clearReply()"></button>
+            @if($commentsLocked)
+                <div class="alert alert-warning">
+                    {{ __('Comments have been locked for this post.') }}
                 </div>
-            </div>
-            <div class="comment-box">
-                <div class="d-flex comment">
-                    <img class="rounded-circle comment-img" src="{{ $user->profile_photo_url }}" height="50px"
-                         width="50px">
-                    <div class="flex-grow-1 ms-3">
-                        <form method="POST" action="{{ route('blog.comment.submit', ['post' => $post->slug]) }}">
-                            @csrf
-                            <div class="form-group">
-                                <input type="hidden" name="reply_id" id="reply_id" value="">
-                                <input type="hidden" name="post_id" value="{{ $post->id }}">
-                                <div class="form-floating comment-compose mb-2">
-                                    <textarea name="text" class="form-control w-100" rows="3"
-                                              placeholder="Leave a comment here" required></textarea>
-                                    <label for="text">Leave a comment here</label>
-                                </div>
-                            </div>
-                            <div class="hstack justify-content-end gap-1">
-                                <button type="reset" class="btn btn-sm btn-secondary rounded-pill">Cancel</button>
-                                <button type="submit" class="btn btn-sm btn-primary rounded-pill">Comment</button>
-                            </div>
-                        </form>
+            @else
+                @php
+                    $user = Auth::getUser();
+                @endphp
+                {{-- Reply Banner (bootstrap collapse toggles “show” on this element) --}}
+                <div class="collapse mb-3" id="replyCommentT">
+                    <div class="alert alert-info py-2 px-3 mb-2">Replying to <strong id="replyingToName">someone</strong>
+                        <button type="button" class="btn-close float-end" aria-label="Cancel reply"
+                                onclick="clearReply()"></button>
                     </div>
                 </div>
-            </div>
+                <div class="comment-box">
+                    <div class="d-flex comment">
+                        <img class="rounded-circle comment-img" src="{{ $user->profile_photo_url }}" height="50px"
+                             width="50px">
+                        <div class="flex-grow-1 ms-3">
+                            <form method="POST" action="{{ route('blog.comment.submit', ['post' => $post->slug]) }}">
+                                @csrf
+                                <div class="form-group">
+                                    <input type="hidden" name="reply_id" id="reply_id" value="">
+                                    <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                    <div class="form-floating comment-compose mb-2">
+                                    <textarea id="commentMessage" name="text" class="form-control w-100" rows="3"
+                                              placeholder="Leave a comment here" required></textarea>
+                                        <label for="commentMessage">Leave a comment here</label>
+                                    </div>
+                                </div>
+                                <div class="hstack justify-content-end gap-1">
+                                    <button type="reset" class="btn btn-sm btn-secondary rounded-pill">Cancel</button>
+                                    <button type="submit" class="btn btn-sm btn-primary rounded-pill">Comment</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endif
         @endauth
         <div class="post-comments">
             <div class="comments-nav">
