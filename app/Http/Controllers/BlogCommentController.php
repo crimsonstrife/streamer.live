@@ -22,15 +22,14 @@ class BlogCommentController extends Controller
             abort(403, 'Comments are locked for this post.');
         }
 
-        $parentComment = Comment::where('id', $request->input('reply_id'))->first();
-
         // Ensure $parentComment exists before proceeding:
-        if ($request->input('reply_id') && ! $parentComment) {
-            abort(404, 'Parent comment not found.');
-        }
-        // Creating a reply to $parentComment on $post:
-        if (! $post->canReplyToComment($parentComment)) {
-            abort(403, 'Replies are locked for that comment thread.');
+        if ($request->input('reply_id')) {
+            $parentComment = Comment::where('id', $request->input('reply_id'))->first();
+
+            // Creating a reply to $parentComment on $post:
+            if (! $post->canReplyToComment($parentComment)) {
+                abort(403, 'Replies are locked.');
+            }
         }
 
         try {
