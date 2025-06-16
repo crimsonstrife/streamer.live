@@ -65,7 +65,7 @@
                              aria-controls="replyCommentT">Reply</a>
                     </span>
                 @else
-                    <span class="text-muted small">Replies locked</span>
+                    <span class="text-muted small" aria-label="Replies are locked for this comment. You cannot reply." title="Replies are locked for this comment. You cannot reply.">Replies locked</span>
                 @endif
                 @if(Auth::getUser()->id !== $commentByID)
                     <button class="btn btn btn-link small">Report</button>
