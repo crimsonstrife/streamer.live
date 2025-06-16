@@ -18,10 +18,12 @@ class BlogComments extends PageBlock
     public static function mutateData(array $data): array
     {
         $post = data_get($data, 'post');
+
         $comments = $post ? $post->comments->where('approved', true)->get() : collect();
 
         return [
             'comments' => $comments,
+            'comments_locked' => $post->comments_locked ?? false,
         ];
     }
 }

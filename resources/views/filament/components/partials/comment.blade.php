@@ -6,6 +6,7 @@
     $commentByID = $comment->commentedBy->id;
     $postAuthorID = $post->author->user_id;
     $commentByAuthor = $commentByID === $postAuthorID;
+    $replyLocked = $comment->replies_locked;
 @endphp
 <div class="d-flex comment">
     @if ($isManualSpam || $isAutoSpam || $highSpamRisk)
@@ -56,10 +57,16 @@
         <div class="hstack align-items-center mb-0" style="margin-left:-.25rem;">
             @auth
                 @include('filament.components.partials.likes', ['comment' => $comment, 'post' => $post])
-                <span><a class="btn btn-link small reply-link" role="button" data-toggle="collapse"
-                         data-reply-id="{{ $comment->id }}"
-                         aria-expanded="false"
-                         aria-controls="replyCommentT">Reply</a></span>
+                @if(! $comment->replies_locked)
+                    <span>
+                        <a class="btn btn-link small reply-link" role="button" data-toggle="collapse"
+                             data-reply-id="{{ $comment->id }}"
+                             aria-expanded="false"
+                             aria-controls="replyCommentT">Reply</a>
+                    </span>
+                @else
+                    <span class="text-muted small">Replies locked</span>
+                @endif
                 @if(Auth::getUser()->id !== $commentByID)
                     <button class="btn btn btn-link small">Report</button>
                 @endif
