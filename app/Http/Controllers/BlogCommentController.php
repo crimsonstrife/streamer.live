@@ -26,6 +26,10 @@ class BlogCommentController extends Controller
         if ($request->input('reply_id')) {
             $parentComment = Comment::where('id', $request->input('reply_id'))->first();
 
+            // Ensure $parentComment exists before proceeding:
+            if (! $parentComment) {
+                abort(404, 'Parent comment not found.');
+            }
             // Creating a reply to $parentComment on $post:
             if (! $post->canReplyToComment($parentComment)) {
                 abort(403, 'Replies are locked.');
