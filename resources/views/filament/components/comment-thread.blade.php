@@ -3,6 +3,7 @@
     $isManualSpam = $comment->is_spam;
     $isAutoSpam   = ! $isManualSpam && $comment->is_spam_auto;
     $highSpamRisk = $comment->spam_score > 4;
+    $replyLocked = $comment->replies_locked;
 @endphp
 @push('styles')
     <style>

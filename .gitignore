@@ -28,3 +28,4 @@ storage/debugbar/*
 .phpstorm.meta.php
 /storage/shieldon_firewall
 /storage/shieldon_firewall/data_driver_file/shieldon_sessions
+/storage/geoip/GeoLite2-Country.mmdb
