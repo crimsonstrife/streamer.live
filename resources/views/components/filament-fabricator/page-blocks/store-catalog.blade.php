@@ -170,15 +170,16 @@
 
                 <div class="row">
                     @forelse ($products as $product)
+                        @php $mediaItems = $product->getMedia('images'); @endphp
                         <div class="col-md-4 mb-4">
-                            <div class="card h-100 product-card" data-images="{{ $product->images->count() }}">
+                            <div class="card h-100 product-card" data-images="{{ $mediaItems->count() }}">
                                 <div class="position-relative overflow-hidden" style="aspect-ratio: 1/1;">
-                                    @foreach ($product->images as $i => $image)
+                                    @foreach ($mediaItems as $index => $media)
                                         <img
-                                            src="{{ asset($image->local_path ?? '') ?: $image->url }}"
-                                            alt="{{ $image->alt_text ?? $product->name }}"
-                                            class="card-img-top product-image position-absolute top-0 start-0 w-100 h-100 object-fit-cover @if($i !== 0) opacity-0 @endif"
-                                            data-index="{{ $i }}"
+                                            src="{{ $media->getUrl() }}"
+                                            alt="{{ $media->getCustomProperty('alt_text') ?? 'Product image for '. $product->name }}"
+                                            class="card-img-top product-image position-absolute top-0 start-0 w-100 h-100 object-fit-cover @if($index !== 0) opacity-0 @endif"
+                                            data-index="{{ $index }}"
                                             loading="lazy"
                                         >
                                     @endforeach

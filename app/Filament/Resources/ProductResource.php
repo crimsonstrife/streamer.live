@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationManager;
+use App\Forms\Components\MediaManagerInput;
 use App\Models\SharedObjects\Category;
 use App\Models\StoreObjects\Product;
 use Filament\Forms;
@@ -93,7 +94,29 @@ class ProductResource extends Resource
                     ->preload()
                     ->searchable(),
                 SpatieTagsInput::make('tags')
-                    ->label(__('filament-blog::filament-blog.tags'))->type('product'),
+                    ->label(__('Product Tags'))->type('product'),
+                MediaManagerInput::make('images')
+                    ->label(__('Product Images'))
+                    ->disk('public')
+                    ->folderTitleFieldName('images')
+                    ->columnSpanFull()
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('alt_text')
+                            ->label('Alt Text')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Fieldset::make('Model Info')
+                            ->schema([
+                                Forms\Components\TextInput::make('model_name')->label('Model Name'),
+                                Forms\Components\TextInput::make('model_height_cm')->label('Model Height (cm)')->numeric(),
+                                Forms\Components\TextInput::make('model_size_worn')->label('Size Worn'),
+                                Forms\Components\Textarea::make('model_description')->label('Model Description')->rows(3),
+                            ])
+                            ->columns(2),
+                    ]),
             ]);
     }
 
@@ -122,7 +145,6 @@ class ProductResource extends Resource
     {
         return [
             VariationsRelationManager::class,
-            ImagesRelationManager::class,
         ];
     }
 

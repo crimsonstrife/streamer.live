@@ -77,6 +77,10 @@ class PostResource extends Resource
                                 Forms\Components\TextInput::make('description')
                                     ->required()
                                     ->maxLength(255),
+                                Forms\Components\TextInput::make('alt_text')
+                                    ->label('Alt Text')
+                                    ->required()
+                                    ->maxLength(255),
                             ])->columnSpan([
                                 'sm' => 2,
                             ]),

@@ -14,14 +14,21 @@
         <div class="row">
             @foreach ($products as $product)
                 @php
-                    $image = $product->images->first();
+                    $mediaItems = $product->getMedia('images');
+                    if ($mediaItems->isNotEmpty())
+                        {
+                            $image = $mediaItems[0];
+                        }
+                    else
+                        {
+                            $image = null;
+                        }
                 @endphp
-
                 <div class="mb-4 col-md-4">
                     <div class="shadow-sm card">
                         @if ($image)
-                            <img src="{!! asset($image->local_path) ?? $image->url !!}" class="card-img-top"
-                                 alt="{{ $image->alt_text }}">
+                            <img src="{!! $image->getUrl() !!}" class="card-img-top"
+                                 alt="{{ $image->getCustomProperty('alt_text') }}">
                         @endif
                         <div class="card-body">
                             <h5 class="card-title">{{ $product->name }}</h5>
