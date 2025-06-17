@@ -10,12 +10,16 @@
         <div class="row">
             @foreach($featured as $post)
                 @php
-                    $postMedia = $post->getMedia("*");
-                    $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                    $postMedia = $post->getMedia("images");
                 @endphp
+                @if($postMedia->isNotEmpty())
+                    @php
+                        $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                    @endphp
+                @endif
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm h-100">
-                        @if ($postMedia !== null)
+                        @if ($postMedia->isNotEmpty())
                             <img src="{{ $postFeaturedImageUrl }}" class="card-img-top" alt="{{ $post->title }}">
                         @endif
                         <div class="card-body">

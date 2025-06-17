@@ -91,11 +91,15 @@
 
                                     <div class="section-background">
                                         @if(count($mediaItems) > 1)
-                                            <div class="section-background__adapt hero__adapt">
-                                                @foreach ($mediaItems as $index => $media)
-                                                    <div class="section-background__image" style="background-image:url('{{ $media->getUrl() }}');"></div>
-                                                @endforeach
-                                                    <div class="section-background__overlay" style="background-color:rgba(0,0,0,0.5)"></div>
+                                            <div class="section-background__adapt hero__adapt hero__carousel">
+                                                <div class="hero__carousel-inner">
+                                                    @foreach ($mediaItems as $index => $media)
+                                                        <div class="section-background__image hero__carousel-item{{ $index === 0 ? ' is-active' : '' }}" style="background-image:url('{{ $media->getUrl() }}');"></div>
+                                                    @endforeach
+                                                </div>
+                                                <div class="section-background__overlay" style="background-color:rgba(0,0,0,0.5)"></div>
+                                                <button class="hero__carousel-prev" aria-label="Previous">&lt;</button>
+                                                <button class="hero__carousel-next" aria-label="Next">&gt;</button>
                                             </div>
                                         @else
                                             <div class="section-background__adapt hero__adapt">

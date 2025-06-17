@@ -89,13 +89,17 @@
                     href="#">{{ $post->author->name ?? 'Unknown' }}</a></p>
             @php
                 $summary = $post->getReactionSummary();
-                $postMedia = $post->getMedia("*");
-                $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                $postMedia = $post->getMedia("images");
             @endphp
+            @if($postMedia->isNotEmpty())
+                @php
+                    $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                @endphp
+            @endif
             @foreach ($summary as $type => $count)
                 <span class="badge bg-secondary">{{ ucfirst($type) }}: {{ $count }}</span>
             @endforeach
-            @if ($postMedia !== null)
+            @if ($postMedia->isNotEmpty())
                 <img src="{{ $postFeaturedImageUrl }}" class="img-fluid mb-4 rounded shadow"
                      alt="{{ $post->title }}">
             @endif

@@ -22,7 +22,7 @@
             <div class="row">
                 @foreach ($related as $relatedProduct)
                     @php
-                        $mediaItems = $product->getMedia('images');
+                        $mediaItems = $relatedProduct->getMedia('images');
                     if ($mediaItems->isNotEmpty())
                         {
                             $image = $mediaItems[0];

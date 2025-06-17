@@ -84,13 +84,17 @@
     <div class="row mb-2">
         @foreach($posts ?? [] as $post)
             @php
-                $postMedia = $post->getMedia("*");
-                $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                $postMedia = $post->getMedia("images");
             @endphp
+            @if($postMedia->isNotEmpty())
+                @php
+                    $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                @endphp
+            @endif
             <div class="col-md-10">
                 <div
                     class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                    @if ($postMedia !== null)
+                    @if ($postMedia->isNotEmpty())
                         <div class="col-auto d-none d-lg-block">
                             <div class="overflow-hidden mx-auto" style="max-width:250px; height:250px;">
                                 <img
