@@ -242,17 +242,20 @@ class MediaManagerInput extends Repeater
                 ->requiresConfirmation()
                 ->action(function (array $arguments, Repeater $component) {
                     $items = $component->getState();
-                    $media = Media::where('uuid', $items[$arguments['item']])->first();
-                    if ($media) {
-                        $media->delete();
+
+                    // Check if the specified index exists in $items
+                    if (isset($arguments['item']) && array_key_exists($arguments['item'], $items)) {
+                        $media = Media::where('uuid', $items[$arguments['item']])->first();
+                        $media?->delete();
+
+                        unset($items[$arguments['item']]);
+
+                        $component->state($items);
+
+                        $component->callAfterStateUpdated();
                     }
-
-                    unset($items[$arguments['item']]);
-
-                    $component->state($items);
-
-                    $component->callAfterStateUpdated();
                 });
+
         });
 
 
