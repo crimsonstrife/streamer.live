@@ -15,9 +15,19 @@ class CustomMediaPathGenerator implements PathGenerator
         $modelId = $media->model_id;
         $collection = $media->collection_name;
 
-        if ($modelId === null) {
-            Log::error("Media model ID is null for media ID {$media->id}.");
-            return '';
+        if (empty($modelType)) {
+            Log::error("Media model type is missing for media ID {$media->id}.");
+            throw new \InvalidArgumentException("Media model type is missing for media ID {$media->id}.");
+        }
+
+        if (empty($modelId)) {
+            Log::error("Media model ID is missing for media ID {$media->id}.");
+            throw new \InvalidArgumentException("Media model ID is missing for media ID {$media->id}.");
+        }
+
+        if (empty($collection)) {
+            Log::error("Media collection name is missing for media ID {$media->id}.");
+            throw new \InvalidArgumentException("Media collection name is missing for media ID {$media->id}.");
         }
 
         if ($modelType === null) {
