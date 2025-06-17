@@ -28,7 +28,7 @@
                     <div class="shadow-sm card">
                         @if ($image)
                             <img src="{!! $image->getUrl() !!}" class="card-img-top"
-                                 alt="{{ empty($image->getCustomProperty('alt_text')) ? 'Product image' : $image->getCustomProperty('alt_text') }}">
+                                 alt="{{ empty($image->getCustomProperty('alt_text')) ? $product->name : $image->getCustomProperty('alt_text') }}">
                         @endif
                         <div class="card-body">
                             <h5 class="card-title">{{ $product->name }}</h5>
