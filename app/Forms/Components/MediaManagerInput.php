@@ -154,7 +154,16 @@ class MediaManagerInput extends Repeater
                     $callback = $media->getAttributeValue('uuid');
 
                     if (! $callback) {
-                        $file->delete();
+                        // Log the missing uuid for traceability
+                        \Log::warning('MediaManagerInput: Missing uuid for uploaded media.', [
+                            'media_id' => $media->id ?? null,
+                            'file_name' => $file->getClientOriginalName() ?? null,
+                            'user_id' => auth()->id() ?? null,
+                        ]);
+                        // Optionally, you could throw an exception or handle this differently
+                        // For now, we do NOT delete the file to avoid silent data loss
+                        // throw new \RuntimeException('Uploaded media is missing a uuid.');
+                        return; // Stop further processing
 
                         return $file;
                     }
