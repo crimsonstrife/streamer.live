@@ -82,7 +82,12 @@ class MediaManagerInput extends Repeater
 
                     $mediaAdder = $record->addMedia($file->getPathname());
 
-                    $filename = $mediaComponent->shouldPreserveFilenames() ? $file->getClientOriginalName() : (Str::ulid() . '.' . $file->getClientOriginalExtension());
+                    if ($mediaComponent->shouldPreserveFilenames()) {
+                        $filename = $file->getClientOriginalName();
+                    } else {
+                        $extension = $file->getClientOriginalExtension();
+                        $filename = Str::ulid() . ($extension !== '' ? ('.' . $extension) : '');
+                    }
 
                     $media = $mediaAdder
                         ->addCustomHeaders($mediaComponent->getCustomHeaders())
