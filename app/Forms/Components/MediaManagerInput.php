@@ -154,18 +154,29 @@ class MediaManagerInput extends Repeater
                     $callback = $media->getAttributeValue('uuid');
 
                     if (! $callback) {
-                        // Log the missing uuid for traceability
+                        // Log the missing UUID with relevant details
                         \Log::warning('MediaManagerInput: Missing uuid for uploaded media.', [
                             'media_id' => $media->id ?? null,
                             'file_name' => $file->getClientOriginalName() ?? null,
                             'user_id' => auth()->id() ?? null,
                         ]);
-                        // Optionally, you could throw an exception or handle this differently
-                        // For now, we do NOT delete the file to avoid silent data loss
-                        // throw new \RuntimeException('Uploaded media is missing a uuid.');
-                        return; // Stop further processing
 
-                        return $file;
+                        // Attempt to delete the file to avoid orphaned files
+                        try {
+                            if (file_exists($file->getRealPath())) {
+                                unlink($file->getRealPath());
+                            }
+                        } catch (\Throwable $exception) {
+                            // Log any deletion failure
+                            \Log::error('Failed to delete orphaned file.', [
+                                'file_path' => $file->getRealPath() ?? null,
+                                'error_message' => $exception->getMessage(),
+                            ]);
+                        }
+
+                        session()->flash('warning', 'Your file upload was incomplete due to missing metadata. Please try again.');
+
+                        return null; // Return null to avoid further processing of orphaned files
                     }
 
                     $storedFile = $mediaComponent->evaluate($callback, [
