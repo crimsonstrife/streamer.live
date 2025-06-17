@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Filament\Resources\PostResource\Pages;
 use Stephenjude\FilamentBlog\Traits\HasContentEditor;
+use App\Forms\Components\MediaManagerInput;
 
 class PostResource extends Resource
 {
@@ -66,15 +67,17 @@ class PostResource extends Resource
                                 'sm' => 2,
                             ]),
 
-                        Forms\Components\FileUpload::make('banner')
+                        MediaManagerInput::make('images')
                             ->label(__('filament-blog::filament-blog.banner'))
-                            ->image()
-                            ->maxSize(config('filament-blog.banner.maxSize', 5120))
-                            ->imageCropAspectRatio(config('filament-blog.banner.cropAspectRatio', '16:9'))
                             ->disk(config('filament-blog.banner.disk', 'public'))
-                            ->visibility(config('filament-blog.banner.visibility', 'public'))
-                            ->directory(config('filament-blog.banner.directory', 'blog'))
-                            ->columnSpan([
+                            ->schema([
+                                Forms\Components\TextInput::make('title')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('description')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])->columnSpan([
                                 'sm' => 2,
                             ]),
 

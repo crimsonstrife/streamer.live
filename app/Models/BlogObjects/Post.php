@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use LaravelIdea\Helper\App\Models\_IH_Post_QB;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\SlugOptions;
@@ -73,13 +75,14 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  *
  * @mixin Eloquent
  */
-class Post extends BasePost implements CommentableContract, Searchable
+class Post extends BasePost implements CommentableContract, Searchable, HasMedia
 {
     use HasComments;
     use HasReactions;
     use HasSlug;
     use HasTags;
     use IsPermissible;
+    use InteractsWithMedia;
 
     /**
      * @var string

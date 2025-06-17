@@ -9,10 +9,14 @@
         <h2 class="mb-4">Featured Posts</h2>
         <div class="row">
             @foreach($featured as $post)
+                @php
+                    $postMedia = $post->getMedia("*");
+                    $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                @endphp
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm h-100">
-                        @if ($post->hasBanner())
-                            <img src="{{ $post->banner_url }}" class="card-img-top" alt="{{ $post->title }}">
+                        @if ($postMedia !== null)
+                            <img src="{{ $postFeaturedImageUrl }}" class="card-img-top" alt="{{ $post->title }}">
                         @endif
                         <div class="card-body">
                             <h5 class="card-title">{{ $post->title }}</h5>

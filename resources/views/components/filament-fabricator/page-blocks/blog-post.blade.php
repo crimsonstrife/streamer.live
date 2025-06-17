@@ -89,12 +89,14 @@
                     href="#">{{ $post->author->name ?? 'Unknown' }}</a></p>
             @php
                 $summary = $post->getReactionSummary();
+                $postMedia = $post->getMedia("*");
+                $postFeaturedImageUrl = $postMedia[0]->getUrl();
             @endphp
             @foreach ($summary as $type => $count)
                 <span class="badge bg-secondary">{{ ucfirst($type) }}: {{ $count }}</span>
             @endforeach
-            @if ($post->hasBanner())
-                <img src="{{ $post->banner_url }}" class="img-fluid mb-4 rounded shadow"
+            @if ($postMedia !== null)
+                <img src="{{ $postFeaturedImageUrl }}" class="img-fluid mb-4 rounded shadow"
                      alt="{{ $post->title }}">
             @endif
 
