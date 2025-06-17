@@ -68,7 +68,7 @@ class CleanupOrphanedFiles extends Command
         foreach ($mediaModels as $modelClass) {
             if (in_array(HasMedia::class, class_implements($modelClass))) {
                 /** @var HasMedia $instance */
-                $instance = new $modelClass;
+                $instance = new $modelClass();
 
                 // Assuming 'getMediaDirectory' generates the storage directory path for media
                 $directories[] = storage_path("public/{$instance->getTable()}"); // Adjust path format if needed
