@@ -284,4 +284,10 @@ class Post extends BasePost implements CommentableContract, Searchable, HasMedia
     {
         return $this->comments_locked ?? false;
     }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->useDisk('public');
+    }
 }
