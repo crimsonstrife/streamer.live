@@ -5,11 +5,14 @@ namespace App\Models;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Hero extends Model
+class Hero extends Model implements HasMedia
 {
     use HasFactory;
     use IsPermissible;
+    use InteractsWithMedia;
 
     protected $fillable = [
         'title',
@@ -34,5 +37,12 @@ class Hero extends Model
     public function getBackgroundImageURLAttribute(): object|string
     {
         return url($this->background_image);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->useDisk('public')
+            ->singleFile();
     }
 }
