@@ -98,10 +98,13 @@ class ProductResource extends Resource
                 MediaManagerInput::make('images')
                     ->label(__('Product Images'))
                     ->disk('public')
-                    ->folderTitleFieldName('images')
+                    ->folderTitleFieldName('name')
                     ->columnSpanFull()
                     ->schema([
                         Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('description')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('alt_text')

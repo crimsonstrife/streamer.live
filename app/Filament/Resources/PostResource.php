@@ -70,6 +70,8 @@ class PostResource extends Resource
                         MediaManagerInput::make('images')
                             ->label(__('filament-blog::filament-blog.banner'))
                             ->disk(config('filament-blog.banner.disk', 'public'))
+                            ->folderTitleFieldName('title')
+                            ->columnSpanFull()
                             ->schema([
                                 Forms\Components\TextInput::make('title')
                                     ->required()
@@ -81,8 +83,6 @@ class PostResource extends Resource
                                     ->label('Alt Text')
                                     ->required()
                                     ->maxLength(255),
-                            ])->columnSpan([
-                                'sm' => 2,
                             ]),
 
                         self::getContentEditor('content'),

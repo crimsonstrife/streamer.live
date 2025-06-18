@@ -36,10 +36,13 @@ class HeroResource extends Resource
                 MediaManagerInput::make('images')
                     ->label(__('Banner Image'))
                     ->disk('public')
-                    ->folderTitleFieldName('images')
+                    ->folderTitleFieldName('title')
                     ->columnSpanFull()
                     ->schema([
                         Forms\Components\TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('description')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('alt_text')
