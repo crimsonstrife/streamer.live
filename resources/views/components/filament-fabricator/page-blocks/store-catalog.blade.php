@@ -177,7 +177,7 @@
                                     @foreach ($mediaItems as $index => $media)
                                         <img
                                             src="{{ $media->getUrl() }}"
-                                            alt="{{ $media->getCustomProperty('alt_text') ?? 'Product image for '. $product->name }}"
+                                            alt="{{ $media->getCustomProperty('image_alt_text') ?? 'Product image for '. $product->name }}"
                                             class="card-img-top product-image position-absolute top-0 start-0 w-100 h-100 object-fit-cover @if($index !== 0) opacity-0 @endif"
                                             data-index="{{ $index }}"
                                             loading="lazy"

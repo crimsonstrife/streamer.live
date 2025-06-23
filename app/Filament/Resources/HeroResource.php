@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HeroResource\Pages;
 use App\Filament\Resources\HeroResource\RelationManagers;
-use App\Forms\Components\MediaManagerInput;
 use App\Models\Hero;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -33,23 +32,6 @@ class HeroResource extends Resource
                     ->default(false),
                 Forms\Components\TextInput::make('title')->required(),
                 Forms\Components\TextInput::make('subtitle'),
-                MediaManagerInput::make('images')
-                    ->label(__('Banner Image'))
-                    ->disk('public')
-                    ->folderTitleFieldName('title')
-                    ->columnSpanFull()
-                    ->schema([
-                        Forms\Components\TextInput::make('title')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('description')
-                            ->required()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('alt_text')
-                            ->label('Alt Text')
-                            ->required()
-                            ->maxLength(255),
-                    ]),
                 Forms\Components\TextInput::make('primary_cta_text')->required(),
                 Forms\Components\TextInput::make('primary_cta_url')->url()->required(),
                 Forms\Components\TextInput::make('secondary_cta_text'),
@@ -90,7 +72,7 @@ class HeroResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\HeroBannerImageRelationManager::class,
         ];
     }
 

@@ -89,11 +89,12 @@
                     href="#">{{ $post->author->name ?? 'Unknown' }}</a></p>
             @php
                 $summary = $post->getReactionSummary();
-                $postMedia = $post->getMedia("images");
+                $postMedia = $post->getMedia('images');
             @endphp
             @if($postMedia->isNotEmpty())
                 @php
                     $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                    $postFeaturedImageAltText = $postMedia[0]->getCustomProperty('image_alt_text');
                 @endphp
             @endif
             @foreach ($summary as $type => $count)
@@ -101,10 +102,10 @@
             @endforeach
             @if ($postMedia->isNotEmpty())
                 <img src="{{ $postFeaturedImageUrl }}" class="img-fluid mb-4 rounded shadow"
-                     alt="{{ $post->title }}">
+                     alt="{{ $postFeaturedImageAltText ?? $post->title . ' Featured Image' }}">
             @endif
 
-            <div class="prose max-w-none">{!! $post->content !!}</div>
+            <div class="prose max-w-none">{!! $post->content_with_media !!}</div>
 
             <div class="row">
                 <div class="mb-3">

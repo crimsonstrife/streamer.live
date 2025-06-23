@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\PostResource\RelationManagers\PostFeaturedImageRelationManager;
 use App\Models\BlogObjects\Author;
 use App\Models\BlogObjects\Post;
 use Filament\Forms;
@@ -11,13 +12,13 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Filament\Resources\PostResource\Pages;
 use Stephenjude\FilamentBlog\Traits\HasContentEditor;
-use App\Forms\Components\MediaManagerInput;
 
 class PostResource extends Resource
 {
@@ -65,24 +66,6 @@ class PostResource extends Resource
                             ->maxLength(1000)
                             ->columnSpan([
                                 'sm' => 2,
-                            ]),
-
-                        MediaManagerInput::make('images')
-                            ->label(__('filament-blog::filament-blog.banner'))
-                            ->disk(config('filament-blog.banner.disk', 'public'))
-                            ->folderTitleFieldName('title')
-                            ->columnSpanFull()
-                            ->schema([
-                                Forms\Components\TextInput::make('title')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('description')
-                                    ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('alt_text')
-                                    ->label('Alt Text')
-                                    ->required()
-                                    ->maxLength(255),
                             ]),
 
                         self::getContentEditor('content'),
@@ -174,11 +157,10 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('banner')
-                    ->disk(config('filament-blog.banner.disk', 'public'))
-                    ->visibility(config('filament-blog.banner.visibility', 'public'))
-                    ->label(__('filament-blog::filament-blog.banner'))
-                    ->circular(),
+                ImageColumn::make('id')
+                    ->label('Preview')
+                    ->getStateUsing(fn ($record) => $record->getFirstMediaUrl('posts'))
+                    ->square(),
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('filament-blog::filament-blog.title'))
                     ->searchable()
@@ -222,7 +204,7 @@ class PostResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PostFeaturedImageRelationManager::class,
         ];
     }
 

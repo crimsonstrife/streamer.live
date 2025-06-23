@@ -15,12 +15,13 @@
                 @if($postMedia->isNotEmpty())
                     @php
                         $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                        $postFeaturedImageAltText = $postMedia[0]->getCustomProperty('image_alt_text');
                     @endphp
                 @endif
                 <div class="col-md-4 mb-4">
                     <div class="card shadow-sm h-100">
                         @if ($postMedia->isNotEmpty())
-                            <img src="{{ $postFeaturedImageUrl }}" class="card-img-top" alt="{{ $post->title }}">
+                            <img src="{{ $postFeaturedImageUrl }}" class="card-img-top" alt="{{ $postFeaturedImageAltText ?? $post->title . ' Featured Image' }}">
                         @endif
                         <div class="card-body">
                             <h5 class="card-title">{{ $post->title }}</h5>

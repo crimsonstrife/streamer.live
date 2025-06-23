@@ -3,7 +3,6 @@
 namespace App\Providers\Filament;
 
 use App\Plugins\BanPlugin;
-use App\Plugins\MediaManagerPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -75,7 +74,6 @@ class ModerationPanelProvider extends PanelProvider
             ->plugins([
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
-                MediaManagerPlugin::make(),
                 BanPlugin::make(),
                 TutorialsPlugin::make(),
             ]);

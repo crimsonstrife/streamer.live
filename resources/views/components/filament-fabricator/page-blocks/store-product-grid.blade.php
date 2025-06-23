@@ -27,7 +27,7 @@
                     <div class="card h-100">
                         @if ($mediaItems->isNotEmpty())
                             <img src="{!! $image->getUrl() !!}" class="card-img-top"
-                                 alt="{{ $image->getCustomProperty('alt_text') }}">
+                                 alt="{{ $image->getCustomProperty('image_alt_text') }}">
                         @endif
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ $product->name }}</h5>

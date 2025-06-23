@@ -17,6 +17,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -231,5 +232,13 @@ class Product extends BaseModel implements Searchable, HasMedia
     {
         $this->addMediaCollection('images')
             ->useDisk('public');
+    }
+
+    public function productMedia(): MorphMany
+    {
+        return $this
+            ->media() // the base Spatie morphMany
+            ->where('model_type', 'App\Models\StoreObjects\Product') // only “products” files
+            ->where('collection_name', 'images');
     }
 }

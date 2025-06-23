@@ -5,6 +5,7 @@ namespace App\Models\BlogObjects;
 use App\Contracts\CommentableContract;
 use App\Enums\Sort;
 use App\Models\BlogObjects\Author;
+use App\Models\Media;
 use App\Models\SharedObjects\Category;
 use App\Models\BlogObjects\Comment;
 use App\Traits\HasComments;
@@ -17,6 +18,8 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -289,5 +292,27 @@ class Post extends BasePost implements CommentableContract, Searchable, HasMedia
     {
         $this->addMediaCollection('images')
             ->useDisk('public');
+    }
+
+    public function postFeaturedMedia(): morphOne
+    {
+        return $this
+            ->morphOne(Media::class, 'model')
+            ->where('model_type', 'App\Models\BlogObjects\Post') // only “posts” files
+            ->where('collection_name', 'images');
+    }
+
+    public function getContentWithMediaAttribute(): string
+    {
+        return preg_replace_callback(
+            '/\[media\s+id=(\d+)\]/',
+            function ($matches) {
+                $media = Media::find($matches[1]);
+                return $media
+                    ? '<img src="'.$media->getFullUrl().'" alt="'.e($media->file_name).'"/>'
+                    : '';
+            },
+            $this->content,
+        );
     }
 }

@@ -115,7 +115,7 @@
                                                 data-thumb-index="{{ $index }}"
                                                 style="cursor:pointer;"
                                                 onclick="goToSlide({{ $index }})"
-                                                alt="{{ $media->getCustomProperty('alt_text') ?? 'Product image' }}">
+                                                alt="{{ $media->getCustomProperty('image_alt_text') ?? 'Product image' }}">
                                         @endforeach
                                     @endif
                                 </div>
@@ -133,7 +133,7 @@
                                         @foreach($mediaItems as $index => $media)
                                             <div class="carousel-item @if($index === 0) active @endif">
                                                 <div class="position-relative">
-                                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded shadow" alt="{{ $media->getCustomProperty('alt_text') ?? 'Product image' }}">
+                                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded shadow" alt="{{ $media->getCustomProperty('image_alt_text') ?? 'Product image' }}">
                                                     @php
                                                         $modelName = $media->getCustomProperty('model_name') ?? null;
                                                         $modelSize = $media->getCustomProperty('model_size_worn') ?? null;

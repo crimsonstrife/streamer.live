@@ -89,6 +89,7 @@
             @if($postMedia->isNotEmpty())
                 @php
                     $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                    $postFeaturedImageAltText = $postMedia[0]->getCustomProperty('image_alt_text');
                 @endphp
             @endif
             <div class="col-md-10">
@@ -99,7 +100,7 @@
                             <div class="overflow-hidden mx-auto" style="max-width:250px; height:250px;">
                                 <img
                                     src="{{ $postFeaturedImageUrl }}"
-                                    alt="{{ $post->title }}" focusable="false"
+                                    alt="{{ $postFeaturedImageAltText ?? $post->title . ' Featured Image' }}" focusable="false"
                                     class="card-img-top w-100 h-100 object-fit-cover"
                                 >
                             </div>

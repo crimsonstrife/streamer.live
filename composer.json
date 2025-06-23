@@ -23,6 +23,7 @@
     "require": {
         "php": "^8.3",
         "a21ns1g4ts/filament-short-url": "^0.1.5",
+        "antoinecorbin/filament-advanced-spatie-media-library": "^1.0",
         "asmit/filament-mention": "^1.0",
         "asosick/filament-layout-manager": "^1.1",
         "bepsvpt/secure-headers": "*",
@@ -35,6 +36,7 @@
         "commerceguys/intl": "^2.0",
         "doctrine/dbal": "^4.2",
         "drewm/mailchimp-api": "^2.5",
+        "elmudo-dev/filament-custom-attribute-file-upload": "^1.1",
         "enshrined/svg-sanitize": "^0.21.0",
         "filament/actions": "^3.3",
         "filament/filament": "^3.3",
@@ -119,7 +121,6 @@
         "symfony/intl": "^7.3",
         "tapp/filament-auditing": "^3.0",
         "team-reflex/discord-php": "^10.4",
-        "tomatophp/filament-media-manager": "^1.1",
         "tomatophp/filament-menus": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
         "z3d0x/filament-fabricator": "^2.4"
