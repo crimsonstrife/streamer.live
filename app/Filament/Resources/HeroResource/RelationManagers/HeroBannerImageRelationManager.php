@@ -114,7 +114,7 @@ class HeroBannerImageRelationManager extends RelationManager
                             ->setCustomProperty('image_title', $data['image_title'])
                             ->setCustomProperty('image_order', $data['image_order'])
                             ->setCustomProperty('image_description', $data['image_description'])
-                            ->setCustomProperty('image_alt_text',    $data['image_alt_text'])
+                            ->setCustomProperty('image_alt_text', $data['image_alt_text'])
                             ->save();
 
                         Notification::make()

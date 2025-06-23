@@ -112,7 +112,7 @@ class PostFeaturedImageRelationManager extends RelationManager
                         $media
                             ->setCustomProperty('image_title', $data['image_title'])
                             ->setCustomProperty('image_description', $data['image_description'])
-                            ->setCustomProperty('image_alt_text',    $data['image_alt_text'])
+                            ->setCustomProperty('image_alt_text', $data['image_alt_text'])
                             ->save();
 
                         Notification::make()

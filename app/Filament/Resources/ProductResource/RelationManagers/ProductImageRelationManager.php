@@ -119,11 +119,11 @@ class ProductImageRelationManager extends RelationManager
 
                         // now stamp on your JSON metadata
                         $media
-                            ->setCustomProperty('model_name',        $data['model_name'])
-                            ->setCustomProperty('model_size_worn',   $data['model_size_worn'])
-                            ->setCustomProperty('model_height_cm',   $data['model_height_cm'])
+                            ->setCustomProperty('model_name', $data['model_name'])
+                            ->setCustomProperty('model_size_worn', $data['model_size_worn'])
+                            ->setCustomProperty('model_height_cm', $data['model_height_cm'])
                             ->setCustomProperty('model_description', $data['model_description'])
-                            ->setCustomProperty('image_alt_text',    $data['image_alt_text'])
+                            ->setCustomProperty('image_alt_text', $data['image_alt_text'])
                             ->save();
 
                         Notification::make()

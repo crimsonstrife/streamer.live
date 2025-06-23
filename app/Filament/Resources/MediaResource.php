@@ -53,7 +53,8 @@ class MediaResource extends Resource
                 TextInput::make('model_type')
                     ->label('Attached To')
                     ->disabled()
-                    ->helperText(fn (?Media $record) => $record
+                    ->helperText(
+                        fn (?Media $record) => $record
                         ? "ID: {$record->model_id}"
                         : 'Not attached yet'
                     ),
@@ -80,7 +81,7 @@ class MediaResource extends Resource
 
                 TextColumn::make('custom_properties')
                     ->label('Metadata')
-                    ->formatStateUsing(fn($state) => json_encode($state)),
+                    ->formatStateUsing(fn ($state) => json_encode($state)),
 
                 TextColumn::make('created_at')
                     ->label('Uploaded')
@@ -92,7 +93,9 @@ class MediaResource extends Resource
                     ->form([
                         TextInput::make('collection'),
                     ])
-                    ->query(fn($query, array $data) => $query->when($data['collection'], fn($q) =>
+                    ->query(fn ($query, array $data) => $query->when(
+                        $data['collection'],
+                        fn ($q) =>
                     $q->where('collection_name', $data['collection'])
                     )),
             ])
