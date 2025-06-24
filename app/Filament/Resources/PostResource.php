@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Filament\Resources\PostResource\Pages;
-use Stephenjude\FilamentBlog\Traits\HasContentEditor;
+use App\Traits\HasContentEditor;
 
 class PostResource extends Resource
 {
