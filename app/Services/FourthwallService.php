@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
 use RuntimeException;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 /**
  * Class FourthwallService
@@ -301,30 +303,47 @@ class FourthwallService
     public function storeImage(Product $product, ?ProductVariant $variant, array $imageData): void
     {
         if ($this->enabled) {
-            $filename = basename($imageData['url']);
-            $localPath = "products/{$product->provider_id}/{$filename}";
+            // Check if media with this provider_id already exists
+            $existing = $product
+                ->getMedia('images')
+                ->first(fn ($media) => $media->getCustomProperty('provider_id') === $imageData['id']);
 
-            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get($imageData['url']);
-
-            if ($response->successful()) {
-                Storage::disk('public')->put($localPath, $response->body());
-            } else {
-                Log::error('Failed to download image: '.$imageData['url']);
-
+            if ($existing) {
+                Log::info("Image {$imageData['id']} already synced for product {$product->name}");
                 return;
             }
 
-            ProductImage::updateOrCreate(
-                ['provider_id' => $imageData['id']],
-                [
-                    'product_id' => $product->id,
-                    'variant_id' => $variant?->id,
-                    'url' => $imageData['url'],
-                    'local_path' => $this->getLocalImagePath($localPath),
-                    'width' => $imageData['width'],
-                    'height' => $imageData['height'],
-                ]
-            );
+            $filename = basename($imageData['url']);
+
+            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get($imageData['url']);
+
+            if (! $response->successful()) {
+                Log::error('Failed to download image: '.$imageData['url']);
+                return;
+            }
+
+            try {
+                $product
+                    ->addMediaFromString($response->body())
+                    ->usingFileName($filename)
+                    ->usingName(pathinfo($filename, PATHINFO_FILENAME))
+                    ->withCustomProperties([
+                        'alt_text' => $imageData['alt'] ?? null,
+                        'width' => $imageData['width'] ?? null,
+                        'height' => $imageData['height'] ?? null,
+                        'provider_url' => $imageData['url'],
+                        'provider_id' => $imageData['id'],
+                    ])
+                    ->toMediaCollection('images');
+            } catch (FileDoesNotExist $e) {
+                Log::error('The file does not exist: '. $e->getMessage());
+                throw new RuntimeException('The file does not exist.');
+            } catch (FileIsTooBig $e) {
+                Log::error('The file is too big: '. $e->getMessage());
+                throw new RuntimeException('The file is too big: '. $e->getMessage());
+            }
+
+            Log::info("Stored image for product {$product->name}: {$filename}");
         } else {
             Log::error('The Fourthwall integration is not enabled');
         }

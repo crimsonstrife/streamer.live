@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Filament\Resources\PostResource;
 use App\Models\BlogObjects\Comment;
 use App\Observers\CommentObserver;
+use App\Services\CustomMediaPathGenerator;
 use App\Services\FourthwallService;
 use App\Services\Spam\AkismetEvaluator;
 use App\Services\Spam\BlacklistEvaluator;
@@ -30,6 +31,7 @@ use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Facades\Health;
+use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
 use Stephenjude\FilamentBlog\Resources\PostResource as PackagePostResource;
 
 class AppServiceProvider extends ServiceProvider
@@ -52,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->isLocal()) {
             // Register additional local services
         }
+
+        app()->bind(PathGenerator::class, CustomMediaPathGenerator::class);
 
         $this->app->singleton(CartHelper::class, function ($app) {
             return new CartHelper($app->make(FourthwallService::class));

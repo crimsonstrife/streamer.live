@@ -5,6 +5,7 @@ namespace App\Models\BlogObjects;
 use App\Contracts\CommentableContract;
 use App\Enums\Sort;
 use App\Models\BlogObjects\Author;
+use App\Models\Media;
 use App\Models\SharedObjects\Category;
 use App\Models\BlogObjects\Comment;
 use App\Traits\HasComments;
@@ -17,10 +18,14 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use LaravelIdea\Helper\App\Models\_IH_Post_QB;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Sluggable\SlugOptions;
@@ -73,13 +78,14 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  *
  * @mixin Eloquent
  */
-class Post extends BasePost implements CommentableContract, Searchable
+class Post extends BasePost implements CommentableContract, Searchable, HasMedia
 {
     use HasComments;
     use HasReactions;
     use HasSlug;
     use HasTags;
     use IsPermissible;
+    use InteractsWithMedia;
 
     /**
      * @var string
@@ -280,5 +286,35 @@ class Post extends BasePost implements CommentableContract, Searchable
     public function isCommentingLocked(): bool
     {
         return $this->comments_locked ?? false;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->useDisk('public');
+    }
+
+    public function postFeaturedMedia(): morphOne
+    {
+        return $this
+            ->morphOne(Media::class, 'model')
+            ->where('model_type', 'App\Models\BlogObjects\Post') // only “posts” files
+            ->where('collection_name', 'images');
+    }
+
+    public function getContentWithMediaAttribute(): string
+    {
+        return preg_replace_callback(
+            '/\[media\s+id\s*=\s*(?:"(\d+)"|\'(\d+)\'|(\d+))\s*\]/',
+            function ($matches) {
+                // $matches[1], [2], or [3] will contain the ID depending on the match
+                $id = $matches[1] ?? $matches[2] ?? $matches[3];
+                $media = Media::find($id);
+                return $media
+                    ? '<img src="'.$media->getMediaUrl().'" alt="'.e($media->getCustomProperty('image_alt_text')).'"/>'
+                    : '';
+            },
+            $this->content,
+        );
     }
 }

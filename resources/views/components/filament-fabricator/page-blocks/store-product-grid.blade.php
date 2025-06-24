@@ -13,20 +13,21 @@
         <div class="row">
             @foreach($products as $product)
                 @php
-                    if ($product->images->isNotEmpty())
-                        {
-                            $image = $product->images->first();
-                        }
-                    else
-                        {
-                            $image = null;
-                        }
+                    $mediaItems = $product->getMedia('images');
+                if ($mediaItems->isNotEmpty())
+                    {
+                        $image = $mediaItems[0];
+                    }
+                else
+                    {
+                        $image = null;
+                    }
                 @endphp
                 <div class="col-md-3 mb-4">
                     <div class="card h-100">
-                        @if ($product->images->isNotEmpty())
-                            <img src="{!! asset($image->local_path) ?? $image->url !!}" class="card-img-top"
-                                 alt="{{ $image->alt_text }}">
+                        @if ($mediaItems->isNotEmpty())
+                            <img src="{!! $image->getUrl() !!}" class="card-img-top"
+                                 alt="{{ $image->getCustomProperty('image_alt_text') }}">
                         @endif
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ $product->name }}</h5>

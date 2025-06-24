@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "56f5dc93f2099e06337483a13c02937b",
+    "content-hash": "9a45e294a819b38c7701a042e2f181c1",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -955,6 +955,49 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.3"
             },
             "time": "2025-05-28T17:07:28+00:00"
+        },
+        {
+            "name": "antoinecorbin/filament-advanced-spatie-media-library",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/antoinecorbin/filament-advanced-spatie-media-library.git",
+                "reference": "9f6ee22febcdacc4ee045cf7725fa3b0d32e22fa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/antoinecorbin/filament-advanced-spatie-media-library/zipball/9f6ee22febcdacc4ee045cf7725fa3b0d32e22fa",
+                "reference": "9f6ee22febcdacc4ee045cf7725fa3b0d32e22fa",
+                "shasum": ""
+            },
+            "require": {
+                "filament/spatie-laravel-media-library-plugin": "^3.2",
+                "illuminate/support": "^10.45|^11.0|^12.0",
+                "php": "^8.1",
+                "spatie/laravel-medialibrary": "^10.0|^11.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AntoineCorbin\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Antoine Corbin",
+                    "email": "acorbin.pro@gmail.com"
+                }
+            ],
+            "description": "Allows you to manage media translations with Spatie Translatable and Filament repeater support.",
+            "support": {
+                "issues": "https://github.com/antoinecorbin/filament-advanced-spatie-media-library/issues",
+                "source": "https://github.com/antoinecorbin/filament-advanced-spatie-media-library/tree/1.0.1"
+            },
+            "time": "2025-04-28T14:47:42+00:00"
         },
         {
             "name": "ashallendesign/laravel-config-validator",
@@ -3225,6 +3268,87 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "elmudo-dev/filament-custom-attribute-file-upload",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elmudometal/filament-custom-attribute-file-upload.git",
+                "reference": "37a4478af668d99a704bd0fec6badb1de931914f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elmudometal/filament-custom-attribute-file-upload/zipball/37a4478af668d99a704bd0fec6badb1de931914f",
+                "reference": "37a4478af668d99a704bd0fec6badb1de931914f",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.2",
+                "filament/forms": "^3.0",
+                "filament/spatie-laravel-media-library-plugin": "^3.2",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.9",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^8.0",
+                "pestphp/pest": "^2.1",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FilamentCustomAttributeFileUpload": "ElmudoDev\\FilamentCustomAttributeFileUpload\\Facades\\FilamentCustomAttributeFileUpload"
+                    },
+                    "providers": [
+                        "ElmudoDev\\FilamentCustomAttributeFileUpload\\FilamentCustomAttributeFileUploadServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ElmudoDev\\FilamentCustomAttributeFileUpload\\": "src/",
+                    "ElmudoDev\\FilamentCustomAttributeFileUpload\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hernan Soto",
+                    "email": "elmudometal@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Component to add a custom name to image attributes for captions",
+            "homepage": "https://github.com/elmudo-dev/filament-custom-attribute-file-upload",
+            "keywords": [
+                "Elmudo-Dev",
+                "filament-custom-attribute-file-upload",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/elmudo-dev/filament-custom-attribute-file-upload/issues",
+                "source": "https://github.com/elmudo-dev/filament-custom-attribute-file-upload"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Elmudo-Dev",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-01-09T21:19:33+00:00"
         },
         {
             "name": "enshrined/svg-sanitize",
@@ -18813,73 +18937,6 @@
                 }
             ],
             "time": "2025-04-16T04:44:30+00:00"
-        },
-        {
-            "name": "tomatophp/filament-media-manager",
-            "version": "v1.1.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tomatophp/filament-media-manager.git",
-                "reference": "f44481f3a067569b83fcf255d2cbbc257c9ab408"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tomatophp/filament-media-manager/zipball/f44481f3a067569b83fcf255d2cbbc257c9ab408",
-                "reference": "f44481f3a067569b83fcf255d2cbbc257c9ab408",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^v3.0.0",
-                "filament/spatie-laravel-media-library-plugin": "^v3.0.0",
-                "php": "^8.1|^8.2",
-                "spatie/laravel-medialibrary": "^10.0|^11.0",
-                "tomatophp/console-helpers": "^1.1",
-                "tomatophp/filament-icons": "^v1.1"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "TomatoPHP\\FilamentMediaManager\\FilamentMediaManagerServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "TomatoPHP\\FilamentMediaManager\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fady Mondy",
-                    "email": "info@3x1.io"
-                }
-            ],
-            "description": "Manage your media files using spatie media library with easy to use GUI for FilamentPHP",
-            "keywords": [
-                "filament",
-                "laravel",
-                "manager",
-                "media",
-                "media-library",
-                "php",
-                "spatie"
-            ],
-            "support": {
-                "issues": "https://github.com/tomatophp/filament-media-manager/issues",
-                "source": "https://github.com/tomatophp/filament-media-manager/tree/v1.1.5"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/3x1io",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-05-11T06:01:42+00:00"
         },
         {
             "name": "tomatophp/filament-menus",

@@ -91,10 +91,11 @@
                 }
             </style>
         @endpush
+        @php $mediaItems = $product->getMedia('images'); @endphp
         <div class="container py-4">
             <div class="row">
                 <div class="col-md-6">
-                    @if ($product->images->isNotEmpty())
+                    @if ($mediaItems->isNotEmpty())
                         <!-- Main Image Carousel -->
                         <div class="row justify-content-center">
                             <!-- Thumbnail Column -->
@@ -106,15 +107,17 @@
 
                                 <!-- Scrollable Thumbnails -->
                                 <div id="thumbnailContainer" class="overflow-auto">
-                                    @foreach($product->images as $index => $image)
-                                        <img
-                                            src="{!! asset($image->local_path) ?? $image->url !!}"
-                                            class="img-thumbnail mb-4 @if($index === 0) border-primary @endif"
-                                            data-thumb-index="{{ $index }}"
-                                            style="cursor:pointer;"
-                                            onclick="goToSlide({{ $index }})"
-                                            alt="{{ $image->alt_text }}">
-                                    @endforeach
+                                    @if ($mediaItems->isNotEmpty() && count($mediaItems) > 1)
+                                        @foreach($mediaItems as $index => $media)
+                                            <img
+                                                src="{{ $media->getUrl() }}"
+                                                class="img-thumbnail mb-4 @if($index === 0) border-primary @endif"
+                                                data-thumb-index="{{ $index }}"
+                                                style="cursor:pointer;"
+                                                onclick="goToSlide({{ $index }})"
+                                                alt="{{ $media->getCustomProperty('image_alt_text') ?? 'Product image' }}">
+                                        @endforeach
+                                    @endif
                                 </div>
 
                                 <!-- Carousel Next Button (moved here) -->
@@ -127,12 +130,17 @@
                             <div class="col-12 col-md-8">
                                 <div id="productImageCarousel" class="carousel slide" data-bs-ride="carousel">
                                     <div class="carousel-inner">
-                                        @foreach($product->images as $index => $image)
+                                        @foreach($mediaItems as $index => $media)
                                             <div class="carousel-item @if($index === 0) active @endif">
                                                 <div class="position-relative">
-                                                    <img src="{!! asset($image->local_path) ?? $image->url !!}"
-                                                         class="img-fluid rounded shadow" alt="{{ $image->alt_text }}">
-                                                    @if($image->model_name || $image->model_size_worn || $image->model_height_cm || $image->model_description)
+                                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded shadow" alt="{{ $media->getCustomProperty('image_alt_text') ?? 'Product image' }}">
+                                                    @php
+                                                        $modelName = $media->getCustomProperty('model_name') ?? null;
+                                                        $modelSize = $media->getCustomProperty('model_size_worn') ?? null;
+                                                        $modelHeight = $media->getCustomProperty('model_height_cm') ?? null;
+                                                        $modelDescription = $media->getCustomProperty('model_description') ?? null;
+                                                    @endphp
+                                                    @if($modelName || $modelSize || $modelHeight || $modelDescription)
                                                         <span
                                                             class="info-badge position-absolute top-0 end-0 m-2 p-2 bg-dark bg-opacity-75 text-white rounded-circle"
                                                             title="Model info"
@@ -143,23 +151,23 @@
                                             </span>
                                                         <div id="info-{{ $loop->index }}"
                                                              class="model-info position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-75 text-white rounded-top d-none">
-                                                            @if($image->model_name)
+                                                            @if($modelName)
                                                                 <p class="mb-1">
-                                                                    <strong>Model:</strong> {{ $image->model_name }}</p>
+                                                                    <strong>Model:</strong> {{ $modelName }}</p>
                                                             @endif
-                                                            @if($image->model_size_worn)
+                                                            @if($modelSize)
                                                                 <p class="mb-1"><strong>Size
-                                                                        Worn:</strong> {{ $image->model_size_worn }}</p>
+                                                                        Worn:</strong> {{ $modelSize }}</p>
                                                             @endif
-                                                            @if($image->model_height_cm)
+                                                            @if($modelHeight)
                                                                 <p class="mb-1">
-                                                                    <strong>Height:</strong> {{ floor($image->model_height_cm / 30.48) }}
-                                                                    '{{ round(fmod($image->model_height_cm / 2.54, 12)) }}
+                                                                    <strong>Height:</strong> {{ floor($modelHeight / 30.48) }}
+                                                                    '{{ round(fmod($modelHeight / 2.54, 12)) }}
                                                                     "
-                                                                    ({{ $image->model_height_cm }} cm)</p>
+                                                                    ({{ $modelHeight }} cm)</p>
                                                             @endif
-                                                            @if($image->model_description)
-                                                                <p class="mb-0">{{ $image->model_description }}</p>
+                                                            @if($modelDescription)
+                                                                <p class="mb-0">{{ $modelDescription }}</p>
                                                             @endif
                                                         </div>
                                                     @endif
@@ -170,7 +178,6 @@
                                 </div>
                             </div>
                         </div>
-
                     @else
                         <img src="{{ asset(config('fourthwall.default_product_image')) }}" alt="No image available"
                              class="img-fluid">

@@ -12,7 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use App\Filament\Resources\ProductCategoryResource\Pages;
-use Stephenjude\FilamentBlog\Traits\HasContentEditor;
+use App\Traits\HasContentEditor;
 
 class ProductCategoryResource extends Resource
 {

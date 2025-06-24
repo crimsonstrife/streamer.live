@@ -23561,6 +23561,17 @@ namespace Barryvdh\Debugbar\Facades {
     }
 }
 
+namespace ElmudoDev\FilamentCustomAttributeFileUpload\Facades {
+    /**
+     *
+     *
+     * @see \ElmudoDev\FilamentCustomAttributeFileUpload\FilamentCustomAttributeFileUpload
+     */
+    class FilamentCustomAttributeFileUpload
+    {
+    }
+}
+
 namespace IbrahimBougaoua\FilaProgress\Facades {
     /**
      *
@@ -36360,6 +36371,9 @@ namespace {
     {
     }
     class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar
+    {
+    }
+    class FilamentCustomAttributeFileUpload extends \ElmudoDev\FilamentCustomAttributeFileUpload\Facades\FilamentCustomAttributeFileUpload
     {
     }
     class FilaProgress extends \IbrahimBougaoua\FilaProgress\Facades\FilaProgress

@@ -9,7 +9,6 @@ use App\Livewire\RecentFollowers;
 use App\Livewire\UpcomingStream;
 use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
-use App\Plugins\MediaManagerPlugin;
 use App\Plugins\MenusPlugin;
 use App\Plugins\ShortUrlPlugin;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
@@ -125,6 +124,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\OrderResource::class,
                 Resources\CommentResource::class,
                 Resources\HeroResource::class,
+                Resources\MediaResource::class,
                 Resources\StreamAlertRuleResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
@@ -170,7 +170,6 @@ class AdminPanelProvider extends PanelProvider
                 MaintenanceSwitchPlugin::make(),
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
                 MenusPlugin::make(),
-                MediaManagerPlugin::make(),
                 BanPlugin::make(),
                 FilamentSeoPlugin::make(),
                 TutorialsPlugin::make(),
