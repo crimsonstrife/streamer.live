@@ -22,7 +22,6 @@ class CustomMediaPathGenerator implements PathGenerator
 
         if (empty($modelId)) {
             Log::error("Media model ID is missing for media ID {$media->id}.");
-            throw new \InvalidArgumentException("Media model ID is missing for media ID {$media->id}.");
         }
 
         if (empty($collection)) {

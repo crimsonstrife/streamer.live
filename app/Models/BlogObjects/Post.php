@@ -305,11 +305,13 @@ class Post extends BasePost implements CommentableContract, Searchable, HasMedia
     public function getContentWithMediaAttribute(): string
     {
         return preg_replace_callback(
-            '/\[media\s+id=(\d+)\]/',
+            '/\[media\s+id\s*=\s*(?:"(\d+)"|\'(\d+)\'|(\d+))\s*\]/',
             function ($matches) {
-                $media = Media::find($matches[1]);
+                // $matches[1], [2], or [3] will contain the ID depending on the match
+                $id = $matches[1] ?? $matches[2] ?? $matches[3];
+                $media = Media::find($id);
                 return $media
-                    ? '<img src="'.$media->getFullUrl().'" alt="'.e($media->file_name).'"/>'
+                    ? '<img src="'.$media->getMediaUrl().'" alt="'.e($media->getCustomProperty('image_alt_text')).'"/>'
                     : '';
             },
             $this->content,

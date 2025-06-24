@@ -27,9 +27,14 @@ class EditMedia extends EditRecord
 
         if (! empty($data['file'])) {
             $path = Storage::disk('public')->path($data['file']);
-            // remove old file:
-            $record->clearMediaCollection($record->collection_name);
-            // add new one:
+
+            // Fetch and remove only the relevant media item
+            $existingMedia = $record->getMedia($record->collection_name)->first();
+            if ($existingMedia) {
+                $existingMedia->delete();
+            }
+
+            // Add the new file as media
             $new = $record
                 ->addMedia($path)
                 ->usingFileName(basename($path))
