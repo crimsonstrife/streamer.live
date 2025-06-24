@@ -26,6 +26,11 @@ storage/debugbar/*
 .DS_Store
 /.rnd
 .phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
 /storage/shieldon_firewall
 /storage/shieldon_firewall/data_driver_file/shieldon_sessions
 /storage/geoip/GeoLite2-Country.mmdb
+/public/css/elmudo-dev/filament-custom-attribute-file-upload/filament-custom-attribute-file-upload-styles.css
+/public/js/elmudo-dev/filament-custom-attribute-file-upload/filament-custom-attribute-file-upload-scripts.js
+/public/js/elmudo-dev/filament-custom-attribute-file-upload/components/filament-custom-attribute-file-upload.js
