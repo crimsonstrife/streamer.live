@@ -22,13 +22,21 @@
             <div class="row">
                 @foreach ($related as $relatedProduct)
                     @php
-                        $image = $relatedProduct->images->first();
+                        $mediaItems = $relatedProduct->getMedia('images');
+                    if ($mediaItems->isNotEmpty())
+                        {
+                            $image = $mediaItems[0];
+                        }
+                    else
+                        {
+                            $image = null;
+                        }
                     @endphp
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
-                            @if ($image)
-                                <img src="{!! asset($image->local_path) ?? $image->url !!}" class="card-img-top"
-                                     alt="{{ $image->alt_text }}">
+                            @if ($mediaItems->isNotEmpty())
+                                <img src="{!! $image->getUrl() !!}" class="card-img-top"
+                                     alt="{{ $image->getCustomProperty('image_alt_text') }}">
                             @endif
                             <div class="card-body">
                                 <h5 class="card-title">{{ $relatedProduct->name }}</h5>

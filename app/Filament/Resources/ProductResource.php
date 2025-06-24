@@ -2,12 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use AntoineCorbin\Form\Components\AdvancedMediaLibraryFileUpload;
+use App\Filament\Resources\ProductResource\RelationManagers\ProductImageRelationManager;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationManager;
+use App\Forms\Components\FixedAdvancedMediaLibraryFileUpload;
+use App\Models\Media;
 use App\Models\SharedObjects\Category;
 use App\Models\StoreObjects\Product;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -93,7 +99,7 @@ class ProductResource extends Resource
                     ->preload()
                     ->searchable(),
                 SpatieTagsInput::make('tags')
-                    ->label(__('filament-blog::filament-blog.tags'))->type('product'),
+                    ->label(__('Product Tags'))->type('product'),
             ]);
     }
 
@@ -122,7 +128,7 @@ class ProductResource extends Resource
     {
         return [
             VariationsRelationManager::class,
-            ImagesRelationManager::class,
+            ProductImageRelationManager::class,
         ];
     }
 

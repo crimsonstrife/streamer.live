@@ -32,9 +32,6 @@ class HeroResource extends Resource
                     ->default(false),
                 Forms\Components\TextInput::make('title')->required(),
                 Forms\Components\TextInput::make('subtitle'),
-                Forms\Components\FileUpload::make('background_image')
-                    ->image()
-                    ->directory('heroes'),
                 Forms\Components\TextInput::make('primary_cta_text')->required(),
                 Forms\Components\TextInput::make('primary_cta_url')->url()->required(),
                 Forms\Components\TextInput::make('secondary_cta_text'),
@@ -75,7 +72,7 @@ class HeroResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\HeroBannerImageRelationManager::class,
         ];
     }
 

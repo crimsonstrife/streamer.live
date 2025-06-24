@@ -83,15 +83,24 @@
     <h2 class="mb-4">Latest Posts</h2>
     <div class="row mb-2">
         @foreach($posts ?? [] as $post)
-            <div class="col-md-6">
+            @php
+                $postMedia = $post->getMedia("images");
+            @endphp
+            @if($postMedia->isNotEmpty())
+                @php
+                    $postFeaturedImageUrl = $postMedia[0]->getUrl();
+                    $postFeaturedImageAltText = $postMedia[0]->getCustomProperty('image_alt_text');
+                @endphp
+            @endif
+            <div class="col-md-10">
                 <div
                     class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                    @if ($post->hasBanner())
+                    @if ($postMedia->isNotEmpty())
                         <div class="col-auto d-none d-lg-block">
                             <div class="overflow-hidden mx-auto" style="max-width:250px; height:250px;">
                                 <img
-                                    src="{{ $post->banner_url }}"
-                                    alt="{{ $post->title }}" focusable="false"
+                                    src="{{ $postFeaturedImageUrl }}"
+                                    alt="{{ $postFeaturedImageAltText ?? $post->title . ' Featured Image' }}" focusable="false"
                                     class="card-img-top w-100 h-100 object-fit-cover"
                                 >
                             </div>

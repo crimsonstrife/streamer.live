@@ -74,16 +74,39 @@
 
                         @foreach($items as $i => $hero)
                             @php $isActive = ($i === 0) ? ' active' : ''; @endphp
-
+                            @php
+                                $mediaItems = $hero->getMedia('images');
+                            if ($mediaItems->isNotEmpty())
+                                {
+                                    $image = $mediaItems[0];
+                                }
+                            else
+                                {
+                                    $image = null;
+                                }
+                            @endphp
                             @if($mode === 'carousel')
                                 <div class="carousel-item{{ $isActive }} h-100">
                                     @endif
 
                                     <div class="section-background">
-                                        <div class="section-background__adapt hero__adapt">
-                                            <div class="section-background__image" style="background-image:url('{{ $hero->background_image_url }}');"></div>
-                                            <div class="section-background__overlay" style="background-color:rgba(0,0,0,0.5)"></div>
-                                        </div>
+                                        @if(count($mediaItems) > 1)
+                                            <div class="section-background__adapt hero__adapt hero__carousel">
+                                                <div class="hero__carousel-inner">
+                                                    @foreach ($mediaItems as $index => $media)
+                                                        <div class="section-background__image hero__carousel-item{{ $index === 0 ? ' is-active' : '' }}" style="background-image:url('{{ $media->getUrl() }}');"></div>
+                                                    @endforeach
+                                                </div>
+                                                <div class="section-background__overlay" style="background-color:rgba(0,0,0,0.5)"></div>
+                                                <button class="hero__carousel-prev" aria-label="Previous">&lt;</button>
+                                                <button class="hero__carousel-next" aria-label="Next">&gt;</button>
+                                            </div>
+                                        @else
+                                            <div class="section-background__adapt hero__adapt">
+                                                <div class="section-background__image" style="background-image:url('{{ $image->getUrl() }}');"></div>
+                                                <div class="section-background__overlay" style="background-color:rgba(0,0,0,0.5)"></div>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="hero__inner hero__inner--center">

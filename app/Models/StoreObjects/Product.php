@@ -17,9 +17,12 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
 use Spatie\Tags\HasTags;
@@ -65,10 +68,11 @@ use Spatie\Tags\HasTags;
  *
  * @mixin Eloquent
  */
-class Product extends BaseModel implements Searchable
+class Product extends BaseModel implements Searchable, HasMedia
 {
     use HasTags;
     use IsPermissible;
+    use InteractsWithMedia;
 
     protected $fillable = [
         'provider_id',
@@ -222,5 +226,19 @@ class Product extends BaseModel implements Searchable
             $this->name,
             $url
         );
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+            ->useDisk('public');
+    }
+
+    public function productMedia(): MorphMany
+    {
+        return $this
+            ->media() // the base Spatie morphMany
+            ->where('model_type', 'App\Models\StoreObjects\Product') // only “products” files
+            ->where('collection_name', 'images');
     }
 }
