@@ -1,5 +1,5 @@
 {{-- footer.blade.php --}}
-@props(['page'])
+@props(['page','post'])
 <div class="container">
     <footer class="py-5">
         <div class="row">
