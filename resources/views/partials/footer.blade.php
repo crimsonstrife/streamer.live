@@ -43,7 +43,7 @@
                 </a>
             </span>
             <span>
-                <p>Powered by Streamer.live © 2025 <?php if(date("Y") > date("Y", strtotime("2025"))) {
+                <p>Powered by Streamer.live © 2025 <?php if (date("Y") > date("Y", strtotime("2025"))) {
                     echo " - " . date("Y");
                 }; ?> by CrimsonStrife, All rights reserved.</p>
             </span>
