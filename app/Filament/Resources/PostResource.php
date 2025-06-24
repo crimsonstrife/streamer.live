@@ -63,7 +63,10 @@ class PostResource extends Resource
                                     ->label('Generate Slug')
                                     ->icon('fas-plus')
                                     ->action(function ($get, $set) {
-                                        $set('slug', Str::slug($get('title')));
+                                        $title = $get('title');
+                                        if (!empty($title)) {
+                                            $set('slug', Str::slug($title));
+                                        }
                                     })
                             )
                             ->unique(Post::class, 'slug', fn ($record) => $record),
