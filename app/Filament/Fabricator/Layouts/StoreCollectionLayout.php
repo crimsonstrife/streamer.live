@@ -31,6 +31,6 @@ class StoreCollectionLayout extends Layout
             ->where('slug', $collectionSlug)
             ->firstOrFail();
 
-        return ['collection' => $collection];
+        return compact('collection');
     }
 }

@@ -1,8 +1,26 @@
 @props(['page'])
 @php
     $layout = get_class($page);
+    $variant = $layout::getHeaderVariant();
+    $product = $collection->products()->first();
+    $productMedia = $product->getMedia('images');
+    $category = $product->categories()->first();
+    $categoryName = $category !== null ? $category->name : '';
+        $data = [
+            'page'        => $page,
+            'post'        => $collection,
+            'title'       => $collection->name,
+            'description' => 'Products and Services',
+            'keywords'    => $product->tags()->pluck('name')->implode(', '),
+            'image'       => $productMedia[0]->getUrl() ?? null,
+            'imageAlt'    => $productMedia[0]->getCustomProperty('image_alt_text') ?? null,
+            'author'      => '',
+            'type'        => 'collection',
+            'category'    => $categoryName,
+            'date'        => $product->created_at->toIso8601String(),
+        ];
 @endphp
-{!! App\View\Helpers\LayoutSection::header($layout::getHeaderVariant()) !!}
+{!! App\View\Helpers\LayoutSection::header($variant, $data) !!}
 
 
 <!-- Page Content -->

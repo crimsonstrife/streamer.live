@@ -1,7 +1,7 @@
-@props(['page','post'])
+@props(['page','post','product'])
 @php
     $data = compact(
-        'page','post','title','description',
+        'page','post','product','title','description',
         'keywords','image','author',
         'type','category','date'
     );

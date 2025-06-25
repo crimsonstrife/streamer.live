@@ -31,6 +31,6 @@ class StoreProductLayout extends Layout
             ->where('slug', $productSlug)
             ->firstOrFail();
 
-        return ['product' => $product];
+        return compact('product');
     }
 }

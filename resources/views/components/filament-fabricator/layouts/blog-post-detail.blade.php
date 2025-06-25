@@ -4,8 +4,8 @@
 ])
 
 @php
-    $layoutClass = get_class($page);
-    $variant     = $layoutClass::getHeaderVariant();
+    $layout = get_class($page);
+    $variant = $layout::getHeaderVariant();
     $postMedia = $post->getMedia('images');
     $data = [
         'page'        => $page,
@@ -33,5 +33,5 @@
 </main>
 </div> <!-- Tag match is actually contained in the header, pulled in via LayoutSection::header() -->
 @stack('modals')
-{!! App\View\Helpers\LayoutSection::footer($layoutClass::getFooterVariant()) !!}
+{!! App\View\Helpers\LayoutSection::footer($layout::getFooterVariant()) !!}
 
