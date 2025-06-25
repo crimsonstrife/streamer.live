@@ -11,6 +11,7 @@ use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
 use App\Plugins\MenusPlugin;
 use App\Plugins\ShortUrlPlugin;
+use App\Utilities\BlogHelper;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Exception;
 use Filament\Events\TenantSet;
@@ -171,7 +172,10 @@ class AdminPanelProvider extends PanelProvider
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(['en']),
                 MenusPlugin::make(),
                 BanPlugin::make(),
-                FilamentSeoPlugin::make(),
+                FilamentSeoPlugin::make()
+                    ->allowAutoPostsIndexing()
+                    ->postUrl(BlogHelper::getBlogSlug())
+                    ->postSlug('slug'),
                 TutorialsPlugin::make(),
             ]);
 
