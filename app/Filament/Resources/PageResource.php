@@ -143,7 +143,7 @@ class PageResource extends BasePageResource
                                 Forms\Components\Textarea::make('seo_description')
                                     ->label('Meta Description')
                                     ->maxLength(160),
-                                SpatieTagsInput::make('seo_keyword')
+                                SpatieTagsInput::make('seo_keywords')
                                     ->label('SEO Keywords')
                                     ->hint('Select or create your keywords'),
                             ]),
