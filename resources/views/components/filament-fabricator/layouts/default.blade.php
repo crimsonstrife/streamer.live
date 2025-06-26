@@ -5,7 +5,7 @@
         $data = [
             'page'        => $page,
             'post'        => null,
-            'title'       => $page->title,
+            'title'       => $page->seo_title ?? $page->title,
             'description' => Str::limit(strip_tags($page->seo_description), 160),
             'keywords'    => $page->tags->pluck('name')->implode(', '),
             'image'       => null,

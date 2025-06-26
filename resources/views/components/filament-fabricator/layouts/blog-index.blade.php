@@ -8,15 +8,15 @@ use App\Models\BlogObjects\Post;
     $data = [
         'page'        => $page,
         'post'        => $post,
-        'title'       => 'Blog Index: Latest Post ->' . $post->title,
-        'description' => "Blog Posts and Updates",
-        'keywords'    => $post->tags->pluck('name')->implode(', '),
+        'title'       => $page->seo_title ?? $page->title ?? 'Blog Index: Latest Post ->' . $post->title,
+        'description' => Str::limit(strip_tags($page->seo_description), 160) ?? "Blog Posts and Updates",
+        'keywords'    => $page->tags->pluck('name')->implode(', '),
         'image'       => $postMedia->isNotEmpty() ? $postMedia[0]->getUrl() : null,
         'imageAlt'    => $postMedia->isNotEmpty() ? $postMedia[0]->getCustomProperty('image_alt_text') : null,
         'author'      => $post->author->name,
         'type'        => 'page',
         'category'    => $post->category->name,
-        'date'        => $post->published_at->toIso8601String(),
+        'date'        => $page->created_at->toIso8601String(),
     ];
 @endphp
 @push('styles')

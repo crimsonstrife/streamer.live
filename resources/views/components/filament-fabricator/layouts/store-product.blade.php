@@ -5,12 +5,17 @@
     $productMedia = $product->getMedia('images');
     $category = $product->categories()->first();
     $categoryName = $category !== null ? $category->name : '';
+    $keywords = collect()
+        ->merge($product->tags->pluck('name') ?? []) // Collect tags from the product (if available)
+        ->merge($page->tags->pluck('name') ?? []) // Collect tags from the page (if available)
+        ->unique() // Remove duplicate tags
+        ->implode(', '); // Convert to a comma-separated string
     $data = [
         'page'        => $page,
         'post'        => $product,
-        'title'       => $product->name,
-        'description' => Str::limit(strip_tags($product->description), 160),
-        'keywords'    => $product->tags->pluck('name')->implode(', '),
+        'title'       => $product->name ?? $page->seo_title ?? $page->title,
+        'description' => Str::limit(strip_tags($product->description), 160) ?? Str::limit(strip_tags($page->seo_description), 160),
+        'keywords'    => $keywords,
         'image'       => $productMedia->isNotEmpty() ? $productMedia[0]->getUrl() : null,
         'imageAlt'    => $productMedia->isNotEmpty() ? $productMedia[0]->getCustomProperty('image_alt_text') : null,
         'author'      => '',

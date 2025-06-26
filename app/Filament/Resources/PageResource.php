@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Hidden;
@@ -90,6 +91,17 @@ class PageResource extends BasePageResource
                                             }
                                         };
                                     })
+                                    ->suffixAction(
+                                        Action::make('generateSlug')
+                                            ->label('Generate Slug')
+                                            ->icon('fas-plus')
+                                            ->action(function ($get, $set) {
+                                                $title = $get('title');
+                                                if (!empty($title)) {
+                                                    $set('slug', Str::slug($title));
+                                                }
+                                            })
+                                    )
                                     ->required(),
 
                                 Select::make('layout')

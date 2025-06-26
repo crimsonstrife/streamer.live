@@ -10,15 +10,15 @@
         $data = [
             'page'        => $page,
             'post'        => $product,
-            'title'       => 'Store Catalog',
-            'description' => 'Products and Services',
-            'keywords'    => $product->tags()->pluck('name')->implode(', '),
+            'title'       => $page->seo_title ?? $page->title ?? 'Store Catalog',
+            'description' => Str::limit(strip_tags($page->seo_description), 160) ?? 'Products and Services',
+            'keywords'    => $page->tags->pluck('name')->implode(', '),
             'image'       => $productMedia->isNotEmpty() ? $productMedia[0]->getUrl() : null,
             'imageAlt'    => $productMedia->isNotEmpty() ? $productMedia[0]->getCustomProperty('image_alt_text') : null,
             'author'      => '',
             'type'        => 'store',
             'category'    => $categoryName,
-            'date'        => $product->created_at->toIso8601String(),
+            'date'        => $page->created_at->toIso8601String(),
         ];
 @endphp
 {!! App\View\Helpers\LayoutSection::header($variant, $data) !!}
