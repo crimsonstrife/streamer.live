@@ -1,8 +1,30 @@
-@props(['page'])
+@props(['page','product'])
 @php
     $layout = get_class($page);
+    $variant = $layout::getHeaderVariant();
+    $productMedia = $product->getMedia('images');
+    $category = $product->categories()->first();
+    $categoryName = $category !== null ? $category->name : '';
+    $keywords = collect()
+        ->merge($product->tags->pluck('name') ?? []) // Collect tags from the product (if available)
+        ->merge($page->tags->pluck('name') ?? []) // Collect tags from the page (if available)
+        ->unique() // Remove duplicate tags
+        ->implode(', '); // Convert to a comma-separated string
+    $data = [
+        'page'        => $page,
+        'post'        => $product,
+        'title'       => $product->name ?? $page->seo_title ?? $page->title,
+        'description' => Str::limit(strip_tags($product->description), 160) ?? Str::limit(strip_tags($page->seo_description), 160),
+        'keywords'    => $keywords,
+        'image'       => $productMedia->isNotEmpty() ? $productMedia[0]->getUrl() : null,
+        'imageAlt'    => $productMedia->isNotEmpty() ? $productMedia[0]->getCustomProperty('image_alt_text') : null,
+        'author'      => '',
+        'type'        => 'product',
+        'category'    => $categoryName,
+        'date'        => $product->created_at->toIso8601String(),
+    ];
 @endphp
-{!! App\View\Helpers\LayoutSection::header($layout::getHeaderVariant()) !!}
+{!! App\View\Helpers\LayoutSection::header($variant, $data) !!}
 
 
 <!-- Page Content -->

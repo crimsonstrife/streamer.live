@@ -1,5 +1,12 @@
-@props(['page'])
-{!! App\View\Helpers\LayoutSection::header() !!}
+@props(['page','post','product'])
+@php
+    $data = compact(
+        'page','post','product','title','description',
+        'keywords','image','author',
+        'type','category','date'
+    );
+@endphp
+{!! App\View\Helpers\LayoutSection::header(null, $data) !!}
 
         <!-- Page Content -->
         <main class="flex-grow-1">

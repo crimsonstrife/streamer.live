@@ -1,6 +1,23 @@
 @props(['page'])
 @php
+use App\Models\BlogObjects\Post;
     $layout = get_class($page);
+    $variant = $layout::getHeaderVariant();
+    $post = Post::latest('published_at')->first();
+    $postMedia = $post->getMedia('images');
+    $data = [
+        'page'        => $page,
+        'post'        => $post,
+        'title'       => $page->seo_title ?? $page->title ?? 'Blog Index: Latest Post ->' . $post->title,
+        'description' => Str::limit(strip_tags($page->seo_description), 160) ?? "Blog Posts and Updates",
+        'keywords'    => $page->tags->pluck('name')->implode(', '),
+        'image'       => $postMedia->isNotEmpty() ? $postMedia[0]->getUrl() : null,
+        'imageAlt'    => $postMedia->isNotEmpty() ? $postMedia[0]->getCustomProperty('image_alt_text') : null,
+        'author'      => $post->author->name,
+        'type'        => 'page',
+        'category'    => $post->category->name,
+        'date'        => $page->created_at->toIso8601String(),
+    ];
 @endphp
 @push('styles')
     <style>
@@ -49,7 +66,7 @@
         }
     </style>
 @endpush
-{!! App\View\Helpers\LayoutSection::header($layout::getHeaderVariant()) !!}
+{!! App\View\Helpers\LayoutSection::header($variant, $data) !!}
 
 
 <!-- Page Content -->

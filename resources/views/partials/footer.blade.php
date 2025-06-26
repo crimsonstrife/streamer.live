@@ -1,5 +1,5 @@
 {{-- footer.blade.php --}}
-@props(['page'])
+@props(['page','post'])
 <div class="container">
     <footer class="py-5">
         <div class="row">
@@ -43,7 +43,7 @@
                 </a>
             </span>
             <span>
-                <p>Powered by Streamer.live © 2025 <?php if(date("Y") > date("Y", strtotime("2025"))) {
+                <p>Powered by Streamer.live © 2025 <?php if (date("Y") > date("Y", strtotime("2025"))) {
                     echo " - " . date("Y");
                 }; ?> by CrimsonStrife, All rights reserved.</p>
             </span>

@@ -1,12 +1,35 @@
 {{-- header.blade.php --}}
-@props(['page'])
-    <!DOCTYPE html>
+@props([
+    'page'        => null,
+    'post'        => null,
+    'title'       => null,
+    'description' => null,
+    'keywords'    => null,
+    'image'       => null,
+    'imageAlt'    => null,
+    'author'      => null,
+    'type'        => null,
+    'category'    => null,
+    'date'        => null,
+])
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <x-seo.tags/>
+    <x-seo.tags
+        :page="$page"
+        :title="$title"
+        :description="$description"
+        :keywords="$keywords"
+        :image="$image"
+        :image-alt="$imageAlt"
+        :author="$author"
+        :type="$type"
+        :category="$category"
+        :date="$date"
+    />
 
     <x-seo.directive/>
 

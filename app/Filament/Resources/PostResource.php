@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PostResource\RelationManagers\PostFeaturedImageRelationManager;
 use App\Models\BlogObjects\Author;
 use App\Models\BlogObjects\Post;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Form;
@@ -57,6 +58,17 @@ class PostResource extends Resource
                         Forms\Components\TextInput::make('slug')
                             ->label(__('filament-blog::filament-blog.slug'))
                             ->required()
+                            ->suffixAction(
+                                Action::make('generateSlug')
+                                    ->label('Generate Slug')
+                                    ->icon('fas-plus')
+                                    ->action(function ($get, $set) {
+                                        $title = $get('title');
+                                        if (!empty($title)) {
+                                            $set('slug', Str::slug($title));
+                                        }
+                                    })
+                            )
                             ->unique(Post::class, 'slug', fn ($record) => $record),
 
                         Forms\Components\Textarea::make('excerpt')

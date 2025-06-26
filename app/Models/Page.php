@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
+use Spatie\Tags\HasTags;
 use Z3d0X\FilamentFabricator\Facades\FilamentFabricator;
 use Z3d0X\FilamentFabricator\Models\Page as BasePage;
 
 class Page extends BasePage implements Searchable
 {
     use IsPermissible;
+    use HasTags;
 
     public function __construct(array $attributes = [])
     {
@@ -40,6 +42,8 @@ class Page extends BasePage implements Searchable
         'type',
         'parent_id',
         'blocks',
+        'seo_title',
+        'seo_description',
     ];
 
     protected $guarded = [];

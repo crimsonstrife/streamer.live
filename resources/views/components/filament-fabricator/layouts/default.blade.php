@@ -1,8 +1,22 @@
 @props(['page'])
 @php
     $layout = get_class($page);
+        $variant = $layout::getHeaderVariant();
+        $data = [
+            'page'        => $page,
+            'post'        => null,
+            'title'       => $page->seo_title ?? $page->title,
+            'description' => Str::limit(strip_tags($page->seo_description), 160),
+            'keywords'    => $page->tags->pluck('name')->implode(', '),
+            'image'       => null,
+            'imageAlt'    => null,
+            'author'      => '',
+            'type'        => 'page',
+            'category'    => $page->type,
+            'date'        => $page->created_at->toIso8601String(),
+        ];
 @endphp
-{!! App\View\Helpers\LayoutSection::header($layout::getHeaderVariant()) !!}
+{!! App\View\Helpers\LayoutSection::header($variant, $data) !!}
 
     <!-- Page Content -->
     <main class="flex-grow-1">

@@ -1,4 +1,16 @@
-@props(['page'])
+@props([
+    'page'        => null,
+    'title'       => null,
+    'description' => null,
+    'keywords'    => null,
+    'image'       => null,
+    'imageAlt'    => null,
+    'author'      => null,
+    'type'        => null,
+    'category'    => null,
+    'date'        => null,
+])
+
 <meta name="description" content="{{ $page->description ?? $description ?? setting('meta_description') }}">
 <meta name="keywords" content="{{ $keywords ?? setting('meta_keywords') }}">
 <meta name="author" content="{{ $author ?? setting('meta_author') }}">
@@ -17,7 +29,7 @@
 <meta property="og:description" content="{{ $page->description ?? $description ?? setting('meta_description') }}"/>
 <meta property="og:image" content="{{ $image ?? setting('meta_image') }}"/>
 <meta property="og:image:alt"
-      content="{{ $page->title ?? $title ?? setting('meta_title') ?? config('app.name', 'Streamer.live') }}"/>
+      content="{{ $imageAlt ?? $page->title ?? $title ?? setting('meta_title') ?? config('app.name', 'Streamer.live') }}"/>
 <meta property="og:url" content="{{url()->current()}}"/>
 
 <meta name="twitter:card" content="summary">
