@@ -40,7 +40,9 @@ namespace App\Models{use Eloquent;
      *
      * @mixin Eloquent
      */
-    class Collection extends Eloquent {}
+    class Collection extends Eloquent
+    {
+    }
 }
 
 namespace App\Models{use Eloquent;
@@ -62,7 +64,9 @@ namespace App\Models{use Eloquent;
      *
      * @mixin Eloquent
      */
-    class Event extends Eloquent implements Eventable {}
+    class Event extends Eloquent implements Eventable
+    {
+    }
 }
 
 namespace App\Models{use App\Contracts\CommenterContract;
@@ -104,7 +108,9 @@ namespace App\Models{use App\Contracts\CommenterContract;
      *
      * @mixin Eloquent
      */
-    class Guest extends Eloquent implements CommenterContract {}
+    class Guest extends Eloquent implements CommenterContract
+    {
+    }
 }
 
 namespace App\Models{use App\Contracts\CommentableContract;
@@ -158,7 +164,9 @@ namespace App\Models{use App\Contracts\CommentableContract;
      *
      * @mixin Eloquent
      */
-    class Post extends Eloquent implements CommentableContract {}
+    class Post extends Eloquent implements CommentableContract
+    {
+    }
 }
 
 namespace App\Models{use Eloquent;
@@ -206,7 +214,9 @@ namespace App\Models{use Eloquent;
      *
      * @mixin Eloquent
      */
-    class Product extends Eloquent {}
+    class Product extends Eloquent
+    {
+    }
 }
 
 namespace App\Models{use Eloquent;
@@ -244,7 +254,9 @@ namespace App\Models{use Eloquent;
      *
      * @mixin Eloquent
      */
-    class ProductImage extends Eloquent {}
+    class ProductImage extends Eloquent
+    {
+    }
 }
 
 namespace App\Models{use Eloquent;
@@ -296,7 +308,9 @@ namespace App\Models{use Eloquent;
      *
      * @mixin Eloquent
      */
-    class ProductVariant extends Eloquent {}
+    class ProductVariant extends Eloquent
+    {
+    }
 }
 
 namespace App\Models{use Eloquent;
@@ -337,7 +351,9 @@ namespace App\Models{use Eloquent;
      *
      * @mixin Eloquent
      */
-    class Reaction extends Eloquent {}
+    class Reaction extends Eloquent
+    {
+    }
 }
 
 namespace App\Models{use Database\Factories\AuthObjects\UserFactory;
@@ -421,5 +437,7 @@ namespace App\Models{use Database\Factories\AuthObjects\UserFactory;
      *
      * @mixin Eloquent
      */
-    class User extends Eloquent implements HasAvatar {}
+    class User extends Eloquent implements HasAvatar
+    {
+    }
 }
