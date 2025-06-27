@@ -5,7 +5,7 @@ namespace App\Models\AuthObjects;
 use App\Models\BlogObjects\Author;
 use App\Traits\HasAdvancedPermissions;
 use App\Traits\IsPermissible;
-use Database\Factories\UserFactory;
+use Database\Factories\AuthObjects\UserFactory;
 use Filament\Models\Contracts\HasAvatar;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -100,20 +100,20 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements HasAvatar
 {
     use Bannable;
-    use HasApiTokens;
-
-    /** @use HasFactory<UserFactory> */
-    use HasFactory;
-
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
     use HasAdvancedPermissions, HasRoles {
         HasAdvancedPermissions::permissions insteadof HasRoles;
         HasAdvancedPermissions::hasPermissionTo insteadof HasRoles;
     }
+
+    use HasApiTokens;
+
+    /** @use HasFactory<UserFactory> */
+    use HasFactory;
+    use HasProfilePhoto;
     use IsPermissible;
+    use Notifiable;
     use SoftDeletes;
+    use TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -178,8 +178,6 @@ class User extends Authenticatable implements HasAvatar
 
     /**
      * Get the title attribute for the Filament Banhammer.
-     *
-     * @return string
      */
     public function getFilamentBanhammerTitleAttribute(): string
     {
@@ -232,13 +230,11 @@ class User extends Authenticatable implements HasAvatar
     protected function name(): Attribute
     {
         return Attribute::get(
-            fn ($value, $attributes) =>
-                $attributes['display_name']
-                ?? trim(($attributes['first_name'] ?? '') . ' ' . ($attributes['last_name'] ?? ''))
+            fn ($value, $attributes) => $attributes['display_name']
+                ?? trim(($attributes['first_name'] ?? '').' '.($attributes['last_name'] ?? ''))
                 ?: ($attributes['username'] ?? 'Unknown')
         );
     }
-
 
     /**
      * Get the user's first name.

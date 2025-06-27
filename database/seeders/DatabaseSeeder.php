@@ -15,9 +15,15 @@ class DatabaseSeeder extends Seeder
         $this->call([
             IconSeeder::class,
             SpamFilterPatternsSeeder::class,
+            FabricatorHomePageSeeder::class,
             FabricatorStorePagesSeeder::class,
             FabricatorBlogPagesSeeder::class,
             MenuSeeder::class,
+            PermissionSeeder::class,
+            PermissionSetSeeder::class,
+            PermissionGroupSeeder::class,
+            RoleSeeder::class,
+            UserSeeder::class,
             BlogSeeder::class,
         ]);
     }

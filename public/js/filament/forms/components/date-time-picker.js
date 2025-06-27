@@ -4919,7 +4919,14 @@ function Ni({
         dayLabels: [],
         months: [],
         init: function () {
-            O.locale(pi[i] ?? pi.en), (this.focusedDate = O().tz(a));
+            O.locale(pi[i] ?? pi.en),
+                this.$nextTick(() => {
+                    this.focusedDate ?? (this.focusedDate = O().tz(a)),
+                        this.focusedMonth ??
+                            (this.focusedMonth = this.focusedDate.month()),
+                        this.focusedYear ??
+                            (this.focusedYear = this.focusedDate.year());
+                });
             let u =
                 this.getSelectedDate() ?? O().tz(a).hour(0).minute(0).second(0);
             ((this.getMaxDate() !== null && u.isAfter(this.getMaxDate())) ||
