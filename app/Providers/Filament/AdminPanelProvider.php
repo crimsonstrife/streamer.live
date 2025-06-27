@@ -122,6 +122,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\RoleResource::class,
                 Resources\ProductResource::class,
                 Resources\ProductCategoryResource::class,
+                Resources\ProductCollectionResource::class,
                 Resources\OrderResource::class,
                 Resources\CommentResource::class,
                 Resources\HeroResource::class,

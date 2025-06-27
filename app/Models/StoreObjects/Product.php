@@ -130,6 +130,11 @@ class Product extends BaseModel implements Searchable, HasMedia
         return $this->hasMany(ProductImage::class);
     }
 
+    public function promotions(): HasMany
+    {
+        return $this->hasMany(Promotion::class);
+    }
+
     /**
      * Get the primary image URL (first image or placeholder).
      */
