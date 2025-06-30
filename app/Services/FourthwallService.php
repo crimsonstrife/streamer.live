@@ -278,7 +278,7 @@ class FourthwallService
 
             foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
                 foreach ($productBatch as $productData) {
-                    Log::info("Syncing product: {data_get($productData,'name')} for collection: {$collection->name}");
+                    Log::info('Syncing product: ' . data_get($productData, 'name') . " for collection: {$collection->name}");
                     $product = Product::updateOrCreate(
                         ['provider_id' => data_get($productData, 'id')],
                         [
