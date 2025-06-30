@@ -165,8 +165,7 @@ class FourthwallService
 
         try {
             // Base64 encode the Open API credentials
-            //$authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
-            $authToken = base64_encode("fw_api_wlxboltxdjslbcgb018s@fourthwall.com:xQVJNJtpCJuCxJ7YfD8kRlKVoyJs0l9Ci7UMa94k");
+            $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
 
             $promotionsResponse = Http::withOptions([
                 'verify' => $this->verify_ssl,
