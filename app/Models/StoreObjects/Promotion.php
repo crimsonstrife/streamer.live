@@ -2,11 +2,14 @@
 
 namespace App\Models\StoreObjects;
 
+use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Promotion extends Model
 {
+    use IsPermissible;
+
     protected $fillable = [
         'provider_id',
         'provider',
