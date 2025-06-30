@@ -168,7 +168,7 @@ class FourthwallService
             $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
 
             $promotionsResponse = Http::withOptions([
-                'verify' => $this->verify_ssl,
+                'verify_ssl' => $this->verify_ssl,
             ])
                 ->withHeaders([
                     'Authorization' => 'Basic ' . $authToken,
