@@ -130,9 +130,9 @@ class Product extends BaseModel implements Searchable, HasMedia
         return $this->hasMany(ProductImage::class);
     }
 
-    public function promotions(): HasMany
+    public function promotions(): BelongsToMany
     {
-        return $this->hasMany(Promotion::class);
+        return $this->belongsToMany(Promotion::class, 'promotion_product');
     }
 
     /**

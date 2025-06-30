@@ -6,6 +6,7 @@ use AntoineCorbin\Form\Components\AdvancedMediaLibraryFileUpload;
 use App\Filament\Resources\ProductResource\RelationManagers\ProductImageRelationManager;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\PromotionRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationManager;
 use App\Forms\Components\FixedAdvancedMediaLibraryFileUpload;
 use App\Models\Media;
@@ -129,6 +130,7 @@ class ProductResource extends Resource
         return [
             VariationsRelationManager::class,
             ProductImageRelationManager::class,
+            PromotionRelationManager::class,
         ];
     }
 

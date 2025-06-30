@@ -41,6 +41,8 @@ return [
         'storefront_token' => env('FOURTHWALL_STOREFRONT_TOKEN'),
         'storefront_url' => env('FOURTHWALL_STOREFRONT_URL', 'https://storefront.fourthwall.com'),
         'webhook_secret' => env('FOURTHWALL_WEBHOOK_SECRET'),
+        'open_api_key' => env('FOURTHWALL_OPEN_API_KEY'),
+        'open_api_secret' => env('FOURTHWALL_OPEN_API_SECRET'),
         'verify' => env('FOURTHWALL_VERIFY', true),
     ],
 

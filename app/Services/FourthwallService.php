@@ -7,6 +7,7 @@ use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductImage;
 use App\Models\StoreObjects\ProductVariant;
+use App\Models\StoreObjects\Promotion;
 use App\Settings\FourthwallSettings;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
@@ -34,6 +35,10 @@ class FourthwallService
 
     protected ?string $storefrontUrl;
 
+    protected ?string $openApiKey;
+
+    protected ?string $openApiSecret;
+
     protected bool $verify_ssl;
 
     protected bool $enable_garbage_collection;
@@ -41,6 +46,8 @@ class FourthwallService
     protected int $collectionsChunkSize;
 
     protected int $productsChunkSize;
+
+    protected int $promotionChunkSize;
 
     protected const STOCK_TTL_SECONDS = 30;
 
@@ -57,6 +64,10 @@ class FourthwallService
         $settingBaseUrl = app(FourthwallSettings::class)->base_url;
         $configStorefrontToken = config('services.fourthwall.storefront_token');
         $settingStorefrontToken = app(FourthwallSettings::class)->storefront_token;
+        $configOpenApiKey = config('services.fourthwall.open_api_key');
+        $settingOpenApiKey = app(FourthwallSettings::class)->open_api_key;
+        $configOpenApiSecret = config('services.fourthwall.open_api_secret');
+        $settingOpenApiSecret = app(FourthwallSettings::class)->open_api_secret;
         $configStorefrontUrl = config('services.fourthwall.storefront_url');
         $settingStorefrontUrl = app(FourthwallSettings::class)->storefront_url;
         $configSSLVerify = config('services.fourthwall.verify');
@@ -67,9 +78,12 @@ class FourthwallService
         $this->baseUrl = $settingBaseUrl ?? $configBaseUrl;
         $this->storefrontToken = $settingStorefrontToken ?? $configStorefrontToken;
         $this->storefrontUrl = $settingStorefrontUrl ?? $configStorefrontUrl;
+        $this->openApiKey = $settingOpenApiKey ?? $configOpenApiKey;
+        $this->openApiSecret = $settingOpenApiSecret ?? $configOpenApiSecret;
         $this->verify_ssl = $settingSSLVerify ?? $configSSLVerify;
         $this->enable_garbage_collection = config('fourthwall.enable_gc', true);
         $this->collectionsChunkSize = config('fourthwall.chunk_size.collections', 10);
+        $this->promotionChunkSize = config('fourthwall.chunk_size.promotions', 5);
         $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);
     }
 
@@ -134,6 +148,98 @@ class FourthwallService
         } else {
             Log::error('The Fourthwall integration is not enabled');
         }
+    }
+
+    /**
+     * Sync Promotions from the Fourthwall API
+     * @throws ConnectionException
+     */
+    public function syncPromotions(): void
+    {
+        if (! $this->enabled) {
+            Log::error('The Fourthwall integration is not enabled.');
+            return;
+        }
+
+        $url = "https://api.fourthwall.com/open-api/v1.0/promotions";
+
+        try {
+            // Base64 encode the Open API credentials
+            //$authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
+            $authToken = base64_encode("fw_api_wlxboltxdjslbcgb018s@fourthwall.com:xQVJNJtpCJuCxJ7YfD8kRlKVoyJs0l9Ci7UMa94k");
+
+            $promotionsResponse = Http::withOptions([
+                'verify' => $this->verify_ssl,
+            ])
+                ->withHeaders([
+                    'Authorization' => 'Basic ' . $authToken,
+                    'Content-Type' => 'application/json',
+                ])
+                ->get($url)
+                ->json();
+
+            if (! is_array($promotionsResponse) || ! isset($promotionsResponse['results'])) {
+                Log::error('Failed to fetch promotions: Invalid or empty API response.');
+                throw new RuntimeException('Failed to fetch promotions from the Fourthwall API.');
+            }
+        } catch (ConnectionException $e) {
+            Log::error('Failed to connect to Fourthwall API: ' . $e->getMessage());
+            throw new RuntimeException('Connection to Fourthwall API failed.');
+        } catch (Exception $e) {
+            Log::error('Unexpected error during promotions sync: ' . $e->getMessage());
+            throw $e;
+        }
+
+        // Process promotions using LazyCollection
+        LazyCollection::make(static function () use ($promotionsResponse) {
+            foreach ($promotionsResponse['results'] as $promotionData) {
+                yield $promotionData;
+            }
+        })->chunk($this->promotionChunkSize)
+        ->each(function ($promotionChunk) {
+            foreach ($promotionChunk as $promotionData) {
+                try {
+                    $promotion = Promotion::updateOrCreate(
+                        ['provider_id' => $promotionData['id']],
+                        [
+                            'title' => $promotionData['title'] ?? 'Untitled Promotion',
+                            'code' => $promotionData['code'] ?? null,
+                            'type' => $promotionData['type'],
+                            'status' => $promotionData['status'],
+                            'discount_type' => $promotionData['discount']['type'] ?? null,
+                            'percentage' => $promotionData['discount']['percentage'] ?? null,
+                            'amount_value' => $promotionData['discount']['money']['value'] ?? null,
+                            'amount_currency' => $promotionData['discount']['money']['currency'] ?? null,
+                            'one_use_per_customer' => $promotionData['limits']['oneUsePerCustomer'] ?? null,
+                            'applies_to' => $promotionData['appliesTo']['type'] ?? null,
+                        ]
+                    );
+
+                    Log::info("Synced promotion: {$promotion->title}");
+
+                    if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty($promotionData['appliesTo']['products'])) {
+                        foreach ($promotionData['appliesTo']['products'] as $productId) {
+                            $product = Product::where('provider_id', $productId)->first();
+
+                            if ($product) {
+                                $promotion->products()->syncWithoutDetaching([$product->id]);
+                            } else {
+                                Log::warning("Product with provider_id {$productId} not found for promotion: {$promotion->title}");
+                            }
+                        }
+                    }
+                } catch (Exception $e) {
+                    Log::error("Error syncing promotion [{$promotionData['title']}]: {$e->getMessage()}");
+                    throw new RuntimeException("Error syncing promotion: {$promotionData['title']}");
+                }
+            }
+
+            if ($this->enable_garbage_collection) {
+                gc_collect_cycles();
+            }
+        });
+
+        Log::info('All promotions synced successfully.');
     }
 
     /**

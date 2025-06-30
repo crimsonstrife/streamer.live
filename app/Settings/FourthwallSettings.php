@@ -16,6 +16,10 @@ class FourthwallSettings extends Settings
 
     public ?string $webhook_secret;
 
+    public ?string $open_api_key;
+
+    public ?string $open_api_secret;
+
     public bool $ssl_verify;
 
     public static function group(): string
@@ -28,6 +32,8 @@ class FourthwallSettings extends Settings
         return [
             'storefront_token',
             'webhook_secret',
+            'open_api_key',
+            'open_api_secret',
         ];
     }
 }
