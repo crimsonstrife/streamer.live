@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
 use Filament\Forms;

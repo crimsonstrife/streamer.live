@@ -36,7 +36,7 @@ class SyncFourthwallData extends Command
             return;
         }
 
-        try{
+        try {
             $fourthwallService->syncPromotions();
             $this->info('Promotions sync completed successfully.');
         } catch (\Exception $e) {
