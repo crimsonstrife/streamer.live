@@ -121,11 +121,11 @@ class FourthwallService
                 ->each(function ($collectionChunk) {
                     foreach ($collectionChunk as $collectionData) {
                         $collection = Collection::updateOrCreate(
-                            ['provider_id' => $collectionData['id']],
+                            ['provider_id' => data_get($collectionData,'id')],
                             [
-                                'name' => $collectionData['name'],
-                                'slug' => $collectionData['slug'],
-                                'description' => $collectionData['description'] ?? null,
+                                'name' => data_get($collectionData,'name'),
+                                'slug' => data_get($collectionData,'slug'),
+                                'description' => data_get($collectionData,'description') ?? null,
                             ]
                         );
 
@@ -197,27 +197,39 @@ class FourthwallService
         })->chunk($this->promotionChunkSize)
         ->each(function ($promotionChunk) {
             foreach ($promotionChunk as $promotionData) {
+                $promotionTitle = data_get($promotionData, 'title');
+
+                // Generate a fallback name if the title doesn't exist
+                if (empty($promotionTitle)) {
+                    $promotionType = data_get($promotionData, 'type', 'Promotion');
+                    $promotionCode = data_get($promotionData, 'code');
+                    $promotionId = data_get($promotionData, 'id');
+
+                    // Dynamic fallback name
+                    $promotionTitle = $promotionType . (!empty($promotionCode) ? " - {$promotionCode}" : '') . " [#{$promotionId}]";
+                }
+
                 try {
                     $promotion = Promotion::updateOrCreate(
-                        ['provider_id' => $promotionData['id']],
+                        ['provider_id' => data_get($promotionData, 'id')],
                         [
-                            'title' => $promotionData['title'] ?? 'Untitled Promotion',
-                            'code' => $promotionData['code'] ?? null,
-                            'type' => $promotionData['type'],
-                            'status' => $promotionData['status'],
-                            'discount_type' => $promotionData['discount']['type'] ?? null,
-                            'percentage' => $promotionData['discount']['percentage'] ?? null,
-                            'amount_value' => $promotionData['discount']['money']['value'] ?? null,
-                            'amount_currency' => $promotionData['discount']['money']['currency'] ?? null,
-                            'one_use_per_customer' => $promotionData['limits']['oneUsePerCustomer'] ?? null,
-                            'applies_to' => $promotionData['appliesTo']['type'] ?? null,
+                            'title' => $promotionTitle,
+                            'code' => data_get($promotionData, 'code'),
+                            'type' => data_get($promotionData, 'type'),
+                            'status' => data_get($promotionData, 'status'),
+                            'discount_type' => data_get($promotionData, 'discount.type'),
+                            'percentage' => data_get($promotionData, 'discount.percentage'),
+                            'amount_value' => data_get($promotionData, 'discount.money.value'),
+                            'amount_currency' => data_get($promotionData, 'discount.money.currency'),
+                            'one_use_per_customer' => data_get($promotionData, 'limits.oneUsePerCustomer'),
+                            'applies_to' => data_get($promotionData, 'appliesTo.type'),
                         ]
                     );
 
                     Log::info("Synced promotion: {$promotion->title}");
 
-                    if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty($promotionData['appliesTo']['products'])) {
-                        foreach ($promotionData['appliesTo']['products'] as $productId) {
+                    if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData,'appliesTo.products'))) {
+                        foreach (data_get($promotionData,'appliesTo.products') as $productId) {
                             $product = Product::where('provider_id', $productId)->first();
 
                             if ($product) {
@@ -266,16 +278,16 @@ class FourthwallService
 
             foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
                 foreach ($productBatch as $productData) {
-                    Log::info("Syncing product: {$productData['name']} for collection: {$collection->name}");
+                    Log::info("Syncing product: {data_get($productData,'name')} for collection: {$collection->name}");
                     $product = Product::updateOrCreate(
-                        ['provider_id' => $productData['id']],
+                        ['provider_id' => data_get($productData, 'id')],
                         [
                             'collection_id' => $collection->id,
-                            'name' => $productData['name'],
-                            'slug' => $productData['slug'],
-                            'description' => $productData['description'] ?? '',
-                            'state' => $productData['state']['type'] ?? 'SOLDOUT',
-                            'access' => $productData['access']['type'] ?? 'PUBLIC',
+                            'name' => data_get($productData,'name'),
+                            'slug' => data_get($productData,'slug'),
+                            'description' => data_get($productData,'description') ?? '',
+                            'state' => data_get($productData,'state.type') ?? 'SOLDOUT',
+                            'access' => data_get($productData,'access.type') ?? 'PUBLIC',
                         ]
                     );
 
@@ -315,26 +327,26 @@ class FourthwallService
                 foreach ($variantBatch as $variantData) {
                     Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
                     ProductVariant::updateOrCreate(
-                        ['provider_id' => $variantData['id']],
+                        ['provider_id' => data_get($variantData,'id')],
                         [
                             'product_id' => $product->id,
-                            'name' => $variantData['name'],
-                            'sku' => $variantData['sku'],
-                            'price' => $variantData['unitPrice']['value'],
-                            'compare_at_price' => $variantData['compareAtPrice']['value'] ?? null,
-                            'currency' => $variantData['unitPrice']['currency'],
-                            'stock_status' => $variantData['stock']['type'],
-                            'stock_count' => $variantData['stock']['inStock'] ?? 0,
-                            'weight' => $variantData['weight']['value'],
-                            'weight_unit' => $variantData['weight']['unit'],
-                            'height' => $variantData['dimensions']['height'],
-                            'length' => $variantData['dimensions']['length'],
-                            'width' => $variantData['dimensions']['width'],
-                            'dimension_unit' => $variantData['dimensions']['unit'],
-                            'description' => $variantData['attributes']['description'] ?? null,
-                            'size' => $variantData['attributes']['size']['name'] ?? null,
-                            'color_name' => $variantData['attributes']['color']['name'] ?? null,
-                            'color_swatch' => $variantData['attributes']['color']['swatch'] ?? null,
+                            'name' => data_get($variantData,'name'),
+                            'sku' => data_get($variantData,'sku'),
+                            'price' => data_get($variantData,'unitPrice.value'),
+                            'compare_at_price' => data_get($variantData,'compareAtPrice.value') ?? null,
+                            'currency' => data_get($variantData,'unitPrice.currency'),
+                            'stock_status' => data_get($variantData,'stock.type'),
+                            'stock_count' => data_get($variantData,'stock.inStock') ?? 0,
+                            'weight' => data_get($variantData,'weight.value'),
+                            'weight_unit' => data_get($variantData,'weight.unit'),
+                            'height' => data_get($variantData,'dimensions.height'),
+                            'length' => data_get($variantData,'dimensions.length'),
+                            'width' => data_get($variantData,'dimensions.width'),
+                            'dimension_unit' => data_get($variantData,'dimensions.unit'),
+                            'description' => data_get($variantData,'attributes.description') ?? null,
+                            'size' => data_get($variantData,'attributes.size.name') ?? null,
+                            'color_name' => data_get($variantData,'attributes.color.name') ?? null,
+                            'color_swatch' => data_get($variantData,'attributes.color.swatch') ?? null,
                         ]
                     );
                 }
@@ -418,12 +430,12 @@ class FourthwallService
                 return;
             }
 
-            $filename = basename($imageData['url']);
+            $filename = basename(data_get($imageData,'url'));
 
-            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get($imageData['url']);
+            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get(data_get($imageData,'url'));
 
             if (! $response->successful()) {
-                Log::error('Failed to download image: '.$imageData['url']);
+                Log::error('Failed to download image: '.data_get($imageData,'url'));
                 return;
             }
 
@@ -433,11 +445,11 @@ class FourthwallService
                     ->usingFileName($filename)
                     ->usingName(pathinfo($filename, PATHINFO_FILENAME))
                     ->withCustomProperties([
-                        'alt_text' => $imageData['alt'] ?? null,
-                        'width' => $imageData['width'] ?? null,
-                        'height' => $imageData['height'] ?? null,
-                        'provider_url' => $imageData['url'],
-                        'provider_id' => $imageData['id'],
+                        'alt_text' => data_get($imageData,'alt') ?? null,
+                        'width' => data_get($imageData,'width') ?? null,
+                        'height' => data_get($imageData,'height') ?? null,
+                        'provider_url' => data_get($imageData,'url'),
+                        'provider_id' => data_get($imageData,'id'),
                     ])
                     ->toMediaCollection('images');
             } catch (FileDoesNotExist $e) {
