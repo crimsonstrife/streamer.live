@@ -121,11 +121,11 @@ class FourthwallService
                 ->each(function ($collectionChunk) {
                     foreach ($collectionChunk as $collectionData) {
                         $collection = Collection::updateOrCreate(
-                            ['provider_id' => data_get($collectionData,'id')],
+                            ['provider_id' => data_get($collectionData, 'id')],
                             [
-                                'name' => data_get($collectionData,'name'),
-                                'slug' => data_get($collectionData,'slug'),
-                                'description' => data_get($collectionData,'description') ?? null,
+                                'name' => data_get($collectionData, 'name'),
+                                'slug' => data_get($collectionData, 'slug'),
+                                'description' => data_get($collectionData, 'description') ?? null,
                             ]
                         );
 
@@ -228,8 +228,8 @@ class FourthwallService
 
                     Log::info("Synced promotion: {$promotion->title}");
 
-                    if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData,'appliesTo.products'))) {
-                        foreach (data_get($promotionData,'appliesTo.products') as $productId) {
+                    if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData, 'appliesTo.products'))) {
+                        foreach (data_get($promotionData, 'appliesTo.products') as $productId) {
                             $product = Product::where('provider_id', $productId)->first();
 
                             if ($product) {
@@ -283,11 +283,11 @@ class FourthwallService
                         ['provider_id' => data_get($productData, 'id')],
                         [
                             'collection_id' => $collection->id,
-                            'name' => data_get($productData,'name'),
-                            'slug' => data_get($productData,'slug'),
-                            'description' => data_get($productData,'description') ?? '',
-                            'state' => data_get($productData,'state.type') ?? 'SOLDOUT',
-                            'access' => data_get($productData,'access.type') ?? 'PUBLIC',
+                            'name' => data_get($productData, 'name'),
+                            'slug' => data_get($productData, 'slug'),
+                            'description' => data_get($productData, 'description') ?? '',
+                            'state' => data_get($productData, 'state.type') ?? 'SOLDOUT',
+                            'access' => data_get($productData, 'access.type') ?? 'PUBLIC',
                         ]
                     );
 
@@ -327,26 +327,26 @@ class FourthwallService
                 foreach ($variantBatch as $variantData) {
                     Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
                     ProductVariant::updateOrCreate(
-                        ['provider_id' => data_get($variantData,'id')],
+                        ['provider_id' => data_get($variantData, 'id')],
                         [
                             'product_id' => $product->id,
-                            'name' => data_get($variantData,'name'),
-                            'sku' => data_get($variantData,'sku'),
-                            'price' => data_get($variantData,'unitPrice.value'),
-                            'compare_at_price' => data_get($variantData,'compareAtPrice.value') ?? null,
-                            'currency' => data_get($variantData,'unitPrice.currency'),
-                            'stock_status' => data_get($variantData,'stock.type'),
-                            'stock_count' => data_get($variantData,'stock.inStock') ?? 0,
-                            'weight' => data_get($variantData,'weight.value'),
-                            'weight_unit' => data_get($variantData,'weight.unit'),
-                            'height' => data_get($variantData,'dimensions.height'),
-                            'length' => data_get($variantData,'dimensions.length'),
-                            'width' => data_get($variantData,'dimensions.width'),
-                            'dimension_unit' => data_get($variantData,'dimensions.unit'),
-                            'description' => data_get($variantData,'attributes.description') ?? null,
-                            'size' => data_get($variantData,'attributes.size.name') ?? null,
-                            'color_name' => data_get($variantData,'attributes.color.name') ?? null,
-                            'color_swatch' => data_get($variantData,'attributes.color.swatch') ?? null,
+                            'name' => data_get($variantData, 'name'),
+                            'sku' => data_get($variantData, 'sku'),
+                            'price' => data_get($variantData, 'unitPrice.value'),
+                            'compare_at_price' => data_get($variantData, 'compareAtPrice.value') ?? null,
+                            'currency' => data_get($variantData, 'unitPrice.currency'),
+                            'stock_status' => data_get($variantData, 'stock.type'),
+                            'stock_count' => data_get($variantData, 'stock.inStock') ?? 0,
+                            'weight' => data_get($variantData, 'weight.value'),
+                            'weight_unit' => data_get($variantData, 'weight.unit'),
+                            'height' => data_get($variantData, 'dimensions.height'),
+                            'length' => data_get($variantData, 'dimensions.length'),
+                            'width' => data_get($variantData, 'dimensions.width'),
+                            'dimension_unit' => data_get($variantData, 'dimensions.unit'),
+                            'description' => data_get($variantData, 'attributes.description') ?? null,
+                            'size' => data_get($variantData, 'attributes.size.name') ?? null,
+                            'color_name' => data_get($variantData, 'attributes.color.name') ?? null,
+                            'color_swatch' => data_get($variantData, 'attributes.color.swatch') ?? null,
                         ]
                     );
                 }
@@ -430,12 +430,12 @@ class FourthwallService
                 return;
             }
 
-            $filename = basename(data_get($imageData,'url'));
+            $filename = basename(data_get($imageData, 'url'));
 
-            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get(data_get($imageData,'url'));
+            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get(data_get($imageData, 'url'));
 
             if (! $response->successful()) {
-                Log::error('Failed to download image: '.data_get($imageData,'url'));
+                Log::error('Failed to download image: '.data_get($imageData, 'url'));
                 return;
             }
 
@@ -445,11 +445,11 @@ class FourthwallService
                     ->usingFileName($filename)
                     ->usingName(pathinfo($filename, PATHINFO_FILENAME))
                     ->withCustomProperties([
-                        'alt_text' => data_get($imageData,'alt') ?? null,
-                        'width' => data_get($imageData,'width') ?? null,
-                        'height' => data_get($imageData,'height') ?? null,
-                        'provider_url' => data_get($imageData,'url'),
-                        'provider_id' => data_get($imageData,'id'),
+                        'alt_text' => data_get($imageData, 'alt') ?? null,
+                        'width' => data_get($imageData, 'width') ?? null,
+                        'height' => data_get($imageData, 'height') ?? null,
+                        'provider_url' => data_get($imageData, 'url'),
+                        'provider_id' => data_get($imageData, 'id'),
                     ])
                     ->toMediaCollection('images');
             } catch (FileDoesNotExist $e) {
