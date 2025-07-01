@@ -98,9 +98,10 @@ class FourthwallWebhookController extends Controller
         dispatch(new HandleFourthwallOrder($data['type'] ?? 'unknown', $data));
 
         $orderService = new OrderSyncService();
+        $fourthwallService = new FourthwallService();
         // Trigger an order sync
         try {
-            FourthwallService::syncOrders($orderService);
+            $fourthwallService->syncOrders($orderService);
         } catch (ConnectionException|RequestException $e) {
             Log::error('Error with order sync: '. $e->getMessage());
         }
