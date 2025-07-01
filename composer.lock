@@ -8233,16 +8233,16 @@
         },
         {
             "name": "mchev/banhammer",
-            "version": "v2.4.0",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mchev/banhammer.git",
-                "reference": "a57318822959036639bc1b7929be7d24ba376457"
+                "reference": "2361f2706c779a17f025b3d96802172d3409b31e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mchev/banhammer/zipball/a57318822959036639bc1b7929be7d24ba376457",
-                "reference": "a57318822959036639bc1b7929be7d24ba376457",
+                "url": "https://api.github.com/repos/mchev/banhammer/zipball/2361f2706c779a17f025b3d96802172d3409b31e",
+                "reference": "2361f2706c779a17f025b3d96802172d3409b31e",
                 "shasum": ""
             },
             "require": {
@@ -8289,7 +8289,7 @@
             ],
             "support": {
                 "issues": "https://github.com/mchev/banhammer/issues",
-                "source": "https://github.com/mchev/banhammer/tree/v2.4.0"
+                "source": "https://github.com/mchev/banhammer/tree/v2.4.1"
             },
             "funding": [
                 {
@@ -8297,7 +8297,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-17T13:49:24+00:00"
+            "time": "2025-06-30T19:26:39+00:00"
         },
         {
             "name": "mews/purifier",
@@ -24187,5 +24187,5 @@
         "php": "^8.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
