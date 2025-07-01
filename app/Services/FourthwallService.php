@@ -279,6 +279,11 @@ class FourthwallService
                         ]
                     );
 
+                    // There is additional product data that can only be obtained via the Open API, so make a request and update it.
+                    //$openAPIProductData = $this->openApiGetRequest("products/{$product->provider_id}");
+                    //$product->setMoreDetailsAttribute(data_get($openAPIProductData, 'additionalInformation.moreDetails')); // Currently these results appear to be empty in the response, despite being documented
+                    //$product->setProductInformationAttribute(data_get($openAPIProductData, 'additionalInformation.sizeAndFit')); // Currently these results appear to be empty in the response, despite being documented
+
                     // Ensure product is linked to the collection (pivot table)
                     $product->collections()->syncWithoutDetaching([$collection->id]);
                     Log::info("Attached product: {$product->name} to collection: {$collection->name}");
