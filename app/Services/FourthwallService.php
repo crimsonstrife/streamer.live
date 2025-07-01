@@ -11,6 +11,7 @@ use App\Models\StoreObjects\Promotion;
 use App\Settings\FourthwallSettings;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -152,7 +153,7 @@ class FourthwallService
 
     /**
      * Sync Promotions from the Fourthwall API
-     * @throws ConnectionException
+     * @throws ConnectionException|RequestException
      */
     public function syncPromotions(): void
     {
@@ -161,23 +162,10 @@ class FourthwallService
             return;
         }
 
-        $url = "https://api.fourthwall.com/open-api/v1.0/promotions";
-
         try {
-            // Base64 encode the Open API credentials
-            $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
+            $promotionsResponse = $this->openApiGetRequest('promotions');
 
-            $promotionsResponse = Http::withOptions([
-                'verify_ssl' => $this->verify_ssl,
-            ])
-                ->withHeaders([
-                    'Authorization' => 'Basic ' . $authToken,
-                    'Content-Type' => 'application/json',
-                ])
-                ->get($url)
-                ->json();
-
-            if (! is_array($promotionsResponse) || ! isset($promotionsResponse['results'])) {
+            if (! isset($promotionsResponse['results'])) {
                 Log::error('Failed to fetch promotions: Invalid or empty API response.');
                 throw new RuntimeException('Failed to fetch promotions from the Fourthwall API.');
             }
@@ -827,5 +815,64 @@ class FourthwallService
 
         Log::error('The Fourthwall integration is not enabled');
         throw new RuntimeException('The Fourthwall integration is not enabled');
+    }
+
+    /**
+     * Make a request to Fourthwall’s Open API (v1.0) with Basic Auth.
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    private function openApiGetRequest(string $endpoint, array $queryParams = [], array $body = []): array
+    {
+        $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
+
+        return Http::withOptions([
+            'verify_ssl' => $this->verify_ssl,
+        ])
+            ->withHeaders([
+                'Authorization' => "Basic {$authToken}",
+                'Content-Accept'        => 'application/json',
+            ])
+            ->get("https://api.fourthwall.com/open-api/v1.0/{$endpoint}", $queryParams)
+            ->throw()
+            ->json();
+    }
+
+    /**
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    public function syncOrders(OrderSyncService $orderSyncService): void
+    {
+        if (! $this->enabled) {
+            Log::error('Fourthwall integration is not enabled; skipping order sync.');
+            return;
+        }
+
+        // Parameters you may want to page with—cursor, limit, etc.
+        $nextCursor = null;
+
+        do {
+            $params = ['limit' => 50];
+            if ($nextCursor) {
+                $params['cursor'] = $nextCursor;
+            }
+
+            $payload = $this->openApiGetRequest('order', $params);
+
+            if (empty($payload['results'] ?? [])) {
+                break;
+            }
+
+            // Upsert each order
+            foreach ($payload['results'] as $orderData) {
+                $orderSyncService->upsert($orderData);
+            }
+
+            // Prepare for next page
+            $nextCursor = $payload['cursor'] ?? null;
+        } while ($nextCursor);
+
+        Log::info('All Fourthwall orders synced.');
     }
 }
