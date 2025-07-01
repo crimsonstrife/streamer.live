@@ -824,25 +824,25 @@ class FourthwallService
 
     /**
      * Make a request to Fourthwall’s Open API (v1.0) with Basic Auth.
-     * @throws RequestException
-     * @throws ConnectionException
-     */
-    private function openApiGetRequest(string $endpoint, array $queryParams = [], array $body = []): array
-    {
-        $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
-
-        return Http::withOptions([
-            'verify_ssl' => $this->verify_ssl,
-        ])
-            ->withHeaders([
-                'Authorization' => "Basic {$authToken}",
-                'Content-Accept'        => 'application/json',
-            ])
-            ->get("https://api.fourthwall.com/open-api/v1.0/{$endpoint}", $queryParams)
-            ->throw()
-            ->json();
-    }
-
++     * @throws RequestException
++     * @throws ConnectionException
++     */
++    private function openApiGetRequest(string $endpoint, array $queryParams = []): array
++    {
++        $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
++
++        return Http::withOptions([
++            'verify_ssl' => $this->verify_ssl,
++        ])
++            ->withHeaders([
++                'Authorization' => "Basic {$authToken}",
++                'Content-Accept'        => 'application/json',
++            ])
++            ->get("https://api.fourthwall.com/open-api/v1.0/{$endpoint}", $queryParams)
++            ->throw()
++            ->json();
++    }
++
     /**
      * @throws RequestException
      * @throws ConnectionException
