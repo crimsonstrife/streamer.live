@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Webhook;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\HandleFourthwallOrder;
+use App\Services\FourthwallService;
+use App\Services\OrderSyncService;
 use App\Settings\FourthwallSettings;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -92,6 +96,14 @@ class FourthwallWebhookController extends Controller
 
         // Dispatch a job to handle the webhook event.
         dispatch(new HandleFourthwallOrder($data['type'] ?? 'unknown', $data));
+
+        $orderService = new OrderSyncService();
+        // Trigger an order sync
+        try {
+            FourthwallService::syncOrders($orderService);
+        } catch (ConnectionException|RequestException $e) {
+            Log::error('Error with order sync: '. $e->getMessage());
+        }
 
         return response('Accepted', 200);
     }
