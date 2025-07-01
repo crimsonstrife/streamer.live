@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\FourthwallService;
+use App\Services\OrderSyncService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -28,7 +29,27 @@ class SyncFourthwallData extends Command
         try {
             // This method will handle syncing collections and products efficiently
             $fourthwallService->syncCollectionsAndProducts();
-            $this->info('Sync completed successfully.');
+            $this->info('Products and Collections Sync completed successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error during sync: '.$e->getMessage());
+            $this->error('An error occurred during sync. Check logs for details.');
+
+            return;
+        }
+
+        try {
+            $fourthwallService->syncPromotions();
+            $this->info('Promotions sync completed successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error during sync: '.$e->getMessage());
+            $this->error('An error occurred during sync. Check logs for details.');
+
+            return;
+        }
+
+        try {
+            $fourthwallService->syncOrders(app(OrderSyncService::class));
+            $this->info('Orders sync completed successfully.');
         } catch (\Exception $e) {
             Log::error('Error during sync: '.$e->getMessage());
             $this->error('An error occurred during sync. Check logs for details.');

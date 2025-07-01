@@ -11,7 +11,7 @@ use Filament\Pages\SettingsPage;
 
 class FourthwallSettings extends SettingsPage
 {
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static ?string $navigationIcon = 'fas-shop';
 
     protected static string $settings = \App\Settings\FourthwallSettings::class;
 
@@ -51,6 +51,20 @@ class FourthwallSettings extends SettingsPage
                         TextInput::make('webhook_secret')
                             ->label('Webhook Secret')
                             ->helperText('Required to allow for order callbacks.')
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        TextInput::make('open_api_key')
+                            ->label('Open API Username')
+                            ->helperText('Username from the Fourthwall Developer Settings')
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255),
+
+                        TextInput::make('open_api_secret')
+                            ->label('Open API Password')
+                            ->helperText('Password from the Fourthwall Developer Settings')
                             ->password()
                             ->revealable()
                             ->maxLength(255),

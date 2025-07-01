@@ -7,9 +7,11 @@ use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductImage;
 use App\Models\StoreObjects\ProductVariant;
+use App\Models\StoreObjects\Promotion;
 use App\Settings\FourthwallSettings;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -34,6 +36,10 @@ class FourthwallService
 
     protected ?string $storefrontUrl;
 
+    protected ?string $openApiKey;
+
+    protected ?string $openApiSecret;
+
     protected bool $verify_ssl;
 
     protected bool $enable_garbage_collection;
@@ -41,6 +47,8 @@ class FourthwallService
     protected int $collectionsChunkSize;
 
     protected int $productsChunkSize;
+
+    protected int $promotionChunkSize;
 
     protected const STOCK_TTL_SECONDS = 30;
 
@@ -57,6 +65,10 @@ class FourthwallService
         $settingBaseUrl = app(FourthwallSettings::class)->base_url;
         $configStorefrontToken = config('services.fourthwall.storefront_token');
         $settingStorefrontToken = app(FourthwallSettings::class)->storefront_token;
+        $configOpenApiKey = config('services.fourthwall.open_api_key');
+        $settingOpenApiKey = app(FourthwallSettings::class)->open_api_key;
+        $configOpenApiSecret = config('services.fourthwall.open_api_secret');
+        $settingOpenApiSecret = app(FourthwallSettings::class)->open_api_secret;
         $configStorefrontUrl = config('services.fourthwall.storefront_url');
         $settingStorefrontUrl = app(FourthwallSettings::class)->storefront_url;
         $configSSLVerify = config('services.fourthwall.verify');
@@ -67,9 +79,12 @@ class FourthwallService
         $this->baseUrl = $settingBaseUrl ?? $configBaseUrl;
         $this->storefrontToken = $settingStorefrontToken ?? $configStorefrontToken;
         $this->storefrontUrl = $settingStorefrontUrl ?? $configStorefrontUrl;
+        $this->openApiKey = $settingOpenApiKey ?? $configOpenApiKey;
+        $this->openApiSecret = $settingOpenApiSecret ?? $configOpenApiSecret;
         $this->verify_ssl = $settingSSLVerify ?? $configSSLVerify;
         $this->enable_garbage_collection = config('fourthwall.enable_gc', true);
         $this->collectionsChunkSize = config('fourthwall.chunk_size.collections', 10);
+        $this->promotionChunkSize = config('fourthwall.chunk_size.promotions', 5);
         $this->productsChunkSize = config('fourthwall.chunk_size.products', 5);
     }
 
@@ -107,11 +122,11 @@ class FourthwallService
                 ->each(function ($collectionChunk) {
                     foreach ($collectionChunk as $collectionData) {
                         $collection = Collection::updateOrCreate(
-                            ['provider_id' => $collectionData['id']],
+                            ['provider_id' => data_get($collectionData, 'id')],
                             [
-                                'name' => $collectionData['name'],
-                                'slug' => $collectionData['slug'],
-                                'description' => $collectionData['description'] ?? null,
+                                'name' => data_get($collectionData, 'name'),
+                                'slug' => data_get($collectionData, 'slug'),
+                                'description' => data_get($collectionData, 'description') ?? null,
                             ]
                         );
 
@@ -134,6 +149,96 @@ class FourthwallService
         } else {
             Log::error('The Fourthwall integration is not enabled');
         }
+    }
+
+    /**
+     * Sync Promotions from the Fourthwall API
+     * @throws ConnectionException|RequestException
+     */
+    public function syncPromotions(): void
+    {
+        if (! $this->enabled) {
+            Log::error('The Fourthwall integration is not enabled.');
+            return;
+        }
+
+        try {
+            $promotionsResponse = $this->openApiGetRequest('promotions');
+
+            if (! isset($promotionsResponse['results'])) {
+                Log::error('Failed to fetch promotions: Invalid or empty API response.');
+                throw new RuntimeException('Failed to fetch promotions from the Fourthwall API.');
+            }
+        } catch (ConnectionException $e) {
+            Log::error('Failed to connect to Fourthwall API: ' . $e->getMessage());
+            throw new RuntimeException('Connection to Fourthwall API failed.');
+        } catch (Exception $e) {
+            Log::error('Unexpected error during promotions sync: ' . $e->getMessage());
+            throw $e;
+        }
+
+        // Process promotions using LazyCollection
+        LazyCollection::make(static function () use ($promotionsResponse) {
+            foreach ($promotionsResponse['results'] as $promotionData) {
+                yield $promotionData;
+            }
+        })->chunk($this->promotionChunkSize)
+        ->each(function ($promotionChunk) {
+            foreach ($promotionChunk as $promotionData) {
+                $promotionTitle = data_get($promotionData, 'title');
+
+                // Generate a fallback name if the title doesn't exist
+                if (empty($promotionTitle)) {
+                    $promotionType = data_get($promotionData, 'type', 'Promotion');
+                    $promotionCode = data_get($promotionData, 'code');
+                    $promotionId = data_get($promotionData, 'id');
+
+                    // Dynamic fallback name
+                    $promotionTitle = $promotionType . (!empty($promotionCode) ? " - {$promotionCode}" : '') . " [#{$promotionId}]";
+                }
+
+                try {
+                    $promotion = Promotion::updateOrCreate(
+                        ['provider_id' => data_get($promotionData, 'id')],
+                        [
+                            'title' => $promotionTitle,
+                            'code' => data_get($promotionData, 'code'),
+                            'type' => data_get($promotionData, 'type'),
+                            'status' => data_get($promotionData, 'status'),
+                            'discount_type' => data_get($promotionData, 'discount.type'),
+                            'percentage' => data_get($promotionData, 'discount.percentage'),
+                            'amount_value' => data_get($promotionData, 'discount.money.value'),
+                            'amount_currency' => data_get($promotionData, 'discount.money.currency'),
+                            'one_use_per_customer' => data_get($promotionData, 'limits.oneUsePerCustomer'),
+                            'applies_to' => data_get($promotionData, 'appliesTo.type'),
+                        ]
+                    );
+
+                    Log::info("Synced promotion: {$promotion->title}");
+
+                    if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData, 'appliesTo.products'))) {
+                        foreach (data_get($promotionData, 'appliesTo.products') as $productId) {
+                            $product = Product::where('provider_id', $productId)->first();
+
+                            if ($product) {
+                                $promotion->products()->syncWithoutDetaching([$product->id]);
+                            } else {
+                                Log::warning("Product with provider_id {$productId} not found for promotion: {$promotion->title}");
+                            }
+                        }
+                    }
+                } catch (Exception $e) {
+                    Log::error("Error syncing promotion : {$e->getMessage()}");
+                    throw new RuntimeException("Error syncing promotion");
+                }
+            }
+
+            if ($this->enable_garbage_collection) {
+                gc_collect_cycles();
+            }
+        });
+
+        Log::info('All promotions synced successfully.');
     }
 
     /**
@@ -161,18 +266,23 @@ class FourthwallService
 
             foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
                 foreach ($productBatch as $productData) {
-                    Log::info("Syncing product: {$productData['name']} for collection: {$collection->name}");
+                    Log::info('Syncing product: ' . data_get($productData, 'name') . " for collection: {$collection->name}");
                     $product = Product::updateOrCreate(
-                        ['provider_id' => $productData['id']],
+                        ['provider_id' => data_get($productData, 'id')],
                         [
                             'collection_id' => $collection->id,
-                            'name' => $productData['name'],
-                            'slug' => $productData['slug'],
-                            'description' => $productData['description'] ?? '',
-                            'state' => $productData['state']['type'] ?? 'SOLDOUT',
-                            'access' => $productData['access']['type'] ?? 'PUBLIC',
+                            'name' => data_get($productData, 'name'),
+                            'slug' => data_get($productData, 'slug'),
+                            'description' => data_get($productData, 'description') ?? '',
+                            'state' => data_get($productData, 'state.type') ?? 'SOLDOUT',
+                            'access' => data_get($productData, 'access.type') ?? 'PUBLIC',
                         ]
                     );
+
+                    // There is additional product data that can only be obtained via the Open API, so make a request and update it.
+                    //$openAPIProductData = $this->openApiGetRequest("products/{$product->provider_id}");
+                    //$product->setMoreDetailsAttribute(data_get($openAPIProductData, 'additionalInformation.moreDetails')); // Currently these results appear to be empty in the response, despite being documented
+                    //$product->setProductInformationAttribute(data_get($openAPIProductData, 'additionalInformation.sizeAndFit')); // Currently these results appear to be empty in the response, despite being documented
 
                     // Ensure product is linked to the collection (pivot table)
                     $product->collections()->syncWithoutDetaching([$collection->id]);
@@ -210,26 +320,26 @@ class FourthwallService
                 foreach ($variantBatch as $variantData) {
                     Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
                     ProductVariant::updateOrCreate(
-                        ['provider_id' => $variantData['id']],
+                        ['provider_id' => data_get($variantData, 'id')],
                         [
                             'product_id' => $product->id,
-                            'name' => $variantData['name'],
-                            'sku' => $variantData['sku'],
-                            'price' => $variantData['unitPrice']['value'],
-                            'compare_at_price' => $variantData['compareAtPrice']['value'] ?? null,
-                            'currency' => $variantData['unitPrice']['currency'],
-                            'stock_status' => $variantData['stock']['type'],
-                            'stock_count' => $variantData['stock']['inStock'] ?? 0,
-                            'weight' => $variantData['weight']['value'],
-                            'weight_unit' => $variantData['weight']['unit'],
-                            'height' => $variantData['dimensions']['height'],
-                            'length' => $variantData['dimensions']['length'],
-                            'width' => $variantData['dimensions']['width'],
-                            'dimension_unit' => $variantData['dimensions']['unit'],
-                            'description' => $variantData['attributes']['description'] ?? null,
-                            'size' => $variantData['attributes']['size']['name'] ?? null,
-                            'color_name' => $variantData['attributes']['color']['name'] ?? null,
-                            'color_swatch' => $variantData['attributes']['color']['swatch'] ?? null,
+                            'name' => data_get($variantData, 'name'),
+                            'sku' => data_get($variantData, 'sku'),
+                            'price' => data_get($variantData, 'unitPrice.value'),
+                            'compare_at_price' => data_get($variantData, 'compareAtPrice.value') ?? null,
+                            'currency' => data_get($variantData, 'unitPrice.currency'),
+                            'stock_status' => data_get($variantData, 'stock.type'),
+                            'stock_count' => data_get($variantData, 'stock.inStock') ?? 0,
+                            'weight' => data_get($variantData, 'weight.value'),
+                            'weight_unit' => data_get($variantData, 'weight.unit'),
+                            'height' => data_get($variantData, 'dimensions.height'),
+                            'length' => data_get($variantData, 'dimensions.length'),
+                            'width' => data_get($variantData, 'dimensions.width'),
+                            'dimension_unit' => data_get($variantData, 'dimensions.unit'),
+                            'description' => data_get($variantData, 'attributes.description') ?? null,
+                            'size' => data_get($variantData, 'attributes.size.name') ?? null,
+                            'color_name' => data_get($variantData, 'attributes.color.name') ?? null,
+                            'color_swatch' => data_get($variantData, 'attributes.color.swatch') ?? null,
                         ]
                     );
                 }
@@ -313,12 +423,12 @@ class FourthwallService
                 return;
             }
 
-            $filename = basename($imageData['url']);
+            $filename = basename(data_get($imageData, 'url'));
 
-            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get($imageData['url']);
+            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get(data_get($imageData, 'url'));
 
             if (! $response->successful()) {
-                Log::error('Failed to download image: '.$imageData['url']);
+                Log::error('Failed to download image: '.data_get($imageData, 'url'));
                 return;
             }
 
@@ -328,11 +438,11 @@ class FourthwallService
                     ->usingFileName($filename)
                     ->usingName(pathinfo($filename, PATHINFO_FILENAME))
                     ->withCustomProperties([
-                        'alt_text' => $imageData['alt'] ?? null,
-                        'width' => $imageData['width'] ?? null,
-                        'height' => $imageData['height'] ?? null,
-                        'provider_url' => $imageData['url'],
-                        'provider_id' => $imageData['id'],
+                        'alt_text' => data_get($imageData, 'alt') ?? null,
+                        'width' => data_get($imageData, 'width') ?? null,
+                        'height' => data_get($imageData, 'height') ?? null,
+                        'provider_url' => data_get($imageData, 'url'),
+                        'provider_id' => data_get($imageData, 'id'),
                     ])
                     ->toMediaCollection('images');
             } catch (FileDoesNotExist $e) {
@@ -710,5 +820,64 @@ class FourthwallService
 
         Log::error('The Fourthwall integration is not enabled');
         throw new RuntimeException('The Fourthwall integration is not enabled');
+    }
+
+    /**
+     * Make a request to Fourthwall’s Open API (v1.0) with Basic Auth.
+     * @throws RequestException
+     * * @throws ConnectionException
+     */
+    private function openApiGetRequest(string $endpoint, array $queryParams = []): array
+    {
+        $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
+
+        return Http::withOptions([
+            'verify_ssl' => $this->verify_ssl,
+        ])
+            ->withHeaders([
+                'Authorization' => "Basic {$authToken}",
+                'Content-Accept'        => 'application/json',
+            ])
+            ->get("https://api.fourthwall.com/open-api/v1.0/{$endpoint}", $queryParams)
+            ->throw()
+            ->json();
+    }
+
+    /**
+     * @throws RequestException
+     * @throws ConnectionException
+     */
+    public function syncOrders(OrderSyncService $orderSyncService): void
+    {
+        if (! $this->enabled) {
+            Log::error('Fourthwall integration is not enabled; skipping order sync.');
+            return;
+        }
+
+        // Parameters you may want to page with—cursor, limit, etc.
+        $nextCursor = null;
+
+        do {
+            $params = ['limit' => 50];
+            if ($nextCursor) {
+                $params['cursor'] = $nextCursor;
+            }
+
+            $payload = $this->openApiGetRequest('order', $params);
+
+            if (empty($payload['results'] ?? [])) {
+                break;
+            }
+
+            // Upsert each order
+            foreach ($payload['results'] as $orderData) {
+                $orderSyncService->upsert($orderData);
+            }
+
+            // Prepare for next page
+            $nextCursor = $payload['cursor'] ?? null;
+        } while ($nextCursor);
+
+        Log::info('All Fourthwall orders synced.');
     }
 }

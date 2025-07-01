@@ -130,6 +130,11 @@ class Product extends BaseModel implements Searchable, HasMedia
         return $this->hasMany(ProductImage::class);
     }
 
+    public function promotions(): BelongsToMany
+    {
+        return $this->belongsToMany(Promotion::class, 'promotion_product');
+    }
+
     /**
      * Get the primary image URL (first image or placeholder).
      */
@@ -193,27 +198,48 @@ class Product extends BaseModel implements Searchable, HasMedia
         if ($this->cachedAdditionalData !== null) {
             return $this->cachedAdditionalData;
         }
-
         $data = DB::table('additional_product_data')
             ->where('product_id', $this->id)
             ->first();
-
         $this->cachedAdditionalData = (array) $data;
-
         return $this->cachedAdditionalData;
+    }
+
+    public function setAdditionalData(array $data): void
+    {
+        $currentData = $this->additionalData();
+        $updatedData = array_merge($currentData, $data);
+
+        // Update in memory (cache)
+        $this->cachedAdditionalData = $updatedData;
+
+        // Update in database
+        DB::table('additional_product_data')
+            ->updateOrInsert(
+                ['product_id' => $this->id],
+                $updatedData
+            );
+    }
+
+    public function setMoreDetailsAttribute(string $value): void
+    {
+        $this->setAdditionalData(['more_details' => htmlentities($value)]);
+    }
+
+    public function setProductInformationAttribute(string $value): void
+    {
+        $this->setAdditionalData(['product_information' => htmlentities($value)]);
     }
 
     public function getMoreDetailsAttribute(): string
     {
         $moreDetails = $this->additionalData()['more_details'] ?? '';
-
         return html_entity_decode($moreDetails);
     }
 
     public function getProductInformationAttribute(): string
     {
         $productInformation = $this->additionalData()['product_information'] ?? '';
-
         return html_entity_decode($productInformation);
     }
 
