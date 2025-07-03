@@ -12,6 +12,9 @@
     'category'    => null,
     'date'        => null,
 ])
+@php
+    $siteName = app(\App\Settings\SiteSettings::class)->site_name ?? config('app.name', 'Streamer.live');
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -36,6 +39,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
+    <title>{{ $siteName }}</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -60,9 +64,9 @@
             <a href="{{ route('fabricator.page.home') }}"
                class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
                 <span class="fs-4" style="margin-right: 10%;">
-                    <x-application-mark height="40" width="40"/>
+                    <x-application-mark height="60" width="60"/>
                 </span>
-                <span class="fs-4">{{ config('app.name', 'Streamer.live') }}</span>
+                <span class="fs-4">{{ $siteName }}</span>
             </a>
             <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search" method="GET" action="{{ route('search') }}">
                 <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search">
