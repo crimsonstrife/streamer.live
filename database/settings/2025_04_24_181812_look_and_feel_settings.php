@@ -2,9 +2,9 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
-return new class extends SettingsMigration
-{
-    public function up(): void {
+return new class () extends SettingsMigration {
+    public function up(): void
+    {
         $this->migrator->add('theme.primary_color');
         $this->migrator->add('theme.secondary_color');
         $this->migrator->add('theme.accent_color');
@@ -14,7 +14,8 @@ return new class extends SettingsMigration
         $this->migrator->add('theme.mode');
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         if ($this->migrator->exists('theme.primary_color')) {
             $this->migrator->delete('theme.primary_color');
         }
