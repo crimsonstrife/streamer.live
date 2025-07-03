@@ -147,7 +147,7 @@
                                                             role="button"
                                                             data-info-id="info-{{ $loop->index }}"
                                                             onclick="toggleModelInfo(this)">
-                                                <x-fas-circle-info />
+                                                <x-fas-circle-info height="1rem" width="auto"/>
                                             </span>
                                                         <div id="info-{{ $loop->index }}"
                                                              class="model-info position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-75 text-white rounded-top d-none">
@@ -187,10 +187,17 @@
                     <h2>{{ $product->name }}</h2>
 
                     @if ($product->review_count > 0)
-                        <div class="mb-2">
+                        <div class="mb-2 d-flex align-items-center">
                             @for ($i = 1; $i <= 5; $i++)
-                                <x-fas-{{ $i <= round($product->average_rating) ? 'star-half-stroke' : 'star' }} height="1rem" />
+                                @if ($product->average_rating >= $i)
+                                    <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                @elseif ($product->average_rating >= $i - 0.5)
+                                    <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto" />
+                                @else
+                                    <x-far-star class="text-muted" height="1rem" width="auto" />
+                                @endif
                             @endfor
+
                             <small class="text-muted ms-2">
                                 {{ number_format($product->average_rating, 1) }}/5
                                 ({{ $product->review_count }} {{ Str::plural('review', $product->review_count) }})
@@ -291,7 +298,13 @@
                                     <strong class="fs-4">{{ number_format($product->average_rating, 1) }}/5</strong>
                                     <div>
                                         @for ($i = 1; $i <= 5; $i++)
-                                            <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                                            @if ($product->average_rating >= $i)
+                                                <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                            @elseif ($product->average_rating >= $i - 0.5)
+                                                <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"  />
+                                            @else
+                                                <x-far-star class="text-muted" height="1rem" width="auto"  />
+                                            @endif
                                         @endfor
                                     </div>
                                     <small class="text-muted">{{ $product->review_count }}
