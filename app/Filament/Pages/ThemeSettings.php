@@ -49,7 +49,7 @@ class ThemeSettings extends SettingsPage
                             ])
                             ->default('rounded'),
 
-                        Forms\Components\Select::make('theme')
+                        Forms\Components\Select::make('mode')
                             ->label('Theme')
                             ->options([
                                 'light' => 'Light',

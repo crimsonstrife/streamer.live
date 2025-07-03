@@ -114,7 +114,7 @@
                             {{ Illuminate\Support\Str::limit(strip_tags($post->excerpt ?? $post->content), 30) }}
                         </p>
                         <p class="text-muted mb-1">
-                            <i class="bi bi-chat-left-text"></i>
+                            <x-fas-comments />
                             {{ $post->comments_count ?? 0 }} {{ Str::plural('comment', $post->comments_count ?? 0) }}
                         </p>
                         <a href="{{ route('blog.post', ['slug' => $post->slug]) }}"

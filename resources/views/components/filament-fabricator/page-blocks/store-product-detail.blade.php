@@ -147,7 +147,7 @@
                                                             role="button"
                                                             data-info-id="info-{{ $loop->index }}"
                                                             onclick="toggleModelInfo(this)">
-                                                <i class="bi bi-info-circle"></i>
+                                                <x-fas-circle-info />
                                             </span>
                                                         <div id="info-{{ $loop->index }}"
                                                              class="model-info position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-75 text-white rounded-top d-none">
@@ -189,7 +189,7 @@
                     @if ($product->review_count > 0)
                         <div class="mb-2">
                             @for ($i = 1; $i <= 5; $i++)
-                                <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                                <x-fas-{{ $i <= round($product->average_rating) ? 'star-half-stroke' : 'star' }} />
                             @endfor
                             <small class="text-muted ms-2">
                                 {{ number_format($product->average_rating, 1) }}/5

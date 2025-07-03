@@ -6,9 +6,9 @@
     $location  = optional($menuModel)->location;
 @endphp
 @if($location === 'footer')
-    <nav class="py-2 bg-body-tertiary">
+    <nav class="py-2">
 @else
-            <nav class="py-2 bg-body-tertiary border-bottom">
+            <nav class="py-2 border-bottom">
 @endif
     <div class="container d-flex flex-wrap">
         @if($location === 'footer')

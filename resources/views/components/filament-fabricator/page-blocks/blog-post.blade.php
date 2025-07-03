@@ -112,7 +112,7 @@
                     <form method="POST"
                           action="{{ route('blog.reaction.toggle', ['type' => 'like', 'post' => $post->slug]) }}">
                         @csrf
-                        <button class="btn btn-sm btn-outline-primary" type="submit">👍 Like
+                        <button class="btn btn-sm btn-outline-primary" type="submit"><x-fas-thumbs-up /> Like
                             ({{ $post->countReactions('like') }})
                         </button>
                     </form>
@@ -121,7 +121,7 @@
                     <form method="POST"
                           action="{{ route('blog.reaction.toggle', ['type' => 'dislike', 'post' => $post->slug]) }}">
                         @csrf
-                        <button class="btn btn-sm btn-outline-primary" type="submit">👎 Dislike
+                        <button class="btn btn-sm btn-outline-primary" type="submit"><x-fas-thumbs-down /> Dislike
                             ({{ $post->countReactions('dislike') }})
                         </button>
                     </form>

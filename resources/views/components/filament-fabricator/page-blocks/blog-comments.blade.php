@@ -176,11 +176,7 @@
                 <button
                     class="btn sort-btn btn-link dropdown-toggle hstack align-items-center gap-2 py-1 px-2 fw-normal"
                         data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                    <span class="ski" style="font-size:1.5em;"><svg aria-hidden="true"
-                                                                    class="svg-icon mdi-outlined mdi-sort"
-                                                                    xmlns="http://www.w3.org/2000/svg" width="48"
-                                                                    height="48" viewBox="0 -960 960 960"><path
-                                d="M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z"></path></svg></span>
+                    <span class="ski" style="font-size:1.5em;"><x-fas-arrow-down-wide-short /></span>
                     <span>Sort by</span>
                 </button>
                 <ul class="dropdown-menu mt-1">

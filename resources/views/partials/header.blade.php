@@ -56,6 +56,7 @@
 
     @php
         $style = app(\App\Settings\LookFeelSettings::class);
+        $display_mode = $style->mode;
     @endphp
 
     <style>
@@ -111,7 +112,7 @@
     @stack('head-scripts')
 
 </head>
-<body class="bg-light">
+<body class="{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }}">
 <x-banner/>
 <div class="min-vh-100 d-flex flex-column">
     <x-filament-menu menu="header-nav-main"/>
