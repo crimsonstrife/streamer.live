@@ -13,7 +13,11 @@
     'date'        => null,
 ])
 @php
-    $siteName = app(\App\Settings\SiteSettings::class)->site_name ?? config('app.name', 'Streamer.live');
+    $settings    = app(\App\Settings\SiteSettings::class);
+    $siteName    = $settings->site_name ?? config('app.name', 'Streamer.live');
+    $showName    = $settings->show_site_name;
+    $logoHeight  = 50;
+    $logoWidth   = null;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -64,9 +68,15 @@
             <a href="{{ route('fabricator.page.home') }}"
                class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
                 <span class="fs-4" style="margin-right: 10%;">
-                    <x-application-mark height="60" width="60"/>
+                    <x-application-mark
+                        :height="$logoHeight"
+                        :width="$logoWidth"
+                        class="me-2"
+                    />
                 </span>
-                <span class="fs-4">{{ $siteName }}</span>
+                @if ($showName)
+                    <span class="fs-4">{{ $siteName }}</span>
+                @endif
             </a>
             <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search" method="GET" action="{{ route('search') }}">
                 <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search">
