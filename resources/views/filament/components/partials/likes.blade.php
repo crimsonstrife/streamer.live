@@ -12,7 +12,7 @@
           action="{{ route('blog.comment.reaction.toggle', ['type' => 'like', 'comment' => $comment->id]) }}">
         @csrf
         <button class="btn btn-default btn-xs icon-btn me-1">
-            <x-fas-thumbs-up />
+            <x-fas-thumbs-up height="1rem"/>
         </button>
     </form>
     <span
@@ -21,7 +21,7 @@
           action="{{ route('blog.comment.reaction.toggle', ['type' => 'dislike', 'comment' => $comment->id]) }}">
         @csrf
         <button class="btn btn-default btn-xs icon-btn me-4">
-            <x-fas-thumbs-down />
+            <x-fas-thumbs-down height="1rem" />
         </button>
     </form>
 @endauth

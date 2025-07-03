@@ -4,7 +4,7 @@
             Shopping Cart
         </h2>
     </x-slot>
-    @php use App\Settings\FourthwallSettings;$settings = app(FourthwallSettings::class); @endphp
+    @php $settings = app(\App\Settings\FourthwallSettings::class); @endphp
 
     @if (! $settings->enable_integration)
         <div class="alert alert-warning text-center">
@@ -81,7 +81,7 @@
                                             <td>
                                                 <a href="{{ route($shopPrefix.'.cart.remove', $variantId) }}"
                                                    class="btn btn-danger btn-sm">
-                                                    <i class="bi bi-trash"></i> Remove
+                                                    <x-fas-trash-can height="1rem"/> Remove
                                                 </a>
                                             </td>
                                         </tr>
@@ -101,13 +101,13 @@
 
                                 <div class="mt-4 d-flex justify-content-between">
                                     <a href="{{ route($shopPrefix.'.page') }}" class="btn btn-secondary">
-                                        <i class="bi bi-arrow-left"></i> Continue Shopping
+                                        <x-fas-arrow-left height="1rem"/> Continue Shopping
                                     </a>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-arrow-repeat"></i> Update Cart
+                                        <x-fas-arrows-rotate height="1rem"/> Update Cart
                                     </button>
                                     <a href="{{ route($shopPrefix.'.cart.checkout') }}" class="btn btn-success">
-                                        <i class="bi bi-bag-check"></i> Proceed to Checkout
+                                        <x-fas-cash-register height="1rem"/> Proceed to Checkout
                                     </a>
                                 </div>
                             </form>
@@ -115,7 +115,7 @@
                             <p class="text-center text-muted fs-5">Your cart is empty.</p>
                             <div class="text-center">
                                 <a href="{{ route($shopPrefix.'.page') }}" class="btn btn-primary">
-                                    <i class="bi bi-shop"></i> Go to Store
+                                    <x-fas-shop height="1rem" /> Go to Shop
                                 </a>
                             </div>
                         @endif

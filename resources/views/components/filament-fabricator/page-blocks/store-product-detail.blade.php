@@ -189,7 +189,7 @@
                     @if ($product->review_count > 0)
                         <div class="mb-2">
                             @for ($i = 1; $i <= 5; $i++)
-                                <x-fas-{{ $i <= round($product->average_rating) ? 'star-half-stroke' : 'star' }} />
+                                <x-fas-{{ $i <= round($product->average_rating) ? 'star-half-stroke' : 'star' }} height="1rem" />
                             @endfor
                             <small class="text-muted ms-2">
                                 {{ number_format($product->average_rating, 1) }}/5

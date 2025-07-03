@@ -1,9 +1,12 @@
 @php
-    use TomatoPHP\FilamentMenus\Models\Menu;
-
-    // the component passes you $menu (the slug) already:
-    $menuModel = Menu::where('key', $menu)->first();
+    $menuModel = TomatoPHP\FilamentMenus\Models\Menu::where('key', $menu)->first();
     $location  = optional($menuModel)->location;
+
+    $shopEnabled  = app(\App\Settings\FourthwallSettings::class)->enable_integration;
+    $shopSlug = app(\App\Utilities\ShopHelper::class)->getShopSlug();
+    $cartCount    = $shopEnabled
+        ? app(\App\Utilities\CartHelper::class)->getCartItemCount()
+        : 0;
 @endphp
 @if($location === 'footer')
     <nav class="py-2">
@@ -53,6 +56,16 @@
         </ul>
                     @if($location !== 'footer')
                         <ul class="nav">
+                            @if($shopEnabled)
+                                <li class="nav-item">
+                                    <x-nav-link href="{{ route($shopSlug.'.cart.show') }}"
+                                                :active="request()->routeIs($shopSlug.'.cart.show')"
+                                                class="nav-link d-flex align-items-center" style="border-bottom: none !important">
+                                        <x-fas-cart-shopping height="1rem"/>
+                                        <span class="badge rounded-pill ms-2" style="color: unset">{{ $cartCount }}</span>
+                                    </x-nav-link>
+                                </li>
+                            @endif
                             @auth
                                 <!-- Teams Dropdown -->
                                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
