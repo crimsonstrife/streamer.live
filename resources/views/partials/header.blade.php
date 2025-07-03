@@ -54,6 +54,59 @@
     <!-- Conditional Styles -->
     @stack('styles')
 
+    @php
+        $style = app(\App\Settings\LookFeelSettings::class);
+    @endphp
+
+    <style>
+        :root {
+            --color-primary:   {{ $style->primary_color }};
+            --color-secondary: {{ $style->secondary_color }};
+            --color-accent: {{ $style->accent_color }};
+            /* override Bootstrap vars */
+            --bs-primary:   {{ $style->primary_color }};
+            --bs-secondary: {{ $style->secondary_color }};
+            --bs-nav-link-color: {{ $style->accent_color }};
+            /* add more as needed, e.g.: */
+        }
+
+        /* Overrides */
+        .nav-link {
+            --bs-nav-link-color: {{ $style->accent_color }};
+        }
+
+        .btn-primary {
+            --bs-btn-bg:             var(--color-accent);
+            --bs-btn-border-color:   var(--color-accent);
+            --bs-btn-hover-color: #fff;
+            --bs-btn-hover-bg: var(--color-accent);
+            --bs-btn-hover-border-color: var(--color-accent);
+            --bs-btn-focus-shadow-rgb: 49, 132, 253;
+            --bs-btn-active-color: #fff;
+            --bs-btn-active-bg: var(--color-accent);
+            --bs-btn-active-border-color: var(--color-accent);
+            --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+            --bs-btn-disabled-color: #fff;
+            --bs-btn-disabled-bg: var(--color-accent);
+            --bs-btn-disabled-border-color: var(--color-accent);
+            /* if you want the text always white you can leave this: */
+            --bs-btn-color:          #fff;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            filter: brightness(0.9);
+        }
+
+        .btn-primary:disabled {
+            filter: brightness(0.3);
+        }
+
+        .btn-secondary:disabled {
+            filter: brightness(0.3);
+        }
+    </style>
+
     <!-- Conditional Scripts -->
     @stack('head-scripts')
 
