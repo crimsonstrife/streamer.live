@@ -81,7 +81,7 @@
                                             <td>
                                                 <a href="{{ route($shopPrefix.'.cart.remove', $variantId) }}"
                                                    class="btn btn-danger btn-sm">
-                                                    <x-fas-trash-can height="1rem"/> Remove
+                                                    <x-fas-trash-can height="1rem" width="auto"/> Remove
                                                 </a>
                                             </td>
                                         </tr>
@@ -101,13 +101,13 @@
 
                                 <div class="mt-4 d-flex justify-content-between">
                                     <a href="{{ route($shopPrefix.'.page') }}" class="btn btn-secondary">
-                                        <x-fas-arrow-left height="1rem"/> Continue Shopping
+                                        <x-fas-arrow-left height="1rem" width="auto"/> Continue Shopping
                                     </a>
                                     <button type="submit" class="btn btn-primary">
-                                        <x-fas-arrows-rotate height="1rem"/> Update Cart
+                                        <x-fas-arrows-rotate height="1rem" width="auto"/> Update Cart
                                     </button>
                                     <a href="{{ route($shopPrefix.'.cart.checkout') }}" class="btn btn-success">
-                                        <x-fas-cash-register height="1rem"/> Proceed to Checkout
+                                        <x-fas-cash-register height="1rem" width="auto"/> Proceed to Checkout
                                     </a>
                                 </div>
                             </form>
@@ -115,7 +115,7 @@
                             <p class="text-center text-muted fs-5">Your cart is empty.</p>
                             <div class="text-center">
                                 <a href="{{ route($shopPrefix.'.page') }}" class="btn btn-primary">
-                                    <x-fas-shop height="1rem" /> Go to Shop
+                                    <x-fas-shop height="1rem" width="auto"/> Go to Shop
                                 </a>
                             </div>
                         @endif
