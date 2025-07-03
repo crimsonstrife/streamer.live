@@ -21,7 +21,7 @@
           action="{{ route('blog.comment.reaction.toggle', ['type' => 'dislike', 'comment' => $comment->id]) }}">
         @csrf
         <button class="btn btn-default btn-xs icon-btn me-4">
-            <x-fas-thumbs-down height="1rem" />
+            <x-fas-thumbs-down height="1rem" width="auto"/>
         </button>
     </form>
 @endauth

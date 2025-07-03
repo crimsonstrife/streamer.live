@@ -176,7 +176,7 @@
                 <button
                     class="btn sort-btn btn-link dropdown-toggle hstack align-items-center gap-2 py-1 px-2 fw-normal"
                         data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                    <span class="ski" style="font-size:1.5em;"><x-fas-arrow-down-wide-short height="2rem"/></span>
+                    <span class="ski" style="font-size:1.5em;"><x-fas-arrow-down-wide-short height="2rem" width="auto"/></span>
                     <span>Sort by</span>
                 </button>
                 <ul class="dropdown-menu mt-1">
