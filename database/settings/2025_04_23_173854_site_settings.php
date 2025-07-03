@@ -2,14 +2,14 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
-return new class extends SettingsMigration
-{
+return new class () extends SettingsMigration {
     public function up(): void
     {
         $this->migrator->add('site.site_name', 'Streamer.live');
         $this->migrator->add('site.site_active', true);
         $this->migrator->add('site.can_register', true);
         $this->migrator->add('site.site_tagline', 'Host your own community!');
+        $this->migrator->add('site.show_site_name', true);
     }
 
     public function down(): void
@@ -18,5 +18,6 @@ return new class extends SettingsMigration
         $this->migrator->delete('site.site_active');
         $this->migrator->delete('site.can_register');
         $this->migrator->delete('site.site_tagline');
+        $this->migrator->delete('site.show_site_name');
     }
 };

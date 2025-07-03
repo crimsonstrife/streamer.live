@@ -39,7 +39,7 @@
             <span class="flex-sm-row justify-content-between">
                 <a href="{{ route('fabricator.page.home') }}"
                    class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
-                    <x-application-logo height="48"/>
+                    <x-application-logo height="40"/>
                 </a>
             </span>
             <span>

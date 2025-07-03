@@ -14,6 +14,8 @@ class SiteSettings extends Settings
 
     public ?string $site_logo; // Store path or media ID
 
+    public bool $show_site_name = true; // Shows the name next to the logo in select places
+
     public ?string $site_favicon; // Store path or media ID
 
     public bool $can_register;

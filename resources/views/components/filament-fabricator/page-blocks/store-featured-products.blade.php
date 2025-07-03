@@ -35,7 +35,13 @@
                             @if ($product->review_count > 0)
                                 <div class="mb-2">
                                     @for ($i = 1; $i <= 5; $i++)
-                                        <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                                        @if ($product->average_rating >= $i)
+                                            <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                        @elseif ($product->average_rating >= $i - 0.5)
+                                            <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"  />
+                                        @else
+                                            <x-far-star class="text-muted" height="1rem" width="auto"  />
+                                        @endif
                                     @endfor
                                     <small class="text-muted ms-2">
                                         {{ number_format($product->average_rating, 1) }}/5

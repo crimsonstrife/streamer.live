@@ -14,6 +14,8 @@ class LookFeelSettings extends Settings
 
     public ?string $font_family;
 
+    public ?int    $base_font_size;
+
     public ?string $button_style; // e.g., rounded, outline, pill
 
     public ?string $mode; // e.g., light, dark, auto

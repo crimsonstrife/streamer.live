@@ -28,6 +28,9 @@ class SiteSettings extends SettingsPage
                 Forms\Components\TextInput::make('site_tagline'),
                 Forms\Components\ColorPicker::make('primary_color'),
                 Forms\Components\FileUpload::make('site_logo')->directory('site'),
+                Forms\Components\Toggle::make('show_site_name')
+                    ->label('Display site name next to logo')
+                    ->default(true),
             ]);
     }
 }
