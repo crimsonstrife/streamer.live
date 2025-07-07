@@ -49,7 +49,7 @@ class StoreProductGrid extends PageBlock
             'title' => $data['title'] ?? 'Products',
             'products' => $productQuery->latest()->take($data['product_count'])->orderByDesc('created_at')->get(),
             'orderPromotions'  => $orderPromotions,
-            'productPromotions'=> $productPromotions,
+            'productPromotions' => $productPromotions,
         ];
     }
 }

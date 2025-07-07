@@ -35,7 +35,7 @@ class StoreNewReleases extends PageBlock
             'title' => $data['title'] ?? 'New Releases',
             'products' => Product::latest()->take($data['product_count'])->get(),
             'orderPromotions'  => $orderPromotions,
-            'productPromotions'=> $productPromotions,
+            'productPromotions' => $productPromotions,
         ];
     }
 }

@@ -45,12 +45,12 @@ class Promotion extends Model
 
     public function scopeLive($query)
     {
-        return $query->where('status','Live');
+        return $query->where('status', 'Live');
     }
 
     public function scopeEntireOrder($query)
     {
-        return $query->where('applies_to','ENTIRE_ORDER');
+        return $query->where('applies_to', 'ENTIRE_ORDER');
     }
 
     public function scopeSelectedProducts($query)
@@ -69,10 +69,11 @@ class Promotion extends Model
 
         if (strtoupper($this->title) === 'TWITCHSUB') {
             if ($this->type === 'SHOP_AUTO_APPLYING') {
-                return "Twitch subscribers get ".($this->discount_type === 'PERCENTAGE'
+                return "Twitch subscribers get ".(
+                    $this->discount_type === 'PERCENTAGE'
                         ? "{$this->percentage}% off"
                         : number_format($this->amount_value / 100, 2)." {$this->amount_currency}"
-                    ). " on " . ($this->applies_to === 'ENTIRE_ORDER' ? "your entire order" : "select products") . " — you’ll be prompted to log in with Twitch at checkout.";
+                ). " on " . ($this->applies_to === 'ENTIRE_ORDER' ? "your entire order" : "select products") . " — you’ll be prompted to log in with Twitch at checkout.";
             }
         }
 
@@ -82,7 +83,8 @@ class Promotion extends Model
         }
 
         return "Use code {$this->code} at checkout to get "
-            .($this->discount_type === 'PERCENTAGE'
+            .(
+                $this->discount_type === 'PERCENTAGE'
                 ? "{$this->percentage}% off"
                 : number_format($this->amount_value / 100, 2)." {$this->amount_currency}"
             ).".";

@@ -82,7 +82,7 @@ class StoreCatalog extends PageBlock
             'sizes' => $sizes,
             'filters' => request()->only(['category', 'tag', 'size']),
             'orderPromotions'  => $orderPromotions,
-            'productPromotions'=> $productPromotions,
+            'productPromotions' => $productPromotions,
         ];
     }
 }
