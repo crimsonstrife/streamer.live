@@ -64,26 +64,35 @@
             --color-primary:   {{ $style->primary_color }};
             --color-secondary: {{ $style->secondary_color }};
             --color-accent: {{ $style->accent_color }};
+            --color-font: {{ $style->font_color }};
+            --color-font-alt: {{ $style->font_alt_color }};
+            --color-disabled: {{ $style->disabled_color }};
+            --color-active: {{ $style->active_color }};
+            --color-hover: {{ $style->hover_color }};
+            --color-link: {{ $style->link_color }};
+            --color-success: {{ $style->success_color }};
+            --color-warning: {{ $style->warning_color }};
+            --color-error: {{ $style->error_color }};
             /* override Bootstrap vars */
-            --bs-primary:   {{ $style->primary_color }};
-            --bs-secondary: {{ $style->secondary_color }};
-            --bs-nav-link-color: {{ $style->accent_color }};
-            --bs-pagination-active-bg: {{ $style->accent_color }};
-            --bs-pagination-active-border-color: {{ $style->accent_color }};
+            --bs-primary:   var(--color-primary);
+            --bs-secondary: var(--color-secondary);
+            --bs-nav-link-color: var(--color-link);
+            --bs-pagination-active-bg: var(--color-active);
+            --bs-pagination-active-border-color: var(--color-active);
             /* add more as needed, e.g.: */
         }
 
         /* Overrides */
         a {
-            color: {{ $style->accent_color }};
+            color: var(--color-link);
         }
 
         .nav-link {
-            --bs-nav-link-color: {{ $style->accent_color }};
+            --bs-nav-link-color: var(--color-link);
         }
 
         .nav {
-            --bs-nav-link-hover-color: {{ $style->accent_color }};
+            --bs-nav-link-hover-color: var(--color-hover);
         }
 
         .nav:hover {
@@ -91,41 +100,40 @@
         }
 
         .text-primary{
-            color: {{ $style->accent_color }} !important;
+            color: var(--color-font) !important;
         }
 
         .btn-primary {
-            --bs-btn-bg:             var(--color-accent);
-            --bs-btn-border-color:   var(--color-accent);
-            --bs-btn-hover-color: #fff;
-            --bs-btn-hover-bg: var(--color-accent);
-            --bs-btn-hover-border-color: var(--color-accent);
+            --bs-btn-bg: var(--color-accent);
+            --bs-btn-border-color: var(--color-accent);
+            --bs-btn-hover-color: var(--color-font-alt);
+            --bs-btn-hover-bg: var(--color-hover);
+            --bs-btn-hover-border-color: var(--color-hover);
             --bs-btn-focus-shadow-rgb: 49, 132, 253;
-            --bs-btn-active-color: #fff;
-            --bs-btn-active-bg: var(--color-accent);
-            --bs-btn-active-border-color: var(--color-accent);
+            --bs-btn-active-color: var(--color-font-alt);
+            --bs-btn-active-bg: var(--color-active);
+            --bs-btn-active-border-color: var(--color-active);
             --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-            --bs-btn-disabled-color: #fff;
-            --bs-btn-disabled-bg: var(--color-accent);
-            --bs-btn-disabled-border-color: var(--color-accent);
-            /* if you want the text always white you can leave this: */
-            --bs-btn-color:          #fff;
+            --bs-btn-disabled-color: var(--color-font-alt);
+            --bs-btn-disabled-bg: var(--color-disabled);
+            --bs-btn-disabled-border-color: var(--color-disabled);
+            --bs-btn-color: var(--color-font-alt);
         }
 
         .btn-outline-primary {
             --bs-btn-color: var(--color-accent);
             --bs-btn-border-color: var(--color-accent);
-            --bs-btn-hover-color: #fff;
-            --bs-btn-hover-bg: var(--color-accent);
-            --bs-btn-hover-border-color: var(--color-accent);
+            --bs-btn-hover-color: var(--color-font-alt);
+            --bs-btn-hover-bg: var(--color-hover);
+            --bs-btn-hover-border-color: var(--color-hover);
             --bs-btn-focus-shadow-rgb: 13, 110, 253;
-            --bs-btn-active-color: #fff;
-            --bs-btn-active-bg: var(--color-accent);
-            --bs-btn-active-border-color: var(--color-accent);
+            --bs-btn-active-color: var(--color-font-alt);
+            --bs-btn-active-bg: var(--color-active);
+            --bs-btn-active-border-color: var(--color-active);
             --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
-            --bs-btn-disabled-color: var(--color-accent);
+            --bs-btn-disabled-color: var(--color-disabled);
             --bs-btn-disabled-bg: transparent;
-            --bs-btn-disabled-border-color: var(--color-accent);
+            --bs-btn-disabled-border-color: var(--color-disabled);
             --bs-gradient: none;
         }
 
@@ -138,6 +146,23 @@
             filter: brightness(0.3);
         }
 
+        .btn-secondary {
+            --bs-btn-color: var(--color-font-alt);
+            --bs-btn-bg: var(--color-secondary);
+            --bs-btn-border-color: var(--color-secondary);
+            --bs-btn-hover-color: var(--color-font-alt);
+            --bs-btn-hover-bg: var(--color-hover);
+            --bs-btn-hover-border-color: var(--color-hover);
+            --bs-btn-focus-shadow-rgb: 130, 138, 145;
+            --bs-btn-active-color: var(--color-font-alt);
+            --bs-btn-active-bg: var(--color-active);
+            --bs-btn-active-border-color: var(--color-active);
+            --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+            --bs-btn-disabled-color: var(--color-font-alt);
+            --bs-btn-disabled-bg: var(--color-disabled);
+            --bs-btn-disabled-border-color: var(--color-disabled);
+        }
+
         .btn-secondary:disabled {
             filter: brightness(0.3);
         }
@@ -147,26 +172,63 @@
             --bs-btn-color: var(--color-accent);
             --bs-btn-bg: transparent;
             --bs-btn-border-color: transparent;
-            --bs-btn-hover-color: var(--color-accent);
+            --bs-btn-hover-color: var(--color-hover);
             --bs-btn-hover-border-color: transparent;
-            --bs-btn-active-color: var(--color-accent);
+            --bs-btn-active-color: var(--color-active);
             --bs-btn-active-border-color: transparent;
-            --bs-btn-disabled-color: #6c757d;
+            --bs-btn-disabled-color: var(--color-disabled);
             --bs-btn-disabled-border-color: transparent;
             --bs-btn-box-shadow: 0 0 0 #000;
             --bs-btn-focus-shadow-rgb: 49, 132, 253;
             text-decoration: underline;
         }
 
+        .btn-danger {
+            --bs-btn-color: var(--color-font-alt);
+            --bs-btn-bg: var(--color-error);
+            --bs-btn-border-color: var(--color-error);
+            --bs-btn-hover-color: var(--color-font-alt);
+            --bs-btn-hover-bg: var(--color-hover);
+            --bs-btn-hover-border-color: var(--color-hover);
+            --bs-btn-focus-shadow-rgb: 225, 83, 97;
+            --bs-btn-active-color: var(--color-font-alt);
+            --bs-btn-active-bg: var(--color-active);
+            --bs-btn-active-border-color: var(--color-active);
+            --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+            --bs-btn-disabled-color: var(--color-font-alt);
+            --bs-btn-disabled-bg: var(--color-disabled);
+            --bs-btn-disabled-border-color: var(--color-disabled);
+        }
+
         .page-link {
-            --bs-pagination-active-bg: {{ $style->accent_color }};
-            --bs-pagination-active-border-color: {{ $style->accent_color }};
-            --bs-pagination-color: {{ $style->accent_color }};
+            --bs-pagination-active-bg: var(--color-active);
+            --bs-pagination-active-border-color: var(--color-active);
+            --bs-pagination-color: var(--color-font);
         }
 
         .accordion {
-            --bs-primary-bg-subtle: {{ $style->accent_color }};
-            --bs-primary-text-emphasis: {{ $style->secondary_color }};
+            --bs-primary-bg-subtle: var(--color-active);
+            --bs-primary-text-emphasis: var(--color-font-alt);
+        }
+
+        .bg-primary {
+            --bs-bg-opacity: 1;
+            background-color: var(--color-primary) !important;
+        }
+
+        .bg-warning {
+            --bs-bg-opacity: 1;
+            background-color: var(--color-warning) !important;
+        }
+
+        .bg-secondary {
+            --bs-bg-opacity: 1;
+            background-color: var(--color-secondary) !important;
+        }
+
+        .bg-danger {
+            --bs-bg-opacity: 1;
+            background-color: var(--color-error) !important;
         }
     </style>
 

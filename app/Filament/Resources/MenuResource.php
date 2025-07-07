@@ -9,7 +9,7 @@ class MenuResource extends BaseMenuResource
 {
     protected static ?string $navigationIcon = 'fas-bars';
     protected static ?string $navigationGroup = 'CMS';
-    protected static ?string $slug = 'cms/menus';
+    protected static ?string $slug = 'menus';
     protected static ?int $navigationSort = 1;
 
     public static function getPages(): array
