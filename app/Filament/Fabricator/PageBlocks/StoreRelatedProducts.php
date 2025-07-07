@@ -3,6 +3,7 @@
 namespace App\Filament\Fabricator\PageBlocks;
 
 use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\Promotion;
 use Filament\Forms\Components\Builder\Block;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 
@@ -54,7 +55,19 @@ class StoreRelatedProducts extends PageBlock
             $related = $relatedByTags->merge($relatedByCategories)->unique('id');
         }
 
+        // pull LIVE promotions from database
+        $orderPromotions = Promotion::where('status', 'Live')
+            ->where('applies_to', 'ENTIRE_ORDER')
+            ->get();
+
+        $productPromotions = Promotion::where('status', 'Live')
+            ->where('applies_to', 'SELECTED_PRODUCTS')
+            ->with('products')   // eager-load the pivot
+            ->get();
+
         $data['related'] = $related;
+        $data['orderPromotions']   = $orderPromotions;
+        $data['productPromotions'] = $productPromotions;
 
         return $data;
     }

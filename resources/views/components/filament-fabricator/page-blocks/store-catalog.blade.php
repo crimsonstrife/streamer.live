@@ -23,22 +23,28 @@
             Please come back later!
         </div>
     @else
-        {{-- ORDER-WIDE PROMOS --}}
+        {{-- PROMOTION BANNERS --}}
         @if($orderPromotions->isNotEmpty())
             <div class="mb-4">
                 @foreach($orderPromotions as $promo)
-                    @if($promo->type === 'SHOP_AUTO_APPLYING')
-                        <div class="alert alert-info alert-dismissible d-flex align-items-center bg-twitch">
-                            <x-fab-twitch class="me-2" width="1rem" />
-                            {!! $promo->customer_message !!}
-                        </div>
-                    @else
-                        <div class="alert alert-info alert-dismissible d-flex align-items-center">
-                            {!! $promo->customer_message !!}
-                        </div>
-                    @endif
-                @endforeach
+                    @php
+                        // Compute the wrapper classes
+                        $wrapperClasses = match(true) {
+                          $promo->title === 'TWITCHSUB'                      => 'alert d-flex align-items-center bg-twitch text-white',
+                          $promo->type === 'SHOP_AUTO_APPLYING'              => 'alert alert-info d-flex align-items-center',
+                          default                                            => 'alert alert-success d-flex align-items-center',
+                        };
+                    @endphp
 
+                    <div class="{{ $wrapperClasses }}">
+                        {{-- Twitch icon only for TWITCHSUB --}}
+                        @if($promo->title === 'TWITCHSUB')
+                            <x-fab-twitch class="me-2" width="1rem" />
+                        @endif
+
+                        {!! $promo->customer_message !!}
+                    </div>
+                @endforeach
             </div>
         @endif
         <div class="row">
@@ -188,10 +194,6 @@
 
                 <div class="row">
                     @forelse ($products as $product)
-                        @php
-                            // find promos that apply to this item
-                            $applied = $productPromotions->filter(fn($p) => $p->products->contains('id', $product->id));
-                        @endphp
                         @php $mediaItems = $product->getMedia('images'); @endphp
                         <div class="col-md-4 mb-4">
                             <div class="card h-100 product-card" data-images="{{ $mediaItems->count() }}">
@@ -231,18 +233,33 @@
                                         </div>
                                     @endif
                                     <p class="card-text mb-2">{{ $product->symbol_price }} USD</p>
-                                    @foreach($applied as $promo)
-                                        @if($promo->type === 'SHOP_AUTO_APPLYING')
-                                            <span class="badge badge-twitch me-1 d-inline-flex align-items-center">
-                                                <x-fab-twitch class="me-1" style="font-size: 0.9em;" />
-                                                {!! $promo->customer_message !!}
-                                            </span>
-                                        @else
-                                            <span class="badge bg-info mb-1">
-                                                {!! $promo->customer_message !!}
-                                            </span>
-                                        @endif
-                                    @endforeach
+                                    {{-- ITEM-SPECIFIC BADGES --}}
+                                    @php
+                                        $applied = $productPromotions->filter(fn($p) => $p->products->contains('id', $product->id));
+                                    @endphp
+
+                                    @if($applied->isNotEmpty())
+                                        <div class="mb-3">
+                                            @foreach($applied as $promo)
+                                                @php
+                                                    $badgeClasses = match(true) {
+                                                      $promo->title === 'TWITCHSUB'           => 'badge d-inline-flex align-items-center badge-twitch',
+                                                      $promo->type === 'SHOP_AUTO_APPLYING'   => 'badge bg-info text-dark',
+                                                      default                                 => 'badge bg-success',
+                                                    };
+                                                @endphp
+
+                                                <span class="{{ $badgeClasses }} me-1">
+                                                    @if($promo->title === 'TWITCHSUB')
+                                                        <x-fab-twitch class="me-1" style="font-size:0.9em;" />
+                                                    @endif
+
+                                                    {!! $promo->customer_message !!}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
                                     <a href="{{ route('shop.product', ['slug' => $product->slug]) }}"
                                        class="btn btn-primary mt-auto">View</a>
                                 </div>
