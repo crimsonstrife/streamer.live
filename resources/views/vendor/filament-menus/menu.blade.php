@@ -21,7 +21,11 @@
                     {{-- header (and any other location): standard horizontal nav --}}
                     <ul class="nav me-auto">
                         @endif
-            @foreach ($menuItems as $item)
+                        @php
+                            $menuItems = $menuItems->sortBy('order');
+                        @endphp
+
+                    @foreach ($menuItems as $item)
                 @php
                     $isActive = url()->current() === ($item['route'] ? route($item['route']) : $item['url']);
                     $link = $item['route'] ? route($item['route']) : $item['url'];
