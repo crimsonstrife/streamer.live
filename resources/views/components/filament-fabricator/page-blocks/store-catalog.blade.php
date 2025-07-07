@@ -1,5 +1,5 @@
 @php use App\Settings\FourthwallSettings; @endphp
-@aware(['page'])
+@aware(['page', 'orderPromotions', 'productPromotions'])
 @push('styles')
     <style>
         .product-image {
@@ -23,6 +23,24 @@
             Please come back later!
         </div>
     @else
+        {{-- ORDER-WIDE PROMOS --}}
+        @if($orderPromotions->isNotEmpty())
+            <div class="mb-4">
+                @foreach($orderPromotions as $promo)
+                    @if($promo->type === 'SHOP_AUTO_APPLYING')
+                        <div class="alert alert-info alert-dismissible d-flex align-items-center bg-twitch">
+                            <x-fab-twitch class="me-2" width="1rem" />
+                            {!! $promo->customer_message !!}
+                        </div>
+                    @else
+                        <div class="alert alert-info alert-dismissible d-flex align-items-center">
+                            {!! $promo->customer_message !!}
+                        </div>
+                    @endif
+                @endforeach
+
+            </div>
+        @endif
         <div class="row">
             <aside class="col-md-3 mb-4">
                 <form method="GET">
@@ -170,6 +188,10 @@
 
                 <div class="row">
                     @forelse ($products as $product)
+                        @php
+                            // find promos that apply to this item
+                            $applied = $productPromotions->filter(fn($p) => $p->products->contains('id', $product->id));
+                        @endphp
                         @php $mediaItems = $product->getMedia('images'); @endphp
                         <div class="col-md-4 mb-4">
                             <div class="card h-100 product-card" data-images="{{ $mediaItems->count() }}">
@@ -209,6 +231,18 @@
                                         </div>
                                     @endif
                                     <p class="card-text mb-2">{{ $product->symbol_price }} USD</p>
+                                    @foreach($applied as $promo)
+                                        @if($promo->type === 'SHOP_AUTO_APPLYING')
+                                            <span class="badge badge-twitch me-1 d-inline-flex align-items-center">
+                                                <x-fab-twitch class="me-1" style="font-size: 0.9em;" />
+                                                {!! $promo->customer_message !!}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-info mb-1">
+                                                {!! $promo->customer_message !!}
+                                            </span>
+                                        @endif
+                                    @endforeach
                                     <a href="{{ route('shop.product', ['slug' => $product->slug]) }}"
                                        class="btn btn-primary mt-auto">View</a>
                                 </div>

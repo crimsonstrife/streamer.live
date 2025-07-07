@@ -45,6 +45,9 @@ class PromotionResource extends Resource
                 TextColumn::make('title')
                     ->sortable()
                     ->searchable(),
+                Forms\Components\Textarea::make('description')
+                    ->label('Customer Message')
+                    ->helperText('Optional: overrides the default messaging shown on the storefront.'),
                 TextColumn::make('discount_type')
                     ->label('Type'),
                 TextColumn::make('applies_to')

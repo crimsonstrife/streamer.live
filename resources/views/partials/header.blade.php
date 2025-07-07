@@ -230,6 +230,18 @@
             --bs-bg-opacity: 1;
             background-color: var(--color-error) !important;
         }
+
+        /* Twitch purple background + white text */
+        .bg-twitch {
+            background-color: #6441A4 !important;
+            color: #ffffff !important;
+            --bs-alert-border-color: #6441A4;
+        }
+        /* badge variant */
+        .badge-twitch {
+            background-color: #6441A4;
+            color: #ffffff;
+        }
     </style>
 
     <!-- Conditional Scripts -->
