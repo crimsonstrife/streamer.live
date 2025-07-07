@@ -15,7 +15,7 @@
             @foreach ($categories as $category)
                 <div class="col-md-3 mb-3">
                     <a href="{{ route('shop.category', ['slug' => $category->slug]) }}" class="text-decoration-none">
-                        <div class="card h-100 text-center p-3">
+                        <div class="card h-100 product-card">
                             <h5 class="card-title mb-1">{{ $category->name }}</h5>
                             <p class="text-muted small mb-0">
                                 {{ $category->products_count }} product{{ $category->products_count !== 1 ? 's' : '' }}

@@ -24,7 +24,7 @@
                         }
                 @endphp
                 <div class="mb-4 col-md-4">
-                    <div class="shadow-sm card">
+                    <div class="card h-100 product-card">
                         @if ($mediaItems->isNotEmpty())
                             <img src="{!! $image->getUrl() !!}" class="card-img-top"
                                  alt="{{ $image->getCustomProperty('image_alt_text') }}">

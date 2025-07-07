@@ -23,8 +23,8 @@
                         $image = null;
                     }
                 @endphp
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
+                <div class="col-md-3 mb-3">
+                    <div class="card h-100 product-card">
                         @if ($mediaItems->isNotEmpty())
                             <img src="{!! $image->getUrl() !!}" class="card-img-top"
                                  alt="{{ $image->getCustomProperty('image_alt_text') }}">

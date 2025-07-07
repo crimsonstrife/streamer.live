@@ -25,7 +25,7 @@
                         }
                 @endphp
                 <div class="mb-4 col-md-4">
-                    <div class="shadow-sm card">
+                    <div class="card h-100 product-card">
                         @if ($image)
                             <img src="{!! $image->getUrl() !!}" class="card-img-top"
                                  alt="{{ empty($image->getCustomProperty('image_alt_text')) ? $product->name : $image->getCustomProperty('image_alt_text') }}">
