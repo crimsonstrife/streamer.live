@@ -35,7 +35,7 @@
                                 @if($promo->title === 'TWITCHSUB')
                                     <x-fab-twitch class="me-2" width="1rem"/>
                                 @endif
-                                {{ $promo->customer_message }}
+                                {!! $promo->customer_message !!}
                             </div>
                         @endforeach
                         <div class="text-muted small">
