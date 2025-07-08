@@ -18,7 +18,7 @@
             src="https://discord.com/widget?id={{ $guildId }}&theme={{ $themeSettings->mode !== 'auto' ? $themeSettings->mode : 'dark' }}"
             width="100%" height="350"
             allowtransparency="true"
-            border="0"
+            style="border:0;"
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
         ></iframe>
     @endif
