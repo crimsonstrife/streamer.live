@@ -12823,20 +12823,21 @@
         },
         {
             "name": "socialiteproviders/microsoft",
-            "version": "4.6.0",
+            "version": "4.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SocialiteProviders/Microsoft.git",
-                "reference": "76d51308ef53d1425a5ce3c3b094b0925cd82951"
+                "reference": "824ef97a4f6e3f363c21702b76676d54e8265573"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/76d51308ef53d1425a5ce3c3b094b0925cd82951",
-                "reference": "76d51308ef53d1425a5ce3c3b094b0925cd82951",
+                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/824ef97a4f6e3f363c21702b76676d54e8265573",
+                "reference": "824ef97a4f6e3f363c21702b76676d54e8265573",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
+                "firebase/php-jwt": "^6.8",
                 "php": "^8.0",
                 "socialiteproviders/manager": "^4.4"
             },
@@ -12869,7 +12870,7 @@
                 "issues": "https://github.com/socialiteproviders/providers/issues",
                 "source": "https://github.com/socialiteproviders/providers"
             },
-            "time": "2024-11-07T21:57:40+00:00"
+            "time": "2025-07-06T00:25:25+00:00"
         },
         {
             "name": "socialiteproviders/tiktok",
@@ -24186,6 +24187,6 @@
     "platform": {
         "php": "^8.3"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }
