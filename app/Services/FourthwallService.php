@@ -209,8 +209,11 @@ class FourthwallService
                             'percentage' => data_get($promotionData, 'discount.percentage'),
                             'amount_value' => data_get($promotionData, 'discount.money.value'),
                             'amount_currency' => data_get($promotionData, 'discount.money.currency'),
+                            'max_uses' => data_get($promotionData, 'limits.maximumUsesNumber'),
                             'one_use_per_customer' => data_get($promotionData, 'limits.oneUsePerCustomer'),
                             'applies_to' => data_get($promotionData, 'appliesTo.type'),
+                            'min_order_value' => data_get($promotionData,'requirements.minimumOrderValue.value'),
+                            'min_order_currency' => data_get($promotionData, 'requirements.minimumOrderValue.currency'),
                         ]
                     );
 

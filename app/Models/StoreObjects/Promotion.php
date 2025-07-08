@@ -73,7 +73,11 @@ class Promotion extends Model
                     $this->discount_type === 'PERCENTAGE'
                         ? "{$this->percentage}% off"
                         : number_format($this->amount_value / 100, 2)." {$this->amount_currency}"
-                ). " on " . ($this->applies_to === 'ENTIRE_ORDER' ? "your entire order" : "select products") . " — you’ll be prompted to log in with Twitch at checkout.";
+                ). " on " . ($this->applies_to === 'ENTIRE_ORDER' ? "their entire order" : "select products") .(
+                    $this->min_order_value > 0
+                        ? " on orders of ".number_format($this->min_order_value, 2)." {$this->min_order_currency}". " or more."
+                        : ""
+                    ). " — you’ll be prompted to log in with Twitch at checkout on eligible orders.";
             }
         }
 

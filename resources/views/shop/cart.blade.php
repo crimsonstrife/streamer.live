@@ -5,7 +5,10 @@
         </h2>
     </x-slot>
     @php $settings = app(\App\Settings\FourthwallSettings::class); @endphp
-
+    @php
+        $orderPromotions = \App\Models\StoreObjects\Promotion::live()->entireOrder()->get();
+        $productPromotions = \App\Models\StoreObjects\Promotion::live()->selectedProducts()->with('products')->get();
+    @endphp
     @if (! $settings->enable_integration)
         <div class="alert alert-warning text-center">
             <strong>Store is currently disabled.</strong>
@@ -17,6 +20,29 @@
         @endphp
         <div class="py-4">
             <div class="container">
+                {{-- ORDER-WIDE PROMOS --}}
+                @if($orderPromotions->isNotEmpty())
+                    <div class="mb-4">
+                        @foreach($orderPromotions as $promo)
+                            @php
+                                $wrapper = match(true) {
+                                  $promo->title === 'TWITCHSUB'           => 'alert d-flex align-items-center bg-twitch text-white',
+                                  $promo->type  === 'SHOP_AUTO_APPLYING'  => 'alert alert-info d-flex align-items-center',
+                                  default                                 => 'alert alert-success d-flex align-items-center',
+                                };
+                            @endphp
+                            <div class="{{ $wrapper }}">
+                                @if($promo->title === 'TWITCHSUB')
+                                    <x-fab-twitch class="me-2" width="1rem"/>
+                                @endif
+                                {!! $promo->customer_message !!}
+                            </div>
+                        @endforeach
+                        <div class="text-muted small">
+                            (You’ll enter any coupon codes at checkout.)
+                        </div>
+                    </div>
+                @endif
                 <div class="shadow-sm card">
                     <div class="card-body">
                         @if ($cart && count($cart['items']) > 0)
@@ -49,6 +75,10 @@
                                                 $image = null;
                                             }
                                         @endphp
+                                        @php
+                                            $applied = $productPromotions
+                                              ->filter(fn($p) => $p->products->contains('id', $item->variant->product->id));
+                                        @endphp
                                         <tr>
                                             <td class="d-flex align-items-center">
                                                 <a href="{{ route('shop.product', ['slug' => $item->variant->product->slug]) }}"
@@ -67,7 +97,7 @@
                                             </td>
                                             <td>{{ $item->variant->name }}</td>
                                             <td>
-                                                {{ $item->variant->symbol_price }} USD
+                                                <span>{{ $item->variant->symbol_price }} USD</span>
                                             </td>
                                             <td>
                                                 <input type="number" name="cart[{{ $variantId }}][quantity]"
@@ -75,8 +105,23 @@
                                                        class="text-center form-control w-50">
                                             </td>
                                             <td>
-                                                {{ $item->variant->price->multiply($item->quantity)->symbolFormatted() }}
-                                                USD
+                                                <span>{{ $item->variant->price->multiply($item->quantity)->symbolFormatted() }}
+                                                USD</span>
+                                                @foreach($applied as $promo)
+                                                    @php
+                                                        $badgeCls = match(true) {
+                                                          $promo->title === 'TWITCHSUB'           => 'badge d-inline-flex align-items-center badge-twitch',
+                                                          $promo->type  === 'SHOP_AUTO_APPLYING'  => 'badge bg-info text-dark',
+                                                          default                                  => 'badge bg-success',
+                                                        };
+                                                    @endphp
+                                                    <span class="{{ $badgeCls }} ms-2">
+                                                        @if($promo->title === 'TWITCHSUB')
+                                                            <x-fab-twitch class="me-1" width="1rem" />
+                                                        @endif
+                                                        {!! $promo->customer_message !!}
+                                                    </span>
+                                                @endforeach
                                             </td>
                                             <td>
                                                 <a href="{{ route($shopPrefix.'.cart.remove', $variantId) }}"
