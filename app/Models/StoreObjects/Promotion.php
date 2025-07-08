@@ -77,7 +77,7 @@ class Promotion extends Model
                     $this->min_order_value > 0
                         ? " on orders of ".number_format($this->min_order_value, 2)." {$this->min_order_currency}". " or more."
                         : ""
-                    ). " — you’ll be prompted to log in with Twitch at checkout on eligible orders.";
+                ). " — you’ll be prompted to log in with Twitch at checkout on eligible orders.";
             }
         }
 
