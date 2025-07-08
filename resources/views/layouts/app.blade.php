@@ -2,6 +2,7 @@
 @php
     /** @var \App\Settings\LookFeelSettings $style */
     $style = app(\App\Settings\LookFeelSettings::class);
+    $fonts = App\Models\Font::all();
 @endphp
 
 {!! App\View\Helpers\LayoutSection::header() !!}

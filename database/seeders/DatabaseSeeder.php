@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             IconSeeder::class,
+            FontSeeder::class,
             SpamFilterPatternsSeeder::class,
             FabricatorHomePageSeeder::class,
             FabricatorStorePagesSeeder::class,

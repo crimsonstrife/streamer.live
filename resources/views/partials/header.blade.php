@@ -40,9 +40,9 @@
 
     <x-seo.directive/>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
+    <!-- Fonts (self-hosted variable fonts) -->
+    <link rel="stylesheet" href="{{ route('assets.fonts.css') }}" />
+
     <title>{{ $siteName }}</title>
 
     <!-- Scripts -->
@@ -58,9 +58,17 @@
         $style = app(\App\Settings\LookFeelSettings::class);
         $display_mode = $style->mode;
     @endphp
-
     <style>
         :root {
+            /* the chosen font slug */
+            @if($style->font_family === 'system')
+                --font-primary: system-ui, sans-serif;
+            @else
+                --font-primary: '{{ $style->font_family }}', system-ui, sans-serif;
+           @endif;
+
+            /* expose a CSS var for weight if you want dynamic control */
+            --font-weight: {{ $settings->font_weight ?? 400 }};
             --color-primary:   {{ $style->primary_color }};
             --color-secondary: {{ $style->secondary_color }};
             --color-accent: {{ $style->accent_color }};
@@ -84,6 +92,10 @@
         }
 
         /* Overrides */
+        body {
+            font-family: var(--font-primary);
+        }
+
         a {
             color: var(--color-link);
         }

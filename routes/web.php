@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Models\Font;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
@@ -170,6 +171,33 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 ->middleware('auth')
                 ->name('product.review.submit');
         });
+
+    Route::get('/assets/fonts.css', function () {
+        $fonts = Font::all();
+        $css   = '';
+
+        foreach ($fonts as $font) {
+            $url  = $font->is_builtin
+                ? asset("{$font->file_path}")
+                : $font->getFirstMediaUrl('fonts');
+            $wMin = $font->weight_min  ?? 100;
+            $wMax = $font->weight_max  ?? 900;
+
+            $css .= <<<CSS
+@font-face {
+    font-family: '{$font->slug}';
+    src: url('{$url}') format('woff2');
+    font-weight: {$wMin} {$wMax};
+    font-style: normal;
+    font-display: swap;
+}
+
+CSS;
+        }
+
+        return response($css, 200)
+            ->header('Content-Type', 'text/css');
+    })->name('assets.fonts.css');
 
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
