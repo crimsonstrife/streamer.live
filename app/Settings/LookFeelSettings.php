@@ -32,6 +32,8 @@ class LookFeelSettings extends Settings
 
     public ?string $warning_color;
 
+    public ?string $info_color;
+
     public ?string $error_color;
 
     public ?string $button_style; // e.g., rounded, outline, pill

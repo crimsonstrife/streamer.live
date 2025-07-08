@@ -54,6 +54,7 @@ class ThemeSettings extends SettingsPage
                         Forms\Components\ColorPicker::make('link_color')->label('Link Color'),
                         Forms\Components\ColorPicker::make('hover_color')->label('Hover Color'),
                         Forms\Components\ColorPicker::make('active_color')->label('Active Color'),
+                        Forms\Components\ColorPicker::make('info_color')->label('Info Notice Color'),
                         Forms\Components\ColorPicker::make('success_color')->label('Success Notice Color'),
                         Forms\Components\ColorPicker::make('warning_color')->label('Warning Notice Color'),
                         Forms\Components\ColorPicker::make('error_color')->label('Error Notice Color'),

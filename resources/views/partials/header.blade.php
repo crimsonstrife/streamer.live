@@ -71,6 +71,7 @@
             --color-hover: {{ $style->hover_color }};
             --color-link: {{ $style->link_color }};
             --color-success: {{ $style->success_color }};
+            --color-info: {{ $style->info_color }};
             --color-warning: {{ $style->warning_color }};
             --color-error: {{ $style->error_color }};
             /* override Bootstrap vars */
@@ -221,6 +222,11 @@
             background-color: var(--color-warning) !important;
         }
 
+        .bg-info {
+            --bs-bg-opacity: 1;
+            background-color: var(--color-info) !important;
+        }
+
         .bg-secondary {
             --bs-bg-opacity: 1;
             background-color: var(--color-secondary) !important;
@@ -229,6 +235,34 @@
         .bg-danger {
             --bs-bg-opacity: 1;
             background-color: var(--color-error) !important;
+        }
+
+        .alert-info {
+            --bs-alert-color: var(--color-font-alt);
+            --bs-alert-bg: var(--color-info);
+            --bs-alert-border-color: var(--color-info);
+            --bs-alert-link-color: var(--color-font-alt);
+        }
+
+        .alert-warning {
+            --bs-alert-color: var(--color-font-alt);
+            --bs-alert-bg: var(--color-warning);
+            --bs-alert-border-color: var(--color-warning);
+            --bs-alert-link-color: var(--color-font-alt);
+        }
+
+        .alert-success {
+            --bs-alert-color: var(--color-font-alt);
+            --bs-alert-bg: var(--color-success);
+            --bs-alert-border-color: var(--color-success);
+            --bs-alert-link-color: var(--color-font-alt);
+        }
+
+        .alert-danger {
+            --bs-alert-color: var(--color-font-alt);
+            --bs-alert-bg: var(--color-error);
+            --bs-alert-border-color: var(--color-error);
+            --bs-alert-link-color: var(--color-font-alt);
         }
 
         /* Twitch purple background + white text */

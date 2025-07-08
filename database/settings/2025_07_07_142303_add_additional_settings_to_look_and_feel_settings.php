@@ -16,6 +16,7 @@ return new class () extends SettingsMigration {
         $this->migrator->add('theme.active_color');
         $this->migrator->add('theme.success_color');
         $this->migrator->add('theme.warning_color');
+        $this->migrator->add('theme.info_color');
         $this->migrator->add('theme.error_color');
     }
 
@@ -47,6 +48,9 @@ return new class () extends SettingsMigration {
         }
         if ($this->migrator->exists('theme.warning_color')) {
             $this->migrator->delete('theme.warning_color');
+        }
+        if ($this->migrator->exists('theme.info_color')) {
+            $this->migrator->delete('theme.info_color');
         }
         if ($this->migrator->exists('theme.error_color')) {
             $this->migrator->delete('theme.error_color');
