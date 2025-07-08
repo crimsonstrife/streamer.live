@@ -6,14 +6,18 @@ use App\Filament\Clusters\Appearance;
 use App\Models\Font;
 use App\Rules\FontExtension;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class FontResource extends Resource
 {
@@ -31,8 +35,30 @@ class FontResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->required(),
-                Forms\Components\TextInput::make('slug')->required()->unique(Font::class, 'slug'),
+                Forms\Components\TextInput::make('name')
+                    ->live(debounce: 500)
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
+                        if (($get('slug') ?? '') !== Str::slug($old)) {
+                            return;
+                        }
+
+                        $set('slug', Str::slug($state));
+                    })
+                    ->required(),
+                Forms\Components\TextInput::make('slug')
+                    ->suffixAction(
+                        Action::make('generateSlug')
+                            ->label('Generate Slug')
+                            ->icon('fas-plus')
+                            ->action(function ($get, $set) {
+                                $title = $get('name');
+                                if (!empty($title)) {
+                                    $set('slug', Str::slug($title));
+                                }
+                            })
+                    )
+                    ->required()
+                    ->unique(Font::class, 'slug', fn ($record) => $record),
                 Forms\Components\TextInput::make('weight_min')
                     ->label('Minimum Weight')
                     ->nullable()

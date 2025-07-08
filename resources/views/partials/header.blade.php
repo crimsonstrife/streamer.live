@@ -64,7 +64,7 @@
             @if($style->font_family === 'system')
                 --font-primary: system-ui, sans-serif;
             @else
-                --font-primary: '{{ $style->font_family }}', system-ui, sans-serif;
+                --font-primary: "{{ $style->font_family }}", system-ui, sans-serif;
            @endif;
 
             /* expose a CSS var for weight if you want dynamic control */
