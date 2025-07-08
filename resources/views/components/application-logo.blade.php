@@ -21,8 +21,21 @@
     @endphp
 
     @if ($ext === 'svg' && $disk->exists($logo))
-        {{-- Inline the uploaded SVG --}}
-        {!! $disk->get($logo) !!}
+        {{-- Inline the uploaded SVG with height/width attributes --}}
+        @php
+            $svgContent = $disk->get($logo);
+            // Only add attributes if at least one is set
+            if ($heightAttr || $widthAttr) {
+                // Insert height/width into the <svg ...> tag
+                $svgContent = preg_replace(
+                    '/<svg\b([^>]*)>/i',
+                    '<svg$1 ' . trim($heightAttr . ' ' . $widthAttr) . '>',
+                    $svgContent,
+                    1
+                );
+            }
+        @endphp
+        {!! $svgContent !!}
     @else
         {{-- Fallback to <img> for PNG/JPG/GIF or remote URLs --}}
         <img
