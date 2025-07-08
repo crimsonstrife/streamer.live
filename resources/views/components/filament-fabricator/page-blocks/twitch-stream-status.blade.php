@@ -1,7 +1,5 @@
 @php
-    use App\Settings\TwitchSettings;use App\Utilities\StreamHelper;
-
-    $settings = app(TwitchSettings::class);
+    $settings = app(\App\Settings\TwitchSettings::class);
 @endphp
 
 @if (! $settings->enable_integration)
@@ -16,7 +14,7 @@
 @else
     @php
         $streamer_username = $channel ?? $settings->channel_name;
-        $streamHelper      = app(StreamHelper::class);
+        $streamHelper      = app(\App\Utilities\StreamHelper::class);
         $streamStatus      = $streamHelper->getStreamStatus($streamer_username);
         $isLive            = ($streamStatus === 'live');
     @endphp
