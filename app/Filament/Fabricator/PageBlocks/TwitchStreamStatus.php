@@ -46,7 +46,7 @@ class TwitchStreamStatus extends PageBlock
                 ->schema([
                     Placeholder::make('warning')
                         ->label('')
-                        ->content('⚠️ Twitch integration is disabled. Enable it in Settings to use this block.'),
+                        ->content('Twitch integration is disabled. Enable it in Settings to use this block.'),
                 ]);
         }
 
