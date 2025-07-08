@@ -32,7 +32,7 @@ class FontResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')->required(),
-                Forms\Components\TextInput::make('slug')->required()->unique(Font::class,'slug'),
+                Forms\Components\TextInput::make('slug')->required()->unique(Font::class, 'slug'),
                 Forms\Components\TextInput::make('weight_min')
                     ->label('Minimum Weight')
                     ->nullable()
