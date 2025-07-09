@@ -22,16 +22,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
 
-/**
- * API Routes for the authenticated user.
- *
- * @param Request $request
- * @return Authenticatable|null
- */
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 // Routes using Passport for authentication
 Route::middleware('passport-api')->group(function () {
     Route::get('/passport-protected', function (Request $request) {

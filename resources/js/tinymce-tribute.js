@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
         width: "100%",
         content_style: `
             body {
-                font-family: Arial, sans-serif;
                 line-height: 1.6;
             }
         `,
