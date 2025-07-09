@@ -385,8 +385,8 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="review" class="form-label">Your Review</label>
-                                    <textarea name="review" class="form-control" rows="3" required></textarea>
+                                    <label for="review" class="form-label" style="position: relative;">Your Review</label>
+                                    <x-content-editor id="reviewMessage" name="review" class="form-control w-100" rows="3" required />
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary">Submit Review</button>
                             </form>

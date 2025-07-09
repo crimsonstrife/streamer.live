@@ -217,7 +217,7 @@
                 <div class="comment-box">
                     <div class="d-flex comment">
                         <img class="rounded-circle comment-img" src="{{ $user->profile_photo_url }}" height="50px"
-                             width="50px">
+                             width="50px" alt="profile photo">
                         <div class="flex-grow-1 ms-3">
                             <form method="POST" action="{{ route('blog.comment.submit', ['post' => $post->slug]) }}">
                                 @csrf
@@ -225,9 +225,8 @@
                                     <input type="hidden" name="reply_id" id="reply_id" value="">
                                     <input type="hidden" name="post_id" value="{{ $post->id }}">
                                     <div class="form-floating comment-compose mb-2">
-                                    <textarea id="commentMessage" name="text" class="form-control w-100" rows="3"
-                                              placeholder="Leave a comment here" required></textarea>
-                                        <label for="commentMessage">Leave a comment here</label>
+                                        <label for="commentMessage" style="position: relative;">Leave a comment here</label>
+                                        <x-content-editor id="commentMessage" name="content" class="form-control w-100" rows="3" required />
                                     </div>
                                 </div>
                                 <div class="hstack justify-content-end gap-1">

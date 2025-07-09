@@ -58,5 +58,10 @@
 <!-- Page Specific Scripts -->
 @stack('scripts')
 
+    {{-- TinyMCE --}}
+    @if (file_exists(public_path('vendor/tinymce/tinymce.min.js')))
+        <script src="{{ asset('vendor/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+    @endif
+
 </body> <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
 </html>  <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
