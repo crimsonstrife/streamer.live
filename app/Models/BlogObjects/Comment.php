@@ -28,7 +28,7 @@ class Comment extends Message
     protected $table = 'comments';
 
     protected $fillable = [
-        'text',
+        'content',
         'commented_on_type',
         'commented_on_id',
         'commented_by_type',
@@ -107,7 +107,7 @@ class Comment extends Message
 
     public function content(): string
     {
-        return html_entity_decode($this->text);
+        return html_entity_decode($this->content);
     }
 
     public function commentedOn(): MorphTo

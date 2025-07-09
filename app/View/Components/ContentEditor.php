@@ -11,6 +11,7 @@ class ContentEditor extends Component
     public ?string $id;
     public ?string $name;
     public ?string $value;
+    public bool $mentions;
 
     /**
      * Create a new component instance.
@@ -18,12 +19,14 @@ class ContentEditor extends Component
      * @param string|null $id
      * @param string|null $name
      * @param string|null $value
+     * @param bool        $mentions
      */
-    public function __construct(?string $id = 'content-editor', ?string $name = 'content', ?string $value = '')
+    public function __construct(?string $id = 'content-editor', ?string $name = 'content', ?string $value = '', bool $mentions = false)
     {
         $this->id = $id;
         $this->name = $name;
         $this->value = $value;
+        $this->mentions = $mentions;
     }
 
     /**

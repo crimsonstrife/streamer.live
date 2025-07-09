@@ -46,10 +46,10 @@
                     </button>
                     <div x-show="hideContent" x-collapse class="panel-collapse mt-2 space-y-2"
                          id="comment-{{ $comment->id }}">
-                        {!! nl2br(e($comment->text)) !!}
+                        {!! nl2br($comment->content) !!}
                     </div>
                 @else
-                    {!! nl2br(e($comment->text)) !!}
+                    {!! nl2br($comment->content) !!}
                 @endif
             </div>
         </div>

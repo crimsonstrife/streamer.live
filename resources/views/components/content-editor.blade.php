@@ -1,5 +1,5 @@
 <div>
-    <textarea id="{{ $id ?? 'content-editor' }}" name="{{ $name ?? 'content' }}" class="form-textarea">{{ $value ?? '' }}</textarea>
+    <textarea id="{{ $id }}" name="{{ $name }}" {{ $attributes->merge(['class' => 'form-textarea']) }}>{{ $value }}</textarea>
 </div>
 
 <script defer>
@@ -8,34 +8,38 @@
         tinymce.init({
             selector: '#{{ $id ?? 'content-editor' }}',
             license_key: 'gpl',
-            plugins: 'link image code lists mention media wordcount preview emoticons codesample',
+            plugins: [
+                'link', 'image', 'code', 'lists',
+                @if($mentions)
+                    'mention',
+                @endif
+                    'media', 'wordcount', 'preview', 'emoticons', 'codesample'
+            ].join(' '),
             toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | link image | code',
             menubar: true,
             promotion: false,
             height: '400px',
             width: '100%',
+            @if($mentions)
             mentions: {
                 source: async (query, success) => {
-                    console.log('Mention query:', query);
-
                     try {
-                        const response = await fetch(`/api/users/search?query=${query}`);
-                        const users = await response.json();
-
-                        success(users.map(user => ({
-                            id: user.id,
-                            name: user.username,
-                            displayName: user.username,
+                        const res   = await fetch(`/api/users/search?query=${query}`);
+                        const users = await res.json();
+                        success(users.map(u => ({
+                            id: u.id,
+                            name: u.username,
+                            displayName: u.username,
                         })));
-                    } catch (error) {
-                        console.error('Error fetching mentions:', error);
+                    } catch {
                         success([]);
                     }
                 },
-                insert: (item) => `@${item.name}`, // Customize the format of inserted mentions
-                delay: 300, // Delay before fetching results
-                minChars: 1, // Minimum characters before search triggers
+                insert: item => `@${item.name}`,
+                delay: 300,
+                minChars: 1,
             },
+            @endif
             content_style: `
             body {
                 line-height: 1.6;
