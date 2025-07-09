@@ -13,4 +13,5 @@ return [
     Spatie\EloquentSortable\EloquentSortableServiceProvider::class,
     nickurt\Akismet\ServiceProvider::class,
     nickurt\StopForumSpam\ServiceProvider::class,
+    Xetaio\Mentions\Providers\MentionServiceProvider::class,
 ];

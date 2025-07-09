@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Webhook\FourthwallWebhookController;
 use App\Models\Icon;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -21,6 +22,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
+
+/**
+ * API Routes for the authenticated user.
+ *
+ * @param Request $request
+ * @return Authenticatable|null
+ */
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
 
 // Routes using Passport for authentication
 Route::middleware('passport-api')->group(function () {
@@ -62,3 +74,5 @@ Route::get('/icon/{id}/svg', function (?int $id) {
  *  API route for fetching all icons in the application.
  */
 Route::get('/icons', [IconController::class, 'fetchIcons']);
+
+Route::middleware('api')->get('/users/search', [UserController::class, 'search'])->name('users.search');

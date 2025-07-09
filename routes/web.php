@@ -201,7 +201,7 @@ CSS;
 
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
-        ->where('slug', '^(?!public\/|storage\/|auth\/|build\/).*$')
+        ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
         ->name('fabricator.page.global.fallback');
 });
 
@@ -260,30 +260,5 @@ Route::resource('icons', IconController::class)
 
 Route::get('/{slug}', FabricatorPageController::class)
     // don’t match any system URI
-    ->where('slug', '^(?!public\/|storage\/|auth\/|build\/).*$')
+    ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
     ->name('fabricator.page.global.fallback');
-
-Route::fallback(static function () {
-    $path = request()->path();
-
-    // if it’s an asset under public/ or build/, we don’t want to handle it here
-    if (Str::startsWith($path, 'public/') || Str::startsWith($path, 'build/') || Str::startsWith($path, 'storage/') || Str::startsWith($path, 'auth/')) {
-        $path = request()->path();                 // e.g. "build/assets/icons/…"
-
-        // If it begins with "public/", remove that so it points at the public/ folder correctly
-        if (Str::startsWith($path, 'public/')) {
-            $path = substr($path, strlen('public/'));
-        }
-
-        $file = public_path($path);                // resolves to /full/project/public/build/…
-
-        if (file_exists($file) && is_file($file)) {
-            // Let Laravel serve the static asset
-            return Response::file($file);
-        }
-    }
-
-    // otherwise it really is a missing “page”
-    Log::error('Fallback route triggered', ['url' => request()->url()]);
-    abort(404);
-});

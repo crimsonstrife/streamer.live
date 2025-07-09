@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use Xetaio\Mentions\Parser\MentionParser;
 
 class BlogCommentController extends Controller
 {
@@ -36,7 +37,7 @@ class BlogCommentController extends Controller
         }
 
         try {
-            Comment::create([
+            $comment = Comment::create([
                 'text' => $data['text'],
                 'reply_id' => $parentComment ? $parentComment->id : null, // comment being replied to, null if top-level comment
                 'commented_on_type' => get_class($post),
@@ -45,6 +46,16 @@ class BlogCommentController extends Controller
                 'commented_by_id' => $request->user()->getKey(),
                 'approved' => true,
             ]);
+
+            // Register a new Parser and parse the content.
+            $parser = new MentionParser($comment);
+            $content = $parser->parse($comment->text);
+
+            /**
+             * Re-assign the parsed content and save it.
+             */
+            $comment->text = $content;
+            $comment->save();
         } catch (Throwable $e) {
             Log::error('Comment::create failed with:', $e->getMessage());
         }
