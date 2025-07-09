@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmoteController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Webhook\FourthwallWebhookController;
@@ -74,5 +75,7 @@ Route::get('/icon/{id}/svg', function (?int $id) {
  *  API route for fetching all icons in the application.
  */
 Route::get('/icons', [IconController::class, 'fetchIcons']);
+
+Route::get('emotes', [EmoteController::class, 'index']);
 
 Route::middleware('api')->get('/users/search', [UserController::class, 'search'])->name('users.search');
