@@ -1,5 +1,5 @@
 @php use App\Settings\FourthwallSettings; @endphp
-@aware(['page'])
+@aware(['page','orderPromotions','productPromotions'])
 @php $settings = app(FourthwallSettings::class); @endphp
 
 @if (! $settings->enable_integration)
@@ -63,6 +63,7 @@
                                     </div>
                                 @endif
                                 <p class="text-muted">{{ $relatedProduct->symbol_price }} USD</p>
+                                @include('shop.partials.promo-badge', ['product' => $relatedProduct])
                                 <a href="{{ url('shop/product/' . $relatedProduct->slug) }}"
                                    class="btn btn-sm btn-outline-primary">
                                     View Product

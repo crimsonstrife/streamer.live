@@ -283,6 +283,14 @@
             color: #ffffff !important;
             --bs-alert-border-color: #6441A4;
         }
+
+        .badge {
+            width: 100%;
+            height: auto;
+            display: block;
+            text-wrap: auto;
+        }
+
         /* badge variant */
         .badge-twitch {
             background-color: #6441A4;

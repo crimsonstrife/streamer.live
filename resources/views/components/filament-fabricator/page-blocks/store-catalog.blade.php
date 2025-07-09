@@ -1,4 +1,3 @@
-@php use App\Settings\FourthwallSettings; @endphp
 @aware(['page', 'orderPromotions', 'productPromotions'])
 @push('styles')
     <style>
@@ -15,7 +14,7 @@
     </style>
 @endpush
 <div class="container py-4">
-    @php $settings = app(FourthwallSettings::class); @endphp
+    @php $settings = app(\App\Settings\FourthwallSettings::class); @endphp
 
     @if (! $settings->enable_integration)
         <div class="alert alert-warning text-center">
@@ -23,30 +22,7 @@
             Please come back later!
         </div>
     @else
-        {{-- PROMOTION BANNERS --}}
-        @if($orderPromotions->isNotEmpty())
-            <div class="mb-4">
-                @foreach($orderPromotions as $promo)
-                    @php
-                        // Compute the wrapper classes
-                        $wrapperClasses = match(true) {
-                          $promo->title === 'TWITCHSUB'                      => 'alert d-flex align-items-center bg-twitch text-white',
-                          $promo->type === 'SHOP_AUTO_APPLYING'              => 'alert alert-info d-flex align-items-center',
-                          default                                            => 'alert alert-success d-flex align-items-center',
-                        };
-                    @endphp
-
-                    <div class="{{ $wrapperClasses }}">
-                        {{-- Twitch icon only for TWITCHSUB --}}
-                        @if($promo->title === 'TWITCHSUB')
-                            <x-fab-twitch class="me-2" width="1rem" />
-                        @endif
-
-                        {!! $promo->customer_message !!}
-                    </div>
-                @endforeach
-            </div>
-        @endif
+        @include('shop.partials.promo-banner')
         <div class="row">
             <aside class="col-md-3 mb-4">
                 <form method="GET">
@@ -233,35 +209,9 @@
                                         </div>
                                     @endif
                                     <p class="card-text mb-2">{{ $product->symbol_price }} USD</p>
-                                    {{-- ITEM-SPECIFIC BADGES --}}
-                                    @php
-                                        $applied = $productPromotions->filter(fn($p) => $p->products->contains('id', $product->id));
-                                    @endphp
-
-                                    @if($applied->isNotEmpty())
-                                        <div class="mb-3">
-                                            @foreach($applied as $promo)
-                                                @php
-                                                    $badgeClasses = match(true) {
-                                                      $promo->title === 'TWITCHSUB'           => 'badge d-inline-flex align-items-center badge-twitch',
-                                                      $promo->type === 'SHOP_AUTO_APPLYING'   => 'badge bg-info text-dark',
-                                                      default                                 => 'badge bg-success',
-                                                    };
-                                                @endphp
-
-                                                <span class="{{ $badgeClasses }} me-1">
-                                                    @if($promo->title === 'TWITCHSUB')
-                                                        <x-fab-twitch class="me-1" style="font-size:0.9em;" />
-                                                    @endif
-
-                                                    {!! $promo->customer_message !!}
-                                                </span>
-                                            @endforeach
-                                        </div>
-                                    @endif
-
+                                    @include('shop.partials.promo-badge', ['product' => $product])
                                     <a href="{{ route('shop.product', ['slug' => $product->slug]) }}"
-                                       class="btn btn-primary mt-auto">View</a>
+                                       class="btn btn-primary mt-auto">View Product</a>
                                 </div>
                             </div>
 

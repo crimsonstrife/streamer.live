@@ -1,5 +1,5 @@
 @php use App\Settings\FourthwallSettings; @endphp
-@aware(['page'])
+@aware(['page','products','orderPromotions','productPromotions'])
 <div class="container py-4">
     @php $settings = app(FourthwallSettings::class); @endphp
 
@@ -56,6 +56,7 @@
                             <p class="card-text text-muted">
                                 {{ $product->symbol_price }} USD
                             </p>
+                            @include('shop.partials.promo-badge', ['product' => $product])
                             <a href="{{ route('shop.product', ['slug' => $product->slug]) }}"
                                class="btn btn-primary">
                                 View Product
