@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Forms\Components;
 
 use Closure;
@@ -33,4 +34,3 @@ class ContentEditor extends Field implements \Filament\Forms\Components\Contract
         return $this->extraAttributes(['mentions' => $enabled]);
     }
 }
-
