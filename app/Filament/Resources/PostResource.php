@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\RelationManagers\PostFeaturedImageRelationManager;
+use App\Forms\Components\ContentEditor;
 use App\Models\BlogObjects\Author;
 use App\Models\BlogObjects\Post;
 use Filament\Forms\Components\Actions\Action;
@@ -80,7 +81,17 @@ class PostResource extends Resource
                                 'sm' => 2,
                             ]),
 
-                        self::getContentEditor('content'),
+                    ContentEditor::make('content')
+                    ->label(__('filament-blog::filament-blog.content'))
+                    ->required()
+                    ->mentions(true)
+                    ->toolbarButtons([
+                        'attachFiles','bold','italic','underline','strike','link',
+                        'h2','h3','blockquote','bulletList','orderedList','undo','redo','code','preview',
+                    ])
+                    ->placeholder('Write your post here...')
+                    ->disableGrammarly()
+                    ->columnSpan(['sm' => 2]),
 
                         Forms\Components\Select::make('blog_author_id')
                             ->label(__('filament-blog::filament-blog.author'))
