@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Emote;
@@ -15,7 +14,7 @@ class EmoteController extends Controller
         $matches = Emote::where('code', 'like', "%{$q}%")
             ->limit(50)
             ->get()
-            ->map(fn ($e) => [
+            ->map(fn($e) => [
                 'code'   => $e->code,
                 'url'    => asset("{$e->image_path}"),
                 'keywords' => $e->keywords, // if you need them

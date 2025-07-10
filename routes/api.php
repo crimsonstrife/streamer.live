@@ -76,6 +76,6 @@ Route::get('/icon/{id}/svg', function (?int $id) {
  */
 Route::get('/icons', [IconController::class, 'fetchIcons']);
 
-Route::get('emotes', [EmoteController::class, 'index']);
+Route::get('/emotes', [EmoteController::class, 'index']);
 
 Route::middleware('api')->get('/users/search', [UserController::class, 'search'])->name('users.search');
