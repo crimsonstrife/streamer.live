@@ -46,6 +46,7 @@ class Comment extends Message
         'is_spam' => 'bool',
         'is_spam_auto' => 'bool',
         'replies_locked' => 'bool',
+        'created_at' => 'datetime',
     ];
 
     public function commentable(): MorphTo
