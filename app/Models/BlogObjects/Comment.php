@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait;
 
 class Comment extends Message
 {
@@ -22,11 +23,12 @@ class Comment extends Message
     use HasReactions;
     use LogsActivity;
     use IsPermissible;
+    use HasMentionsTrait;
 
     protected $table = 'comments';
 
     protected $fillable = [
-        'text',
+        'content',
         'commented_on_type',
         'commented_on_id',
         'commented_by_type',
@@ -105,7 +107,7 @@ class Comment extends Message
 
     public function content(): string
     {
-        return html_entity_decode($this->text);
+        return html_entity_decode($this->content);
     }
 
     public function commentedOn(): MorphTo

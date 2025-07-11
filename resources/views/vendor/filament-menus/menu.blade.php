@@ -1,14 +1,17 @@
 @php
-    use TomatoPHP\FilamentMenus\Models\Menu;
-
-    // the component passes you $menu (the slug) already:
-    $menuModel = Menu::where('key', $menu)->first();
+    $menuModel = TomatoPHP\FilamentMenus\Models\Menu::where('key', $menu)->first();
     $location  = optional($menuModel)->location;
+
+    $shopEnabled  = app(\App\Settings\FourthwallSettings::class)->enable_integration;
+    $shopSlug = app(\App\Utilities\ShopHelper::class)->getShopSlug();
+    $cartCount    = $shopEnabled
+        ? app(\App\Utilities\CartHelper::class)->getCartItemCount()
+        : 0;
 @endphp
 @if($location === 'footer')
-    <nav class="py-2 bg-body-tertiary">
+    <nav class="py-2">
 @else
-            <nav class="py-2 bg-body-tertiary border-bottom">
+            <nav class="py-2 border-bottom">
 @endif
     <div class="container d-flex flex-wrap">
         @if($location === 'footer')
@@ -18,7 +21,11 @@
                     {{-- header (and any other location): standard horizontal nav --}}
                     <ul class="nav me-auto">
                         @endif
-            @foreach ($menuItems as $item)
+                        @php
+                            $menuItems = $menuItems->sortBy('order');
+                        @endphp
+
+                    @foreach ($menuItems as $item)
                 @php
                     $isActive = url()->current() === ($item['route'] ? route($item['route']) : $item['url']);
                     $link = $item['route'] ? route($item['route']) : $item['url'];
@@ -53,6 +60,16 @@
         </ul>
                     @if($location !== 'footer')
                         <ul class="nav">
+                            @if($shopEnabled)
+                                <li class="nav-item">
+                                    <x-nav-link href="{{ route($shopSlug.'.cart.show') }}"
+                                                :active="request()->routeIs($shopSlug.'.cart.show')"
+                                                class="nav-link d-flex align-items-center" style="border-bottom: none !important">
+                                        <x-fas-cart-shopping height="1rem" width="auto"/>
+                                        <span class="badge rounded-pill ms-2" style="color: unset">{{ $cartCount }}</span>
+                                    </x-nav-link>
+                                </li>
+                            @endif
                             @auth
                                 <!-- Teams Dropdown -->
                                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())

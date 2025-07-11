@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogObjects\Comment;
 use App\Models\BlogObjects\Post;
+use App\Parsers\UserMentionParser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +15,7 @@ class BlogCommentController extends Controller
     public function store(Request $request, Post $post): RedirectResponse
     {
         $data = $request->validate([
-            'text' => ['required', 'string', 'max:1000'],
+            'content' => ['required', 'string', 'max:1000'],
         ]);
 
         $parentComment = null;
@@ -36,8 +37,8 @@ class BlogCommentController extends Controller
         }
 
         try {
-            Comment::create([
-                'text' => $data['text'],
+            $comment = Comment::create([
+                'content' => $data['content'],
                 'reply_id' => $parentComment ? $parentComment->id : null, // comment being replied to, null if top-level comment
                 'commented_on_type' => get_class($post),
                 'commented_on_id' => $post->id,
@@ -45,6 +46,16 @@ class BlogCommentController extends Controller
                 'commented_by_id' => $request->user()->getKey(),
                 'approved' => true,
             ]);
+
+            // Register a new Parser and parse the content.
+            $parser = new UserMentionParser($comment);
+            $content = $parser->parse($comment->content);
+
+            /**
+             * Re-assign the parsed content and save it.
+             */
+            $comment->content = $content;
+            $comment->save();
         } catch (Throwable $e) {
             Log::error('Comment::create failed with:', $e->getMessage());
         }

@@ -42,4 +42,55 @@ class Promotion extends Model
     {
         return $this->belongsToMany(Product::class, 'promotion_product');
     }
+
+    public function scopeLive($query)
+    {
+        return $query->where('status', 'Live');
+    }
+
+    public function scopeEntireOrder($query)
+    {
+        return $query->where('applies_to', 'ENTIRE_ORDER');
+    }
+
+    public function scopeSelectedProducts($query)
+    {
+        return $query->where('applies_to', 'SELECTED_PRODUCTS');
+    }
+
+    /**
+     * A customer-facing message for this promo.
+     */
+    public function getCustomerMessageAttribute(): ?string
+    {
+        if ($this->description) {
+            return $this->description;
+        }
+
+        if (strtoupper($this->title) === 'TWITCHSUB') {
+            if ($this->type === 'SHOP_AUTO_APPLYING') {
+                return "Twitch subscribers get ".(
+                    $this->discount_type === 'PERCENTAGE'
+                        ? "{$this->percentage}% off"
+                        : number_format($this->amount_value / 100, 2)." {$this->amount_currency}"
+                ). " on " . ($this->applies_to === 'ENTIRE_ORDER' ? "their entire order" : "select products") .(
+                    $this->min_order_value > 0
+                        ? " on orders of ".number_format($this->min_order_value, 2)." {$this->min_order_currency}". " or more."
+                        : ""
+                ). " — you’ll be prompted to log in with Twitch at checkout on eligible orders.";
+            }
+        }
+
+        // defaults
+        if ($this->type === 'SHOP_AUTO_APPLYING') {
+            return "This discount will be auto-applied at checkout when you’re eligible.";
+        }
+
+        return "Use code {$this->code} at checkout to get "
+            .(
+                $this->discount_type === 'PERCENTAGE'
+                ? "{$this->percentage}% off"
+                : number_format($this->amount_value / 100, 2)." {$this->amount_currency}"
+            ).".";
+    }
 }

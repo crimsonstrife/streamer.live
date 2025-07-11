@@ -4,6 +4,7 @@ namespace App\Filament\Fabricator\PageBlocks;
 
 use App\Models\SharedObjects\Category;
 use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\Promotion;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -34,9 +35,21 @@ class StoreProductGrid extends PageBlock
             });
         }
 
+        // pull LIVE promotions from database
+        $orderPromotions = Promotion::where('status', 'Live')
+            ->where('applies_to', 'ENTIRE_ORDER')
+            ->get();
+
+        $productPromotions = Promotion::where('status', 'Live')
+            ->where('applies_to', 'SELECTED_PRODUCTS')
+            ->with('products')   // eager-load the pivot
+            ->get();
+
         return [
             'title' => $data['title'] ?? 'Products',
             'products' => $productQuery->latest()->take($data['product_count'])->orderByDesc('created_at')->get(),
+            'orderPromotions'  => $orderPromotions,
+            'productPromotions' => $productPromotions,
         ];
     }
 }

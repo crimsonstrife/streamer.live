@@ -1,5 +1,5 @@
 @php use App\Settings\FourthwallSettings; @endphp
-@aware(['product'])
+@aware(['product','orderPromotions','productPromotions'])
 @php $settings = app(FourthwallSettings::class); @endphp
 
 @if (! $settings->enable_integration)
@@ -93,6 +93,7 @@
         @endpush
         @php $mediaItems = $product->getMedia('images'); @endphp
         <div class="container py-4">
+            @include('shop.partials.promo-banner')
             <div class="row">
                 <div class="col-md-6">
                     @if ($mediaItems->isNotEmpty())
@@ -147,7 +148,7 @@
                                                             role="button"
                                                             data-info-id="info-{{ $loop->index }}"
                                                             onclick="toggleModelInfo(this)">
-                                                <i class="bi bi-info-circle"></i>
+                                                <x-fas-circle-info height="1rem" width="auto"/>
                                             </span>
                                                         <div id="info-{{ $loop->index }}"
                                                              class="model-info position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-75 text-white rounded-top d-none">
@@ -187,10 +188,17 @@
                     <h2>{{ $product->name }}</h2>
 
                     @if ($product->review_count > 0)
-                        <div class="mb-2">
+                        <div class="mb-2 d-flex align-items-center">
                             @for ($i = 1; $i <= 5; $i++)
-                                <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                                @if ($product->average_rating >= $i)
+                                    <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                @elseif ($product->average_rating >= $i - 0.5)
+                                    <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto" />
+                                @else
+                                    <x-far-star class="text-muted" height="1rem" width="auto" />
+                                @endif
                             @endfor
+
                             <small class="text-muted ms-2">
                                 {{ number_format($product->average_rating, 1) }}/5
                                 ({{ $product->review_count }} {{ Str::plural('review', $product->review_count) }})
@@ -203,6 +211,8 @@
                     @endif
 
                     <p class="text-muted">{{ $product->symbol_price }} USD</p>
+
+                    @include('shop.partials.promo-badge', ['product' => $product])
 
                     <div class="mb-3">
                         {!! $product->description !!}
@@ -291,7 +301,13 @@
                                     <strong class="fs-4">{{ number_format($product->average_rating, 1) }}/5</strong>
                                     <div>
                                         @for ($i = 1; $i <= 5; $i++)
-                                            <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                                            @if ($product->average_rating >= $i)
+                                                <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                            @elseif ($product->average_rating >= $i - 0.5)
+                                                <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"  />
+                                            @else
+                                                <x-far-star class="text-muted" height="1rem" width="auto"  />
+                                            @endif
                                         @endfor
                                     </div>
                                     <small class="text-muted">{{ $product->review_count }}
@@ -369,8 +385,8 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="review" class="form-label">Your Review</label>
-                                    <textarea name="review" class="form-control" rows="3" required></textarea>
+                                    <label for="review" class="form-label" style="position: relative;">Your Review</label>
+                                    <x-content-editor id="reviewMessage" name="review" class="form-control w-100" rows="3" required />
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary">Submit Review</button>
                             </form>

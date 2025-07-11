@@ -1,5 +1,5 @@
 @php use App\Settings\FourthwallSettings; @endphp
-@aware(['page'])
+@aware(['page','products','orderPromotions','productPromotions'])
 <div class="container py-4">
     @php $settings = app(FourthwallSettings::class); @endphp
 
@@ -23,8 +23,8 @@
                         $image = null;
                     }
                 @endphp
-                <div class="col-md-3 mb-4">
-                    <div class="card h-100">
+                <div class="col-md-3 mb-3">
+                    <div class="card h-100 product-card">
                         @if ($mediaItems->isNotEmpty())
                             <img src="{!! $image->getUrl() !!}" class="card-img-top"
                                  alt="{{ $image->getCustomProperty('image_alt_text') }}">
@@ -34,7 +34,13 @@
                             @if ($product->review_count > 0)
                                 <div class="mb-2">
                                     @for ($i = 1; $i <= 5; $i++)
-                                        <i class="bi {{ $i <= round($product->average_rating) ? 'bi-star-fill text-warning' : 'bi-star text-muted' }}"></i>
+                                        @if ($product->average_rating >= $i)
+                                            <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                        @elseif ($product->average_rating >= $i - 0.5)
+                                            <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"  />
+                                        @else
+                                            <x-far-star class="text-muted" height="1rem" width="auto"  />
+                                        @endif
                                     @endfor
                                     <small class="text-muted ms-2">
                                         {{ number_format($product->average_rating, 1) }}/5
@@ -50,6 +56,7 @@
                             <p class="card-text text-muted">
                                 {{ $product->symbol_price }} USD
                             </p>
+                            @include('shop.partials.promo-badge', ['product' => $product])
                             <a href="{{ route('shop.product', ['slug' => $product->slug]) }}"
                                class="btn btn-primary">
                                 View Product

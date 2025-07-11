@@ -1,14 +1,53 @@
 <?php
 
+use App\Http\Controllers\EmoteController;
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Webhook\FourthwallWebhookController;
 use App\Models\Icon;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * Retrieve the authenticated user.
+ *
+ * This route returns the authenticated user using the `Request` object.
+ * The user is retrieved by calling the `user()` method on the `Request` object.
+ * The route is protected by the `auth:api` middleware.
+ *
+ * @param Request $request The request object.
+ *
+ * @return Authenticatable|null The authenticated user or null if not authenticated.
+ */
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:api');
+
+/**
+ * API Routes for the authenticated user.
+ *
+ * @param Request $request
+ * @return Authenticatable|null
+ */
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+
+// Routes using Passport for authentication
+Route::middleware('passport-api')->group(function () {
+    Route::get('/passport-protected', function (Request $request) {
+        return response()->json(['message' => 'This route uses Passport']);
+    });
+});
+
+// Routes using Sanctum for authentication
+Route::middleware('sanctum-api')->group(function () {
+    Route::get('/sanctum-protected', function (Request $request) {
+        return response()->json(['message' => 'This route uses Sanctum']);
+    });
+});
 
 Route::post('/webhooks/fourthwall', FourthwallWebhookController::class);
 
@@ -36,3 +75,7 @@ Route::get('/icon/{id}/svg', function (?int $id) {
  *  API route for fetching all icons in the application.
  */
 Route::get('/icons', [IconController::class, 'fetchIcons']);
+
+Route::get('/emotes', [EmoteController::class, 'index']);
+
+Route::middleware('api')->get('/users/search', [UserController::class, 'search'])->name('users.search');

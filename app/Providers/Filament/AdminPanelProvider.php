@@ -15,6 +15,7 @@ use App\Utilities\BlogHelper;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Exception;
 use Filament\Events\TenantSet;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -25,6 +26,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
 use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
@@ -97,6 +99,13 @@ class AdminPanelProvider extends PanelProvider
             TenantSet::class,
             SwitchTeam::class,
         );
+
+        FilamentAsset::register([
+            Js::make(
+                'tinymce',
+                asset('vendor/tinymce/tinymce.min.js'),
+            ),
+        ]);
     }
 
     /**

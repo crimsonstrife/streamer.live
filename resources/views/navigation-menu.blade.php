@@ -1,4 +1,9 @@
-<nav class="bg-white navbar navbar-expand-lg navbar-light border-bottom">
+@php
+    $style = app(\App\Settings\LookFeelSettings::class);
+    $display_mode = $style->mode;
+@endphp
+
+<nav class="{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }} navbar-expand-lg navbar-{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }} border-bottom">
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('dashboard') }}">

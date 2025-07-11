@@ -18,7 +18,8 @@ class ProductReviewController extends Controller
 
         $user = auth()->user();
 
-        $isVerified = ProductReview::verifyPurchase($user->id, $product->id);
+        $productReview = new ProductReview();
+        $isVerified = $productReview->verifyPurchase($user->id, $product->id);
 
         ProductReview::create([
             'product_id' => $product->id,

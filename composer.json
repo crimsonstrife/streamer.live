@@ -121,8 +121,10 @@
         "symfony/intl": "^7.3",
         "tapp/filament-auditing": "^3.0",
         "team-reflex/discord-php": "^10.4",
+        "tinymce/tinymce": "^7.9",
         "tomatophp/filament-menus": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
+        "xetaio/xetaravel-mentions": "^11.0",
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
@@ -166,6 +168,7 @@
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan tinymce:publish --ansi",
             "@php artisan ide-helper:generate",
             "@php artisan ide-helper:meta"
         ],

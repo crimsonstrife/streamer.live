@@ -34,3 +34,4 @@ _ide_helper_models.php
 /public/css/elmudo-dev/filament-custom-attribute-file-upload/filament-custom-attribute-file-upload-styles.css
 /public/js/elmudo-dev/filament-custom-attribute-file-upload/filament-custom-attribute-file-upload-scripts.js
 /public/js/elmudo-dev/filament-custom-attribute-file-upload/components/filament-custom-attribute-file-upload.js
+/public/vendor/tinymce/

@@ -39,7 +39,7 @@
             <span class="flex-sm-row justify-content-between">
                 <a href="{{ route('fabricator.page.home') }}"
                    class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
-                    <x-application-logo height="48"/>
+                    <x-application-logo height="40"/>
                 </a>
             </span>
             <span>
@@ -57,6 +57,11 @@
 
 <!-- Page Specific Scripts -->
 @stack('scripts')
+
+    {{-- TinyMCE --}}
+    @if (file_exists(public_path('vendor/tinymce/tinymce.min.js')))
+        <script src="{{ asset('vendor/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+    @endif
 
 </body> <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
 </html>  <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->

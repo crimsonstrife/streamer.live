@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait;
 
 class Reply extends Message
 {
@@ -22,10 +23,12 @@ class Reply extends Message
     use HasReactions;
     use LogsActivity;
     use IsPermissible;
+    use HasMentionsTrait;
+
     protected $table = 'comments';
 
     protected $fillable = [
-        'text',
+        'content',
         'commented_on_type',
         'commented_on_id',
         'commented_by_type',

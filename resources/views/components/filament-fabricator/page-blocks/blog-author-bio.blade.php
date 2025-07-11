@@ -53,23 +53,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        .btn-bd-primary {
-            --bd-violet-bg: #712cf9;
-            --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
-
-            --bs-btn-font-weight: 600;
-            --bs-btn-color: var(--bs-white);
-            --bs-btn-bg: var(--bd-violet-bg);
-            --bs-btn-border-color: var(--bd-violet-bg);
-            --bs-btn-hover-color: var(--bs-white);
-            --bs-btn-hover-bg: #6528e0;
-            --bs-btn-hover-border-color: #6528e0;
-            --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
-            --bs-btn-active-color: var(--bs-btn-hover-color);
-            --bs-btn-active-bg: #5a23c8;
-            --bs-btn-active-border-color: #5a23c8;
-        }
-
         .bd-mode-toggle {
             z-index: 1500;
         }
@@ -81,7 +64,7 @@
 @endpush
 @if ($post->author)
     <div class="container mt-5">
-        <div class="p-4 mb-3 bg-body-tertiary rounded">
+        <div class="p-4 mb-3 rounded">
             <h4 class="fst-italic">About the Author</h4>
             <div class="d-flex align-items-center">
                 @if ($post->author->avatar_url)

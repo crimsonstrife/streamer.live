@@ -30,7 +30,9 @@ class PromotionResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Textarea::make('description')
+                    ->label('Customer Message')
+                    ->helperText('Optional: overrides the default messaging shown on the storefront.'),
             ]);
     }
 

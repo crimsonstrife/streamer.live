@@ -176,11 +176,7 @@
                 <button
                     class="btn sort-btn btn-link dropdown-toggle hstack align-items-center gap-2 py-1 px-2 fw-normal"
                         data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                    <span class="ski" style="font-size:1.5em;"><svg aria-hidden="true"
-                                                                    class="svg-icon mdi-outlined mdi-sort"
-                                                                    xmlns="http://www.w3.org/2000/svg" width="48"
-                                                                    height="48" viewBox="0 -960 960 960"><path
-                                d="M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z"></path></svg></span>
+                    <span class="ski" style="font-size:1.5em;"><x-fas-arrow-down-wide-short height="2rem" width="auto"/></span>
                     <span>Sort by</span>
                 </button>
                 <ul class="dropdown-menu mt-1">
@@ -221,7 +217,7 @@
                 <div class="comment-box">
                     <div class="d-flex comment">
                         <img class="rounded-circle comment-img" src="{{ $user->profile_photo_url }}" height="50px"
-                             width="50px">
+                             width="50px" alt="profile photo">
                         <div class="flex-grow-1 ms-3">
                             <form method="POST" action="{{ route('blog.comment.submit', ['post' => $post->slug]) }}">
                                 @csrf
@@ -229,9 +225,8 @@
                                     <input type="hidden" name="reply_id" id="reply_id" value="">
                                     <input type="hidden" name="post_id" value="{{ $post->id }}">
                                     <div class="form-floating comment-compose mb-2">
-                                    <textarea id="commentMessage" name="text" class="form-control w-100" rows="3"
-                                              placeholder="Leave a comment here" required></textarea>
-                                        <label for="commentMessage">Leave a comment here</label>
+                                        <label for="commentMessage" style="position: relative;">Leave a comment here</label>
+                                        <x-content-editor id="commentMessage" name="content" :mentions="true" class="form-control w-100" rows="3" required />
                                     </div>
                                 </div>
                                 <div class="hstack justify-content-end gap-1">

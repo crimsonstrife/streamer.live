@@ -7,6 +7,7 @@
     $online      = $presenceCount ?? null;
     $widget = (bool) ($embedWidget ?? false);
     $guildId     = $guildId      ?? null;
+    $themeSettings = app(\App\Settings\LookFeelSettings::class)
 @endphp
 
 <div class="discord-community-block text-center">
@@ -14,10 +15,10 @@
 
     @if($widget && $guildId)
         <iframe
-            src="https://discord.com/widget?id={{ $guildId }}&theme=dark"
+            src="https://discord.com/widget?id={{ $guildId }}&theme={{ $themeSettings->mode !== 'auto' ? $themeSettings->mode : 'dark' }}"
             width="100%" height="350"
             allowtransparency="true"
-            frameborder="0"
+            style="border:0;"
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
         ></iframe>
     @endif
