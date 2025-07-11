@@ -282,19 +282,6 @@
         },
 
         highlighter: function (text) {
-            const escapeHtml = function (str) {
-                return str.replace(/[&<>"']/g, function (char) {
-                    const escapeMap = {
-                        "&": "&amp;",
-                        "<": "&lt;",
-                        ">": "&gt;",
-                        '"': "&quot;",
-                        "'": "&#39;",
-                    };
-                    return escapeMap[char];
-                });
-            };
-
             return text.replace(
                 new RegExp(
                     "(" +
@@ -303,7 +290,7 @@
                     "ig",
                 ),
                 function ($1, match) {
-                    return "<strong>" + escapeHtml(match) + "</strong>";
+                    return "<strong>" + match + "</strong>";
                 },
             );
         },
@@ -341,9 +328,9 @@
             $.each(items, function (i, item) {
                 const $element = $(_this.render(item, i));
 
-                $element.text(
+                $element.html(
                     $element
-                        .text()
+                        .html()
                         .replace(
                             $element.text(),
                             _this.highlighter($element.text()),
