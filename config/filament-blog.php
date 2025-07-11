@@ -7,7 +7,7 @@ return [
      *      \Filament\Forms\Components\RichEditor::class
      *      \Filament\Forms\Components\MarkdownEditor::class
      */
-    'editor' => \App\Forms\Components\ContentEditor::class,
+    'editor' => \Filament\Forms\Components\RichEditor::class,
 
     /**
      * Configs for Posts banner file that give you option to change
