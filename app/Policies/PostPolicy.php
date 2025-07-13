@@ -12,9 +12,6 @@ class PostPolicy
 
     /**
      * Determine whether the user can view any models.
-     *
-     * @param User $user
-     * @return bool
      */
     public function viewAny(User $user): bool
     {
@@ -37,14 +34,15 @@ class PostPolicy
             return true;
         }
 
-        if ($user->can('list-post')) {
+        if ($user->can('read-post')) {
             return true;
         }
 
         // authors can view their own unpublished posts
         $author = $post->author();
         $authorUser = $author->user();
-        return $user->id == $authorUser->id;
+
+        return $user->id === $authorUser->id;
     }
 
     public function create(User $user): bool
@@ -60,7 +58,8 @@ class PostPolicy
 
         $author = $post->author();
         $authorUser = $author->user();
-        return $user->id == $authorUser->id;
+
+        return $user->id === $authorUser->id;
     }
 
     public function delete(User $user, Post $post): bool
@@ -71,6 +70,19 @@ class PostPolicy
 
         $author = $post->author();
         $authorUser = $author->user();
-        return $user->id == $authorUser->id;
+
+        return $user->id === $authorUser->id;
+    }
+
+    public function restore(User $user, Post $post): bool
+    {
+        if ($user->can('restore-post')) {
+            return true;
+        }
+
+        $author = $post->author();
+        $authorUser = $author->user();
+
+        return $user->id === $authorUser->id;
     }
 }

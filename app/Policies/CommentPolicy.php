@@ -12,9 +12,6 @@ class CommentPolicy
 
     /**
      * Determine whether the user can view any models.
-     *
-     * @param User $user
-     * @return bool
      */
     public function viewAny(User $user): bool
     {
@@ -38,12 +35,12 @@ class CommentPolicy
             return true;
         }
 
-        if ($user->can('list-comment')) {
+        if ($user->can('read-comment')) {
             return true;
         }
 
         // users can view their own comments
-        return $user->id == $comment->commentedBy()->id;
+        return $user->id === $comment->commentedBy()->id;
     }
 
     public function create(User $user): bool
@@ -58,7 +55,7 @@ class CommentPolicy
         }
 
         // Check if the user owns the comment
-        if ($user->id == $comment->commentedBy()->id) {
+        if ($user->id === $comment->commentedBy()->id) {
             // Prevent edits if the comment is older than 15 minutes
             return now()->diffInMinutes($comment->created_at) <= 15;
         }
@@ -74,6 +71,6 @@ class CommentPolicy
         }
 
         // users can delete their own comments
-        return $user->id == $comment->commentedBy()->id;
+        return $user->id === $comment->commentedBy()->id;
     }
 }

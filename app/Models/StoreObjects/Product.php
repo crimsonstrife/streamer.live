@@ -5,10 +5,6 @@ namespace App\Models\StoreObjects;
 use App\Casts\MoneyValueCast;
 use App\Models\BaseModel;
 use App\Models\SharedObjects\Category;
-use App\Models\StoreObjects\Collection;
-use App\Models\StoreObjects\ProductImage;
-use App\Models\StoreObjects\ProductReview;
-use App\Models\StoreObjects\ProductVariant;
 use App\Traits\IsPermissible;
 use App\Utilities\ShopHelper;
 use DB;
@@ -68,11 +64,11 @@ use Spatie\Tags\HasTags;
  *
  * @mixin Eloquent
  */
-class Product extends BaseModel implements Searchable, HasMedia
+class Product extends BaseModel implements HasMedia, Searchable
 {
     use HasTags;
-    use IsPermissible;
     use InteractsWithMedia;
+    use IsPermissible;
 
     protected $fillable = [
         'provider_id',
@@ -202,6 +198,7 @@ class Product extends BaseModel implements Searchable, HasMedia
             ->where('product_id', $this->id)
             ->first();
         $this->cachedAdditionalData = (array) $data;
+
         return $this->cachedAdditionalData;
     }
 
@@ -234,12 +231,14 @@ class Product extends BaseModel implements Searchable, HasMedia
     public function getMoreDetailsAttribute(): string
     {
         $moreDetails = $this->additionalData()['more_details'] ?? '';
+
         return html_entity_decode($moreDetails);
     }
 
     public function getProductInformationAttribute(): string
     {
         $productInformation = $this->additionalData()['product_information'] ?? '';
+
         return html_entity_decode($productInformation);
     }
 
