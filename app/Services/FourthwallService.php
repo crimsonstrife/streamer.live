@@ -125,7 +125,7 @@ class FourthwallService
                             [
                                 'name' => data_get($collectionData, 'name'),
                                 'slug' => data_get($collectionData, 'slug'),
-                                'description' => data_get($collectionData, 'description') ?? null,
+                                'description' => data_get($collectionData, 'description'),
                             ]
                         );
 
@@ -330,7 +330,7 @@ class FourthwallService
                             'name' => data_get($variantData, 'name'),
                             'sku' => data_get($variantData, 'sku'),
                             'price' => data_get($variantData, 'unitPrice.value'),
-                            'compare_at_price' => data_get($variantData, 'compareAtPrice.value') ?? null,
+                            'compare_at_price' => data_get($variantData, 'compareAtPrice.value'),
                             'currency' => data_get($variantData, 'unitPrice.currency'),
                             'stock_status' => data_get($variantData, 'stock.type'),
                             'stock_count' => data_get($variantData, 'stock.inStock') ?? 0,
@@ -340,10 +340,10 @@ class FourthwallService
                             'length' => data_get($variantData, 'dimensions.length'),
                             'width' => data_get($variantData, 'dimensions.width'),
                             'dimension_unit' => data_get($variantData, 'dimensions.unit'),
-                            'description' => data_get($variantData, 'attributes.description') ?? null,
-                            'size' => data_get($variantData, 'attributes.size.name') ?? null,
-                            'color_name' => data_get($variantData, 'attributes.color.name') ?? null,
-                            'color_swatch' => data_get($variantData, 'attributes.color.swatch') ?? null,
+                            'description' => data_get($variantData, 'attributes.description'),
+                            'size' => data_get($variantData, 'attributes.size.name'),
+                            'color_name' => data_get($variantData, 'attributes.color.name'),
+                            'color_swatch' => data_get($variantData, 'attributes.color.swatch'),
                         ]
                     );
                 }
@@ -444,9 +444,9 @@ class FourthwallService
                     ->usingFileName($filename)
                     ->usingName(pathinfo($filename, PATHINFO_FILENAME))
                     ->withCustomProperties([
-                        'alt_text' => data_get($imageData, 'alt') ?? null,
-                        'width' => data_get($imageData, 'width') ?? null,
-                        'height' => data_get($imageData, 'height') ?? null,
+                        'alt_text' => data_get($imageData, 'alt'),
+                        'width' => data_get($imageData, 'width'),
+                        'height' => data_get($imageData, 'height'),
                         'provider_url' => data_get($imageData, 'url'),
                         'provider_id' => data_get($imageData, 'id'),
                     ])
