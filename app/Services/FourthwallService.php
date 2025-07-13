@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Jobs\ProcessProductImage;
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
-use App\Models\StoreObjects\ProductImage;
 use App\Models\StoreObjects\ProductVariant;
 use App\Models\StoreObjects\Promotion;
 use App\Settings\FourthwallSettings;
@@ -59,7 +58,7 @@ class FourthwallService
     public function __construct()
     {
         // Read the config first, then allow the Filament setting to override it if it's true
-        $configEnabled  = config('services.fourthwall.enabled');
+        $configEnabled = config('services.fourthwall.enabled');
         $settingEnabled = app(FourthwallSettings::class)->enable_integration;
         $configBaseUrl = config('services.fourthwall.base_url');
         $settingBaseUrl = app(FourthwallSettings::class)->base_url;
@@ -153,12 +152,14 @@ class FourthwallService
 
     /**
      * Sync Promotions from the Fourthwall API
+     *
      * @throws ConnectionException|RequestException
      */
     public function syncPromotions(): void
     {
         if (! $this->enabled) {
             Log::error('The Fourthwall integration is not enabled.');
+
             return;
         }
 
@@ -170,10 +171,10 @@ class FourthwallService
                 throw new RuntimeException('Failed to fetch promotions from the Fourthwall API.');
             }
         } catch (ConnectionException $e) {
-            Log::error('Failed to connect to Fourthwall API: ' . $e->getMessage());
+            Log::error('Failed to connect to Fourthwall API: '.$e->getMessage());
             throw new RuntimeException('Connection to Fourthwall API failed.');
         } catch (Exception $e) {
-            Log::error('Unexpected error during promotions sync: ' . $e->getMessage());
+            Log::error('Unexpected error during promotions sync: '.$e->getMessage());
             throw $e;
         }
 
@@ -183,63 +184,63 @@ class FourthwallService
                 yield $promotionData;
             }
         })->chunk($this->promotionChunkSize)
-        ->each(function ($promotionChunk) {
-            foreach ($promotionChunk as $promotionData) {
-                $promotionTitle = data_get($promotionData, 'title');
+            ->each(function ($promotionChunk) {
+                foreach ($promotionChunk as $promotionData) {
+                    $promotionTitle = data_get($promotionData, 'title');
 
-                // Generate a fallback name if the title doesn't exist
-                if (empty($promotionTitle)) {
-                    $promotionType = data_get($promotionData, 'type', 'Promotion');
-                    $promotionCode = data_get($promotionData, 'code');
-                    $promotionId = data_get($promotionData, 'id');
+                    // Generate a fallback name if the title doesn't exist
+                    if (empty($promotionTitle)) {
+                        $promotionType = data_get($promotionData, 'type', 'Promotion');
+                        $promotionCode = data_get($promotionData, 'code');
+                        $promotionId = data_get($promotionData, 'id');
 
-                    // Dynamic fallback name
-                    $promotionTitle = $promotionType . (!empty($promotionCode) ? " - {$promotionCode}" : '') . " [#{$promotionId}]";
-                }
+                        // Dynamic fallback name
+                        $promotionTitle = $promotionType.(! empty($promotionCode) ? " - {$promotionCode}" : '')." [#{$promotionId}]";
+                    }
 
-                try {
-                    $promotion = Promotion::updateOrCreate(
-                        ['provider_id' => data_get($promotionData, 'id')],
-                        [
-                            'title' => $promotionTitle,
-                            'code' => data_get($promotionData, 'code'),
-                            'type' => data_get($promotionData, 'type'),
-                            'status' => data_get($promotionData, 'status'),
-                            'discount_type' => data_get($promotionData, 'discount.type'),
-                            'percentage' => data_get($promotionData, 'discount.percentage'),
-                            'amount_value' => data_get($promotionData, 'discount.money.value'),
-                            'amount_currency' => data_get($promotionData, 'discount.money.currency'),
-                            'max_uses' => data_get($promotionData, 'limits.maximumUsesNumber'),
-                            'one_use_per_customer' => data_get($promotionData, 'limits.oneUsePerCustomer'),
-                            'applies_to' => data_get($promotionData, 'appliesTo.type'),
-                            'min_order_value' => data_get($promotionData, 'requirements.minimumOrderValue.value'),
-                            'min_order_currency' => data_get($promotionData, 'requirements.minimumOrderValue.currency'),
-                        ]
-                    );
+                    try {
+                        $promotion = Promotion::updateOrCreate(
+                            ['provider_id' => data_get($promotionData, 'id')],
+                            [
+                                'title' => $promotionTitle,
+                                'code' => data_get($promotionData, 'code'),
+                                'type' => data_get($promotionData, 'type'),
+                                'status' => data_get($promotionData, 'status'),
+                                'discount_type' => data_get($promotionData, 'discount.type'),
+                                'percentage' => data_get($promotionData, 'discount.percentage'),
+                                'amount_value' => data_get($promotionData, 'discount.money.value'),
+                                'amount_currency' => data_get($promotionData, 'discount.money.currency'),
+                                'max_uses' => data_get($promotionData, 'limits.maximumUsesNumber'),
+                                'one_use_per_customer' => data_get($promotionData, 'limits.oneUsePerCustomer'),
+                                'applies_to' => data_get($promotionData, 'appliesTo.type'),
+                                'min_order_value' => data_get($promotionData, 'requirements.minimumOrderValue.value'),
+                                'min_order_currency' => data_get($promotionData, 'requirements.minimumOrderValue.currency'),
+                            ]
+                        );
 
-                    Log::info("Synced promotion: {$promotion->title}");
+                        Log::info("Synced promotion: {$promotion->title}");
 
-                    if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData, 'appliesTo.products'))) {
-                        foreach (data_get($promotionData, 'appliesTo.products') as $productId) {
-                            $product = Product::where('provider_id', $productId)->first();
+                        if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData, 'appliesTo.products'))) {
+                            foreach (data_get($promotionData, 'appliesTo.products') as $productId) {
+                                $product = Product::where('provider_id', $productId)->first();
 
-                            if ($product) {
-                                $promotion->products()->syncWithoutDetaching([$product->id]);
-                            } else {
-                                Log::warning("Product with provider_id {$productId} not found for promotion: {$promotion->title}");
+                                if ($product) {
+                                    $promotion->products()->syncWithoutDetaching([$product->id]);
+                                } else {
+                                    Log::warning("Product with provider_id {$productId} not found for promotion: {$promotion->title}");
+                                }
                             }
                         }
+                    } catch (Exception $e) {
+                        Log::error("Error syncing promotion : {$e->getMessage()}");
+                        throw new RuntimeException('Error syncing promotion');
                     }
-                } catch (Exception $e) {
-                    Log::error("Error syncing promotion : {$e->getMessage()}");
-                    throw new RuntimeException("Error syncing promotion");
                 }
-            }
 
-            if ($this->enable_garbage_collection) {
-                gc_collect_cycles();
-            }
-        });
+                if ($this->enable_garbage_collection) {
+                    gc_collect_cycles();
+                }
+            });
 
         Log::info('All promotions synced successfully.');
     }
@@ -269,7 +270,7 @@ class FourthwallService
 
             foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
                 foreach ($productBatch as $productData) {
-                    Log::info('Syncing product: ' . data_get($productData, 'name') . " for collection: {$collection->name}");
+                    Log::info('Syncing product: '.data_get($productData, 'name')." for collection: {$collection->name}");
                     $product = Product::updateOrCreate(
                         ['provider_id' => data_get($productData, 'id')],
                         [
@@ -283,9 +284,9 @@ class FourthwallService
                     );
 
                     // There is additional product data that can only be obtained via the Open API, so make a request and update it.
-                    //$openAPIProductData = $this->openApiGetRequest("products/{$product->provider_id}");
-                    //$product->setMoreDetailsAttribute(data_get($openAPIProductData, 'additionalInformation.moreDetails')); // Currently these results appear to be empty in the response, despite being documented
-                    //$product->setProductInformationAttribute(data_get($openAPIProductData, 'additionalInformation.sizeAndFit')); // Currently these results appear to be empty in the response, despite being documented
+                    // $openAPIProductData = $this->openApiGetRequest("products/{$product->provider_id}");
+                    // $product->setMoreDetailsAttribute(data_get($openAPIProductData, 'additionalInformation.moreDetails')); // Currently these results appear to be empty in the response, despite being documented
+                    // $product->setProductInformationAttribute(data_get($openAPIProductData, 'additionalInformation.sizeAndFit')); // Currently these results appear to be empty in the response, despite being documented
 
                     // Ensure product is linked to the collection (pivot table)
                     $product->collections()->syncWithoutDetaching([$collection->id]);
@@ -423,15 +424,17 @@ class FourthwallService
 
             if ($existing) {
                 Log::info("Image {$imageData['id']} already synced for product {$product->name}");
+
                 return;
             }
 
             $filename = basename(data_get($imageData, 'url'));
 
-            $response = Http::withOptions(['verify_ssl' => $this->verify_ssl])->get(data_get($imageData, 'url'));
+            $response = Http::withOptions(['verify' => $this->verify_ssl])->get(data_get($imageData, 'url'));
 
             if (! $response->successful()) {
                 Log::error('Failed to download image: '.data_get($imageData, 'url'));
+
                 return;
             }
 
@@ -449,11 +452,11 @@ class FourthwallService
                     ])
                     ->toMediaCollection('images');
             } catch (FileDoesNotExist $e) {
-                Log::error('The file does not exist: '. $e->getMessage());
+                Log::error('The file does not exist: '.$e->getMessage());
                 throw new RuntimeException('The file does not exist.');
             } catch (FileIsTooBig $e) {
-                Log::error('The file is too big: '. $e->getMessage());
-                throw new RuntimeException('The file is too big: '. $e->getMessage());
+                Log::error('The file is too big: '.$e->getMessage());
+                throw new RuntimeException('The file is too big: '.$e->getMessage());
             }
 
             Log::info("Stored image for product {$product->name}: {$filename}");
@@ -655,7 +658,7 @@ class FourthwallService
             $url = "{$this->baseUrl}/{$endpoint}?".http_build_query($queryParams, '', '&');
 
             return Http::withOptions([
-                'verify_ssl' => $this->verify_ssl,
+                'verify' => $this->verify_ssl,
             ])
                 ->withQueryParameters($queryParams)
                 ->{$method}($url, $method === 'get' ? [] : $bodyParams) // Only send body for non-GET requests
@@ -827,19 +830,20 @@ class FourthwallService
 
     /**
      * Make a request to Fourthwall’s Open API (v1.0) with Basic Auth.
+     *
      * @throws RequestException
-     * * @throws ConnectionException
+     *                          * @throws ConnectionException
      */
     private function openApiGetRequest(string $endpoint, array $queryParams = []): array
     {
         $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
 
         return Http::withOptions([
-            'verify_ssl' => $this->verify_ssl,
+            'verify' => $this->verify_ssl,
         ])
             ->withHeaders([
                 'Authorization' => "Basic {$authToken}",
-                'Content-Accept'        => 'application/json',
+                'Content-Accept' => 'application/json',
             ])
             ->get("https://api.fourthwall.com/open-api/v1.0/{$endpoint}", $queryParams)
             ->throw()
@@ -854,6 +858,7 @@ class FourthwallService
     {
         if (! $this->enabled) {
             Log::error('Fourthwall integration is not enabled; skipping order sync.');
+
             return;
         }
 
