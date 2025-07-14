@@ -25,7 +25,7 @@ class PagePolicy
 
     public function update(User $user, Page $page): bool
     {
-        if ($user->can('update-post')) {
+        if ($user->can('update-page')) {
             return true;
         }
 
