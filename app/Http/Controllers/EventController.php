@@ -13,7 +13,7 @@ class EventController extends Controller
     {
         // Figure out which month/year to show (from ?scheduleMonth, ?scheduleYear or fallback to now)
         $month = (int) $request->query('scheduleMonth', now()->month);
-        $year  = (int) $request->query('scheduleYear',  now()->year);
+        $year  = (int) $request->query('scheduleYear', now()->year);
 
         // Get all the computed calendar data
         $calendarData = ScheduleCalendarBlock::mutateData([
