@@ -318,7 +318,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         );
     }
 
-    public function canUserViewMedia(User $user): bool
+    public function canUserViewMedia(?User $user): bool
     {
         if ($this->published_at !== null) {
             return true;

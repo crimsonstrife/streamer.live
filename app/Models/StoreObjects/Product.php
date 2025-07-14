@@ -268,7 +268,7 @@ class Product extends BaseModel implements HasMedia, Searchable
             ->where('collection_name', 'images');
     }
 
-    public function canUserViewMedia(User $user): bool
+    public function canUserViewMedia(?User $user): bool
     {
         if ($this->access === 'PUBLIC') {
             return true;
