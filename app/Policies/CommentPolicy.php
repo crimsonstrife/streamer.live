@@ -61,7 +61,6 @@ class CommentPolicy
         }
 
         return false;
-
     }
 
     public function delete(User $user, Comment $comment): bool
