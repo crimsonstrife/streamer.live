@@ -42,7 +42,7 @@ class ProductPolicy
             return true;
         }
 
-        return $user->id === $product->user_id; // Users can always view their own orders
+        return false;
     }
 
     /**

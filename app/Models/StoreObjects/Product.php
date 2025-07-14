@@ -3,6 +3,7 @@
 namespace App\Models\StoreObjects;
 
 use App\Casts\MoneyValueCast;
+use App\Models\AuthObjects\User;
 use App\Models\BaseModel;
 use App\Models\SharedObjects\Category;
 use App\Traits\IsPermissible;
@@ -265,5 +266,44 @@ class Product extends BaseModel implements HasMedia, Searchable
             ->media() // the base Spatie morphMany
             ->where('model_type', 'App\Models\StoreObjects\Product') // only “products” files
             ->where('collection_name', 'images');
+    }
+
+    public function canUserViewMedia(User $user): bool
+    {
+        if ($this->access === 'PUBLIC') {
+            return true;
+        }
+
+        if ($this->access === 'AVAILABLE') {
+            return true;
+        }
+
+        // visitors cannot view private or unavailable items
+        if ($user === null) {
+            return false;
+        }
+
+        // admin overrides status and access
+        if ($user->can('is-admin') || $user->can('is-super-admin')) {
+            return true;
+        }
+
+        if ($user->can('read-product')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function canUserCreateMedia(User $user): bool
+    {
+        // admin overrides status and access
+        return $user->can('is-admin') || $user->can('is-super-admin');
+    }
+
+    public function canUserDeleteMedia(User $user): bool
+    {
+        // admin overrides status and access
+        return $user->can('is-admin') || $user->can('is-super-admin');
     }
 }
