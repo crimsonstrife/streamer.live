@@ -79,6 +79,9 @@
         }
     </style>
 @endpush
+@php
+    $blogSlug = \App\Utilities\BlogHelper::getBlogSlug();
+@endphp
 <div class="container py-4">
     <h2 class="mb-4">Latest Posts</h2>
     <div class="row mb-2">
@@ -117,7 +120,7 @@
                             <x-fas-comments height="1rem" width="auto" />
                             {{ $post->comments_count ?? 0 }} {{ Str::plural('comment', $post->comments_count ?? 0) }}
                         </p>
-                        <a href="{{ route('blog.post', ['slug' => $post->slug]) }}"
+                        <a href="{{ route($blogSlug.'.post', ['slug' => $post->slug]) }}"
                            class="icon-link gap-1 icon-link-hover stretched-link">Read More
                             <x-fas-chevron-right height="1rem" width="auto" />
                         </a>

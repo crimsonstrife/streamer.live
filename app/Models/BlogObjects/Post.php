@@ -104,6 +104,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         'blog_author_id',
         'category_id',
         'comments_locked',
+        'is_announcement',
     ];
 
     /**
@@ -115,6 +116,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
         'comments_locked' => 'bool',
+        'is_announcement' => 'bool',
     ];
 
     /**
@@ -219,6 +221,11 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
     public function scopeDraft(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
     {
         return $query->whereNull('published_at');
+    }
+
+    public function scopeAnnouncements(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
+    {
+        return $query->whereNotNull('is_announcement', true);
     }
 
     public function author(): BelongsTo

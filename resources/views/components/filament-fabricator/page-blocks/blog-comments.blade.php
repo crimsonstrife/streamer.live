@@ -150,22 +150,23 @@
     <div class="alert alert-danger">Comments block requires a post context.</div>
 @else
     @php
-        // Grab sort from query-string (default = newest)
-        $sort = request()->query('sort', 'newest');
-        // Filter only approved top-level comments
-        $comments = $post
-            ->comments
-            ->where('approved', true)
-            ->whereNull('reply_id');
+        $blogSlug = \App\Utilities\BlogHelper::getBlogSlug();
+            // Grab sort from query-string (default = newest)
+            $sort = request()->query('sort', 'newest');
+            // Filter only approved top-level comments
+            $comments = $post
+                ->comments
+                ->where('approved', true)
+                ->whereNull('reply_id');
 
-        // Perform collection-based sort
-        if ($sort === 'top') {
-            $comments = $comments->sortByDesc('score');
-        } elseif ($sort === 'oldest') {
-            $comments = $comments->sortBy('created_at');
-        } else { // newest
-            $comments = $comments->sortByDesc('created_at');
-        }
+            // Perform collection-based sort
+            if ($sort === 'top') {
+                $comments = $comments->sortByDesc('score');
+            } elseif ($sort === 'oldest') {
+                $comments = $comments->sortBy('created_at');
+            } else { // newest
+                $comments = $comments->sortByDesc('created_at');
+            }
     @endphp
     <div class="container mt-5">
         <div class="mb-5 hstack gap-3 align-items-center">
@@ -219,7 +220,7 @@
                         <img class="rounded-circle comment-img" src="{{ $user->profile_photo_url }}" height="50px"
                              width="50px" alt="profile photo">
                         <div class="flex-grow-1 ms-3">
-                            <form method="POST" action="{{ route('blog.comment.submit', ['post' => $post->slug]) }}">
+                            <form method="POST" action="{{ route($blogSlug.'.comment.submit', ['post' => $post->slug]) }}">
                                 @csrf
                                 <div class="form-group">
                                     <input type="hidden" name="reply_id" id="reply_id" value="">
