@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\NewsletterController;
@@ -54,6 +55,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
     Route::post('newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])
         ->name('newsletter.unsubscribe');
+
+    Route::get('/events',         [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/{event}', [EventController::class, 'show'] )->name('events.show');
 
     // User Dashboard
     Route::middleware([
