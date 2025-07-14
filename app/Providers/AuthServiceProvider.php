@@ -9,11 +9,13 @@ use App\Models\AuthObjects\User;
 use App\Models\BlogObjects\Comment;
 use App\Models\BlogObjects\Post;
 use App\Models\BlogObjects\Reply;
+use App\Models\Media;
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Order;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
 use App\Policies\CommentPolicy;
+use App\Policies\MediaPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\PermissionGroupPolicy;
 use App\Policies\PermissionPolicy;
@@ -48,6 +50,7 @@ class AuthServiceProvider extends ServiceProvider
         ProductVariant::class => ProductVariantPolicy::class,
         Collection::class => CommentPolicy::class,
         Order::class => OrderPolicy::class,
+        Media::class => MediaPolicy::class,
     ];
 
     /**
