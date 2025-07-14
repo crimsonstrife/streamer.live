@@ -21,7 +21,7 @@
                 ->map(fn($event) => (object)[
                     'type'      => 'event',
                     'title'     => $event->title,
-                    'url'       => '',// TODO: Setup routes and views for events on front-end
+                    'url'       => route('events.show', $event),
                     'date'      => $event->starts_at,
                 ]);
 
