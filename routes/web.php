@@ -56,8 +56,8 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::post('newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])
         ->name('newsletter.unsubscribe');
 
-    Route::get('/events',         [EventController::class, 'index'])->name('events.index');
-    Route::get('/events/{event}', [EventController::class, 'show'] )->name('events.show');
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
 
     // User Dashboard
     Route::middleware([
