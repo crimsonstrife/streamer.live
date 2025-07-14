@@ -5,13 +5,18 @@
         </h2>
     </x-slot>
 
-    <div class="py-5">
-        <div class="container">
-            <div class="card shadow-lg rounded">
-                <div class="card-body">
-                    <x-welcome />
-                </div>
+    <div class="container py-5">
+        <div class="row gy-4">
+            <div class="col-lg-4">
+                @include('dashboard.partials.profile-card')
+                @include('dashboard.partials.notifications')
+            </div>
+            <div class="col-lg-8">
+                @include('dashboard.partials.recent-orders')
+                @include('dashboard.partials.announcements')
+                @include('dashboard.partials.integrations')
             </div>
         </div>
     </div>
 </x-app-layout>
+
