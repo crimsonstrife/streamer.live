@@ -212,6 +212,9 @@ class TwitchService
      */
     public function getChannelSchedule(int $first = 5, Carbon $startTime = null): ?array
     {
+        // Ensure the access token is initialized
+        $this->authenticate();
+
         $broadcasterId = $this->getBroadcasterId();
         if (! $broadcasterId) {
             return null;
