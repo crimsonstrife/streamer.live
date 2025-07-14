@@ -12,6 +12,7 @@ use App\Models\BlogObjects\Reply;
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Order;
 use App\Models\StoreObjects\Product;
+use App\Models\StoreObjects\ProductVariant;
 use App\Policies\CommentPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\PermissionGroupPolicy;
@@ -19,6 +20,7 @@ use App\Policies\PermissionPolicy;
 use App\Policies\PermissionSetPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\ProductVariantPolicy;
 use App\Policies\ReplyPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
@@ -43,6 +45,7 @@ class AuthServiceProvider extends ServiceProvider
         Comment::class => CommentPolicy::class,
         Reply::class => ReplyPolicy::class,
         Product::class => ProductPolicy::class,
+        ProductVariant::class => ProductVariantPolicy::class,
         Collection::class => CommentPolicy::class,
         Order::class => OrderPolicy::class,
     ];
