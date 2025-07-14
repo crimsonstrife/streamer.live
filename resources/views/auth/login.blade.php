@@ -1,4 +1,5 @@
 <x-guest-layout>
+    <x-authentication-card>
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <main class="form-signin w-50 m-auto">
                 <!-- Logo -->
@@ -54,13 +55,9 @@
                         <p style="margin-bottom: unset;">© {{ date('Y') }} {{ $siteName }}</p>
                     @endif
                 @endisset
-                <p class="mt-5 mb-3 text-body-secondary">
-                    <span>
-                        <p>Powered by Streamer.live © 2025 <?php if (date("Y") > date("Y", strtotime("2025"))) {
-                        echo " - " . date("Y");}; ?> by CrimsonStrife, All rights reserved.</p>
-                    </span>
-                </p>
+            <x-copyright />
         </main>
     </div>
+    </x-authentication-card>
 </x-guest-layout>
 
