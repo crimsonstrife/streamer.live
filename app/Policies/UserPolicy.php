@@ -72,4 +72,40 @@ class UserPolicy
     {
         return $user->can('delete-user', $model);
     }
+
+    /**
+     * Determine whether the user can restore the model.
+     *
+     * @param User $user The authenticated user.
+     * @param User $model The User model instance being restored.
+     * @return bool True if the user has the 'restore-user' permission for the given model, false otherwise.
+     */
+    public function restore(User $user, User $model): bool
+    {
+        return $user->can('restore-user', $model);
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     *
+     * @param User $user The authenticated user.
+     * @param User $model The User model instance being permanently deleted.
+     * @return bool True if the user has the 'force-delete-user' permission for the given model, false otherwise.
+     */
+    public function forceDelete(User $user, User $model): bool
+    {
+        return $user->can('force-delete-user', $model);
+    }
+
+    /**
+     * Determine whether the user can replicate the model.
+     *
+     * @param User $user The authenticated user.
+     * @param User $model The User model instance being replicated.
+     * @return bool True if the user has the 'replicate-user' permission for the given model, false otherwise.
+     */
+    public function replicate(User $user, User $model): bool
+    {
+        return $user->can('replicate-user', $model);
+    }
 }
