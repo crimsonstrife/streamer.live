@@ -4,6 +4,7 @@ namespace App\Models\BlogObjects;
 
 use App\Contracts\CommentableContract;
 use App\Enums\Sort;
+use App\Models\AuthObjects\User;
 use App\Models\Media;
 use App\Models\SharedObjects\Category;
 use App\Traits\HasComments;
@@ -315,5 +316,44 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
             },
             $this->content,
         );
+    }
+
+    public function canUserViewMedia(User $user): bool
+    {
+        if ($this->published_at !== null) {
+            return true;
+        }
+
+        // visitors cannot view unpublished items
+        if ($user === null) {
+            return false;
+        }
+
+        // admin overrides published status
+        if ($user->can('is-admin') || $user->can('is-super-admin')) {
+            return true;
+        }
+
+        if ($user->can('read-post')) {
+            return true;
+        }
+
+        // authors can view their own unpublished posts
+        $author = $this->author();
+        $authorUser = $author->user();
+
+        return $user->id === $authorUser->id;
+    }
+
+    public function canUserCreateMedia(User $user): bool
+    {
+        // admin overrides status and access
+        return $user->can('is-admin') || $user->can('is-super-admin');
+    }
+
+    public function canUserDeleteMedia(User $user): bool
+    {
+        // admin overrides status and access
+        return $user->can('is-admin') || $user->can('is-super-admin');
     }
 }
