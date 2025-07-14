@@ -14,6 +14,7 @@ use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Order;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
+use App\Policies\CollectionPolicy;
 use App\Policies\CommentPolicy;
 use App\Policies\MediaPolicy;
 use App\Policies\OrderPolicy;
@@ -48,7 +49,7 @@ class AuthServiceProvider extends ServiceProvider
         Reply::class => ReplyPolicy::class,
         Product::class => ProductPolicy::class,
         ProductVariant::class => ProductVariantPolicy::class,
-        Collection::class => CommentPolicy::class,
+        Collection::class => CollectionPolicy::class,
         Order::class => OrderPolicy::class,
         Media::class => MediaPolicy::class,
     ];
