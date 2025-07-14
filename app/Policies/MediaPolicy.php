@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Media;
-use App\Models\User;
+use App\Models\AuthObjects\User;
 use Illuminate\Support\Str;
 
 class MediaPolicy
