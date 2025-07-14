@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Filament\Resources\PostResource;
+use App\Http\Livewire\Profile\UpdateProfileInformationForm as AppUpdateProfile;
 use App\Models\BlogObjects\Comment;
 use App\Observers\CommentObserver;
 use App\Services\CustomMediaPathGenerator;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
@@ -136,5 +138,11 @@ class AppServiceProvider extends ServiceProvider
         if (Schema::hasTable('pages')) {
             view()->share('shopSlug', ShopHelper::getShopSlug());
         }
+
+        // this will override the alias Jetstream registered
+        Livewire::component(
+            'profile.update-profile-information-form',
+            AppUpdateProfile::class
+        );
     }
 }

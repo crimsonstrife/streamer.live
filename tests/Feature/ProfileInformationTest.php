@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AuthObjects\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Jetstream\Http\Livewire\UpdateProfileInformationForm;
+use App\Http\Livewire\Profile\UpdateProfileInformationForm;
 use Livewire\Livewire;
 use Tests\TestCase;
 
