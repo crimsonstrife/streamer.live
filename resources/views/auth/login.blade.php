@@ -42,9 +42,9 @@
                             </a>
                         @endif
 
-                        <button type="submit" class="btn btn-primary w-100 py-2">
-                            {{ __('Log in') }}
-                        </button>
+                            <x-button>
+                                {{ __('Log In') }}
+                            </x-button>
                     </div>
                 </form>
 
