@@ -71,7 +71,6 @@ class ReplyPolicy
         }
 
         return false;
-
     }
 
     public function delete(User $user, Reply $comment): bool
