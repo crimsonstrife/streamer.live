@@ -1297,10 +1297,12 @@ $(document).on("ajaxPageLoad", function () {
                             n.title &&
                                 (U +=
                                     '<div class="ui-widget-header ui-dialog-titlebar ui-corner-all blockTitle">' +
-                                    (n.title || "&nbsp;") +
+                                    DOMPurify.sanitize(n.title || "&nbsp;") +
                                     "</div>"),
                             (U +=
-                                '<div class="ui-widget-content ui-dialog-content"></div>'),
+                                '<div class="ui-widget-content ui-dialog-content">' +
+                                DOMPurify.sanitize(y || "") +
+                                '</div>'),
                             (U += "</div>"))
                           : (U = k
                                 ? '<div class="blockUI ' +
@@ -1558,8 +1560,8 @@ $(document).on("ajaxPageLoad", function () {
             }),
             (e.growlUI = function (t, o, n, i) {
                 const s = e('<div class="growlUI"></div>');
-                t && s.append("<h1>" + t + "</h1>"),
-                    o && s.append("<h2>" + o + "</h2>"),
+                t && s.append("<h1>" + DOMPurify.sanitize(t) + "</h1>"),
+                    o && s.append("<h2>" + DOMPurify.sanitize(o) + "</h2>"),
                     void 0 === n && (n = 3e3);
                 const l = function (t) {
                     (t = t || {}),
