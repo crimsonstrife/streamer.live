@@ -282,6 +282,15 @@
         },
 
         highlighter: function (text) {
+            const escapeHtml = function (str) {
+                return str
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
+            };
+
             return text.replace(
                 new RegExp(
                     "(" +
@@ -290,7 +299,7 @@
                     "ig",
                 ),
                 function ($1, match) {
-                    return "<strong>" + match + "</strong>";
+                    return "<strong>" + escapeHtml(match) + "</strong>";
                 },
             );
         },
