@@ -1,6 +1,11 @@
-version: "1.0"
-linter: jetbrains/qodana-php:2025.1
+version: '1.0'
+linter: 'jetbrains/qodana-php:2025.1'
 profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
+exclude:
+  - name: All
+    paths:
+      - _ide_helper_models.php
+      - public/vendor
