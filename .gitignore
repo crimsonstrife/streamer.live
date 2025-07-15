@@ -28,6 +28,7 @@ storage/debugbar/*
 .phpstorm.meta.php
 _ide_helper.php
 _ide_helper_models.php
+streamer.live.code-workspace
 /storage/shieldon_firewall
 /storage/shieldon_firewall/data_driver_file/shieldon_sessions
 /storage/geoip/GeoLite2-Country.mmdb
