@@ -8,6 +8,7 @@ use App\Models\BlogObjects\Comment;
 use App\Observers\CommentObserver;
 use App\Services\CustomMediaPathGenerator;
 use App\Services\FourthwallService;
+use App\Services\SecureGuestModeService;
 use App\Services\Spam\AkismetEvaluator;
 use App\Services\Spam\BlacklistEvaluator;
 use App\Services\Spam\StopForumSpamEvaluator;
@@ -72,6 +73,8 @@ class AppServiceProvider extends ServiceProvider
                 $app->tagged('spam.evaluator')
             );
         });
+
+        $this->app->singleton('secure-guest-mode', fn($app) => new SecureGuestModeService);
 
         $this->app->tag(
             [
