@@ -4,7 +4,6 @@ namespace App\Models\StoreObjects;
 
 use App\Casts\MoneyValueCast;
 use App\Models\AuthObjects\User;
-use App\Models\StoreObjects\OrderItem;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     use IsPermissible;
+
     protected $fillable = [
         'provider_id',
         'friendly_id',
@@ -70,5 +70,17 @@ class Order extends Model
     public function orderItems(): HasMany
     {
         return $this->items();
+    }
+
+    public function getHasDiscountAttribute(): bool
+    {
+        return $this->discount && $this->discount->raw() > 0;
+    }
+
+    public function getFormattedDiscountAttribute(): string
+    {
+        return $this->discount
+            ? $this->discount->symbolFormatted()
+            : 'N/A';
     }
 }

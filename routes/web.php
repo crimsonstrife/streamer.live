@@ -6,6 +6,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
@@ -34,7 +35,7 @@ use Shieldon\Firewall\Panel;
 
 Route::any('/firewall/panel/{path?}', function () {
 
-    $panel = new Panel();
+    $panel = new Panel;
     $panel->csrf(['_token' => csrf_token()]);
     $panel->entry();
 
@@ -64,11 +65,26 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         'auth:sanctum',
         config('jetstream.auth_session'),
         'verified',
-        'firewall'
+        'firewall',
     ])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard');
         })->name('dashboard');
+        Route::middleware(['store.enabled'])
+            ->group(function () {
+                $shopSlug = ShopHelper::getShopSlug();               // 'shop'
+                $productSlug = ShopHelper::getProductSlug();         // 'product'
+                $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
+
+                Route::prefix($shopSlug)->name($shopSlug.'.')->group(function () {
+                    $productSlug = ShopHelper::getProductSlug();         // 'product'
+                    $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
+                    // List the current user’s orders
+                    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+                    // Show a single order’s details
+                    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+                });
+            });
     });
 
     /**
@@ -170,6 +186,10 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('category');
                 Route::get('/', FabricatorPageController::class)->name('page');
                 Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
+                // List the current user’s orders
+                Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+                // Show a single order’s details
+                Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
             });
             Route::post("/$productSlug/{product}/review", [ProductReviewController::class, 'store'])
                 ->middleware('auth')
@@ -178,14 +198,14 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
     Route::get('/assets/fonts.css', function () {
         $fonts = Font::all();
-        $css   = '';
+        $css = '';
 
         foreach ($fonts as $font) {
-            $url  = $font->is_builtin
+            $url = $font->is_builtin
                 ? asset("{$font->file_path}")
                 : $font->getFirstMediaUrl('fonts');
-            $wMin = $font->weight_min  ?? 100;
-            $wMax = $font->weight_max  ?? 900;
+            $wMin = $font->weight_min ?? 100;
+            $wMax = $font->weight_max ?? 900;
 
             $css .= <<<CSS
 @font-face {

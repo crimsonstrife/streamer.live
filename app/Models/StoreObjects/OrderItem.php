@@ -3,8 +3,6 @@
 namespace App\Models\StoreObjects;
 
 use App\Casts\MoneyValueCast;
-use App\Models\StoreObjects\Order;
-use App\Models\StoreObjects\ProductVariant;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -59,5 +57,10 @@ class OrderItem extends Model
     public function getSizeAttribute(): ?string
     {
         return $this->attributes['size']['name'] ?? null;
+    }
+
+    public function getNameAttribute(): string
+    {
+        return html_entity_decode($this->attributes['name']);
     }
 }
