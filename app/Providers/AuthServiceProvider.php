@@ -14,6 +14,7 @@ use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Order;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
+use App\Models\Ticket;
 use App\Policies\CollectionPolicy;
 use App\Policies\CommentPolicy;
 use App\Policies\MediaPolicy;
@@ -26,6 +27,7 @@ use App\Policies\ProductPolicy;
 use App\Policies\ProductVariantPolicy;
 use App\Policies\ReplyPolicy;
 use App\Policies\RolePolicy;
+use App\Policies\TicketPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Spatie\Permission\Models\Permission;
@@ -52,6 +54,7 @@ class AuthServiceProvider extends ServiceProvider
         Collection::class => CollectionPolicy::class,
         Order::class => OrderPolicy::class,
         Media::class => MediaPolicy::class,
+        Ticket::class => TicketPolicy::class,
     ];
 
     /**

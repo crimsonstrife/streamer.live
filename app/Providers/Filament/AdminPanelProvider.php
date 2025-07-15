@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages;
+use App\Filament\Resources;
 use App\Listeners\SwitchTeam;
 use App\Livewire\CurrentStreamStatus;
 use App\Livewire\PanelCalendarWidget;
@@ -19,13 +21,9 @@ use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
-use App\Filament\Pages;
-use App\Filament\Resources;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
-use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
@@ -138,6 +136,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\HeroResource::class,
                 Resources\MediaResource::class,
                 Resources\StreamAlertRuleResource::class,
+                Resources\TicketResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([

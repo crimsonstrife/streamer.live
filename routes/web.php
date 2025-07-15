@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TicketController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Models\Font;
 use App\Settings\TwitchSettings;
@@ -70,6 +71,31 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::get('/dashboard', function () {
             return view('dashboard');
         })->name('dashboard');
+
+        // List the current user’s tickets
+        Route::get('tickets', [TicketController::class, 'index'])
+            ->name('tickets.index');
+
+        // Show the “create ticket” form
+        Route::get('tickets/create', [TicketController::class, 'create'])
+            ->name('tickets.create');
+
+        // Store a brand-new ticket (with its initial customer message)
+        Route::post('tickets', [TicketController::class, 'store'])
+            ->name('tickets.store');
+
+        // View a single ticket (public & private messages)
+        Route::get('tickets/{ticket}', [TicketController::class, 'show'])
+            ->name('tickets.show');
+
+        // Post a public reply to a ticket (ticket owner only)
+        Route::post('tickets/{ticket}/reply', [TicketController::class, 'reply'])
+            ->name('tickets.reply');
+
+        // Add an internal note to a ticket (staff only)
+        Route::post('tickets/{ticket}/note', [TicketController::class, 'note'])
+            ->name('tickets.note');
+
         Route::middleware(['store.enabled'])
             ->group(function () {
                 $shopSlug = ShopHelper::getShopSlug();               // 'shop'

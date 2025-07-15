@@ -2,13 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages;
+use App\Filament\Resources;
 use App\Plugins\BanPlugin;
+use Exception;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use App\Filament\Pages;
-use App\Filament\Resources;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -25,7 +26,7 @@ use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 class ModerationPanelProvider extends PanelProvider
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function panel(Panel $panel): Panel
     {
@@ -45,6 +46,7 @@ class ModerationPanelProvider extends PanelProvider
                 Resources\UserResource::class,
                 Resources\RoleResource::class,
                 Resources\CommentResource::class,
+                Resources\TicketResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Moderation/Pages'), for: 'App\\Filament\\Moderation\\Pages')
             ->pages([

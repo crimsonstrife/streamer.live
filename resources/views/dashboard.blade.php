@@ -12,8 +12,9 @@
                 @include('dashboard.partials.notifications')
             </div>
             <div class="col-lg-8">
-                @include('dashboard.partials.recent-orders')
                 @include('dashboard.partials.announcements')
+                @include('dashboard.partials.recent-orders')
+                @include('dashboard.partials.tickets')
                 @include('dashboard.partials.integrations')
             </div>
         </div>

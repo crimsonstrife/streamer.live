@@ -20,6 +20,7 @@
                 "manage-discord-settings",
                 "manage-fourthwall-settings",
                 "manage-twitch-settings",
+                "manage-tickets",
                 "view-analytics",
                 "view-settings",
                 "is-admin",
@@ -43,6 +44,7 @@
                 "access-telescope",
                 "manage-settings",
                 "manage-general-settings",
+                "manage-tickets",
                 "view-analytics",
                 "view-settings",
                 "is-admin",
@@ -57,7 +59,8 @@
             "permissions": [
                 "access-filament",
                 "view-analytics",
-                "is-moderator"
+                "is-moderator",
+                "manage-tickets"
             ]
         }
     ]
