@@ -1282,7 +1282,7 @@ $(document).on("ajaxPageLoad", function () {
                           n.title &&
                               (U +=
                                   '<div class="ui-widget-header ui-dialog-titlebar ui-corner-all blockTitle">' +
-                                  (n.title || "&nbsp;") +
+                                  DOMPurify.sanitize(n.title || "&nbsp;") +
                                   "</div>"),
                           (U +=
                               '<div class="ui-widget-content ui-dialog-content"></div>'),
@@ -1301,7 +1301,7 @@ $(document).on("ajaxPageLoad", function () {
                                     "</div>"),
                             (U +=
                                 '<div class="ui-widget-content ui-dialog-content">' +
-                                DOMPurify.sanitize(y || "") +
+                                DOMPurify.sanitize(DOMPurify.sanitize(y || "")) +
                                 "</div>"),
                             (U += "</div>"))
                           : (U = k
