@@ -24180,7 +24180,9 @@ namespace A21ns1g4ts\FilamentShortUrl\Facades {
     /**
      * @see \A21ns1g4ts\FilamentShortUrl\FilamentShortUrl
      */
-    class FilamentShortUrl {}
+    class FilamentShortUrl
+    {
+    }
 }
 
 namespace AnourValar\EloquentSerialize\Facades {
@@ -25260,14 +25262,18 @@ namespace ElmudoDev\FilamentCustomAttributeFileUpload\Facades {
     /**
      * @see \ElmudoDev\FilamentCustomAttributeFileUpload\FilamentCustomAttributeFileUpload
      */
-    class FilamentCustomAttributeFileUpload {}
+    class FilamentCustomAttributeFileUpload
+    {
+    }
 }
 
 namespace IbrahimBougaoua\FilaProgress\Facades {
     /**
      * @see \IbrahimBougaoua\FilaProgress\FilaProgress
      */
-    class FilaProgress {}
+    class FilaProgress
+    {
+    }
 }
 
 namespace Indra\Revisor\Facades {
@@ -25480,7 +25486,9 @@ namespace Joaopaulolndev\FilamentEditProfile\Facades {
     /**
      * @see \Joaopaulolndev\FilamentEditProfile\FilamentEditProfile
      */
-    class FilamentEditProfile {}
+    class FilamentEditProfile
+    {
+    }
 }
 
 namespace Laragear\Turnstile\Facades {
@@ -32458,21 +32466,51 @@ namespace Spatie\Newsletter\Support {
 }
 
 namespace {
-    class App extends \Illuminate\Support\Facades\App {}
-    class Arr extends \Illuminate\Support\Arr {}
-    class Artisan extends \Illuminate\Support\Facades\Artisan {}
-    class Auth extends \Illuminate\Support\Facades\Auth {}
-    class Blade extends \Illuminate\Support\Facades\Blade {}
-    class Broadcast extends \Illuminate\Support\Facades\Broadcast {}
-    class Bus extends \Illuminate\Support\Facades\Bus {}
-    class Cache extends \Illuminate\Support\Facades\Cache {}
-    class Concurrency extends \Illuminate\Support\Facades\Concurrency {}
-    class Config extends \Illuminate\Support\Facades\Config {}
-    class Context extends \Illuminate\Support\Facades\Context {}
-    class Cookie extends \Illuminate\Support\Facades\Cookie {}
-    class Crypt extends \Illuminate\Support\Facades\Crypt {}
-    class Date extends \Illuminate\Support\Facades\Date {}
-    class DB extends \Illuminate\Support\Facades\DB {}
+    class App extends \Illuminate\Support\Facades\App
+    {
+    }
+    class Arr extends \Illuminate\Support\Arr
+    {
+    }
+    class Artisan extends \Illuminate\Support\Facades\Artisan
+    {
+    }
+    class Auth extends \Illuminate\Support\Facades\Auth
+    {
+    }
+    class Blade extends \Illuminate\Support\Facades\Blade
+    {
+    }
+    class Broadcast extends \Illuminate\Support\Facades\Broadcast
+    {
+    }
+    class Bus extends \Illuminate\Support\Facades\Bus
+    {
+    }
+    class Cache extends \Illuminate\Support\Facades\Cache
+    {
+    }
+    class Concurrency extends \Illuminate\Support\Facades\Concurrency
+    {
+    }
+    class Config extends \Illuminate\Support\Facades\Config
+    {
+    }
+    class Context extends \Illuminate\Support\Facades\Context
+    {
+    }
+    class Cookie extends \Illuminate\Support\Facades\Cookie
+    {
+    }
+    class Crypt extends \Illuminate\Support\Facades\Crypt
+    {
+    }
+    class Date extends \Illuminate\Support\Facades\Date
+    {
+    }
+    class DB extends \Illuminate\Support\Facades\DB
+    {
+    }
 
     /**
      * @template TCollection of static
@@ -37955,63 +37993,171 @@ namespace {
             return $instance->macroCall($method, $parameters);
         }
     }
-    class Event extends \Illuminate\Support\Facades\Event {}
-    class File extends \Illuminate\Support\Facades\File {}
-    class Gate extends \Illuminate\Support\Facades\Gate {}
-    class Hash extends \Illuminate\Support\Facades\Hash {}
-    class Http extends \Illuminate\Support\Facades\Http {}
-    class Js extends \Illuminate\Support\Js {}
-    class Lang extends \Illuminate\Support\Facades\Lang {}
-    class Log extends \Illuminate\Support\Facades\Log {}
-    class Mail extends \Illuminate\Support\Facades\Mail {}
-    class Notification extends \Illuminate\Support\Facades\Notification {}
-    class Number extends \Illuminate\Support\Number {}
-    class Password extends \Illuminate\Support\Facades\Password {}
-    class Process extends \Illuminate\Support\Facades\Process {}
-    class Queue extends \Illuminate\Support\Facades\Queue {}
-    class RateLimiter extends \Illuminate\Support\Facades\RateLimiter {}
-    class Redirect extends \Illuminate\Support\Facades\Redirect {}
-    class Request extends \Illuminate\Support\Facades\Request {}
-    class Response extends \Illuminate\Support\Facades\Response {}
-    class Route extends \Illuminate\Support\Facades\Route {}
-    class Schedule extends \Illuminate\Support\Facades\Schedule {}
-    class Schema extends \Illuminate\Support\Facades\Schema {}
-    class Session extends \Illuminate\Support\Facades\Session {}
-    class Storage extends \Illuminate\Support\Facades\Storage {}
-    class Str extends \Illuminate\Support\Str {}
-    class URL extends \Illuminate\Support\Facades\URL {}
-    class Uri extends \Illuminate\Support\Uri {}
-    class Validator extends \Illuminate\Support\Facades\Validator {}
-    class View extends \Illuminate\Support\Facades\View {}
-    class Vite extends \Illuminate\Support\Facades\Vite {}
-    class FilamentShortUrl extends \A21ns1g4ts\FilamentShortUrl\Facades\FilamentShortUrl {}
-    class EloquentSerialize extends \AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade {}
-    class ConfigValidator extends \AshAllenDesign\ConfigValidator\Facades\ConfigValidator {}
-    class ShortURL extends \AshAllenDesign\ShortURL\Facades\ShortURL {}
-    class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar {}
-    class FilamentCustomAttributeFileUpload extends \ElmudoDev\FilamentCustomAttributeFileUpload\Facades\FilamentCustomAttributeFileUpload {}
-    class FilaProgress extends \IbrahimBougaoua\FilaProgress\Facades\FilaProgress {}
-    class Revisor extends \Indra\Revisor\Facades\Revisor {}
-    class FilamentEditProfile extends \Joaopaulolndev\FilamentEditProfile\Facades\FilamentEditProfile {}
-    class Turnstile extends \Laragear\Turnstile\Facades\Turnstile {}
-    class Horizon extends \Laravel\Horizon\Horizon {}
-    class Feature extends \Laravel\Pennant\Feature {}
-    class Pulse extends \Laravel\Pulse\Facades\Pulse {}
-    class Socialite extends \Laravel\Socialite\Facades\Socialite {}
-    class Livewire extends \Livewire\Livewire {}
-    class Purifier extends \Mews\Purifier\Facades\Purifier {}
-    class Akismet extends \nickurt\Akismet\Facade {}
-    class StopForumSpam extends \nickurt\StopForumSpam\Facade {}
-    class Module extends \Nwidart\Modules\Facades\Module {}
-    class IdGenerator extends \Omaressaouaf\LaravelIdGenerator\IdGenerator {}
-    class Health extends \Spatie\Health\Facades\Health {}
-    class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
-    class Navigation extends \Spatie\Navigation\Facades\Navigation {}
-    class FilamentFabricator extends \Z3d0X\FilamentFabricator\Facades\FilamentFabricator {}
+    class Event extends \Illuminate\Support\Facades\Event
+    {
+    }
+    class File extends \Illuminate\Support\Facades\File
+    {
+    }
+    class Gate extends \Illuminate\Support\Facades\Gate
+    {
+    }
+    class Hash extends \Illuminate\Support\Facades\Hash
+    {
+    }
+    class Http extends \Illuminate\Support\Facades\Http
+    {
+    }
+    class Js extends \Illuminate\Support\Js
+    {
+    }
+    class Lang extends \Illuminate\Support\Facades\Lang
+    {
+    }
+    class Log extends \Illuminate\Support\Facades\Log
+    {
+    }
+    class Mail extends \Illuminate\Support\Facades\Mail
+    {
+    }
+    class Notification extends \Illuminate\Support\Facades\Notification
+    {
+    }
+    class Number extends \Illuminate\Support\Number
+    {
+    }
+    class Password extends \Illuminate\Support\Facades\Password
+    {
+    }
+    class Process extends \Illuminate\Support\Facades\Process
+    {
+    }
+    class Queue extends \Illuminate\Support\Facades\Queue
+    {
+    }
+    class RateLimiter extends \Illuminate\Support\Facades\RateLimiter
+    {
+    }
+    class Redirect extends \Illuminate\Support\Facades\Redirect
+    {
+    }
+    class Request extends \Illuminate\Support\Facades\Request
+    {
+    }
+    class Response extends \Illuminate\Support\Facades\Response
+    {
+    }
+    class Route extends \Illuminate\Support\Facades\Route
+    {
+    }
+    class Schedule extends \Illuminate\Support\Facades\Schedule
+    {
+    }
+    class Schema extends \Illuminate\Support\Facades\Schema
+    {
+    }
+    class Session extends \Illuminate\Support\Facades\Session
+    {
+    }
+    class Storage extends \Illuminate\Support\Facades\Storage
+    {
+    }
+    class Str extends \Illuminate\Support\Str
+    {
+    }
+    class URL extends \Illuminate\Support\Facades\URL
+    {
+    }
+    class Uri extends \Illuminate\Support\Uri
+    {
+    }
+    class Validator extends \Illuminate\Support\Facades\Validator
+    {
+    }
+    class View extends \Illuminate\Support\Facades\View
+    {
+    }
+    class Vite extends \Illuminate\Support\Facades\Vite
+    {
+    }
+    class FilamentShortUrl extends \A21ns1g4ts\FilamentShortUrl\Facades\FilamentShortUrl
+    {
+    }
+    class EloquentSerialize extends \AnourValar\EloquentSerialize\Facades\EloquentSerializeFacade
+    {
+    }
+    class ConfigValidator extends \AshAllenDesign\ConfigValidator\Facades\ConfigValidator
+    {
+    }
+    class ShortURL extends \AshAllenDesign\ShortURL\Facades\ShortURL
+    {
+    }
+    class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar
+    {
+    }
+    class FilamentCustomAttributeFileUpload extends \ElmudoDev\FilamentCustomAttributeFileUpload\Facades\FilamentCustomAttributeFileUpload
+    {
+    }
+    class FilaProgress extends \IbrahimBougaoua\FilaProgress\Facades\FilaProgress
+    {
+    }
+    class Revisor extends \Indra\Revisor\Facades\Revisor
+    {
+    }
+    class FilamentEditProfile extends \Joaopaulolndev\FilamentEditProfile\Facades\FilamentEditProfile
+    {
+    }
+    class Turnstile extends \Laragear\Turnstile\Facades\Turnstile
+    {
+    }
+    class Horizon extends \Laravel\Horizon\Horizon
+    {
+    }
+    class Feature extends \Laravel\Pennant\Feature
+    {
+    }
+    class Pulse extends \Laravel\Pulse\Facades\Pulse
+    {
+    }
+    class Socialite extends \Laravel\Socialite\Facades\Socialite
+    {
+    }
+    class Livewire extends \Livewire\Livewire
+    {
+    }
+    class Purifier extends \Mews\Purifier\Facades\Purifier
+    {
+    }
+    class Akismet extends \nickurt\Akismet\Facade
+    {
+    }
+    class StopForumSpam extends \nickurt\StopForumSpam\Facade
+    {
+    }
+    class Module extends \Nwidart\Modules\Facades\Module
+    {
+    }
+    class IdGenerator extends \Omaressaouaf\LaravelIdGenerator\IdGenerator
+    {
+    }
+    class Health extends \Spatie\Health\Facades\Health
+    {
+    }
+    class Flare extends \Spatie\LaravelIgnition\Facades\Flare
+    {
+    }
+    class Navigation extends \Spatie\Navigation\Facades\Navigation
+    {
+    }
+    class FilamentFabricator extends \Z3d0X\FilamentFabricator\Facades\FilamentFabricator
+    {
+    }
 }
 
 namespace Facades\Livewire\Features\SupportFileUploads {
     /**
      * @mixin \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl     */
-    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl {}
+    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl
+    {
+    }
 }
