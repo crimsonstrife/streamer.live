@@ -1302,7 +1302,7 @@ $(document).on("ajaxPageLoad", function () {
                             (U +=
                                 '<div class="ui-widget-content ui-dialog-content">' +
                                 DOMPurify.sanitize(y || "") +
-                                '</div>'),
+                                "</div>"),
                             (U += "</div>"))
                           : (U = k
                                 ? '<div class="blockUI ' +
