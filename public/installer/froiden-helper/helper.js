@@ -1306,12 +1306,12 @@ $(document).on("ajaxPageLoad", function () {
                             (U += "</div>"))
                           : (U = k
                                 ? '<div class="blockUI ' +
-                                  DOMPurify.sanitize(n.blockMsgClass) +
+                                  DOMPurify.sanitize(n.blockMsgClass || "") +
                                   ' blockPage" style="z-index:' +
                                   (x + 10) +
                                   ';display:none;position:fixed"></div>'
                                 : '<div class="blockUI ' +
-                                  DOMPurify.sanitize(n.blockMsgClass) +
+                                  DOMPurify.sanitize(n.blockMsgClass || "") +
                                   ' blockElement" style="z-index:' +
                                   (x + 10) +
                                   ';display:none;position:absolute"></div>'),
