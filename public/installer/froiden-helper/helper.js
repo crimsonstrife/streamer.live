@@ -1290,7 +1290,7 @@ $(document).on("ajaxPageLoad", function () {
                         : n.theme
                           ? ((U =
                                 '<div class="blockUI ' +
-                                n.blockMsgClass +
+                                DOMPurify.sanitize(n.blockMsgClass || "") +
                                 ' blockElement ui-dialog ui-widget ui-corner-all" style="z-index:' +
                                 (x + 10) +
                                 ';display:none;position:absolute">'),
