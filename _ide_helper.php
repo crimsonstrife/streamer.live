@@ -23561,6 +23561,51 @@ namespace Barryvdh\Debugbar\Facades {
     }
 }
 
+namespace Codedge\Updater {
+    /**
+     * UpdaterFacade.php.
+     *
+     * @author Holger Lösken <holger.loesken@codedge.de>
+     * @copyright See LICENSE file that was distributed with this source code.
+     */
+    class UpdaterFacade
+    {
+        /**
+         *
+         *
+         * @static
+         */
+        public static function source($name = '')
+        {
+            /** @var \Codedge\Updater\UpdaterManager $instance */
+            return $instance->source($name);
+        }
+
+        /**
+         *
+         *
+         * @static
+         */
+        public static function getDefaultSourceRepository()
+        {
+            /** @var \Codedge\Updater\UpdaterManager $instance */
+            return $instance->getDefaultSourceRepository();
+        }
+
+        /**
+         *
+         *
+         * @static
+         */
+        public static function sourceRepository($sourceRepository)
+        {
+            /** @var \Codedge\Updater\UpdaterManager $instance */
+            return $instance->sourceRepository($sourceRepository);
+        }
+
+    }
+}
+
 namespace ElmudoDev\FilamentCustomAttributeFileUpload\Facades {
     /**
      *
@@ -36371,6 +36416,9 @@ namespace {
     {
     }
     class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar
+    {
+    }
+    class Updater extends \Codedge\Updater\UpdaterFacade
     {
     }
     class FilamentCustomAttributeFileUpload extends \ElmudoDev\FilamentCustomAttributeFileUpload\Facades\FilamentCustomAttributeFileUpload
