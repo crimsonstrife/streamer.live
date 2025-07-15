@@ -17,12 +17,22 @@ return [
     ],
 
     'requirements' => [
-        'openssl',
-        'pdo',
-        'mbstring',
-        'tokenizer',
+        'ctype',
+        'curl',
+        'dom',
         'fileinfo',
-        'curl'
+        'filter',
+        'hash',
+        'mbstring',
+        'openssl',
+        'pcre',
+        'pdo',
+        'session',
+        'tokenizer',
+        'xml',
+        'bcmath',
+        'intl',
+        'redis',
     ],
 
     /*
