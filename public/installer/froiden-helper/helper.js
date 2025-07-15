@@ -1,4 +1,4 @@
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 (function ($) {
     "use strict";
     $.easyAjax = function (options) {
