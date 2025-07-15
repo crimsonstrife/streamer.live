@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Contracts\CommentableContract;
 use App\Enums\Sort;
+use App\Models\AuthObjects\Guest;
 use App\Models\AuthObjects\User;
 use App\Models\BaseModel as Model;
 use App\Models\BlogObjects\Comment;
+use App\Models\StoreObjects\Order;
 use App\Traits\HasComments;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -24,14 +26,29 @@ class Ticket extends Model implements CommentableContract
         return $this->belongsTo(User::class);
     }
 
+    public function guest(): BelongsTo
+    {
+        return $this->belongsTo(Guest::class);
+    }
+
     public function order(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\StoreObjects\Order::class);
+        return $this->belongsTo(Order::class);
     }
 
     public function scopeForUser($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Who “owns” this ticket: either a user or a guest
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->user_id
+            ? $this->user()
+            : $this->guest();
     }
 
     // All messages (both public & private)
