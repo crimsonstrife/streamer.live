@@ -74,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton('secure-guest-mode', fn($app) => new SecureGuestModeService);
+        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService());
 
         $this->app->tag(
             [
