@@ -14,4 +14,5 @@ return [
     nickurt\Akismet\ServiceProvider::class,
     nickurt\StopForumSpam\ServiceProvider::class,
     Xetaio\Mentions\Providers\MentionServiceProvider::class,
+    Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
 ];

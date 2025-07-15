@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b56082e2cc6cd180e1e3ba9de8c21569",
+    "content-hash": "96583e2aaf816403d61d397d62375afc",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -4221,6 +4221,46 @@
                 "source": "https://github.com/firebase/php-jwt/tree/v6.11.1"
             },
             "time": "2025-04-09T20:32:01+00:00"
+        },
+        {
+            "name": "froiden/laravel-installer",
+            "version": "1.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Froiden/laravel-installer.git",
+                "reference": "ed1968f79cc35631d44e42d064353e5a32111c9c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Froiden/laravel-installer/zipball/ed1968f79cc35631d44e42d064353e5a32111c9c",
+                "reference": "ed1968f79cc35631d44e42d064353e5a32111c9c",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "Froiden\\LaravelInstaller\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ajay Kumar Choudhary",
+                    "email": "ajay@froiden.com"
+                }
+            ],
+            "description": "Laravel web installer",
+            "support": {
+                "issues": "https://github.com/Froiden/laravel-installer/issues",
+                "source": "https://github.com/Froiden/laravel-installer/tree/1.9.0"
+            },
+            "time": "2024-02-10T05:44:39+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -24354,6 +24394,6 @@
     "platform": {
         "php": "^8.3"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

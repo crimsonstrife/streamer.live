@@ -48,6 +48,7 @@
         "filament/spatie-laravel-tags-plugin": "^3.3",
         "filament/tables": "^3.3",
         "filament/widgets": "^3.3",
+        "froiden/laravel-installer": "1.9.0",
         "geoip2/geoip2": "^3.2",
         "gerenuk/filament-banhammer": "^1.1",
         "guava/calendar": "^1.14",
