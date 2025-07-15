@@ -281,7 +281,7 @@
             const button = $(opt.container).find(selector);
 
             if (!button.is("input")) {
-                button.html(button.attr("data-prev-text"));
+                button.text(button.attr("data-prev-text"));
                 button.prop("disabled", false);
             } else {
                 button.val(button.attr("data-prev-text"));
