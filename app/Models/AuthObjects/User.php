@@ -181,7 +181,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getFilamentBanhammerTitleAttribute(): string
     {
-        return $this->getDisplayNameAttribute();
+        return $this->getNameAttribute();
     }
 
     /**
@@ -225,15 +225,13 @@ class User extends Authenticatable implements HasAvatar
     /**
      * Get the user's name.
      *
-     * @return Attribute The user's name.
+     * @return string The user's name.
      */
-    protected function name(): Attribute
+    protected function getNameAttribute(): string
     {
-        return Attribute::get(
-            fn ($value, $attributes) => $attributes['display_name']
-                ?? trim(($attributes['first_name'] ?? '').' '.($attributes['last_name'] ?? ''))
-                ?: ($attributes['username'] ?? 'Unknown')
-        );
+        return $this->display_name
+            ?? trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''))
+            ?: ($this->username ?? 'Unknown');
     }
 
     /**

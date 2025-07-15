@@ -15,7 +15,7 @@ class BlogCommentController extends Controller
     public function store(Request $request, Post $post): RedirectResponse
     {
         $data = $request->validate([
-            'content' => ['required', 'string', 'max:1000'],
+            'commentMessage' => ['required', 'string', 'max:1000'],
         ]);
 
         $parentComment = null;
@@ -38,7 +38,7 @@ class BlogCommentController extends Controller
 
         try {
             $comment = Comment::create([
-                'content' => $data['content'],
+                'content' => $data['commentMessage'],
                 'reply_id' => $parentComment ? $parentComment->id : null, // comment being replied to, null if top-level comment
                 'commented_on_type' => get_class($post),
                 'commented_on_id' => $post->id,

@@ -227,7 +227,7 @@
                                     <input type="hidden" name="post_id" value="{{ $post->id }}">
                                     <div class="form-floating comment-compose mb-2">
                                         <label for="commentMessage" style="position: relative;">Leave a comment here</label>
-                                        <x-content-editor id="commentMessage" name="content" :mentions="true" class="form-control w-100" rows="3" required />
+                                        <x-content-editor id="commentMessage" name="commentMessage" :mentions="true" class="form-control w-100" rows="3" required />
                                     </div>
                                 </div>
                                 <div class="hstack justify-content-end gap-1">

@@ -44,7 +44,7 @@ Route::any('/firewall/panel/{path?}', function () {
 
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {
-    $blogSlug = BlogHelper::getBlogSlug();               // 'blog'
+    $blogSlug = BlogHelper::getBlogSlug(); // 'blog'
 
     // Homepage
     Route::get('/', FabricatorPageController::class)->name('fabricator.page.home');
@@ -67,6 +67,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         config('jetstream.auth_session'),
         'verified',
         'firewall',
+        'auth.banned',
+        'ip.banned',
+        'logout.banned'
     ])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard');
@@ -122,7 +125,14 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify/{id}/{hash}', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session'), 'signed'])->name('verification.verify');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'signed',
+        'auth.banned',
+        'ip.banned',
+        'logout.banned'
+    ])->name('verification.verify');
 
     /**
      * Route for handling email verification notices.
@@ -133,7 +143,13 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.notice');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'auth.banned',
+        'ip.banned',
+        'logout.banned'
+    ])->name('verification.notice');
 
     /**
      * Route to handle sending email verification link.
@@ -144,7 +160,14 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::post('/email/verify/send', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session'), 'throttle:6,1'])->name('verification.send');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'auth.banned',
+        'ip.banned',
+        'logout.banned',
+        'throttle:6,1'
+    ])->name('verification.send');
 
     /**
      * Route for handling email verification completion.
@@ -155,7 +178,13 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify/complete', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.complete');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'auth.banned',
+        'ip.banned',
+        'logout.banned'
+    ])->name('verification.complete');
 
     Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
         ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
@@ -167,17 +196,34 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::get('/', FabricatorPageController::class)->name('index');
         Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
         Route::post('/{post}/comment', [BlogCommentController::class, 'store'])
-            ->middleware('auth')
+            ->middleware([
+                'auth',
+                'auth.banned',
+                'ip.banned',
+                'logout.banned'
+            ])
             ->name('comment.submit');
         // Post reactions
         Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])
             ->name('reaction.toggle')
-            ->middleware('auth');
+            ->middleware(
+                [
+                    'auth',
+                    'auth.banned',
+                    'ip.banned',
+                    'logout.banned'
+                ]
+            );
 
         // Comment reactions
         Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
             ->name('comment.reaction.toggle')
-            ->middleware('auth');
+            ->middleware([
+                'auth',
+                'auth.banned',
+                'ip.banned',
+                'logout.banned'
+            ]);
     });
 
     Route::middleware(['store.enabled'])
@@ -218,7 +264,12 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
             });
             Route::post("/$productSlug/{product}/review", [ProductReviewController::class, 'store'])
-                ->middleware('auth')
+                ->middleware([
+                    'auth',
+                    'auth.banned',
+                    'ip.banned',
+                    'logout.banned'
+                ])
                 ->name('product.review.submit');
         });
 

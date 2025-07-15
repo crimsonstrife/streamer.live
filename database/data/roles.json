@@ -56,7 +56,12 @@
             ],
             "sets": ["User Management"],
             "permissions": [
-                "viewAny"
+                "viewAny",
+                "create-comment",
+                "create-reply",
+                "create-order",
+                "create-order-item",
+                "create-reaction"
             ]
         }
     ]
