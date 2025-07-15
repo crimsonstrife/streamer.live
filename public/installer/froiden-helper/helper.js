@@ -1301,7 +1301,9 @@ $(document).on("ajaxPageLoad", function () {
                                     "</div>"),
                             (U +=
                                 '<div class="ui-widget-content ui-dialog-content">' +
-                                DOMPurify.sanitize(DOMPurify.sanitize(y || "")) +
+                                DOMPurify.sanitize(
+                                    DOMPurify.sanitize(y || ""),
+                                ) +
                                 "</div>"),
                             (U += "</div>"))
                           : (U = k
