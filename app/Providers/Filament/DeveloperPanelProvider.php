@@ -30,6 +30,7 @@ class DeveloperPanelProvider extends PanelProvider
         return $panel
             ->id('developer')
             ->path('dev')
+            ->authGuard('web')
             ->login()
             ->registration()
             ->passwordReset()

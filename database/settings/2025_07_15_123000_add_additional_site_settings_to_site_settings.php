@@ -6,13 +6,21 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('site.site_timezone', 'UTC');
-        $this->migrator->add('site.site_date_format', 'MM-DD-YYYY');
+        if (!$this->migrator->exists('site.site_timezone')) {
+            $this->migrator->add('site.site_timezone', 'UTC');
+        }
+        if (!$this->migrator->exists('site.site_date_format')) {
+            $this->migrator->add('site.site_date_format', 'MM-DD-YYYY');
+        }
     }
 
     public function down(): void
     {
-        $this->migrator->delete('site.site_timezone');
-        $this->migrator->delete('site.site_date_format');
+        if ($this->migrator->exists('site.site_timezone')) {
+            $this->migrator->delete('site.site_timezone');
+        }
+        if ($this->migrator->exists('site.site_date_format')) {
+            $this->migrator->delete('site.site_date_format');
+        }
     }
 };

@@ -33,6 +33,7 @@ class ModerationPanelProvider extends PanelProvider
         return $panel
             ->id('moderation')
             ->path('moderation')
+            ->authGuard('web')
             ->login()
             ->registration()
             ->passwordReset()

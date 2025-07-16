@@ -9,6 +9,7 @@ use App\Models\BlogObjects\Comment;
 use App\Observers\CommentObserver;
 use App\Services\CustomMediaPathGenerator;
 use App\Services\FourthwallService;
+use App\Services\OnboardingStepRegistrar;
 use App\Services\SecureGuestModeService;
 use App\Services\Spam\AkismetEvaluator;
 use App\Services\Spam\BlacklistEvaluator;
@@ -24,6 +25,7 @@ use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
 use Exception;
+use Filament\Facades\Filament;
 use Filament\FilamentManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
@@ -151,15 +153,5 @@ class AppServiceProvider extends ServiceProvider
             'profile.update-profile-information-form',
             AppUpdateProfile::class
         );
-
-        Onboard::addStep('Set your site settings!')
-            ->link('/admin/settings/site-settings')
-            ->cta('Configure')
-            ->completeIf(function (SiteSettings $setting) {
-                return $setting->isComplete() === true;
-            })
-            ->excludeIf(function (User $model) {
-                return ! $model->can('is-super-admin') or ! $model->can('is-admin');
-            });
     }
 }
