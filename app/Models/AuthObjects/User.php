@@ -2,13 +2,17 @@
 
 namespace App\Models\AuthObjects;
 
+use AllowDynamicProperties;
 use App\Models\BlogObjects\Author;
 use App\Traits\HasAdvancedPermissions;
 use App\Traits\IsPermissible;
 use Database\Factories\AuthObjects\UserFactory;
+use Eloquent;
 use Filament\Models\Contracts\HasAvatar;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,6 +27,9 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
 use Mchev\Banhammer\Models\Ban;
 use Mchev\Banhammer\Traits\Bannable;
+use Spatie\Onboard\Concerns\GetsOnboarded;
+use Spatie\Onboard\Concerns\Onboardable;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -46,69 +53,70 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $custom_fields
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Ban> $bans
+ * @property-read Collection<int, Ban> $bans
  * @property-read int|null $bans_count
  * @property-read string $filament_banhammer_title
  * @property-read string|null $full_name
  * @property-read string $name
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
+ * @property-read Collection<int, Permission> $permissions
  * @property-read int|null $permissions_count
  * @property-read string $profile_photo_url
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
+ * @property-read Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PersonalAccessToken> $tokens
+ * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User banned(bool $banned = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User bannedByType(string $className)
+ * @method static Builder<static>|User banned(bool $banned = true)
+ * @method static Builder<static>|User bannedByType(string $className)
  * @method static UserFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User notBanned()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User permission($permissions, $without = false)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User role($roles, $guard = null, $without = false)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereBansMeta(string $key, $value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereBirthdate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCurrentTeamId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCustomFields($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDisplayName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereFirstName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereProfilePhotoPath($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePronouns($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorConfirmedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorRecoveryCodes($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorSecret($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsername($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutPermission($permissions)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutRole($roles, $guard = null)
+ * @method static Builder<static>|User newModelQuery()
+ * @method static Builder<static>|User newQuery()
+ * @method static Builder<static>|User notBanned()
+ * @method static Builder<static>|User permission($permissions, $without = false)
+ * @method static Builder<static>|User query()
+ * @method static Builder<static>|User role($roles, $guard = null, $without = false)
+ * @method static Builder<static>|User whereBansMeta(string $key, $value)
+ * @method static Builder<static>|User whereBirthdate($value)
+ * @method static Builder<static>|User whereCreatedAt($value)
+ * @method static Builder<static>|User whereCurrentTeamId($value)
+ * @method static Builder<static>|User whereCustomFields($value)
+ * @method static Builder<static>|User whereDisplayName($value)
+ * @method static Builder<static>|User whereEmail($value)
+ * @method static Builder<static>|User whereEmailVerifiedAt($value)
+ * @method static Builder<static>|User whereFirstName($value)
+ * @method static Builder<static>|User whereId($value)
+ * @method static Builder<static>|User whereLastName($value)
+ * @method static Builder<static>|User whereLocation($value)
+ * @method static Builder<static>|User wherePassword($value)
+ * @method static Builder<static>|User whereProfilePhotoPath($value)
+ * @method static Builder<static>|User wherePronouns($value)
+ * @method static Builder<static>|User whereRememberToken($value)
+ * @method static Builder<static>|User whereTwoFactorConfirmedAt($value)
+ * @method static Builder<static>|User whereTwoFactorRecoveryCodes($value)
+ * @method static Builder<static>|User whereTwoFactorSecret($value)
+ * @method static Builder<static>|User whereUpdatedAt($value)
+ * @method static Builder<static>|User whereUsername($value)
+ * @method static Builder<static>|User withoutPermission($permissions)
+ * @method static Builder<static>|User withoutRole($roles, $guard = null)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
-#[\AllowDynamicProperties]
-class User extends Authenticatable implements HasAvatar
+#[AllowDynamicProperties]
+class User extends Authenticatable implements HasAvatar, Onboardable
 {
     use Bannable;
+    use GetsOnboarded;
     use HasAdvancedPermissions, HasRoles {
         HasAdvancedPermissions::permissions insteadof HasRoles;
         HasAdvancedPermissions::hasPermissionTo insteadof HasRoles;
     }
-
     use HasApiTokens;
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use HasProfilePhoto;
     use IsPermissible;
     use Notifiable;
@@ -230,7 +238,7 @@ class User extends Authenticatable implements HasAvatar
     protected function getNameAttribute(): string
     {
         return $this->display_name
-            ?? trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''))
+            ?? trim(($this->first_name ?? '').' '.($this->last_name ?? ''))
             ?: ($this->username ?? 'Unknown');
     }
 

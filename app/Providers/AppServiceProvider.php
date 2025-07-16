@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Filament\Resources\PostResource;
 use App\Http\Livewire\Profile\UpdateProfileInformationForm as AppUpdateProfile;
+use App\Models\AuthObjects\User;
 use App\Models\BlogObjects\Comment;
 use App\Observers\CommentObserver;
 use App\Services\CustomMediaPathGenerator;
@@ -30,11 +31,14 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Twitch\Provider;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Facades\Health;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
+use Spatie\Onboard\Facades\Onboard;
 use Stephenjude\FilamentBlog\Resources\PostResource as PackagePostResource;
 
 class AppServiceProvider extends ServiceProvider
@@ -74,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService());
+        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService);
 
         $this->app->tag(
             [
@@ -104,8 +108,8 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('twitch', \SocialiteProviders\Twitch\Provider::class);
+        Event::listen(function (SocialiteWasCalled $event) {
+            $event->extendSocialite('twitch', Provider::class);
         });
 
         Comment::observe(CommentObserver::class);
@@ -147,5 +151,15 @@ class AppServiceProvider extends ServiceProvider
             'profile.update-profile-information-form',
             AppUpdateProfile::class
         );
+
+        Onboard::addStep('Set your site settings!')
+            ->link('/admin/settings/site-settings')
+            ->cta('Configure')
+            ->completeIf(function (SiteSettings $setting) {
+                return $setting->isComplete() === true;
+            })
+            ->excludeIf(function (User $model) {
+                return ! $model->can('is-super-admin') or ! $model->can('is-admin');
+            });
     }
 }
