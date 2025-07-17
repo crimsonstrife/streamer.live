@@ -37,7 +37,7 @@ class OnboardingServiceProvider extends ServiceProvider
                 $user = Filament::auth()?->user();
 
                 if ($panel && $user) {
-                    (new OnboardingStepRegistrar)->register($panel, $user);
+                    (new OnboardingStepRegistrar())->register($panel, $user);
                 }
             });
         }

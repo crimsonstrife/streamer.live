@@ -77,7 +77,7 @@ class AccountWidget extends Widget
         ]);
 
         // Register onboarding steps using the OnboardingStepRegistrar service.
-        (new OnboardingStepRegistrar)->register($panel, $user);
+        (new OnboardingStepRegistrar())->register($panel, $user);
 
         // Mark the user and panel combination as registered.
         $registeredUsers[] = $key;
