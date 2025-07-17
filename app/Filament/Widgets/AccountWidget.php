@@ -34,7 +34,7 @@ class AccountWidget extends Widget
             (new OnboardingStepRegistrar())->register($panel, $user);
             static::$stepsRegistered = true;
         } else {
-            Log::warning('Onboarding skipped in widget: user or panel missing', [
+            Log::info('Onboarding skipped in widget: user or panel missing', [
                 'user' => $user,
                 'panel' => $panel?->getId(),
             ]);
