@@ -25,49 +25,55 @@ class OnboardingStepRegistrar
 
     public function register(?Panel $panel = null, ?User $user = null): void
     {
-        $panelSlug = $panel?->getId() ?? 'default';
+        $panelSlug = $panel?->getId() ?? 'admin';
 
         match ($panelSlug) {
-            'admin' => $this->registerAdminSteps($user),
-            'moderator' => $this->registerModeratorSteps($user),
+            'admin' => $this->registerAdminSteps($panel, $user),
+            'moderator' => $this->registerModeratorSteps($panel, $user),
             default => null,
         };
     }
 
-    protected function registerAdminSteps(?User $user): void
+    protected function registerAdminSteps(?Panel $panel = null, ?User $user = null): void
     {
-        $this->addStepOnce('site-settings', function () use ($user) {
+        $panelSlug = $panel?->getId() ?? 'admin';
+
+        $this->addStepOnce('site-settings', function () use ($panelSlug, $user) {
             Onboard::addStep('Set your site settings!')
-                ->link('/admin/settings/site-settings')
+                ->link("/{$panelSlug}/settings/site-settings")
                 ->cta('Configure')
                 ->completeIf(fn (SiteSettings $setting) => $setting->isComplete())
                 ->excludeIf(fn () => ! $user->can('is-super-admin') && ! $user->can('is-admin'));
         });
 
-        $this->registerModeratorSteps($user);
+        $this->registerModeratorSteps($panel, $user);
 
-        $this->addOptionalIntegrationSteps($user);
+        $this->addOptionalIntegrationSteps($panel, $user);
     }
 
-    protected function registerModeratorSteps(?User $user): void
+    protected function registerModeratorSteps(?Panel $panel = null, ?User $user = null): void
     {
-        $this->addStepOnce('moderator-reports', function () use ($user) {
+        $panelSlug = $panel?->getId() ?? 'admin';
+
+        $this->addStepOnce('moderator-blog-comments', function () use ($panelSlug, $user) {
             Onboard::addStep('Review flagged comments')
-                ->link('/moderator/reports')
+                ->link("/{$panelSlug}/blog/comments")
                 ->cta('Review')
-                ->completeIf(fn () => $user->hasCompletedOnboardingStep('visited_moderator_reports'))
+                ->completeIf(fn () => $user->hasCompletedOnboardingStep('visited_blog_comments'))
                 ->excludeIf(fn () => ! $user->can('is-super-admin') && ! $user->can('is-admin') && ! $user->can('is-moderator'));
         });
 
-        $this->addOptionalIntegrationSteps($user);
+        $this->addOptionalIntegrationSteps($panel, $user);
     }
 
-    protected function addOptionalIntegrationSteps(?User $user): void
+    protected function addOptionalIntegrationSteps(?Panel $panel = null, ?User $user = null): void
     {
+        $panelSlug = $panel?->getId() ?? 'admin';
+
         foreach (['discord', 'fourthwall', 'twitch'] as $slug) {
-            $this->addStepOnce("optional-integration-{$slug}", function () use ($slug, $user) {
+            $this->addStepOnce("optional-integration-{$slug}", function () use ($panelSlug, $slug, $user) {
                 Onboard::addStep("Visit the {$slug} integration settings")
-                    ->link("/admin/integrations/{$slug}-settings")
+                    ->link("/{$panelSlug}/integrations/{$slug}-settings")
                     ->cta('See Optional Features')
                     ->completeIf(fn () => $user->hasCompletedOnboardingStep("visited_{$slug}_integration_page"))
                     ->excludeIf(fn () => ! $user->can('is-super-admin') && ! $user->can('is-admin'));
