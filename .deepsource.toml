@@ -7,7 +7,8 @@ exclude_patterns = [
   "app/node_modules/**",
   "app/config/**",
   "app/database/migrations/**",
-  "app/database/settings/**"
+  "app/database/settings/**",
+  "app/public/vendor/**"
 ]
 
 [[analyzers]]

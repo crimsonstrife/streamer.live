@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages;
 use App\Filament\Resources;
+use App\Filament\Widgets\AccountWidget;
 use App\Plugins\BanPlugin;
 use Exception;
 use Filament\Http\Middleware\Authenticate;
@@ -33,6 +34,7 @@ class ModerationPanelProvider extends PanelProvider
         return $panel
             ->id('moderation')
             ->path('moderation')
+            ->authGuard('web')
             ->login()
             ->registration()
             ->passwordReset()
@@ -55,7 +57,7 @@ class ModerationPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Moderation/Widgets'), for: 'App\\Filament\\Moderation\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
