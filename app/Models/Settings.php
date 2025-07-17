@@ -14,9 +14,13 @@ use Spatie\LaravelSettings\Settings as SpatieSettings;
 use Spatie\LaravelSettings\SettingsConfig;
 use Spatie\LaravelSettings\SettingsRepositories\SettingsRepository;
 use Spatie\LaravelSettings\Support\Crypto;
+use Spatie\Onboard\Concerns\GetsOnboarded;
+use Spatie\Onboard\Concerns\Onboardable;
 
-abstract class Settings extends SpatieSettings
+abstract class Settings extends SpatieSettings implements Onboardable
 {
+    use GetsOnboarded;
+
     private SettingsMapper $mapper;
 
     private SettingsConfig $config;
@@ -112,8 +116,8 @@ abstract class Settings extends SpatieSettings
 
     public function __serialize(): array
     {
-        /** @var \App\Models\StoreObjects\Collection $encrypted */
-        /** @var \App\Models\StoreObjects\Collection $nonEncrypted */
+        /** @var StoreObjects\Collection $encrypted */
+        /** @var StoreObjects\Collection $nonEncrypted */
         [$encrypted, $nonEncrypted] = $this->toCollection()->partition(
             fn ($value, string $name) => $this->config->isEncrypted($name)
         );
@@ -130,8 +134,8 @@ abstract class Settings extends SpatieSettings
 
         $this->ensureConfigIsLoaded();
 
-        /** @var \App\Models\StoreObjects\Collection $encrypted */
-        /** @var \App\Models\StoreObjects\Collection $nonEncrypted */
+        /** @var StoreObjects\Collection $encrypted */
+        /** @var StoreObjects\Collection $nonEncrypted */
         [$encrypted, $nonEncrypted] = collect($data)->partition(
             fn ($value, string $name) => $this->config->isEncrypted($name)
         );
@@ -145,7 +149,7 @@ abstract class Settings extends SpatieSettings
     }
 
     /**
-     * @param  \App\Models\StoreObjects\Collection|array  $properties
+     * @param  StoreObjects\Collection|array  $properties
      * @return $this
      */
     public function fill($properties): self

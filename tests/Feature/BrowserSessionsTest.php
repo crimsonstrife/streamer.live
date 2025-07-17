@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AuthObjects\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Jetstream\Http\Livewire\LogoutOtherBrowserSessionsForm;
+use App\Http\Livewire\Profile\LogoutOtherBrowserSessionsForm;
 use Livewire\Livewire;
 use Tests\TestCase;
 

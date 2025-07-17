@@ -2,13 +2,18 @@
 
 use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TicketController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Models\Font;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
@@ -40,7 +45,7 @@ Route::any('/firewall/panel/{path?}', function () {
 
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {
-    $blogSlug = BlogHelper::getBlogSlug();               // 'blog'
+    $blogSlug = BlogHelper::getBlogSlug(); // 'blog'
 
     // Homepage
     Route::get('/', FabricatorPageController::class)->name('fabricator.page.home');
@@ -54,16 +59,62 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::post('newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])
         ->name('newsletter.unsubscribe');
 
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+
     // User Dashboard
     Route::middleware([
         'auth:sanctum',
         config('jetstream.auth_session'),
         'verified',
-        'firewall'
+        'firewall',
+        'auth.banned',
+        'ip.banned',
+        'logout.banned',
     ])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard');
         })->name('dashboard');
+
+        // List the current user’s tickets
+        Route::get('tickets', [TicketController::class, 'index'])
+            ->name('tickets.index');
+
+        // Show the “create ticket” form
+        Route::get('tickets/create', [TicketController::class, 'create'])
+            ->name('tickets.create');
+
+        // Store a brand-new ticket (with its initial customer message)
+        Route::post('tickets', [TicketController::class, 'store'])
+            ->name('tickets.store');
+
+        // View a single ticket (public & private messages)
+        Route::get('tickets/{ticket}', [TicketController::class, 'show'])
+            ->name('tickets.show');
+
+        // Post a public reply to a ticket (ticket owner only)
+        Route::post('tickets/{ticket}/reply', [TicketController::class, 'reply'])
+            ->name('tickets.reply');
+
+        // Add an internal note to a ticket (staff only)
+        Route::post('tickets/{ticket}/note', [TicketController::class, 'note'])
+            ->name('tickets.note');
+
+        Route::middleware(['store.enabled'])
+            ->group(function () {
+                $shopSlug = ShopHelper::getShopSlug();               // 'shop'
+                $productSlug = ShopHelper::getProductSlug();         // 'product'
+                $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
+
+                Route::prefix($shopSlug)->name($shopSlug.'.')->group(function () {
+                    $productSlug = ShopHelper::getProductSlug();         // 'product'
+                    $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
+                    // List the current user’s orders
+                    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+                    // Show a single order’s details
+                    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+                });
+            });
     });
 
     /**
@@ -75,7 +126,14 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify/{id}/{hash}', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session'), 'signed'])->name('verification.verify');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'signed',
+        'auth.banned',
+        'ip.banned',
+        'logout.banned',
+    ])->name('verification.verify');
 
     /**
      * Route for handling email verification notices.
@@ -86,7 +144,13 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.notice');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'auth.banned',
+        'ip.banned',
+        'logout.banned',
+    ])->name('verification.notice');
 
     /**
      * Route to handle sending email verification link.
@@ -97,7 +161,14 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::post('/email/verify/send', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session'), 'throttle:6,1'])->name('verification.send');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'auth.banned',
+        'ip.banned',
+        'logout.banned',
+        'throttle:6,1',
+    ])->name('verification.send');
 
     /**
      * Route for handling email verification completion.
@@ -108,7 +179,13 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify/complete', function () {
         return view('auth.verify-email');
-    })->middleware(['auth:sanctum', config('jetstream.auth_session')])->name('verification.complete');
+    })->middleware([
+        'auth:sanctum',
+        config('jetstream.auth_session'),
+        'auth.banned',
+        'ip.banned',
+        'logout.banned',
+    ])->name('verification.complete');
 
     Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
         ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
@@ -120,17 +197,34 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         Route::get('/', FabricatorPageController::class)->name('index');
         Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
         Route::post('/{post}/comment', [BlogCommentController::class, 'store'])
-            ->middleware('auth')
+            ->middleware([
+                'auth',
+                'auth.banned',
+                'ip.banned',
+                'logout.banned',
+            ])
             ->name('comment.submit');
         // Post reactions
         Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])
             ->name('reaction.toggle')
-            ->middleware('auth');
+            ->middleware(
+                [
+                    'auth',
+                    'auth.banned',
+                    'ip.banned',
+                    'logout.banned',
+                ]
+            );
 
         // Comment reactions
         Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
             ->name('comment.reaction.toggle')
-            ->middleware('auth');
+            ->middleware([
+                'auth',
+                'auth.banned',
+                'ip.banned',
+                'logout.banned',
+            ]);
     });
 
     Route::middleware(['store.enabled'])
@@ -165,17 +259,55 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('category');
                 Route::get('/', FabricatorPageController::class)->name('page');
                 Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
+                // List the current user’s orders
+                Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+                // Show a single order’s details
+                Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
             });
             Route::post("/$productSlug/{product}/review", [ProductReviewController::class, 'store'])
-                ->middleware('auth')
+                ->middleware([
+                    'auth',
+                    'auth.banned',
+                    'ip.banned',
+                    'logout.banned',
+                ])
                 ->name('product.review.submit');
         });
 
+    Route::get('/assets/fonts.css', function () {
+        $fonts = Font::all();
+        $css = '';
+
+        foreach ($fonts as $font) {
+            $url = $font->is_builtin
+                ? asset((string) ($font->file_path))
+                : $font->getFirstMediaUrl('fonts');
+            $wMin = $font->weight_min ?? 100;
+            $wMax = $font->weight_max ?? 900;
+
+            $css .= <<<CSS
+@font-face {
+    font-family: '{$font->slug}';
+    src: url('{$url}') format('woff2');
+    font-weight: {$wMin} {$wMax};
+    font-style: normal;
+    font-display: swap;
+}
+
+CSS;
+        }
+
+        return response($css, 200)
+            ->header('Content-Type', 'text/css');
+    })->name('assets.fonts.css');
+
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
-        ->where('slug', '^(?!public\/|storage\/|auth\/|build\/).*$')
+        ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
         ->name('fabricator.page.global.fallback');
 });
+
+Route::middleware(['web', 'auth'])->post('/{panel}/onboarding/dismiss', [OnboardingController::class, 'dismiss'])->name('onboarding.dismiss');
 
 // Kick off the OAuth flow, saving your “context” in session
 Route::get('auth/twitch/redirect', function (Request $request) {
@@ -232,30 +364,5 @@ Route::resource('icons', IconController::class)
 
 Route::get('/{slug}', FabricatorPageController::class)
     // don’t match any system URI
-    ->where('slug', '^(?!public\/|storage\/|auth\/|build\/).*$')
+    ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
     ->name('fabricator.page.global.fallback');
-
-Route::fallback(static function () {
-    $path = request()->path();
-
-    // if it’s an asset under public/ or build/, we don’t want to handle it here
-    if (Str::startsWith($path, 'public/') || Str::startsWith($path, 'build/') || Str::startsWith($path, 'storage/') || Str::startsWith($path, 'auth/')) {
-        $path = request()->path();                 // e.g. "build/assets/icons/…"
-
-        // If it begins with "public/", remove that so it points at the public/ folder correctly
-        if (Str::startsWith($path, 'public/')) {
-            $path = substr($path, strlen('public/'));
-        }
-
-        $file = public_path($path);                // resolves to /full/project/public/build/…
-
-        if (file_exists($file) && is_file($file)) {
-            // Let Laravel serve the static asset
-            return Response::file($file);
-        }
-    }
-
-    // otherwise it really is a missing “page”
-    Log::error('Fallback route triggered', ['url' => request()->url()]);
-    abort(404);
-});

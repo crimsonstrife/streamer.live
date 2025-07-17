@@ -79,6 +79,9 @@
         }
     </style>
 @endpush
+@php
+    $blogSlug = \App\Utilities\BlogHelper::getBlogSlug();
+@endphp
 @if (!isset($post))
     <div class="alert alert-danger">No post found in context.</div>
 @else
@@ -110,18 +113,18 @@
             <div class="row">
                 <div class="mb-3">
                     <form method="POST"
-                          action="{{ route('blog.reaction.toggle', ['type' => 'like', 'post' => $post->slug]) }}">
+                          action="{{ route($blogSlug.'.reaction.toggle', ['type' => 'like', 'post' => $post->slug]) }}">
                         @csrf
-                        <button class="btn btn-sm btn-outline-primary" type="submit">👍 Like
+                        <button class="btn btn-sm btn-outline-primary" type="submit"><x-fas-thumbs-up height="1rem" width="auto"/> Like
                             ({{ $post->countReactions('like') }})
                         </button>
                     </form>
                 </div>
                 <div class="mb-3">
                     <form method="POST"
-                          action="{{ route('blog.reaction.toggle', ['type' => 'dislike', 'post' => $post->slug]) }}">
+                          action="{{ route($blogSlug.'.reaction.toggle', ['type' => 'dislike', 'post' => $post->slug]) }}">
                         @csrf
-                        <button class="btn btn-sm btn-outline-primary" type="submit">👎 Dislike
+                        <button class="btn btn-sm btn-outline-primary" type="submit"><x-fas-thumbs-down height="1rem" width="auto"/> Dislike
                             ({{ $post->countReactions('dislike') }})
                         </button>
                     </form>

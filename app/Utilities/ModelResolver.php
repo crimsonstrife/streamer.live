@@ -2,10 +2,11 @@
 
 namespace App\Utilities;
 
-use App\Models\BlogObjects\Comment;
 use App\Models\AuthObjects\Guest;
-use App\Models\BlogObjects\Reaction;
 use App\Models\AuthObjects\User;
+use App\Models\BlogObjects\Comment;
+use App\Models\BlogObjects\Reaction;
+use App\Models\TicketMessage;
 use Illuminate\Database\Eloquent\Builder;
 
 final class ModelResolver
@@ -72,5 +73,21 @@ final class ModelResolver
     public static function guestQuery(): Builder
     {
         return self::guestModel()->newQuery();
+    }
+
+    /** @return class-string */
+    public static function ticketMessageClass(): string
+    {
+        return config('comments.ticketMessage_model', TicketMessage::class);
+    }
+
+    public static function ticketMessageModel(): TicketMessage
+    {
+        return app(self::ticketMessageClass());
+    }
+
+    public static function ticketMessageQuery(): Builder
+    {
+        return self::ticketMessageModel()->newQuery();
     }
 }

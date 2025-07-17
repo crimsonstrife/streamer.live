@@ -21,7 +21,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'first_name' => ['nullable', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
-            'display_name' => ['nullable', 'string', 'max:255'],
+            'display_name' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'birthdate' => ['required', 'date'],
             'pronouns' => ['nullable', 'string', 'max:255'],
             'location' => ['nullable', 'string', 'max:255'],
@@ -56,7 +56,12 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     {
         $user->forceFill([
             'username' => $input['username'],
+            'first_name' => $input['first_name'],
+            'last_name' => $input['last_name'],
+            'display_name' => $input['display_name'],
             'birthdate' => $input['birthdate'],
+            'pronouns' => $input['pronouns'],
+            'location' => $input['location'],
             'email' => $input['email'],
             'email_verified_at' => null,
         ])->save();

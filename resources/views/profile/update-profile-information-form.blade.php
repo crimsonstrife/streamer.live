@@ -50,7 +50,7 @@
                 <!-- Username -->
                 <div class="col-md-6">
                     <label for="username" class="form-label">{{ __('Username') }}</label>
-                    <input id="username" type="text" class="form-control" wire:model="state.username" required>
+                    <input id="username" type="text" class="form-control" wire:model="state.username" required autocomplete="username">
                     <x-input-error for="username" />
                 </div>
 
@@ -71,7 +71,7 @@
                 <!-- Display Name -->
                 <div class="col-md-6">
                     <label for="display_name" class="form-label">{{ __('Display Name') }}</label>
-                    <input id="display_name" type="text" class="form-control" wire:model="state.display_name">
+                    <input id="display_name" type="text" class="form-control" wire:model="state.display_name" autocomplete="username">
                     <x-input-error for="display_name" />
                 </div>
 
@@ -109,6 +109,13 @@
                     <label for="pronouns" class="form-label">{{ __('Pronouns') }}</label>
                     <input id="pronouns" type="text" class="form-control" wire:model="state.pronouns">
                     <x-input-error for="pronouns" />
+                </div>
+
+                <!-- Location -->
+                <div class="col-md-6">
+                    <label for="location" class="form-label">{{ __('Location') }}</label>
+                    <input id="location" type="text" class="form-control" wire:model="state.location">
+                    <x-input-error for="location" />
                 </div>
             </div>
 

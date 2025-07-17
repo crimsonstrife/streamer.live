@@ -4,10 +4,9 @@ namespace App\Models\BlogObjects;
 
 use App\Contracts\CommentableContract;
 use App\Enums\Sort;
-use App\Models\BlogObjects\Author;
+use App\Models\AuthObjects\User;
 use App\Models\Media;
 use App\Models\SharedObjects\Category;
-use App\Models\BlogObjects\Comment;
 use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;
@@ -17,8 +16,8 @@ use ArrayAccess;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
@@ -46,11 +45,11 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read mixed $banner_url
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \LakM\Comments\Models\Comment> $comments
+ * @property-read Collection<int, \LakM\Comments\Models\Comment> $comments
  * @property-read int|null $comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Reaction> $reactions
+ * @property-read Collection<int, Reaction> $reactions
  * @property-read int|null $reactions_count
- * @property \Illuminate\Database\Eloquent\Collection<int, Tag> $tags
+ * @property Collection<int, Tag> $tags
  * @property-read int|null $tags_count
  *
  * @method static Builder<static>|Post draft()
@@ -78,14 +77,14 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  *
  * @mixin Eloquent
  */
-class Post extends BasePost implements CommentableContract, Searchable, HasMedia
+class Post extends BasePost implements CommentableContract, HasMedia, Searchable
 {
     use HasComments;
     use HasReactions;
     use HasSlug;
     use HasTags;
-    use IsPermissible;
     use InteractsWithMedia;
+    use IsPermissible;
 
     /**
      * @var string
@@ -105,6 +104,7 @@ class Post extends BasePost implements CommentableContract, Searchable, HasMedia
         'blog_author_id',
         'category_id',
         'comments_locked',
+        'is_announcement',
     ];
 
     /**
@@ -116,6 +116,7 @@ class Post extends BasePost implements CommentableContract, Searchable, HasMedia
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
         'comments_locked' => 'bool',
+        'is_announcement' => 'bool',
     ];
 
     /**
@@ -222,6 +223,11 @@ class Post extends BasePost implements CommentableContract, Searchable, HasMedia
         return $query->whereNull('published_at');
     }
 
+    public function scopeAnnouncements(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
+    {
+        return $query->whereNotNull('is_announcement', true);
+    }
+
     public function author(): BelongsTo
     {
         $author = $this->belongsTo(Author::class, 'blog_author_id');
@@ -310,11 +316,51 @@ class Post extends BasePost implements CommentableContract, Searchable, HasMedia
                 // $matches[1], [2], or [3] will contain the ID depending on the match
                 $id = $matches[1] ?? $matches[2] ?? $matches[3];
                 $media = Media::find($id);
+
                 return $media
                     ? '<img src="'.$media->getMediaUrl().'" alt="'.e($media->getCustomProperty('image_alt_text')).'"/>'
                     : '';
             },
             $this->content,
         );
+    }
+
+    public function canUserViewMedia(?User $user): bool
+    {
+        if ($this->published_at !== null) {
+            return true;
+        }
+
+        // visitors cannot view unpublished items
+        if ($user === null) {
+            return false;
+        }
+
+        // admin overrides published status
+        if ($user->can('is-admin') || $user->can('is-super-admin')) {
+            return true;
+        }
+
+        if ($user->can('read-post')) {
+            return true;
+        }
+
+        // authors can view their own unpublished posts
+        $author = $this->author();
+        $authorUser = $author->user();
+
+        return $user->id === $authorUser->id;
+    }
+
+    public function canUserCreateMedia(User $user): bool
+    {
+        // admin overrides status and access
+        return $user->can('is-admin') || $user->can('is-super-admin');
+    }
+
+    public function canUserDeleteMedia(User $user): bool
+    {
+        // admin overrides status and access
+        return $user->can('is-admin') || $user->can('is-super-admin');
     }
 }

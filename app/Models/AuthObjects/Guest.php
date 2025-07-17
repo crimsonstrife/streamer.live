@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Mchev\Banhammer\Traits\Bannable;
 
 /**
  *
@@ -52,6 +53,7 @@ class Guest extends Authenticatable implements CommenterContract
 {
     use SoftDeletes;
     use CanComment;
+    use Bannable;
 
     protected $table = 'guests';
 
@@ -151,5 +153,10 @@ class Guest extends Authenticatable implements CommenterContract
                 ['ip_address' => request()->ip()],
                 $data->toArray(),
             );
+    }
+
+    public function getFilamentBanhammerTitleAttribute(): ?string
+    {
+        return $this->email;
     }
 }

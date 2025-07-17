@@ -59,6 +59,7 @@ class ScheduleCalendarBlock extends PageBlock
         // map into a simple array and group by day of month
         $grouped = $rawEvents
             ->map(fn ($e) => [
+                'id'    => $e->id,
                 'day'   => $e->starts_at->day,
                 'iso'   => $e->starts_at->toIso8601String(),
                 'label' => $e->starts_at->format('g:ia'),  // time only

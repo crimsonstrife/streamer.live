@@ -6,6 +6,7 @@ use App\Models\SharedObjects\Category;
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
+use App\Models\StoreObjects\Promotion;
 use Filament\Forms\Components\Builder\Block;
 use Spatie\Tags\Tag;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
@@ -53,6 +54,16 @@ class StoreCatalog extends PageBlock
             );
         }
 
+        // pull LIVE promotions from database
+        $orderPromotions = Promotion::where('status', 'Live')
+            ->where('applies_to', 'ENTIRE_ORDER')
+            ->get();
+
+        $productPromotions = Promotion::where('status', 'Live')
+            ->where('applies_to', 'SELECTED_PRODUCTS')
+            ->with('products')   // eager-load the pivot
+            ->get();
+
         // Paginate
         $products = $query->latest()->paginate(9)->withQueryString();
 
@@ -70,6 +81,8 @@ class StoreCatalog extends PageBlock
             'tags' => Tag::getWithType('product'),
             'sizes' => $sizes,
             'filters' => request()->only(['category', 'tag', 'size']),
+            'orderPromotions'  => $orderPromotions,
+            'productPromotions' => $productPromotions,
         ];
     }
 }

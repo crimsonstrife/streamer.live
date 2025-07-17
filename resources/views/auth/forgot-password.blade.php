@@ -1,34 +1,49 @@
 <x-guest-layout>
     <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <main class="form-signin w-50 m-auto">
+            <!-- Logo -->
+            <div class="mb-4 text-center">
+                <x-authentication-card-logo class="w-auto h-9" height="57"/>
+            </div>
 
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-        </div>
+            <h1 class="h3 mb-3 fw-normal">Uh-Oh, forgot your password?</h1>
 
-        @session('status')
+            <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                {{ __('Forgot your password? No problem, it happens. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+            </div>
+
+            @session('status')
             <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
                 {{ $value }}
             </div>
-        @endsession
+            @endsession
 
-        <x-validation-errors class="mb-4" />
+            <x-validation-errors class="mb-4" />
 
-        <form method="POST" action="{{ route('password.email') }}">
-            @csrf
+            <form method="POST" action="{{ route('password.email') }}">
+                @csrf
 
-            <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            </div>
+                <div class="block mb-3">
+                    <x-label for="email" class="form-label" value="{{ __('Email') }}" />
+                    <x-input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus autocomplete="email" />
+                </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Email Password Reset Link') }}
-                </x-button>
-            </div>
-        </form>
+                <div class="flex items-center justify-end mt-4">
+                    <x-button>
+                        {{ __('Email Password Reset Link') }}
+                    </x-button>
+                </div>
+            </form>
+
+            {{-- Optional copyright line --}}
+            @isset($settings->show_site_name)
+                @if ($settings->show_site_name)
+                    <p style="margin-bottom: unset;">© {{ date('Y') }} {{ $siteName }}</p>
+                @endif
+            @endisset
+                <x-copyright />
+        </main>
+        </div>
     </x-authentication-card>
 </x-guest-layout>

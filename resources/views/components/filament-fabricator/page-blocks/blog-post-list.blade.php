@@ -79,6 +79,9 @@
         }
     </style>
 @endpush
+@php
+    $blogSlug = \App\Utilities\BlogHelper::getBlogSlug();
+@endphp
 <div class="container py-4">
     <h2 class="mb-4">Latest Posts</h2>
     <div class="row mb-2">
@@ -114,14 +117,12 @@
                             {{ Illuminate\Support\Str::limit(strip_tags($post->excerpt ?? $post->content), 30) }}
                         </p>
                         <p class="text-muted mb-1">
-                            <i class="bi bi-chat-left-text"></i>
+                            <x-fas-comments height="1rem" width="auto" />
                             {{ $post->comments_count ?? 0 }} {{ Str::plural('comment', $post->comments_count ?? 0) }}
                         </p>
-                        <a href="{{ route('blog.post', ['slug' => $post->slug]) }}"
+                        <a href="{{ route($blogSlug.'.post', ['slug' => $post->slug]) }}"
                            class="icon-link gap-1 icon-link-hover stretched-link">Read More
-                            <svg class="bi">
-                                <use xlink:href="#chevron-right"></use>
-                            </svg>
+                            <x-fas-chevron-right height="1rem" width="auto" />
                         </a>
                     </div>
                 </div>

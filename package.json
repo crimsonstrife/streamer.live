@@ -21,10 +21,13 @@
     "dependencies": {
         "@floating-ui/dom": "^1.7.0",
         "@popperjs/core": "^2.11.8",
+        "@redmine-ui/tributejs": "^6.1.2",
         "bootstrap": "^5.3.6",
         "bootstrap-icons": "^1.13.1",
         "jquery": "^3.7.1",
         "jquery-ui": "^1.14.1",
-        "swiper": "^11.2.8"
+        "swiper": "^11.2.8",
+        "tinymce": "^7.9.1",
+        "dompurify": "^3.2.6"
     }
 }

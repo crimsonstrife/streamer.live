@@ -7,7 +7,27 @@
                 "Permission Set Management",
                 "Permission Group Management",
                 "User Management",
-                "Role Management"
+                "Role Management",
+                "Ticket Management",
+                "Product Management",
+                "Product Variant Management",
+                "Collection Management",
+                "Order Management",
+                "Author Management",
+                "Post Management",
+                "Comment Management",
+                "Reaction Management",
+                "Reply Management",
+                "Promotion Management",
+                "Product Review Management",
+                "Event Management",
+                "Hero Management",
+                "Page Management",
+                "Category Management",
+                "Ticket Message Management",
+                "Stream Alert Rule Management",
+                "Order Item Management",
+                "Product Image Management"
             ],
             "permissions": [
                 "access-filament",
@@ -20,6 +40,7 @@
                 "manage-discord-settings",
                 "manage-fourthwall-settings",
                 "manage-twitch-settings",
+                "manage-tickets",
                 "view-analytics",
                 "view-settings",
                 "is-admin",
@@ -43,6 +64,7 @@
                 "access-telescope",
                 "manage-settings",
                 "manage-general-settings",
+                "manage-tickets",
                 "view-analytics",
                 "view-settings",
                 "is-admin",
@@ -57,7 +79,8 @@
             "permissions": [
                 "access-filament",
                 "view-analytics",
-                "is-moderator"
+                "is-moderator",
+                "manage-tickets"
             ]
         }
     ]

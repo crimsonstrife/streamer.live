@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages;
+use App\Filament\Resources;
+use App\Filament\Widgets\AccountWidget;
 use App\Listeners\SwitchTeam;
 use App\Livewire\CurrentStreamStatus;
 use App\Livewire\PanelCalendarWidget;
@@ -15,16 +18,14 @@ use App\Utilities\BlogHelper;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Exception;
 use Filament\Events\TenantSet;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
-use App\Filament\Pages;
-use App\Filament\Resources;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
-use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
@@ -97,6 +98,13 @@ class AdminPanelProvider extends PanelProvider
             TenantSet::class,
             SwitchTeam::class,
         );
+
+        FilamentAsset::register([
+            Js::make(
+                'tinymce',
+                asset('vendor/tinymce/tinymce.min.js'),
+            ),
+        ]);
     }
 
     /**
@@ -108,6 +116,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->authGuard('web')
             ->login()
             ->registration()
             ->passwordReset()
@@ -129,6 +138,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\HeroResource::class,
                 Resources\MediaResource::class,
                 Resources\StreamAlertRuleResource::class,
+                Resources\TicketResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -142,7 +152,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
                 CurrentStreamStatus::class,
                 UpcomingStream::class,

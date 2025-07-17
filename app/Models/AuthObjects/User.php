@@ -2,14 +2,17 @@
 
 namespace App\Models\AuthObjects;
 
+use AllowDynamicProperties;
 use App\Models\BlogObjects\Author;
+use App\Models\SharedObjects\OnboardingProgress;
 use App\Traits\HasAdvancedPermissions;
 use App\Traits\IsPermissible;
-use Database\Factories\AuthObjects\UserFactory;
 use Filament\Models\Contracts\HasAvatar;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,91 +26,61 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
 use Mchev\Banhammer\Models\Ban;
 use Mchev\Banhammer\Traits\Bannable;
+use Spatie\Onboard\Concerns\GetsOnboarded;
+use Spatie\Onboard\Concerns\Onboardable;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property int $id
- * @property string $username
- * @property string|null $first_name
- * @property string|null $last_name
- * @property string $display_name
- * @property string $email
- * @property Carbon|null $email_verified_at
- * @property Carbon $birthdate
- * @property string|null $pronouns
- * @property string|null $location
- * @property string $password
- * @property string|null $two_factor_secret
- * @property string|null $two_factor_recovery_codes
- * @property string|null $two_factor_confirmed_at
- * @property string|null $remember_token
- * @property int|null $current_team_id
- * @property string|null $profile_photo_path
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property string|null $custom_fields
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Ban> $bans
- * @property-read int|null $bans_count
- * @property-read string $filament_banhammer_title
- * @property-read string|null $full_name
- * @property-read string $name
- * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
- * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
- * @property-read int|null $permissions_count
- * @property-read string $profile_photo_url
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
- * @property-read int|null $roles_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PersonalAccessToken> $tokens
- * @property-read int|null $tokens_count
+ * Class User
  *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User banned(bool $banned = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User bannedByType(string $className)
- * @method static UserFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User notBanned()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User permission($permissions, $without = false)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User role($roles, $guard = null, $without = false)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereBansMeta(string $key, $value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereBirthdate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCurrentTeamId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCustomFields($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDisplayName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereFirstName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereProfilePhotoPath($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePronouns($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorConfirmedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorRecoveryCodes($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorSecret($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsername($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutPermission($permissions)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutRole($roles, $guard = null)
+ * Represents a user in the application, including authentication, permissions, and onboarding progress.
  *
- * @mixin \Eloquent
+ * @property int $id The unique identifier for the user.
+ * @property string $username The username of the user.
+ * @property string|null $first_name The first name of the user.
+ * @property string|null $last_name The last name of the user.
+ * @property string $display_name The display name of the user.
+ * @property string $email The email address of the user.
+ * @property Carbon|null $email_verified_at The timestamp when the user's email was verified.
+ * @property Carbon $birthdate The birthdate of the user.
+ * @property string|null $pronouns The pronouns of the user.
+ * @property string|null $location The location of the user.
+ * @property string $password The hashed password of the user.
+ * @property string|null $two_factor_secret The secret for two-factor authentication.
+ * @property string|null $two_factor_recovery_codes The recovery codes for two-factor authentication.
+ * @property string|null $two_factor_confirmed_at The timestamp when two-factor authentication was confirmed.
+ * @property string|null $remember_token The token used for "remember me" functionality.
+ * @property int|null $current_team_id The ID of the user's current team.
+ * @property string|null $profile_photo_path The path to the user's profile photo.
+ * @property Carbon|null $created_at The timestamp when the user was created.
+ * @property Carbon|null $updated_at The timestamp when the user was last updated.
+ * @property string|null $custom_fields Custom fields associated with the user.
+ * @property-read Collection<int, Ban> $bans The bans associated with the user.
+ * @property-read int|null $bans_count The count of bans associated with the user.
+ * @property-read string $filament_banhammer_title The title used for the Filament Banhammer.
+ * @property-read string|null $full_name The full name of the user.
+ * @property-read string $name The name of the user.
+ * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications The notifications for the user.
+ * @property-read int|null $notifications_count The count of notifications for the user.
+ * @property-read Collection<int, Permission> $permissions The permissions assigned to the user.
+ * @property-read int|null $permissions_count The count of permissions assigned to the user.
+ * @property-read string $profile_photo_url The URL of the user's profile photo.
+ * @property-read Collection<int, \Spatie\Permission\Models\Role> $roles The roles assigned to the user.
+ * @property-read int|null $roles_count The count of roles assigned to the user.
+ * @property-read Collection<int, PersonalAccessToken> $tokens The personal access tokens for the user.
+ * @property-read int|null $tokens_count The count of personal access tokens for the user.
  */
-#[\AllowDynamicProperties]
-class User extends Authenticatable implements HasAvatar
+#[AllowDynamicProperties]
+class User extends Authenticatable implements HasAvatar, MustVerifyEmail, Onboardable
 {
     use Bannable;
+    use GetsOnboarded;
     use HasAdvancedPermissions, HasRoles {
         HasAdvancedPermissions::permissions insteadof HasRoles;
         HasAdvancedPermissions::hasPermissionTo insteadof HasRoles;
     }
-
     use HasApiTokens;
-
-    /** @use HasFactory<UserFactory> */
     use HasFactory;
     use HasProfilePhoto;
     use IsPermissible;
@@ -136,7 +109,7 @@ class User extends Authenticatable implements HasAvatar
     /**
      * The attributes that should be cast to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'birthdate' => 'date',
@@ -178,16 +151,18 @@ class User extends Authenticatable implements HasAvatar
 
     /**
      * Get the title attribute for the Filament Banhammer.
+     *
+     * @return string The title used for the Filament Banhammer.
      */
     public function getFilamentBanhammerTitleAttribute(): string
     {
-        return $this->getDisplayNameAttribute();
+        return $this->getNameAttribute();
     }
 
     /**
      * Get the attributes that should be cast.
      *
-     * @return array<string, string>
+     * @return array<string, string> The attributes and their cast types.
      */
     protected function casts(): array
     {
@@ -225,15 +200,13 @@ class User extends Authenticatable implements HasAvatar
     /**
      * Get the user's name.
      *
-     * @return Attribute The user's name.
+     * @return string The user's name.
      */
-    protected function name(): Attribute
+    protected function getNameAttribute(): string
     {
-        return Attribute::get(
-            fn ($value, $attributes) => $attributes['display_name']
-                ?? trim(($attributes['first_name'] ?? '').' '.($attributes['last_name'] ?? ''))
-                ?: ($attributes['username'] ?? 'Unknown')
-        );
+        return $this->display_name
+            ?? trim(($this->first_name ?? '').' '.($this->last_name ?? ''))
+            ?: ($this->username ?? 'Unknown');
     }
 
     /**
@@ -249,18 +222,28 @@ class User extends Authenticatable implements HasAvatar
     /**
      * Get the user's last name.
      *
-     * @return string|null The user's last name.
+     * @return string|null The last name of the user.
      */
     public function getLastNameAttribute(): ?string
     {
         return $this->last_name ?? null;
     }
 
+    /**
+     * Define a one-to-one relationship with the Author model.
+     *
+     * @return HasOne The relationship instance.
+     */
     public function blogAuthor(): HasOne
     {
         return $this->hasOne(Author::class);
     }
 
+    /**
+     * Get the user's Twitch token if it is valid.
+     *
+     * @return string|null The Twitch token, or null if expired or not set.
+     */
     public function getTwitchToken(): ?string
     {
         if ($this->twitch_user_token && now()->lt($this->twitch_user_expires_at)) {
@@ -268,5 +251,65 @@ class User extends Authenticatable implements HasAvatar
         }
 
         return null;
+    }
+
+    /**
+     * Check if the user has completed a specific onboarding step.
+     *
+     * @param  string  $key  The key of the onboarding step.
+     * @return bool True if the step is completed, false otherwise.
+     */
+    public function hasCompletedOnboardingStep(string $key): bool
+    {
+        return $this->onboardingProgress()
+            ->where('step_key', $key)
+            ->whereNotNull('completed_at')
+            ->exists();
+    }
+
+    /**
+     * Mark a specific onboarding step as complete for the user.
+     *
+     * @param  string  $key  The key of the onboarding step.
+     */
+    public function markOnboardingStepComplete(string $key): void
+    {
+        $this->onboardingProgress()->updateOrCreate(
+            ['step_key' => $key],
+            ['completed_at' => now()]
+        );
+    }
+
+    /**
+     * Define a one-to-many relationship with the OnboardingProgress model.
+     *
+     * @return HasMany The relationship instance.
+     */
+    public function onboardingProgress(): HasMany
+    {
+        return $this->hasMany(OnboardingProgress::class);
+    }
+
+    /**
+     * Check if the user has dismissed the onboarding process.
+     *
+     * @return bool True if onboarding is dismissed, false otherwise.
+     */
+    public function hasDismissedOnboarding(): bool
+    {
+        return $this->onboardingProgress()
+            ->where('step_key', 'onboarding.dismissed')
+            ->exists();
+    }
+
+    /**
+     * Dismiss the onboarding process for the user.
+     */
+    public function dismissOnboarding(): void
+    {
+        $this->onboardingProgress()->updateOrCreate(
+            ['step_key' => 'onboarding.dismissed'],
+            ['completed_at' => now()]
+        );
     }
 }

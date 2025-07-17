@@ -32,6 +32,7 @@
         "brickx/maintenance-switch": "^1.0",
         "calebporzio/sushi": "^2.5",
         "cocur/slugify": "^4.6",
+        "codedge/laravel-selfupdater": "^3.10",
         "commerceguys/addressing": "^2.2",
         "commerceguys/intl": "^2.0",
         "doctrine/dbal": "^4.2",
@@ -48,6 +49,7 @@
         "filament/spatie-laravel-tags-plugin": "^3.3",
         "filament/tables": "^3.3",
         "filament/widgets": "^3.3",
+        "froiden/laravel-installer": "1.9.0",
         "geoip2/geoip2": "^3.2",
         "gerenuk/filament-banhammer": "^1.1",
         "guava/calendar": "^1.14",
@@ -108,6 +110,7 @@
         "spatie/laravel-medialibrary": "^11.12",
         "spatie/laravel-navigation": "^1.3",
         "spatie/laravel-newsletter": "^5.3",
+        "spatie/laravel-onboard": "^2.6",
         "spatie/laravel-permission": "^6.15",
         "spatie/laravel-searchable": "^1.13",
         "spatie/laravel-settings": "^3.4",
@@ -121,8 +124,10 @@
         "symfony/intl": "^7.3",
         "tapp/filament-auditing": "^3.0",
         "team-reflex/discord-php": "^10.4",
+        "tinymce/tinymce": "^7.9",
         "tomatophp/filament-menus": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
+        "xetaio/xetaravel-mentions": "^11.0",
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
@@ -166,6 +171,7 @@
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan tinymce:publish --ansi",
             "@php artisan ide-helper:generate",
             "@php artisan ide-helper:meta"
         ],

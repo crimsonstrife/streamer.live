@@ -13,19 +13,21 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Xetaio\Mentions\Models\Traits\HasMentionsTrait;
 
 class Message extends Model
 {
     use HasOwner;
     use HasOwnerAvatar;
     use LogsActivity;
+    use HasMentionsTrait;
 
     protected $table = 'comments';
 
     protected $userRelationshipName = 'commented_by';
 
     protected $fillable = [
-        'text',
+        'content',
         'commented_on_type',
         'commented_on_id',
         'commented_by_type',
@@ -80,5 +82,15 @@ class Message extends Model
     {
         return $this->morphMany(Activity::class, 'subject')
             ->orderBy('created_at', 'desc');
+    }
+
+    public function getTextAttribute(): ?string
+    {
+        return $this->attributes['content'] ?? null;
+    }
+
+    public function setTextAttribute($value): void
+    {
+        $this->attributes['content'] = $value;
     }
 }

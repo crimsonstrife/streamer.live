@@ -6,3 +6,15 @@
 body {
     font-family: "Arial", sans-serif;
 }
+
+/* default “light” background when mode = auto */
+.bg-auto {
+    background-color: var(--color-light-background);
+}
+
+/* if the user’s system prefers dark, swap it */
+@media (prefers-color-scheme: dark) {
+    .bg-auto {
+        background-color: var(--color-dark-background);
+    }
+}

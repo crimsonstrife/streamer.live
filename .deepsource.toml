@@ -1,13 +1,14 @@
 version = 1
 
-test_patterns = ["app/tests/**"]
+test_patterns = ["tests/**"]
 
 exclude_patterns = [
   "app/vendor/**",
   "app/node_modules/**",
   "app/config/**",
   "app/database/migrations/**",
-  "app/database/settings/**"
+  "app/database/settings/**",
+  "app/public/vendor/**"
 ]
 
 [[analyzers]]

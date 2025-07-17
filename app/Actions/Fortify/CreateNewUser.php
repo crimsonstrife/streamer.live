@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\AuthObjects\User;
+use App\Models\AuthObjects\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laragear\Turnstile\Facades\Turnstile;
@@ -30,12 +31,19 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
 
-        return User::create([
+        $user = User::create([
             'username' => $input['username'],
             'display_name' => $input['username'],
             'birthdate' => $input['birthdate'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
         ]);
+
+        // Add the user role to new user
+        $role = Role::where('name', 'user');
+
+        $user->assignRole($role);
+
+        return $user;
     }
 }

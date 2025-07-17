@@ -1,5 +1,19 @@
 @props(['page','post','product'])
+@php
+    /** @var \App\Settings\LookFeelSettings $style */
+    $style = app(\App\Settings\LookFeelSettings::class);
+    $fonts = App\Models\Font::all();
+@endphp
+
 {!! App\View\Helpers\LayoutSection::header() !!}
+
+<style>
+    :root {
+        --color-primary:   {{ $style->primary_color }};
+        --color-secondary: {{ $style->secondary_color }};
+        --color-accent: {{ $style->accent_color }};
+    }
+</style>
 
         <!-- Page Content -->
         <main class="flex-grow-1">

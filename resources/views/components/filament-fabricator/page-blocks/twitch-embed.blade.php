@@ -1,7 +1,5 @@
 @php
-    use App\Settings\TwitchSettings;
-
-    $settings = app(TwitchSettings::class);
+    $settings = app(\App\Settings\TwitchSettings::class);
 @endphp
 
 @if (! $settings->enable_integration)

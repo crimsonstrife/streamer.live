@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckIPFilter;
+use App\Http\Middleware\EnsureGuestMode;
 use App\Http\Middleware\EnsureStoreEnabled;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;

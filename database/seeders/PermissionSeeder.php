@@ -2,12 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\AuthObjects\PermissionRegistrar;
+use App\Utilities\DynamicModelUtility as ModelUtility;
+use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Utilities\DynamicModelUtility as ModelUtility;
 use Spatie\Permission\Models\Permission;
-use App\Models\AuthObjects\PermissionRegistrar;
 
 /**
  * Class PermissionSeeder
@@ -24,6 +25,7 @@ class PermissionSeeder extends Seeder
         'view',
         'viewAny',
     ];
+
     private $crudActions = [
         'create',
         'read',
@@ -31,6 +33,7 @@ class PermissionSeeder extends Seeder
         'delete',
         'deleteAny',
     ];
+
     private $advancedActions = [
         'list',
         'restore',
@@ -41,6 +44,7 @@ class PermissionSeeder extends Seeder
         'replicate',
         'reorder',
         'restoreAny'];
+
     private $specialPermissions = [
         'access-filament',
         'access-jetstream',
@@ -52,6 +56,7 @@ class PermissionSeeder extends Seeder
         'manage-discord-settings',
         'manage-fourthwall-settings',
         'manage-twitch-settings',
+        'manage-tickets',
         'view-analytics',
         'view-settings',
         'is-admin',
@@ -62,6 +67,7 @@ class PermissionSeeder extends Seeder
 
     /**
      * Run the database seeds.
+     *
      * @throws BindingResolutionException
      */
     public function run(): void
@@ -113,6 +119,7 @@ class PermissionSeeder extends Seeder
     {
         if (empty($this->specialPermissions)) {
             $this->command->warn('No special permissions found to create.');
+
             return;
         }
 
@@ -147,11 +154,12 @@ class PermissionSeeder extends Seeder
             // If no models are found, output a warning and return false
             if (empty($models)) {
                 $this->command->warn('No models found with the IsPermissible trait.');
+
                 return false;
             }
 
             // Count models and output for logging
-            $this->command->info('Found ' . count($models) . ' models with the IsPermissible trait');
+            $this->command->info('Found '.count($models).' models with the IsPermissible trait');
 
             // Loop through the models and add them to the objects array
             foreach ($models as $model) {
@@ -173,9 +181,10 @@ class PermissionSeeder extends Seeder
             $this->createAdvancedPermissions('permission');
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log the exception for debugging
-            $this->command->error('Error while generating permissions: ' . $e->getMessage());
+            $this->command->error('Error while generating permissions: '.$e->getMessage());
+
             return false;
         }
     }
@@ -183,8 +192,6 @@ class PermissionSeeder extends Seeder
     /**
      * Create a permission for each CRUD operation.
      *
-     * @param string $object
-     * @return void
      * @example $this->createCrudPermissions('user');
      */
     private function createCrudPermissions(string $object): void
@@ -208,8 +215,6 @@ class PermissionSeeder extends Seeder
     /**
      * Create advanced permissions for each object.
      *
-     * @param string $object
-     * @return void
      * @example $this->createAdvancedPermissions('user');
      */
     private function createAdvancedPermissions(string $object): void

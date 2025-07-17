@@ -14,6 +14,10 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Gerenuk\FilamentBanhammer\Resources\Actions\BanAction;
+use Gerenuk\FilamentBanhammer\Resources\Actions\BanBulkAction;
+use Gerenuk\FilamentBanhammer\Resources\Actions\UnbanAction;
+use Gerenuk\FilamentBanhammer\Resources\Actions\UnbanBulkAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -53,10 +57,14 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                BanAction::make(),
+                UnbanAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    BanBulkAction::make(),
+                    UnbanBulkAction::make(),
                 ]),
             ]);
     }
