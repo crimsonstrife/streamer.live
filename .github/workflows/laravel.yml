@@ -11,49 +11,42 @@ on:
 jobs:
   laravel-tests:
     runs-on: ubuntu-latest
-    # set the default DB env for all steps that need it
     env:
       DB_CONNECTION: sqlite
       DB_DATABASE: ${{ github.workspace }}/database/database.sqlite
 
     steps:
-      # 1) Checkout
       - uses: actions/checkout@v4
 
-      # 2) PHP + SQLite extension
       - name: Setup PHP with SQLite
         uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
         with:
           php-version: '8.3'
           extensions: sqlite
 
-      # 3) Copy example env (we'll override DB via workflow env)
       - name: Copy .env
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      # 4) Dependencies
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      # 5) Generate app key
+      - name: Run migrations
+        run: php artisan migrate --force
+
       - name: Generate key
         run: php artisan key:generate
 
-      # 6) Fix permissions
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
 
-      # 7) Create an empty SQLite database file
       - name: Create SQLite database
         run: |
           mkdir -p database
           touch database/database.sqlite
 
-      # 8) (Optional) Run migrations so tests have schema
-      - name: Run migrations
-        run: php artisan migrate --force
+      - name: Clear Laravel cache
+        run: php artisan cache:clear
 
-      # 9) Run your tests
       - name: Execute tests
         run: php artisan test
