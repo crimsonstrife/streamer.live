@@ -6,20 +6,19 @@ use App\Services\OnboardingStepRegistrar;
 use Filament\Facades\Filament;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Log;
-use Spatie\Onboard\Facades\Onboard;
 
 class AccountWidget extends Widget
 {
     protected static ?int $sort = -3;
+
     protected static bool $stepsRegistered = false;
+
     protected static bool $isLazy = false; // must be false so mount() runs immediately
+
     protected static string $view = 'filament.widgets.account-widget';
 
     public function mount(): void
     {
-        $user = Filament::auth()?->user();
-        $panel = Filament::getCurrentPanel();
-
         if (static::$stepsRegistered) {
             return;
         }

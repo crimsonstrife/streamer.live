@@ -4,7 +4,7 @@
     $steps = $onboarding->steps;
     $totalSteps = count($steps);
     $completedSteps = collect($steps)->filter(fn ($step) => $step->complete())->count();
-    $progress = $totalSteps > 0 ? intval(($completedSteps / $totalSteps) * 100) : 0;
+    $progress = $totalSteps > 0 ? (int) (($completedSteps / $totalSteps) * 100) : 0;
     $dismissed = session('onboarding_dismissed', false);
 @endphp
 
@@ -12,7 +12,7 @@
     <x-filament::section>
         {{-- Top User Info --}}
         <div class="flex items-center gap-x-3">
-            <x-filament-panels::avatar.user size="lg" :user="$user" />
+            <x-filament-panels::avatar.user size="lg" :user="$user"/>
 
             <div class="flex-1">
                 <h2 class="text-base font-semibold leading-6 text-gray-950 dark:text-white">
@@ -43,28 +43,9 @@
                 </x-filament::button>
             </form>
         </div>
-
         {{-- Onboarding Section --}}
-        @if (empty($steps))
-            <p class="text-red-500">No onboarding steps found.</p>
-        @endif
-        @if (! $onboarding->inProgress())
-            <p class="text-red-500">Onboarding is not in progress.</p>
-        @endif
-        @if ($dismissed)
-            <p class="text-yellow-500">Onboarding is dismissed in session.</p>
-        @endif
-    @if ($onboarding->inProgress() && !$dismissed)
+        @if ($onboarding->inProgress() && !$dismissed)
             <x-filament::card class="mt-4 bg-gray-50 dark:bg-gray-800 relative">
-                {{-- Dismiss button --}}
-                <form method="post" action="#" class="absolute top-2 right-2">
-                    @csrf
-                    <button type="submit" class="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                        <x-fas-xmark class="w-4 h-4" />
-                        <span class="sr-only">Dismiss</span>
-                    </button>
-                </form>
-
                 {{-- Progress Header --}}
                 <div class="mb-2">
                     <h3 class="text-sm font-medium text-gray-800 dark:text-gray-200">
@@ -80,18 +61,18 @@
                         {{ $completedSteps }} of {{ $totalSteps }} steps completed
                     </p>
                 </div>
-
+                <br/>
                 {{-- Steps --}}
                 <ul class="space-y-3 mt-3">
                     @foreach ($steps as $step)
                         <li class="flex items-start gap-2">
                             @if ($step->complete())
-                                <x-far-square-check class="text-success mt-1" height="1.5rem" />
+                                <x-far-square-check class="text-success mt-1" height="1.5rem"/>
                                 <div class="flex-1 text-sm text-gray-500 line-through">
                                     <span class="font-semibold">{{ $loop->iteration }}. {{ $step->title }}</span>
                                 </div>
                             @else
-                                <x-far-square class="text-gray-400 mt-1" height="1.5rem" />
+                                <x-far-square class="text-gray-400 mt-1" height="1.5rem"/>
                                 <div class="flex-1 text-sm text-gray-800 dark:text-gray-200">
                                     <div class="font-semibold">{{ $loop->iteration }}. {{ $step->title }}</div>
                                     @if ($step->cta)
@@ -107,6 +88,14 @@
                         </li>
                     @endforeach
                 </ul>
+                <br/>
+                {{-- Dismiss button --}}
+                <form method="post" action="#" class="relative bottom-2 left-10">
+                    @csrf
+                    <button type="submit" class="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                        <span><x-fas-xmark class="w-4 h-4"/> Dismiss</span>
+                    </button>
+                </form>
             </x-filament::card>
         @endif
     </x-filament::section>
