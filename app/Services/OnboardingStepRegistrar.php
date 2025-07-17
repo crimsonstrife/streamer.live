@@ -44,6 +44,7 @@ class OnboardingStepRegistrar
 
         $this->addStepOnce('site-settings', function () use ($panelSlug, $user) {
             Onboard::addStep('Set your site settings!')
+                ->key('site-settings')
                 ->link("/{$panelSlug}/settings/site-settings")
                 ->cta('Configure')
                 ->completeIf(fn (SiteSettings $setting) => $setting->isComplete())
