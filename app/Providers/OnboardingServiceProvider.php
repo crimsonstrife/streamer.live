@@ -29,7 +29,7 @@ class OnboardingServiceProvider extends ServiceProvider
                 $user = Filament::auth()?->user();
 
                 if ($panel && $user) {
-                    (new OnboardingStepRegistrar)->register($panel, $user);
+                    (new OnboardingStepRegistrar())->register($panel, $user);
                 } else {
                     logger()->warning('Onboarding skipped: panel or user missing.', [
                         'panel' => $panel?->getId(),

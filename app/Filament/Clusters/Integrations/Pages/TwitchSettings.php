@@ -138,8 +138,7 @@ class TwitchSettings extends SettingsPage
     {
         parent::mount();
 
-        if ( auth()->user()?->can('is-admin') or auth()->user()?->can('is-super-admin'))
-        {
+        if (auth()->user()?->can('is-admin') or auth()->user()?->can('is-super-admin')) {
             auth()->user()?->markOnboardingStepComplete('visited_twitch_integration_page');
         }
     }
