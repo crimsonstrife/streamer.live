@@ -65,6 +65,7 @@ class OnboardingStepRegistrar
 
         $this->addStepOnce('moderator-blog-comments', function () use ($panelSlug, $user) {
             Onboard::addStep('Review flagged comments')
+                ->key('visited_blog_comments')
                 ->link("/{$panelSlug}/blog/comments")
                 ->cta('Review')
                 ->completeIf(fn () => $user->hasCompletedOnboardingStep('visited_blog_comments'))
