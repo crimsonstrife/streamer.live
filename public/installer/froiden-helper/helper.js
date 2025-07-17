@@ -467,7 +467,7 @@ $(document).on("ajaxPageLoad", function () {
         return b ? b[a] : q.en[a];
     }
     function e(a, c, d) {
-        a.stopPropagation(), a.preventDefault();
+        (a.stopPropagation(), a.preventDefault());
         const e = b.isFunction(d) && d.call(c, a) === !1;
         e || c.modal("hide");
     }
@@ -503,12 +503,12 @@ $(document).on("ajaxPageLoad", function () {
                         "button with key " + a + " must be an object",
                     );
                 }
-                e.label || (e.label = a),
+                (e.label || (e.label = a),
                     e.className ||
                         (e.className =
                             d <= 2 && f === d - 1
                                 ? "btn-primary"
-                                : "btn-default");
+                                : "btn-default"));
             }),
             a
         );
@@ -592,7 +592,7 @@ $(document).on("ajaxPageLoad", function () {
         container: "body",
     };
     const p = {};
-    (p.alert = function () {
+    ((p.alert = function () {
         let a;
         if (
             ((a = k("alert", ["ok"], ["message", "callback"], arguments)),
@@ -669,10 +669,10 @@ $(document).on("ajaxPageLoad", function () {
                             break;
                         case "checkbox":
                             var d = h.find("input:checked");
-                            (c = []),
+                            ((c = []),
                                 g(d, function (a, d) {
                                     c.push(b(d).val());
-                                });
+                                }));
                     }
                     return a.callback.call(this, c);
                 }),
@@ -705,12 +705,12 @@ $(document).on("ajaxPageLoad", function () {
                     if (!k.length) {
                         throw new Error("prompt with select requires options");
                     }
-                    g(k, function (a, d) {
+                    (g(k, function (a, d) {
                         let e = h;
                         if (d.value === c || d.text === c) {
                             throw new Error("given options in wrong format");
                         }
-                        d.group &&
+                        (d.group &&
                             (o[d.group] ||
                                 (o[d.group] = b("<optgroup/>").attr(
                                     "label",
@@ -723,12 +723,12 @@ $(document).on("ajaxPageLoad", function () {
                                     "'>" +
                                     d.text +
                                     "</option>",
-                            );
+                            ));
                     }),
                         g(o, function (a, b) {
                             h.append(b);
                         }),
-                        h.val(a.value);
+                        h.val(a.value));
                     break;
                 case "checkbox":
                     var q = b.isArray(a.value) ? a.value : [a.value];
@@ -740,17 +740,17 @@ $(document).on("ajaxPageLoad", function () {
                     if (!k[0].value || !k[0].text) {
                         throw new Error("given options in wrong format");
                     }
-                    (h = b("<div/>")),
+                    ((h = b("<div/>")),
                         g(k, function (c, d) {
                             const e = b(n.inputs[a.inputType]);
-                            e.find("input").attr("value", d.value),
+                            (e.find("input").attr("value", d.value),
                                 e.find("label").append(d.text),
                                 g(q, function (a, b) {
                                     b === d.value &&
                                         e.find("input").prop("checked", !0);
                                 }),
-                                h.append(e);
-                        });
+                                h.append(e));
+                        }));
             }
             return (
                 a.placeholder && h.attr("placeholder", a.placeholder),
@@ -758,9 +758,9 @@ $(document).on("ajaxPageLoad", function () {
                 a.maxlength && h.attr("maxlength", a.maxlength),
                 f.append(h),
                 f.on("submit", function (a) {
-                    a.preventDefault(),
+                    (a.preventDefault(),
                         a.stopPropagation(),
-                        e.find(".btn-primary").click();
+                        e.find(".btn-primary").click());
                 }),
                 (e = p.dialog(a)),
                 e.off("shown.bs.modal"),
@@ -786,7 +786,7 @@ $(document).on("ajaxPageLoad", function () {
             }
             if (
                 (g(j, function (a, b) {
-                    (k +=
+                    ((k +=
                         "<button data-bb-handler='" +
                         a +
                         "' type='button' class='btn " +
@@ -794,7 +794,7 @@ $(document).on("ajaxPageLoad", function () {
                         "'>" +
                         b.label +
                         "</button>"),
-                        (l[a] = b.callback);
+                        (l[a] = b.callback));
                 }),
                 i.find(".bootbox-body").html(a.message),
                 a.animate === !0 && d.addClass("fade"),
@@ -822,12 +822,12 @@ $(document).on("ajaxPageLoad", function () {
                 }),
                 a.backdrop !== "static" &&
                     d.on("click.dismiss.bs.modal", function (a) {
-                        d.children(".modal-backdrop").length &&
+                        (d.children(".modal-backdrop").length &&
                             (a.currentTarget = d
                                 .children(".modal-backdrop")
                                 .get(0)),
                             a.target === a.currentTarget &&
-                                d.trigger("escape.close.bb");
+                                d.trigger("escape.close.bb"));
                     }),
                 d.on("escape.close.bb", function (a) {
                     l.onEscape && e(a, d, l.onEscape);
@@ -854,14 +854,14 @@ $(document).on("ajaxPageLoad", function () {
         }),
         (p.setDefaults = function () {
             let a = {};
-            arguments.length === 2
+            (arguments.length === 2
                 ? (a[arguments[0]] = arguments[1])
                 : (a = arguments[0]),
-                b.extend(o, a);
+                b.extend(o, a));
         }),
         (p.hideAll = function () {
-            return b(".bootbox").modal("hide"), p;
-        });
+            return (b(".bootbox").modal("hide"), p);
+        }));
     var q = {
         bg_BG: {
             OK: "ÐžÐº",
@@ -926,7 +926,7 @@ $(document).on("ajaxPageLoad", function () {
             );
         }),
         (p.removeLocale = function (a) {
-            return delete q[a], p;
+            return (delete q[a], p);
         }),
         (p.setLocale = function (a) {
             return p.setDefaults("locale", a);
@@ -990,7 +990,7 @@ $(document).on("ajaxPageLoad", function () {
             }
             function h(a) {
                 const b = p();
-                r || c(b), k(a, b) || j(b);
+                (r || c(b), k(a, b) || j(b));
             }
             function i(b) {
                 const d = p();
@@ -1070,13 +1070,13 @@ $(document).on("ajaxPageLoad", function () {
                               duration: g.hideDuration,
                               easing: g.hideEasing,
                               complete: function () {
-                                  q(j),
+                                  (q(j),
                                       g.onHidden &&
                                           o.state !== "hidden" &&
                                           g.onHidden(),
                                       (o.state = "hidden"),
                                       (o.endTime = new Date()),
-                                      n(o);
+                                      n(o));
                               },
                           })
                         : void 0;
@@ -1086,20 +1086,20 @@ $(document).on("ajaxPageLoad", function () {
                         (i = setTimeout(d, g.extendedTimeOut));
                 }
                 function f() {
-                    clearTimeout(i),
+                    (clearTimeout(i),
                         j
                             .stop(!0, !0)
                             [
                                 g.showMethod
-                            ]({ duration: g.showDuration, easing: g.showEasing });
+                            ]({ duration: g.showDuration, easing: g.showEasing }));
                 }
                 var g = p();
                 let h = b.iconClass || g.iconClass;
-                typeof b.optionsOverride !== "undefined" &&
+                (typeof b.optionsOverride !== "undefined" &&
                     ((g = a.extend(g, b.optionsOverride)),
                     (h = b.optionsOverride.iconClass || h)),
                     t++,
-                    (r = c(g, !0));
+                    (r = c(g, !0)));
                 var i = null;
                 var j = a("<div/>");
                 const k = a("<div/>");
@@ -1137,16 +1137,16 @@ $(document).on("ajaxPageLoad", function () {
                     g.closeButton &&
                         m &&
                         m.click(function (a) {
-                            a.stopPropagation
+                            (a.stopPropagation
                                 ? a.stopPropagation()
                                 : void 0 !== a.cancelBubble &&
                                   a.cancelBubble !== !0 &&
                                   (a.cancelBubble = !0),
-                                d(!0);
+                                d(!0));
                         }),
                     g.onclick &&
                         j.click(function () {
-                            g.onclick(), d();
+                            (g.onclick(), d());
                         }),
                     n(o),
                     g.debug && console && console.log(o),
@@ -1157,11 +1157,11 @@ $(document).on("ajaxPageLoad", function () {
                 return a.extend({}, m(), v.options);
             }
             function q(a) {
-                r || (r = c()),
+                (r || (r = c()),
                     a.is(":visible") ||
                         (a.remove(),
                         (a = null),
-                        r.children().length === 0 && r.remove());
+                        r.children().length === 0 && r.remove()));
             }
             let r;
             let s;
@@ -1241,12 +1241,12 @@ $(document).on("ajaxPageLoad", function () {
                 ) {
                     const m = y.jquery ? y[0] : y;
                     const v = {};
-                    e(t).data("blockUI.history", v),
+                    (e(t).data("blockUI.history", v),
                         (v.el = m),
                         (v.parent = m.parentNode),
                         (v.display = m.style.display),
                         (v.position = m.style.position),
-                        v.parent?.removeChild(m);
+                        v.parent?.removeChild(m));
                 }
                 e(t).data("blockUI.onUnblock", n.onUnblock);
                 let g;
@@ -1254,7 +1254,7 @@ $(document).on("ajaxPageLoad", function () {
                 let w;
                 let U;
                 let x = n.baseZ;
-                (g = e(
+                ((g = e(
                     r || n.forceIframe
                         ? '<iframe class="blockUI" style="z-index:' +
                               x++ +
@@ -1324,10 +1324,10 @@ $(document).on("ajaxPageLoad", function () {
                             : w.css(s)),
                     n.theme || I.css(n.overlayCSS),
                     I.css("position", k ? "fixed" : "absolute"),
-                    (r || n.forceIframe) && g.css("opacity", 0);
+                    (r || n.forceIframe) && g.css("opacity", 0));
                 const C = [g, I, w];
                 const S = e(k ? "body" : t);
-                e.each(C, function () {
+                (e.each(C, function () {
                     this.appendTo(S);
                 }),
                     n.theme &&
@@ -1336,7 +1336,7 @@ $(document).on("ajaxPageLoad", function () {
                         w.draggable({
                             handle: ".ui-dialog-titlebar",
                             cancel: "li",
-                        });
+                        }));
                 const O =
                     f &&
                     (!e.support.boxModel ||
@@ -1357,7 +1357,7 @@ $(document).on("ajaxPageLoad", function () {
                     e.each(C, function (e, t) {
                         const o = t[0].style;
                         if (((o.position = "absolute"), e < 2)) {
-                            k
+                            (k
                                 ? o.setExpression(
                                       "height",
                                       "Math.max(document.body.scrollHeight, document.body.offsetHeight) - (jQuery.support.boxModel?0:" +
@@ -1378,19 +1378,16 @@ $(document).on("ajaxPageLoad", function () {
                                           'this.parentNode.offsetWidth + "px"',
                                       ),
                                 B && o.setExpression("left", B),
-                                M && o.setExpression("top", M);
+                                M && o.setExpression("top", M));
                         } else if (n.centerY) {
-                            k &&
+                            (k &&
                                 o.setExpression(
                                     "top",
                                     '(document.documentElement.clientHeight || document.body.clientHeight) / 2 - (this.offsetHeight / 2) + (blah = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop) + "px"',
                                 ),
-                                (o.marginTop = 0);
+                                (o.marginTop = 0));
                         } else if (!n.centerY && k) {
-                            const i =
-                                n.css?.top
-                                    ? parseInt(n.css.top, 10)
-                                    : 0;
+                            const i = n.css?.top ? parseInt(n.css.top, 10) : 0;
                             const s =
                                 "((document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop) + " +
                                 i +
@@ -1411,12 +1408,12 @@ $(document).on("ajaxPageLoad", function () {
                     const j = n.onBlock ? n.onBlock : c;
                     const H = n.showOverlay && !y ? j : c;
                     const z = y ? j : c;
-                    n.showOverlay && I._fadeIn(n.fadeIn, H),
-                        y && w._fadeIn(n.fadeIn, z);
+                    (n.showOverlay && I._fadeIn(n.fadeIn, H),
+                        y && w._fadeIn(n.fadeIn, z));
                 } else {
-                    n.showOverlay && I.show(),
+                    (n.showOverlay && I.show(),
                         y && w.show(),
-                        n.onBlock && n.onBlock.bind(w)();
+                        n.onBlock && n.onBlock.bind(w)());
                 }
                 if (
                     (i(1, t, n),
@@ -1440,14 +1437,14 @@ $(document).on("ajaxPageLoad", function () {
             const a = e(t);
             const d = a.data("blockUI.history");
             const c = a.data("blockUI.timeout");
-            c && (clearTimeout(c), a.removeData("blockUI.timeout")),
+            (c && (clearTimeout(c), a.removeData("blockUI.timeout")),
                 (o = e.extend({}, e.blockUI.defaults, o || {})),
                 i(0, t, o),
                 o.onUnblock === null &&
                     ((o.onUnblock = a.data("blockUI.onUnblock")),
-                    a.removeData("blockUI.onUnblock"));
+                    a.removeData("blockUI.onUnblock")));
             let r;
-            (r = l
+            ((r = l
                 ? e("body").children().filter(".blockUI").add("body > .blockUI")
                 : a.find(">.blockUI")),
                 o.cursorReset &&
@@ -1459,12 +1456,12 @@ $(document).on("ajaxPageLoad", function () {
                       r.stop().fadeOut(o.fadeOut, function () {
                           --s === 0 && n(r, d, o, t);
                       }))
-                    : n(r, d, o, t);
+                    : n(r, d, o, t));
         }
         function n(t, o, n, i) {
             const s = e(i);
             if (!s.data("blockUI.isBlocked")) {
-                t.each(function () {
+                (t.each(function () {
                     this.parentNode?.removeChild(this);
                 }),
                     o?.el &&
@@ -1474,11 +1471,11 @@ $(document).on("ajaxPageLoad", function () {
                         o.parent?.appendChild(o.el),
                         s.removeData("blockUI.history")),
                     s.data("blockUI.static") && s.css("position", "static"),
-                    typeof n.onUnblock === "function" && n.onUnblock(i, n);
+                    typeof n.onUnblock === "function" && n.onUnblock(i, n));
                 const l = e(document.body);
                 const a = l.width();
                 const d = l[0].style.width;
-                l.width(a - 1).width(a), (l[0].style.width = d);
+                (l.width(a - 1).width(a), (l[0].style.width = d));
             }
         }
         function i(t, o, n) {
@@ -1538,8 +1535,8 @@ $(document).on("ajaxPageLoad", function () {
                 (n.offsetWidth - e.offsetWidth) / 2 - d(n, "borderLeftWidth");
             const l =
                 (n.offsetHeight - e.offsetHeight) / 2 - d(n, "borderTopWidth");
-            t && (i.left = s > 0 ? s + "px" : "0"),
-                o && (i.top = l > 0 ? l + "px" : "0");
+            (t && (i.left = s > 0 ? s + "px" : "0"),
+                o && (i.top = l > 0 ? l + "px" : "0"));
         }
         function d(t, o) {
             return parseInt(e.css(t, o), 10) || 0;
@@ -1553,7 +1550,7 @@ $(document).on("ajaxPageLoad", function () {
         var f =
             (document.documentMode || 0,
             e.isFunction(document.createElement("div").style.setExpression));
-        (e.blockUI = function (e) {
+        ((e.blockUI = function (e) {
             t(window, e);
         }),
             (e.unblockUI = function (e) {
@@ -1561,11 +1558,11 @@ $(document).on("ajaxPageLoad", function () {
             }),
             (e.growlUI = function (t, o, n, i) {
                 const s = e('<div class="growlUI"></div>');
-                t && s.append("<h1>" + DOMPurify.sanitize(t) + "</h1>"),
+                (t && s.append("<h1>" + DOMPurify.sanitize(t) + "</h1>"),
                     o && s.append("<h2>" + DOMPurify.sanitize(o) + "</h2>"),
-                    void 0 === n && (n = 3e3);
+                    void 0 === n && (n = 3e3));
                 const l = function (t) {
-                    (t = t || {}),
+                    ((t = t || {}),
                         e.blockUI({
                             message: s,
                             fadeIn:
@@ -1584,20 +1581,20 @@ $(document).on("ajaxPageLoad", function () {
                             showOverlay: !1,
                             onUnblock: i,
                             css: e.blockUI.defaults.growlCSS,
-                        });
+                        }));
                 };
                 l();
                 s.css("opacity");
                 s.mouseover(function () {
                     l({ fadeIn: 0, timeout: 3e4 });
                     const t = e(".blockMsg");
-                    t.stop(), t.fadeTo(300, 1);
+                    (t.stop(), t.fadeTo(300, 1));
                 }).mouseout(function () {
                     e(".blockMsg").fadeOut(1e3);
                 });
             }),
             (e.fn.block = function (o) {
-                if (this[0] === window) return e.blockUI(o), this;
+                if (this[0] === window) return (e.blockUI(o), this);
                 const n = e.extend({}, e.blockUI.defaults, o || {});
                 return (
                     this.each(function () {
@@ -1606,11 +1603,11 @@ $(document).on("ajaxPageLoad", function () {
                             t.unblock({ fadeOut: 0 });
                     }),
                     this.each(function () {
-                        e.css(this, "position") == "static" &&
+                        (e.css(this, "position") == "static" &&
                             ((this.style.position = "relative"),
                             e(this).data("blockUI.static", !0)),
                             (this.style.zoom = 1),
-                            t(this, o);
+                            t(this, o));
                     })
                 );
             }),
@@ -1683,7 +1680,7 @@ $(document).on("ajaxPageLoad", function () {
                 quirksmodeOffsetHack: 4,
                 blockMsgClass: "blockMsg",
                 ignoreIfBlocked: !1,
-            });
+            }));
         var p = null;
         var b = [];
     }
