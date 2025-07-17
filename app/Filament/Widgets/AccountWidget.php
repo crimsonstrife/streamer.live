@@ -27,7 +27,7 @@ class AccountWidget extends Widget
         $panel = Filament::getCurrentPanel();
 
         if ($user && $panel) {
-            Log::info('Registering onboarding from AccountWidget', [
+            Log::debug('Registering onboarding from AccountWidget', [
                 'user_id' => $user->id,
                 'panel' => $panel->getId(),
             ]);
