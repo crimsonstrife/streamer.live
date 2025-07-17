@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "150a6dfefefb559eaeb34f70aec3d504",
+    "content-hash": "0927bc7a0d8bfab50f147113c3aa0a85",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -5913,16 +5913,16 @@
         },
         {
             "name": "lakm/laravel-comments",
-            "version": "2.3.7",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lakshan-Madushanka/laravel-comments.git",
-                "reference": "003478d0e2d93af806bea2c129ac519d9fed6017"
+                "reference": "bec10d4ef6ad88bb6968915d8a940e39f7d9f3f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lakshan-Madushanka/laravel-comments/zipball/003478d0e2d93af806bea2c129ac519d9fed6017",
-                "reference": "003478d0e2d93af806bea2c129ac519d9fed6017",
+                "url": "https://api.github.com/repos/Lakshan-Madushanka/laravel-comments/zipball/bec10d4ef6ad88bb6968915d8a940e39f7d9f3f1",
+                "reference": "bec10d4ef6ad88bb6968915d8a940e39f7d9f3f1",
                 "shasum": ""
             },
             "require": {
@@ -5947,13 +5947,13 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "LakM\\Comments\\CommentServiceProvider"
+                        "LakM\\Commenter\\CommenterServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "LakM\\Comments\\": "src/"
+                    "LakM\\Commenter\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -5976,7 +5976,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Lakshan-Madushanka/laravel-comments/issues",
-                "source": "https://github.com/Lakshan-Madushanka/laravel-comments/tree/2.3.7"
+                "source": "https://github.com/Lakshan-Madushanka/laravel-comments/tree/3.0.2"
             },
             "funding": [
                 {
@@ -5984,7 +5984,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-06-28T00:25:00+00:00"
+            "time": "2025-07-03T14:58:34+00:00"
         },
         {
             "name": "lakm/nopass",
@@ -8025,16 +8025,16 @@
         },
         {
             "name": "livewire/livewire",
-            "version": "v3.6.3",
+            "version": "v3.6.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/livewire.git",
-                "reference": "56aa1bb63a46e06181c56fa64717a7287e19115e"
+                "reference": "ef04be759da41b14d2d129e670533180a44987dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/livewire/zipball/56aa1bb63a46e06181c56fa64717a7287e19115e",
-                "reference": "56aa1bb63a46e06181c56fa64717a7287e19115e",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/ef04be759da41b14d2d129e670533180a44987dc",
+                "reference": "ef04be759da41b14d2d129e670533180a44987dc",
                 "shasum": ""
             },
             "require": {
@@ -8089,7 +8089,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
-                "source": "https://github.com/livewire/livewire/tree/v3.6.3"
+                "source": "https://github.com/livewire/livewire/tree/v3.6.4"
             },
             "funding": [
                 {
@@ -8097,26 +8097,26 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-12T22:26:52+00:00"
+            "time": "2025-07-17T05:12:15+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
-            "version": "3.1.2",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/maennchen/ZipStream-PHP.git",
-                "reference": "aeadcf5c412332eb426c0f9b4485f6accba2a99f"
+                "reference": "9712d8fa4cdf9240380b01eb4be55ad8dcf71416"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/aeadcf5c412332eb426c0f9b4485f6accba2a99f",
-                "reference": "aeadcf5c412332eb426c0f9b4485f6accba2a99f",
+                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/9712d8fa4cdf9240380b01eb4be55ad8dcf71416",
+                "reference": "9712d8fa4cdf9240380b01eb4be55ad8dcf71416",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-zlib": "*",
-                "php-64bit": "^8.2"
+                "php-64bit": "^8.3"
             },
             "require-dev": {
                 "brianium/paratest": "^7.7",
@@ -8125,7 +8125,7 @@
                 "guzzlehttp/guzzle": "^7.5",
                 "mikey179/vfsstream": "^1.6",
                 "php-coveralls/php-coveralls": "^2.5",
-                "phpunit/phpunit": "^11.0",
+                "phpunit/phpunit": "^12.0",
                 "vimeo/psalm": "^6.0"
             },
             "suggest": {
@@ -8167,7 +8167,7 @@
             ],
             "support": {
                 "issues": "https://github.com/maennchen/ZipStream-PHP/issues",
-                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.1.2"
+                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.2.0"
             },
             "funding": [
                 {
@@ -8175,7 +8175,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-27T12:07:53+00:00"
+            "time": "2025-07-17T11:15:13+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -20379,16 +20379,16 @@
         },
         {
             "name": "barryvdh/reflection-docblock",
-            "version": "v2.3.1",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barryvdh/ReflectionDocBlock.git",
-                "reference": "b6ff9f93603561f50e53b64310495d20b8dff5d8"
+                "reference": "d103774cbe7e94ddee7e4870f97f727b43fe7201"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/ReflectionDocBlock/zipball/b6ff9f93603561f50e53b64310495d20b8dff5d8",
-                "reference": "b6ff9f93603561f50e53b64310495d20b8dff5d8",
+                "url": "https://api.github.com/repos/barryvdh/ReflectionDocBlock/zipball/d103774cbe7e94ddee7e4870f97f727b43fe7201",
+                "reference": "d103774cbe7e94ddee7e4870f97f727b43fe7201",
                 "shasum": ""
             },
             "require": {
@@ -20425,9 +20425,9 @@
                 }
             ],
             "support": {
-                "source": "https://github.com/barryvdh/ReflectionDocBlock/tree/v2.3.1"
+                "source": "https://github.com/barryvdh/ReflectionDocBlock/tree/v2.4.0"
             },
-            "time": "2025-01-18T19:26:32+00:00"
+            "time": "2025-07-17T06:07:30+00:00"
         },
         {
             "name": "brianium/paratest",

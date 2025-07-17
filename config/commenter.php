@@ -1,12 +1,12 @@
 <?php
 
-use App\Enums\Sort;
 use App\Models\BlogObjects\Comment;
 use App\Models\AuthObjects\Guest;
 use App\Models\BlogObjects\Reaction;
 use App\Models\AuthObjects\User;
-use LakM\Comments\Policies\CommentPolicy;
-use LakM\Comments\Policies\ReplyPolicy;
+use LakM\Commenter\Enums\Sort;
+use LakM\Commenter\Policies\CommentPolicy;
+use LakM\Commenter\Policies\ReplyPolicy;
 
 return [
     /**
@@ -14,7 +14,7 @@ return [
      */
     'theme' => 'modern',
 
-    'primary_color' => '#0400ff',
+    'primary_color' => '#000000',
 
     'secondary_color' => '#000000',
 
@@ -32,20 +32,20 @@ return [
 
     /**
      * Comment Model
-     * Must extend base model LakM\Comments\Models\Comment
+     * Must extend base model LakM\Commenter\Models\Comment
      */
     'model' => Comment::class,
 
     /**
      * Comment owner model
      * Must extend Illuminate\Contracts\Auth\Authenticatable
-     * Must implement LakM\Comments\Contracts\CommenterContract
+     * Must implement LakM\Commenter\Contracts\CommenterContract
      */
     'user_model' => User::class,
 
     /**
      * Comment owner model in guest mode
-     * Must extend LakM\Comments\Models\Guest
+     * Must extend LakM\Commenter\Models\Guest
      */
     'guest_model' => Guest::class,
 
@@ -68,7 +68,7 @@ return [
 
     /**
      * Reaction model
-     * Must extend LakM\Comments\Models\Reaction
+     * Must extend LakM\Commenter\Models\Reaction
      */
     'reaction_model' => Reaction::class,
 
@@ -181,7 +181,6 @@ return [
 
     /**
      * Quill editor configs
-     *
      * @see https://quilljs.com/docs/configuration
      */
     'editor_config' => [
