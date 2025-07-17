@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\AuthObjects\User;
+use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Http\Livewire\Profile\UpdateProfileInformationForm;
 use Livewire\Livewire;
@@ -18,7 +19,7 @@ class ProfileInformationTest extends TestCase
 
         $component = Livewire::test(UpdateProfileInformationForm::class);
 
-        $this->assertEquals($user->name, $component->state['name']);
+        $this->assertEquals($user->username, $component->state['username']);
         $this->assertEquals($user->email, $component->state['email']);
     }
 
@@ -27,10 +28,10 @@ class ProfileInformationTest extends TestCase
         $this->actingAs($user = User::factory()->create());
 
         Livewire::test(UpdateProfileInformationForm::class)
-            ->set('state', ['name' => 'Test Name', 'email' => 'test@example.com'])
+            ->set('state', ['username' => 'TestName', 'email' => 'test@example.com'])
             ->call('updateProfileInformation');
 
-        $this->assertEquals('Test Name', $user->fresh()->name);
+        $this->assertEquals('TestName', $user->fresh()->username);
         $this->assertEquals('test@example.com', $user->fresh()->email);
     }
 }

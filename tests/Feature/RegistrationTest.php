@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Faker\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Fortify\Features;
 use Laravel\Jetstream\Jetstream;
@@ -39,11 +40,14 @@ class RegistrationTest extends TestCase
             $this->markTestSkipped('Registration support is not enabled.');
         }
 
+        $faker = Factory::create();
+        $fakedPassword = $faker->password(); // If this gets auto-tagged as a hardcoded password, it is not. It is generated randomly by Faker for testing.
+
         $response = $this->post('/register', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'username' => $faker->userName(),
+            'email' => $faker->email(),
+            'password' => $fakedPassword,
+            'password_confirmation' => $fakedPassword,
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
         ]);
 
