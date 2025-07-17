@@ -84,6 +84,7 @@ class OnboardingStepRegistrar
         foreach (['discord', 'fourthwall', 'twitch'] as $slug) {
             $this->addStepOnce("optional-integration-{$slug}", function () use ($panelSlug, $slug, $user) {
                 Onboard::addStep("Visit the {$slug} integration settings")
+                    ->key("visited_{$slug}_integration_page")
                     ->link("/{$panelSlug}/integrations/{$slug}-settings")
                     ->cta('See Optional Features')
                     ->completeIf(fn () => $user->hasCompletedOnboardingStep("visited_{$slug}_integration_page"))
