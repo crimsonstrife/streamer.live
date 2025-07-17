@@ -6,6 +6,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
@@ -36,7 +37,7 @@ use Shieldon\Firewall\Panel;
 
 Route::any('/firewall/panel/{path?}', function () {
 
-    $panel = new Panel();
+    $panel = new Panel;
     $panel->csrf(['_token' => csrf_token()]);
     $panel->entry();
 
@@ -69,7 +70,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         'firewall',
         'auth.banned',
         'ip.banned',
-        'logout.banned'
+        'logout.banned',
     ])->group(function () {
         Route::get('/dashboard', function () {
             return view('dashboard');
@@ -131,7 +132,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         'signed',
         'auth.banned',
         'ip.banned',
-        'logout.banned'
+        'logout.banned',
     ])->name('verification.verify');
 
     /**
@@ -148,7 +149,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         config('jetstream.auth_session'),
         'auth.banned',
         'ip.banned',
-        'logout.banned'
+        'logout.banned',
     ])->name('verification.notice');
 
     /**
@@ -166,7 +167,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         'auth.banned',
         'ip.banned',
         'logout.banned',
-        'throttle:6,1'
+        'throttle:6,1',
     ])->name('verification.send');
 
     /**
@@ -183,7 +184,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
         config('jetstream.auth_session'),
         'auth.banned',
         'ip.banned',
-        'logout.banned'
+        'logout.banned',
     ])->name('verification.complete');
 
     Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
@@ -200,7 +201,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 'auth',
                 'auth.banned',
                 'ip.banned',
-                'logout.banned'
+                'logout.banned',
             ])
             ->name('comment.submit');
         // Post reactions
@@ -211,7 +212,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                     'auth',
                     'auth.banned',
                     'ip.banned',
-                    'logout.banned'
+                    'logout.banned',
                 ]
             );
 
@@ -222,7 +223,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 'auth',
                 'auth.banned',
                 'ip.banned',
-                'logout.banned'
+                'logout.banned',
             ]);
     });
 
@@ -268,7 +269,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                     'auth',
                     'auth.banned',
                     'ip.banned',
-                    'logout.banned'
+                    'logout.banned',
                 ])
                 ->name('product.review.submit');
         });
@@ -279,7 +280,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
         foreach ($fonts as $font) {
             $url = $font->is_builtin
-                ? asset("{$font->file_path}")
+                ? asset((string) ($font->file_path))
                 : $font->getFirstMediaUrl('fonts');
             $wMin = $font->weight_min ?? 100;
             $wMax = $font->weight_max ?? 900;
@@ -305,6 +306,8 @@ CSS;
         ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
         ->name('fabricator.page.global.fallback');
 });
+
+Route::middleware(['web', 'auth'])->post('/{panel}/onboarding/dismiss', [OnboardingController::class, 'dismiss'])->name('onboarding.dismiss');
 
 // Kick off the OAuth flow, saving your “context” in session
 Route::get('auth/twitch/redirect', function (Request $request) {

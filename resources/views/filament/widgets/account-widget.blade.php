@@ -5,7 +5,7 @@
     $totalSteps = count($steps);
     $completedSteps = collect($steps)->filter(fn ($step) => $step->complete())->count();
     $progress = $totalSteps > 0 ? (int) (($completedSteps / $totalSteps) * 100) : 0;
-    $dismissed = session('onboarding_dismissed', false);
+    $dismissed = $user->hasDismissedOnboarding();
 @endphp
 
 <x-filament-widgets::widget class="fi-account-widget">
@@ -44,7 +44,7 @@
             </form>
         </div>
         {{-- Onboarding Section --}}
-        @if ($onboarding->inProgress() && !$dismissed)
+        @if (!$dismissed && $onboarding->inProgress())
             <x-filament::card class="mt-4 bg-gray-50 dark:bg-gray-800 relative">
                 {{-- Progress Header --}}
                 <div class="mb-2">
@@ -90,7 +90,9 @@
                 </ul>
                 <br/>
                 {{-- Dismiss button --}}
-                <form method="post" action="#" class="relative bottom-2 left-10">
+                <form method="post"
+                      action="{{ route('onboarding.dismiss', ['panel' => filament()->getCurrentPanel()?->getId() ?? 'admin']) }}"
+                      class="relative bottom-2 left-10">
                     @csrf
                     <button type="submit" class="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                         <span><x-fas-xmark class="w-4 h-4"/> Dismiss</span>

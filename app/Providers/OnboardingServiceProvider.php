@@ -3,23 +3,31 @@
 namespace App\Providers;
 
 use App\Services\OnboardingStepRegistrar;
-use Filament\Events\ServingFilament;
 use Filament\Facades\Filament;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Onboard\Facades\Onboard;
 
+/**
+ * Class OnboardingServiceProvider
+ *
+ * Service provider for managing onboarding steps within the application.
+ */
 class OnboardingServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
+     *
+     * This method is used to bind services into the container.
      */
     public function register(): void
     {
-        //
+        // No services are registered in this provider.
     }
 
     /**
      * Bootstrap services.
+     *
+     * This method is used to initialize services and perform any necessary setup.
      */
     public function boot(): void
     {
@@ -29,12 +37,7 @@ class OnboardingServiceProvider extends ServiceProvider
                 $user = Filament::auth()?->user();
 
                 if ($panel && $user) {
-                    (new OnboardingStepRegistrar())->register($panel, $user);
-                } else {
-                    logger()->warning('Onboarding skipped: panel or user missing.', [
-                        'panel' => $panel?->getId(),
-                        'user_id' => $user?->id,
-                    ]);
+                    (new OnboardingStepRegistrar)->register($panel, $user);
                 }
             });
         }
