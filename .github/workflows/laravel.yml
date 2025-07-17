@@ -24,6 +24,11 @@ jobs:
           php-version: '8.3'
           extensions: sqlite
 
+      - name: Create SQLite database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
       - name: Copy .env
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -31,19 +36,14 @@ jobs:
       - name: Install Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Run migrations
-        run: php artisan migrate --force
-
       - name: Generate key
         run: php artisan key:generate
 
+      - name: Run migrations
+        run: php artisan migrate --force
+
       - name: Directory Permissions
         run: chmod -R 777 storage bootstrap/cache
-
-      - name: Create SQLite database
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
 
       - name: Clear Laravel cache
         run: php artisan cache:clear
