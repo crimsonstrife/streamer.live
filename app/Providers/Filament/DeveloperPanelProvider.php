@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\AccountWidget;
+use Exception;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -23,7 +25,7 @@ use Stephenjude\FilamentDebugger\DebuggerPlugin;
 class DeveloperPanelProvider extends PanelProvider
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function panel(Panel $panel): Panel
     {
@@ -45,7 +47,7 @@ class DeveloperPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Developer/Widgets'), for: 'App\\Filament\\Developer\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([

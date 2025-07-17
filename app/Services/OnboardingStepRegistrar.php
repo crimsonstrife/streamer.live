@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AuthObjects\User;
 use App\Settings\SiteSettings;
+use Exception;
 use Filament\Panel;
 use Spatie\Onboard\Facades\Onboard;
 
@@ -29,11 +30,14 @@ class OnboardingStepRegistrar
 
         match ($panelSlug) {
             'admin' => $this->registerAdminSteps($panel, $user),
-            'moderator' => $this->registerModeratorSteps($panel, $user),
+            'moderation' => $this->registerModeratorSteps($panel, $user),
             default => null,
         };
     }
 
+    /**
+     * @throws Exception
+     */
     protected function registerAdminSteps(?Panel $panel = null, ?User $user = null): void
     {
         $panelSlug = $panel?->getId() ?? 'admin';
@@ -51,6 +55,9 @@ class OnboardingStepRegistrar
         $this->addOptionalIntegrationSteps($panel, $user);
     }
 
+    /**
+     * @throws Exception
+     */
     protected function registerModeratorSteps(?Panel $panel = null, ?User $user = null): void
     {
         $panelSlug = $panel?->getId() ?? 'admin';
@@ -66,6 +73,9 @@ class OnboardingStepRegistrar
         $this->addOptionalIntegrationSteps($panel, $user);
     }
 
+    /**
+     * @throws Exception
+     */
     protected function addOptionalIntegrationSteps(?Panel $panel = null, ?User $user = null): void
     {
         $panelSlug = $panel?->getId() ?? 'admin';
