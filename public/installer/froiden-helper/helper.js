@@ -1061,7 +1061,7 @@ $(document).on("ajaxPageLoad", function () {
                 };
             }
             function n(a) {
-                s && s(a);
+                s?.(a);
             }
             function o(b) {
                 function d(b) {
@@ -1246,7 +1246,7 @@ $(document).on("ajaxPageLoad", function () {
                         (v.parent = m.parentNode),
                         (v.display = m.style.display),
                         (v.position = m.style.position),
-                        v.parent && v.parent.removeChild(m);
+                        v.parent?.removeChild(m);
                 }
                 e(t).data("blockUI.onUnblock", n.onUnblock);
                 let g;
@@ -1388,7 +1388,7 @@ $(document).on("ajaxPageLoad", function () {
                                 (o.marginTop = 0);
                         } else if (!n.centerY && k) {
                             const i =
-                                n.css && n.css.top
+                                n.css?.top
                                     ? parseInt(n.css.top, 10)
                                     : 0;
                             const s =
@@ -1465,14 +1465,13 @@ $(document).on("ajaxPageLoad", function () {
             const s = e(i);
             if (!s.data("blockUI.isBlocked")) {
                 t.each(function () {
-                    this.parentNode && this.parentNode.removeChild(this);
+                    this.parentNode?.removeChild(this);
                 }),
-                    o &&
-                        o.el &&
+                    o?.el &&
                         ((o.el.style.display = o.display),
                         (o.el.style.position = o.position),
                         (o.el.style.cursor = "default"),
-                        o.parent && o.parent.appendChild(o.el),
+                        o.parent?.appendChild(o.el),
                         s.removeData("blockUI.history")),
                     s.data("blockUI.static") && s.css("position", "static"),
                     typeof n.onUnblock === "function" && n.onUnblock(i, n);
@@ -1529,7 +1528,7 @@ $(document).on("ajaxPageLoad", function () {
         function l(e) {
             if (b) {
                 const t = b[e === !0 ? b.length - 1 : 0];
-                t && t.focus();
+                t?.focus();
             }
         }
         function a(e, t, o) {
