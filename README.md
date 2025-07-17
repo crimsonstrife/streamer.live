@@ -2,6 +2,7 @@
 
 <p align="center">
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<a href="[https://packagist.org/packages/laravel/framework](https://github.com/crimsonstrife/streamer.live/actions/workflows/laravel.yml)"><img src="https://github.com/crimsonstrife/streamer.live/actions/workflows/laravel.yml/badge.svg?branch=main" alt="Laravel"></a>
 </p>
 
 ## About Streamer.live – The All-in-One Streaming Companion
