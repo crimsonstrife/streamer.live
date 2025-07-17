@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages;
 use App\Filament\Resources;
+use App\Filament\Widgets\AccountWidget;
 use App\Listeners\SwitchTeam;
 use App\Livewire\CurrentStreamStatus;
 use App\Livewire\PanelCalendarWidget;
@@ -115,6 +116,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->authGuard('web')
             ->login()
             ->registration()
             ->passwordReset()
@@ -150,7 +152,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
                 CurrentStreamStatus::class,
                 UpcomingStream::class,

@@ -2,9 +2,9 @@
 
 namespace App\Livewire;
 
-use Filament\Widgets\Widget;
 use App\Models\Event;
 use Carbon\Carbon;
+use Filament\Widgets\Widget;
 
 class UpcomingStream extends Widget
 {
@@ -14,8 +14,8 @@ class UpcomingStream extends Widget
 
     protected function getViewData(): array
     {
-        $now   = Carbon::now();
-        $soon  = $now->copy()->addMinutes(15);
+        $now = Carbon::now();
+        $soon = $now->copy()->addMinutes(15);
 
         $events = Event::query()
             ->where('starts_at', '>=', $now)
@@ -25,7 +25,7 @@ class UpcomingStream extends Widget
 
         return [
             // we still call them streams for context, but they're your Event models
-            'streams'       => $events,
+            'streams' => $events,
             'soonThreshold' => $soon,
         ];
     }
