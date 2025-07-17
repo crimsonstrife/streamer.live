@@ -1,6 +1,6 @@
 version = 1
 
-test_patterns = ["app/tests/**"]
+test_patterns = ["tests/**"]
 
 exclude_patterns = [
   "app/vendor/**",
