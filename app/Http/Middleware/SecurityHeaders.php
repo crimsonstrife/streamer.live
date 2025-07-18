@@ -13,7 +13,8 @@ class SecurityHeaders
         $response = $next($request);
 
         // Content Security Policy
-        $response->headers->set('Content-Security-Policy',
+        $response->headers->set(
+            'Content-Security-Policy',
             "default-src 'self'; ".
             "script-src 'self'; ".
             "style-src 'self'; ".
@@ -33,13 +34,15 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // Permissions Policy (formerly Feature-Policy)
-        $response->headers->set('Permissions-Policy',
+        $response->headers->set(
+            'Permissions-Policy',
             'geolocation=(), microphone=(), camera=()'
         );
 
         // HSTS — only over HTTPS!
         if ($request->isSecure()) {
-            $response->headers->set('Strict-Transport-Security',
+            $response->headers->set(
+                'Strict-Transport-Security',
                 'max-age=63072000; includeSubDomains; preload'
             );
         }
