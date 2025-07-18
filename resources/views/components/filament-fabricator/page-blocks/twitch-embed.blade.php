@@ -16,10 +16,11 @@
         // fall back to the saved default channel if none was provided
         $channel           = $channel ?? ($data['channel'] ?? $settings->channel_name);
         $chat              = $chat ?? ($data['chat'] ?? false);
-        $autoplay          = $autoplay ?? ($data['autoplay'] ?? false);
-        $muted             = false;
-        if($autoplay) { $muted = true; };
-        $horizontal_layout = $horizontal_layout ?? ($data['horizontal_layout'] ?? false);
+        $autoplay          = $autoplay ?? ($data['autoplay'] ?? 'false');
+        $muted             = 'false';
+        $autoplay             = 'false'; // hardcoding for now
+        if($autoplay) { $muted = 'true'; }
+    $horizontal_layout = $horizontal_layout ?? ($data['horizontal_layout'] ?? false);
         $theme             = $themeSettings->theme ?? 'light';
         $host              = parse_url(config('app.url'), PHP_URL_HOST);
     @endphp
@@ -29,7 +30,7 @@
             <div style="display: flex; flex-direction: {{ $horizontal_layout ? 'row' : 'column' }};">
                 <div class="aspect-w-16 aspect-h-9">
                     <iframe
-                        src="https://player.twitch.tv/?channel={{ $channel }}&parent={{ $host }}&muted={{ $muted }}$autoplay={{ $autoplay }}"
+                        src="https://player.twitch.tv/?channel={{ $channel }}&parent={{ request()->getHost() }}"
                         height="auto"
                         width="100%"
                         allowfullscreen>
@@ -39,7 +40,7 @@
                 @if ($chat)
                     <div class="{{ $horizontal_layout ? 'w-full md:w-1/3' : '' }} mt-4 md:mt-0">
                         <iframe
-                            src="https://www.twitch.tv/embed/{{ $channel }}/chat?parent={{ $host }}"
+                            src="https://www.twitch.tv/embed/{{ $channel }}/chat?parent={{ request()->getHost() }}"
                             width="100%" height="500"
                             id="chat_embed">
                         </iframe>
