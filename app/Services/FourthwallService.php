@@ -98,56 +98,40 @@ class FourthwallService
      */
     public function syncCollectionsAndProducts(): void
     {
-        if ($this->enabled) {
-            $collectionsResponse = $this->getRequest('v1/collections');
-
-            if (! isset($collectionsResponse['results'])) {
-                Log::error('Failed to fetch collections from Fourthwall.');
-                throw new RuntimeException('API request for collections failed.');
-            }
-
-            // Ensure at least one collection is retrieved
-            if (empty($collectionsResponse['results'])) {
-                Log::warning('No collections found from API.');
-                throw new RuntimeException('No collections returned from API.');
-            }
-
-            // Use a lazy collection to iterate without loading everything at once
-            LazyCollection::make(static function () use ($collectionsResponse) {
-                foreach ($collectionsResponse['results'] as $collectionData) {
-                    yield $collectionData;
-                }
-            })->chunk($this->collectionsChunkSize)
-                ->each(function ($collectionChunk) {
-                    foreach ($collectionChunk as $collectionData) {
-                        $collection = Collection::updateOrCreate(
-                            ['provider_id' => data_get($collectionData, 'id')],
-                            [
-                                'name' => data_get($collectionData, 'name'),
-                                'slug' => data_get($collectionData, 'slug'),
-                                'description' => data_get($collectionData, 'description'),
-                            ]
-                        );
-
-                        Log::info("Synced collection: {$collection->name}");
-
-                        // Attempt to sync products for this collection
-                        try {
-                            $this->syncProducts($collection);
-                        } catch (Exception $e) {
-                            Log::error("Error syncing products for collection {$collection->name}: ".$e->getMessage());
-                            throw new RuntimeException("Failed to sync products for collection: {$collection->name}");
-                        }
-                    }
-                    if ($this->enable_garbage_collection) {
-                        gc_collect_cycles();
-                    }
-                });
-
-            Log::info('All collections and products synced successfully.');
-        } else {
-            Log::error('The Fourthwall integration is not enabled');
+        if (! $this->enabled) {
+            Log::error('Fourthwall integration is disabled.');
+            return;
         }
+
+        $page = 0;
+        do {
+            // fetch one “page” of collections
+            $collectionsResponse = $this->getRequest('v1/collections', [
+                'page' => $page,
+                'size' => $this->collectionsChunkSize,
+            ]);
+
+            $collections = data_get($collectionsResponse, 'results', []);
+            foreach ($collections as $collectionData) {
+                $collection = Collection::updateOrCreate(
+                    ['provider_id' => data_get($collectionData, 'id')],
+                    [
+                        'name'        => data_get($collectionData, 'name'),
+                        'slug'        => data_get($collectionData, 'slug'),
+                        'description' => data_get($collectionData, 'description'),
+                    ]
+                );
+                Log::info("Synced collection: {$collection->name}");
+
+                // now paginate through that collection’s products
+                $this->syncProducts($collection);
+            }
+
+            $hasNextPage = data_get($collectionsResponse, 'paging.hasNextPage', false);
+            $page++;
+        } while ($hasNextPage);
+
+        Log::info('All collections and their products synced.');
     }
 
     /**
@@ -254,64 +238,59 @@ class FourthwallService
      */
     public function syncProducts(Collection $collection): void
     {
-        if ($this->enabled) {
-            $productsResponse = $this->getRequest("v1/collections/{$collection->slug}/products");
+        $page = 0;
+        do {
+            $productsResponse = $this->getRequest(
+                "v1/collections/{$collection->slug}/products",
+                [
+                    'page' => $page,
+                    'size' => $this->productsChunkSize,
+                ]
+            );
 
-            if (! isset($productsResponse['results'])) {
-                Log::error('No products found for collection: '.$collection->name);
-                throw new RuntimeException('API request for products failed.');
-            }
+            $products = data_get($productsResponse, 'results', []);
+            foreach ($products as $productData) {
+                Log::info('Syncing product: '.data_get($productData, 'name')." for collection: {$collection->name}");
+                $product = Product::updateOrCreate(
+                    ['provider_id' => data_get($productData, 'id')],
+                    [
+                        'collection_id' => $collection->id,
+                        'name' => data_get($productData, 'name'),
+                        'slug' => data_get($productData, 'slug'),
+                        'description' => data_get($productData, 'description') ?? '',
+                        'state' => data_get($productData, 'state.type') ?? 'SOLDOUT',
+                        'access' => data_get($productData, 'access.type') ?? 'PUBLIC',
+                    ]
+                );
 
-            // Ensure at least one product is retrieved
-            if (empty($productsResponse['results'])) {
-                Log::warning('No products found for collection: '.$collection->name);
-                throw new RuntimeException("No products returned for collection: {$collection->name}");
-            }
+                // There is additional product data that can only be obtained via the Open API, so make a request and update it.
+                // $openAPIProductData = $this->openApiGetRequest("products/{$product->provider_id}");
+                // $product->setMoreDetailsAttribute(data_get($openAPIProductData, 'additionalInformation.moreDetails')); // Currently these results appear to be empty in the response, despite being documented
+                // $product->setProductInformationAttribute(data_get($openAPIProductData, 'additionalInformation.sizeAndFit')); // Currently these results appear to be empty in the response, despite being documented
 
-            foreach (array_chunk($productsResponse['results'], $this->productsChunkSize) as $productBatch) {
-                foreach ($productBatch as $productData) {
-                    Log::info('Syncing product: '.data_get($productData, 'name')." for collection: {$collection->name}");
-                    $product = Product::updateOrCreate(
-                        ['provider_id' => data_get($productData, 'id')],
-                        [
-                            'collection_id' => $collection->id,
-                            'name' => data_get($productData, 'name'),
-                            'slug' => data_get($productData, 'slug'),
-                            'description' => data_get($productData, 'description') ?? '',
-                            'state' => data_get($productData, 'state.type') ?? 'SOLDOUT',
-                            'access' => data_get($productData, 'access.type') ?? 'PUBLIC',
-                        ]
-                    );
+                // Ensure product is linked to the collection (pivot table)
+                $product->collections()->syncWithoutDetaching([$collection->id]);
+                Log::info("Attached product: {$product->name} to collection: {$collection->name}");
 
-                    // There is additional product data that can only be obtained via the Open API, so make a request and update it.
-                    // $openAPIProductData = $this->openApiGetRequest("products/{$product->provider_id}");
-                    // $product->setMoreDetailsAttribute(data_get($openAPIProductData, 'additionalInformation.moreDetails')); // Currently these results appear to be empty in the response, despite being documented
-                    // $product->setProductInformationAttribute(data_get($openAPIProductData, 'additionalInformation.sizeAndFit')); // Currently these results appear to be empty in the response, despite being documented
-
-                    // Ensure product is linked to the collection (pivot table)
-                    $product->collections()->syncWithoutDetaching([$collection->id]);
-                    Log::info("Attached product: {$product->name} to collection: {$collection->name}");
-
-                    if (! empty($productData['variants'])) {
-                        $this->syncProductVariants($product, $productData['variants']);
-                    }
-
-                    // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
-                    $this->updateProductPricing($product);
-
-                    // Dispatch image processing for the product
-                    if (! empty($productData['images'])) {
-                        $this->syncProductImages($product, $productData['images']);
-                    }
-                    unset($productData);
+                if (! empty($productData['variants'])) {
+                    $this->syncProductVariants($product, $productData['variants']);
                 }
-                if ($this->enable_garbage_collection) {
-                    gc_collect_cycles();
+
+                // Since the root product does not have a price, we need to calculate it based on the variants, defaulting to the lowest price variant.
+                $this->updateProductPricing($product);
+
+                // Dispatch image processing for the product
+                if (! empty($productData['images'])) {
+                    $this->syncProductImages($product, $productData['images']);
                 }
+                unset($productData);
             }
-        } else {
-            Log::error('The Fourthwall integration is not enabled');
-        }
+
+            $hasNextPage = data_get($productsResponse, 'paging.hasNextPage', false);
+            $page++;
+        } while ($hasNextPage);
+
+        Log::info("Finished syncing products for collection {$collection->name}");
     }
 
     /**
