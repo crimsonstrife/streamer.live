@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Pages;
 use Filament\Pages\Page;
 use Codedge\Updater\UpdaterManager;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class Updates extends Page
 {
@@ -17,7 +18,8 @@ class Updates extends Page
 
     public function mount(UpdaterManager $updater): void
     {
-        $this->currentVersion   = config('self-update.version_installed') ?? $updater->source()->getVersionInstalled();
+        $this->currentVersion = config('self-update.version_installed') ?? $updater->source()->getVersionInstalled();
+
         if ($updater->source()->isNewVersionAvailable()) {
             $this->availableVersion = $updater->source()->getVersionAvailable();
         }
@@ -26,16 +28,18 @@ class Updates extends Page
     public function checkForUpdate(): void
     {
         $updater = app(UpdaterManager::class);
+
         $this->availableVersion = $updater->source()->isNewVersionAvailable()
             ? $updater->source()->getVersionAvailable()
             : null;
+
         Notification::make()
             ->title($this->availableVersion ? "Update Available" : "Up to Date")
             ->success()
             ->send();
     }
 
-    public function runUpdate()
+    public function runUpdate(): void
     {
         $updater = app(UpdaterManager::class);
 
@@ -48,21 +52,70 @@ class Updates extends Page
         }
 
         try {
-            $version  = $updater->source()->getVersionAvailable();
-            $release  = $updater->source()->fetch($version);
-            $updater->source()->update($release);
-            Notification::make()
-                ->title("Updated to {$version}")
-                ->success()
-                ->send();
-            // Refresh displayed versions:
-            $this->mount($updater);
+            $versionAvailable = $updater->source()->getVersionAvailable();
+            $release = $updater->source()->fetch($versionAvailable);
+
+            Log::info('Attempting to update', [
+                'available_version' => $versionAvailable,
+                'release_data' => $release,
+            ]);
+
+            $updated = $updater->source()->update($release);
+
+            if ($updated) {
+                Notification::make()
+                    ->title("Updated to {$versionAvailable}")
+                    ->success()
+                    ->send();
+
+                $this->updateConfigVersion($versionAvailable);
+                $this->mount($updater);
+
+                Log::info("Update successful to version {$versionAvailable}");
+            } else {
+                Log::warning('Updater returned false without exception', [
+                    'version' => $versionAvailable,
+                    'release' => $release,
+                ]);
+
+                throw new \Exception('Update failed: updater returned false');
+            }
         } catch (\Throwable $e) {
+            Log::error('Update failed', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             Notification::make()
                 ->title('Update failed')
-                ->body($e->getMessage())
+                ->body($e->getMessage() ?: 'No error message provided. Check logs.')
                 ->danger()
                 ->send();
         }
+    }
+
+    protected function updateConfigVersion(string $newVersion): void
+    {
+        $configFilePath = config_path('self-update.php');
+
+        if (! file_exists($configFilePath)) {
+            throw new \RuntimeException('Configuration file does not exist.');
+        }
+
+        $configContent = file_get_contents($configFilePath);
+
+        $updatedContent = preg_replace(
+            "/'version_installed'\s*=>\s*'[^']*'/",
+            "'version_installed' => '{$newVersion}'",
+            $configContent
+        );
+
+        if ($updatedContent !== null) {
+            file_put_contents($configFilePath, $updatedContent);
+        } else {
+            throw new \RuntimeException('Failed to update the version in the configuration file.');
+        }
+
+        Log::info("Updated version_installed in config to {$newVersion}");
     }
 }
