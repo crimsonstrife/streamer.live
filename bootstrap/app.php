@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\CheckIPFilter;
 use App\Http\Middleware\EnsureStoreEnabled;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -70,6 +71,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Apply to all "web" routes
         $middleware->web(append: [
             CheckIPFilter::class,
+            SecurityHeaders::class,
         ]);
 
         // Apply to all "api" routes

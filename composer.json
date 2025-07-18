@@ -103,6 +103,7 @@
         "spatie/eloquent-sortable": "^4.4",
         "spatie/error-solutions": "^1.1",
         "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-csp": "^3.13",
         "spatie/laravel-data": "^4.11",
         "spatie/laravel-deleted-models": "^1.0",
         "spatie/laravel-enum": "^3.2",
