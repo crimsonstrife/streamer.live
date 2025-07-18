@@ -10,8 +10,8 @@
         </div>
     @else
         <p class="mt-4 text-sm text-gray-600">Your application is up to date.</p>
-        <x-filament::button wire:click="checkForUpdate" wire:loading.attr="disabled" class="mt-2">
-            Check for Updates
-        </x-filament::button>
     @endif
+    <x-filament::button wire:click="checkForUpdate" wire:loading.attr="disabled" class="mt-2">
+        Check for Updates
+    </x-filament::button>
 </x-filament::page>
