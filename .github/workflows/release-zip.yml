@@ -30,16 +30,21 @@ jobs:
         extensions: mbstring, bcmath, fileinfo
         coverage: none
 
-    - name: Create SQLite database file
+    - name: Prepare CI-safe Laravel environment
       run: |
-        mkdir -p database
-        touch database/database.sqlite
+        cp .env.example .env
+        echo "APP_ENV=testing" >> .env
+        echo "APP_DEBUG=false" >> .env
+        echo "CACHE_STORE=array" >> .env
+        echo "SESSION_DRIVER=array" >> .env
+        echo "QUEUE_CONNECTION=sync" >> .env
+        echo "DB_CONNECTION=array" >> .env
 
-    - name: Run artisan migrate commands
-      run: php artisan migrate
+    - name: Install Composer dependencies (no dev, no scripts)
+      run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
-    - name: Install PHP dependencies (no dev)
-      run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+    - name: Discover Laravel packages manually
+      run: php artisan package:discover
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
