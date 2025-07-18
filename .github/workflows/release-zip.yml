@@ -30,6 +30,11 @@ jobs:
         extensions: mbstring, bcmath, fileinfo
         coverage: none
 
+    - name: Create SQLite database file
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
     - name: Install PHP dependencies (no dev)
       run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
