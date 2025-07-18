@@ -3,6 +3,7 @@
     "name": "crimsonstrife/streamer",
     "type": "application",
     "description": "A Laravel-based webapp for hosting content creator fan sites, aimed a streamers and their community building. Built with Laravel, Livewire, and Filament.",
+    "version": "1.1.0-alpha",
     "keywords": [
         "laravel",
         "livewire",
