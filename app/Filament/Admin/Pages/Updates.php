@@ -55,6 +55,13 @@ class Updates extends Page
             $versionAvailable = $updater->source()->getVersionAvailable();
             $release = $updater->source()->fetch($versionAvailable);
 
+            Log::info('Available releases', [
+                'url' => $updater->getDefaultSourceRepository() ?? 'N/A',
+                'versionAvailable' => $updater->source()->getVersionAvailable(),
+                'release' => $release,
+                'path' => method_exists($release, 'getStoragePath') ? $release->getStoragePath() : 'no method',
+            ]);
+
             Log::info('Attempting to update', [
                 'available_version' => $versionAvailable,
                 'release_data' => $release,
