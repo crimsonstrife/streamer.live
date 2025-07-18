@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Middleware\CheckIPFilter;
-use App\Http\Middleware\EnsureGuestMode;
 use App\Http\Middleware\EnsureStoreEnabled;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
@@ -23,9 +22,9 @@ if (isset($_SERVER['REQUEST_URI'])) {
 
     // This directory must be writable.
     // We put it in the `storage/shieldon_firewall` directory.
-    $storage =  __DIR__ . '/../storage/shieldon_firewall';
+    $storage = __DIR__.'/../storage/shieldon_firewall';
 
-    $firewall = new Firewall();
+    $firewall = new Firewall;
 
     $firewall->configure($storage);
 
@@ -35,7 +34,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     $response = $firewall->run();
 
     if ($response->getStatusCode() !== 200) {
-        $httpResolver = new HttpResolver();
+        $httpResolver = new HttpResolver;
         $httpResolver($response);
     }
 }
@@ -63,6 +62,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'firewall' => ShieldonFirewall::class,
             'ip-filter' => CheckIPFilter::class,
         ]);
+
+        $middleware->trustProxies('*');
+        $middleware->trustHosts(at: fn () => config('app.url'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
