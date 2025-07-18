@@ -85,7 +85,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->trustProxies('*');
         // $middleware->trustHosts();
-        $middleware->append(StartSession::class);
+        // $middleware->append(StartSession::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
