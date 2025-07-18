@@ -75,15 +75,15 @@ jobs:
       run: php artisan migrate --force
 
     - name: Discover Laravel packages manually
-      run: php artisan package:discover
+      run: php artisan package:discover  
 
     - name: Create ZIP for release
       run: |
         mkdir -p release
-        zip -r release/laravel-release.zip \
+        zip -r release/laravel-release.zip . \
           app bootstrap config database public resources routes vendor \
           artisan composer.json composer.lock package.json public/build \
-          -x "**/node_modules/**" "**/storage/**" "**/.git/**" "**/.env" "**/tests/**"
+          -x "release/*" "node_modules/*" "storage/*" "tests/*" ".git/*" ".env" "**/storage/**" "**/.git/**" "**/.env" "**/tests/**"
 
     - name: Upload release ZIP to GitHub
       uses: softprops/action-gh-release@v1
