@@ -16,7 +16,7 @@ jobs:
     - name: Checkout repository (with Git LFS)
       uses: actions/checkout@v4
       with:
-        lfs: true # enable Git LFS support
+        lfs: true
 
     - name: Install Git LFS
       run: |
@@ -30,7 +30,17 @@ jobs:
         extensions: mbstring, bcmath, fileinfo
         coverage: none
 
-    - name: Set up CI-safe Laravel .env
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Create SQLite database file
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Prepare CI-safe .env
       run: |
         cp .env.example .env
         echo "APP_ENV=testing" >> .env
@@ -41,15 +51,19 @@ jobs:
         echo "SESSION_DRIVER=array" >> .env
         echo "QUEUE_CONNECTION=sync" >> .env
 
-    - name: Create SQLite database file
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-
     - name: Install Composer dependencies (no dev, no post-autoload-dump)
       run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
-    - name: Clear Laravel config and cache (ensure fresh env)
+    - name: Install Node dependencies
+      run: npm ci
+
+    - name: Build frontend assets (required for icon registration)
+      run: npm run build
+
+    - name: Run artisan publish commands
+      run: php artisan tinymce:publish
+
+    - name: Clear Laravel config/cache
       run: |
         php artisan config:clear
         php artisan cache:clear
@@ -59,20 +73,6 @@ jobs:
 
     - name: Discover Laravel packages manually
       run: php artisan package:discover
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Install Node dependencies
-      run: npm ci
-
-    - name: Run artisan publish commands
-      run: php artisan tinymce:publish
-
-    - name: Build assets
-      run: npm run build
 
     - name: Create ZIP for release
       run: |
