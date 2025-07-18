@@ -64,7 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->trustProxies('*');
-        $middleware->trustHosts(at: fn () => config('app.url'));
+        $middleware->trustHosts(config('app.url'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
