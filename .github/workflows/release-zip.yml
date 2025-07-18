@@ -1,0 +1,63 @@
+name: Build & Upload Release
+
+on:
+  push:
+    tags:
+      - 'v*' # e.g. v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository (with Git LFS)
+      uses: actions/checkout@v4
+      with:
+        lfs: true # enable Git LFS support
+
+    - name: Install Git LFS
+      run: |
+        git lfs install
+        git lfs pull
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, bcmath, fileinfo
+        coverage: none
+
+    - name: Install PHP dependencies (no dev)
+      run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Node dependencies
+      run: npm ci
+
+    - name: Run artisan publish commands
+      run: php artisan tinymce:publish
+
+    - name: Build assets
+      run: npm run build
+
+    - name: Create ZIP for release
+      run: |
+        mkdir -p release
+        zip -r release/laravel-release.zip \
+          app bootstrap config database public resources routes vendor \
+          artisan composer.json composer.lock package.json public/build \
+          -x "**/node_modules/**" "**/storage/**" "**/.git/**" "**/.env" "**/tests/**"
+
+    - name: Upload release ZIP to GitHub
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/laravel-release.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
