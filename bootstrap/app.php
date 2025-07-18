@@ -24,7 +24,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     // We put it in the `storage/shieldon_firewall` directory.
     $storage = __DIR__.'/../storage/shieldon_firewall';
 
-    $firewall = new Firewall;
+    $firewall = new Firewall();
 
     $firewall->configure($storage);
 
@@ -34,7 +34,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     $response = $firewall->run();
 
     if ($response->getStatusCode() !== 200) {
-        $httpResolver = new HttpResolver;
+        $httpResolver = new HttpResolver();
         $httpResolver($response);
     }
 }
