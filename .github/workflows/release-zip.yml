@@ -29,7 +29,18 @@ jobs:
         php-version: '8.3'
         extensions: mbstring, bcmath, fileinfo
         coverage: none
-        
+
+    - name: Set up CI-safe Laravel .env
+      run: |
+        cp .env.example .env
+        echo "APP_ENV=testing" >> .env
+        echo "APP_DEBUG=false" >> .env
+        echo "DB_CONNECTION=sqlite" >> .env
+        echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
+        echo "CACHE_STORE=file" >> .env
+        echo "SESSION_DRIVER=array" >> .env
+        echo "QUEUE_CONNECTION=sync" >> .env
+
     - name: Create SQLite database file
       run: |
         mkdir -p database
@@ -37,6 +48,11 @@ jobs:
 
     - name: Install Composer dependencies (no dev, no post-autoload-dump)
       run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
+
+    - name: Clear Laravel config and cache (ensure fresh env)
+      run: |
+        php artisan config:clear
+        php artisan cache:clear
 
     - name: Run database migrations
       run: php artisan migrate --force
