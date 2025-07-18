@@ -29,19 +29,17 @@ jobs:
         php-version: '8.3'
         extensions: mbstring, bcmath, fileinfo
         coverage: none
-
-    - name: Prepare CI-safe Laravel environment
+        
+    - name: Create SQLite database file
       run: |
-        cp .env.example .env
-        echo "APP_ENV=testing" >> .env
-        echo "APP_DEBUG=false" >> .env
-        echo "CACHE_STORE=array" >> .env
-        echo "SESSION_DRIVER=array" >> .env
-        echo "QUEUE_CONNECTION=sync" >> .env
-        echo "DB_CONNECTION=array" >> .env
+        mkdir -p database
+        touch database/database.sqlite
 
-    - name: Install Composer dependencies (no dev, no scripts)
+    - name: Install Composer dependencies (no dev, no post-autoload-dump)
       run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
+
+    - name: Run database migrations
+      run: php artisan migrate --force
 
     - name: Discover Laravel packages manually
       run: php artisan package:discover
