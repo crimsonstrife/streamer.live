@@ -60,6 +60,9 @@ jobs:
     - name: Build frontend assets (required for icon registration)
       run: npm run build
 
+    - name: Generate Laravel application key
+      run: php artisan key:generate
+
     - name: Run artisan publish commands
       run: php artisan tinymce:publish
 
