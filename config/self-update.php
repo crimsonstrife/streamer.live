@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+use Codedge\Updater\Notifications\Notifiable;
+use Codedge\Updater\Notifications\Notifications\UpdateAvailable;
+use Codedge\Updater\Notifications\Notifications\UpdateFailed;
+use Codedge\Updater\Notifications\Notifications\UpdateSucceeded;
+
 return [
 
     /*
@@ -41,35 +46,35 @@ return [
 
     'repository_types' => [
         'github' => [
-            'type'                 => 'github',
-            'repository_vendor'    => env('SELF_UPDATER_REPO_VENDOR', 'crimsonstrife'),
-            'repository_name'      => env('SELF_UPDATER_REPO_NAME', 'streamer.live'),
-            'repository_url'       => 'https://github.com/crimsonstrife/streamer.live',
-            'download_path'        => storage_path('app/self-update'),
+            'type' => 'github',
+            'repository_vendor' => env('SELF_UPDATER_REPO_VENDOR', 'crimsonstrife'),
+            'repository_name' => env('SELF_UPDATER_REPO_NAME', 'streamer.live'),
+            'repository_url' => 'https://github.com/crimsonstrife/streamer.live',
+            'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', '/var/www/self-updater/'),
             'private_access_token' => env('SELF_UPDATER_GITHUB_PRIVATE_ACCESS_TOKEN', ''),
-            'use_branch'           => env('SELF_UPDATER_USE_BRANCH', ''),
-            //'package_file_name'    => env('SELF_UPDATER_PACKAGE_FILE_NAME', 'regex:releaseV.*\.zip'),
+            'use_branch' => env('SELF_UPDATER_USE_BRANCH', ''),
+            // 'package_file_name'    => env('SELF_UPDATER_PACKAGE_FILE_NAME', 'regex:releaseV.*\.zip'),
         ],
         'gitlab' => [
-            'base_url'             => '',
-            'type'                 => 'gitlab',
-            'repository_id'        => env('SELF_UPDATER_REPO_URL', ''),
-            'download_path'        => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
+            'base_url' => '',
+            'type' => 'gitlab',
+            'repository_id' => env('SELF_UPDATER_REPO_URL', ''),
+            'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
             'private_access_token' => env('SELF_UPDATER_GITLAB_PRIVATE_ACCESS_TOKEN', ''),
         ],
         'http' => [
-            'type'                 => 'http',
-            'repository_url'       => env('SELF_UPDATER_REPO_URL', ''),
-            'pkg_filename_format'  => env('SELF_UPDATER_PKG_FILENAME_FORMAT', 'v_VERSION_'),
-            'download_path'        => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
+            'type' => 'http',
+            'repository_url' => env('SELF_UPDATER_REPO_URL', ''),
+            'pkg_filename_format' => env('SELF_UPDATER_PKG_FILENAME_FORMAT', 'v_VERSION_'),
+            'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
             'private_access_token' => env('SELF_UPDATER_HTTP_PRIVATE_ACCESS_TOKEN', ''),
         ],
         'gitea' => [
-            'type'                 => 'gitea',
-            'repository_vendor'    => env('SELF_UPDATER_REPO_VENDOR', ''),
-            'gitea_url'            => env('SELF_UPDATER_GITEA_URL', ''),
-            'repository_name'      => env('SELF_UPDATER_REPO_NAME', ''),
-            'download_path'        => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
+            'type' => 'gitea',
+            'repository_vendor' => env('SELF_UPDATER_REPO_VENDOR', ''),
+            'gitea_url' => env('SELF_UPDATER_GITEA_URL', ''),
+            'repository_name' => env('SELF_UPDATER_REPO_NAME', ''),
+            'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
             'private_access_token' => env('SELF_UPDATER_GITEA_PRIVATE_ACCESS_TOKEN', ''),
         ],
     ],
@@ -132,26 +137,26 @@ return [
 
     'notifications' => [
         'notifications' => [
-            \Codedge\Updater\Notifications\Notifications\UpdateSucceeded::class => ['mail'],
-            \Codedge\Updater\Notifications\Notifications\UpdateFailed::class    => ['mail'],
-            \Codedge\Updater\Notifications\Notifications\UpdateAvailable::class => ['mail'],
+            UpdateSucceeded::class => ['mail'],
+            UpdateFailed::class => ['mail'],
+            UpdateAvailable::class => ['mail'],
         ],
 
         /*
          * Here you can specify the notifiable to which the notifications should be sent. The default
          * notifiable will use the variables specified in this config file.
          */
-        'notifiable' => \Codedge\Updater\Notifications\Notifiable::class,
+        'notifiable' => Notifiable::class,
 
         'mail' => [
             'to' => [
                 'address' => env('SELF_UPDATER_MAILTO_ADDRESS', 'notifications@example.com'),
-                'name'    => env('SELF_UPDATER_MAILTO_NAME', ''),
+                'name' => env('SELF_UPDATER_MAILTO_NAME', ''),
             ],
 
             'from' => [
                 'address' => env('SELF_UPDATER_MAIL_FROM_ADDRESS', 'updater@example.com'),
-                'name'    => env('SELF_UPDATER_MAIL_FROM_NAME', 'Update'),
+                'name' => env('SELF_UPDATER_MAIL_FROM_NAME', 'Update'),
             ],
         ],
     ],
@@ -164,10 +169,10 @@ return [
 
     'artisan_commands' => [
         'pre_update' => [
-            //'command:signature' => [
+            // 'command:signature' => [
             //    'class' => Command class
             //    'params' => []
-            //]
+            // ]
         ],
         'post_update' => [
 

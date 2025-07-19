@@ -34,7 +34,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     // We put it in the `storage/shieldon_firewall` directory.
     $storage = __DIR__.'/../storage/shieldon_firewall';
 
-    $firewall = new Firewall();
+    $firewall = new Firewall;
 
     $firewall->configure($storage);
 
@@ -44,7 +44,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     $response = $firewall->run();
 
     if ($response->getStatusCode() !== 200) {
-        $httpResolver = new HttpResolver();
+        $httpResolver = new HttpResolver;
         $httpResolver($response);
     }
 }
@@ -71,7 +71,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Apply to all "web" routes
         $middleware->web(append: [
             CheckIPFilter::class,
-            SecurityHeaders::class,
+            // SecurityHeaders::class,
         ]);
 
         // Apply to all "api" routes

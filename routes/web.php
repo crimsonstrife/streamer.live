@@ -37,7 +37,7 @@ use Shieldon\Firewall\Panel;
 
 Route::any('/firewall/panel/{path?}', function () {
 
-    $panel = new Panel();
+    $panel = new Panel;
     $panel->csrf(['_token' => csrf_token()]);
     $panel->entry();
 
@@ -280,7 +280,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
         foreach ($fonts as $font) {
             $url = $font->is_builtin
-                ? asset((string) ($font->file_path))
+                ? Storage::url($font->file_path)
                 : $font->getFirstMediaUrl('fonts');
             $wMin = $font->weight_min ?? 100;
             $wMax = $font->weight_max ?? 900;

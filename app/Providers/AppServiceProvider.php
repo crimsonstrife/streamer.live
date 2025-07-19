@@ -4,12 +4,10 @@ namespace App\Providers;
 
 use App\Filament\Resources\PostResource;
 use App\Http\Livewire\Profile\UpdateProfileInformationForm as AppUpdateProfile;
-use App\Models\AuthObjects\User;
 use App\Models\BlogObjects\Comment;
 use App\Observers\CommentObserver;
 use App\Services\CustomMediaPathGenerator;
 use App\Services\FourthwallService;
-use App\Services\OnboardingStepRegistrar;
 use App\Services\SecureGuestModeService;
 use App\Services\Spam\AkismetEvaluator;
 use App\Services\Spam\BlacklistEvaluator;
@@ -25,7 +23,6 @@ use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
 use Exception;
-use Filament\Facades\Filament;
 use Filament\FilamentManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
@@ -40,7 +37,6 @@ use Spatie\Health\Checks\Checks\EnvironmentCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
 use Spatie\Health\Facades\Health;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
-use Spatie\Onboard\Facades\Onboard;
 use Stephenjude\FilamentBlog\Resources\PostResource as PackagePostResource;
 
 class AppServiceProvider extends ServiceProvider
@@ -80,7 +76,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService());
+        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService);
 
         $this->app->tag(
             [
