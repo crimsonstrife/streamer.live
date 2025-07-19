@@ -169,7 +169,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         parent::boot();
 
         static::creating(static function ($model) {
-            // If there is no slug provided, generate one from the title
             $currentSlug = $model->slug;
 
             if ($currentSlug === '' || $currentSlug === null) {
@@ -178,7 +177,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         });
 
         static::updating(static function ($model) {
-            // If there is no slug provided, generate one from the title, otherwise keep the existing slug
             $currentSlug = $model->slug;
 
             if ($currentSlug === '' || $currentSlug === null) {
@@ -186,6 +184,14 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
             } else {
                 $model->slug = $currentSlug;
             }
+        });
+
+        static::saved(function (Post $post) {
+            BlogHelper::clearPostCache($post);
+        });
+
+        static::deleted(function (Post $post) {
+            BlogHelper::clearPostCache($post);
         });
     }
 

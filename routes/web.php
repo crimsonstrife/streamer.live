@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlogCommentController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
@@ -194,8 +195,8 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::get('/search', SearchController::class)->name('search');
 
     Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () {
-        Route::get('/', FabricatorPageController::class)->name('index');
-        Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
+        Route::get('/', [BlogController::class, 'index'])->name('index');
+        Route::get('/{slug}', [BlogController::class, 'show'])->name('post');
         Route::post('/{post}/comment', [BlogCommentController::class, 'store'])
             ->middleware([
                 'auth',

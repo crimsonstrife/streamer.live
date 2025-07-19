@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BlogObjects\Post;
-use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
@@ -162,52 +160,5 @@ BLADE,
 BLADE,
             $viewData
         );
-    }
-
-    public function post(Request $request, string $slug): string
-    {
-        $postPageSlug = BlogHelper::getBlogSlug().'/post'; // e.g. 'blog/post'
-
-        /** @var PageRoutesService $routesService */
-        $routesService = resolve(PageRoutesService::class);
-
-        /** @var Page|null $page */
-        $page = $routesService->getPageFromUri('/'.$postPageSlug);
-
-        if (! $page) {
-            abort(404, 'Blog post layout page not found');
-        }
-
-        $layout = FilamentFabricator::getLayoutFromName($page->layout);
-
-        if (! $layout || ! is_subclass_of($layout, Layout::class)) {
-            throw new RuntimeException("Layout \"{$page->layout}\" not found or invalid.");
-        }
-
-        $component = $layout::getComponent();
-
-        // Load the post model
-        $post = Post::where('slug', $slug)->firstOrFail();
-
-        $data = method_exists($layout, 'getData')
-            ? $layout::getData($page, ['slug' => $slug, 'post' => $post])
-            : [];
-
-        return Blade::render(
-            <<<'BLADE'
-<x-dynamic-component
-    :component="$component"
-    :page="$page"
-    :post="$post"
-/>
-BLADE,
-            [
-                'component' => $component,
-                'page' => $page,
-                'post' => $post,
-                ...$data,
-            ]
-        );
-
     }
 }

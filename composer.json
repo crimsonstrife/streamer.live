@@ -85,6 +85,7 @@
         "nwidart/laravel-modules": "*",
         "omaressaouaf/laravel-id-generator": "^1.2",
         "parallax/filament-comments": "^1.4",
+        "predis/predis": "^3.0",
         "pxlrbt/filament-activity-log": "^1.1",
         "ramsey/uuid": "^4.7",
         "schmeits/filament-character-counter": "^1.3",
