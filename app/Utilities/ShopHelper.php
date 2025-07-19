@@ -2,8 +2,9 @@
 
 namespace App\Utilities;
 
-use App\Models\StoreObjects\OrderItem;
 use App\Models\Page;
+use App\Models\StoreObjects\OrderItem;
+use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
@@ -105,5 +106,14 @@ class ShopHelper
             'variant',
             fn ($query) => $query->where('product_id', $productId)
         )->exists();
+    }
+
+    public static function clearProductCache(string $slug): void
+    {
+        if (Cache::getStore() instanceof TaggableStore) {
+            Cache::tags(['shop', "product:$slug"])->flush();
+        } else {
+            Cache::forget("product:$slug");
+        }
     }
 }

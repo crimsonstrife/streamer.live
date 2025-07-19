@@ -12,6 +12,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TicketController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Models\Font;
@@ -217,6 +218,8 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
                 ]
             );
 
+        // Route::get('category/{slug}', [BlogController::class, 'category'])->name('category');
+
         // Comment reactions
         Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
             ->name('comment.reaction.toggle')
@@ -255,9 +258,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
             Route::prefix($shopSlug)->name($shopSlug.'.')->group(function () {
                 $productSlug = ShopHelper::getProductSlug();         // 'product'
                 $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
-                Route::get("$productSlug/{slug}", [FabricatorPageController::class, 'product'])->name('product');
-                Route::get("$collectionSlug/{slug}", [FabricatorPageController::class, 'collection'])->name('collection');
-                Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('category');
+                Route::get("$productSlug/{slug}", [StoreController::class, 'product'])->name('product');
+                Route::get("$collectionSlug/{slug}", [StoreController::class, 'collection'])->name('collection');
+                // Route::get('category/{slug}', [StoreController::class, 'category'])->name('category');
                 Route::get('/', FabricatorPageController::class)->name('page');
                 Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
                 // List the current user’s orders

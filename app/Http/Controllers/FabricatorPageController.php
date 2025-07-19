@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Utilities\ShopHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
 use RuntimeException;
@@ -67,98 +66,5 @@ class FabricatorPageController extends Controller
             ]
         );
 
-    }
-
-    public function product(Request $request, string $slug): string
-    {
-        $productPageSlug = ShopHelper::getShopSlug().'/'.ShopHelper::getProductSlug();
-
-        /** @var PageRoutesService $routesService */
-        $routesService = resolve(PageRoutesService::class);
-
-        /** @var Page|null $page */
-        $page = $routesService->getPageFromUri('/'.$productPageSlug);
-
-        if (! $page) {
-            abort(404, 'Product base page not found');
-        }
-
-        $layout = FilamentFabricator::getLayoutFromName($page->layout);
-
-        if (! $layout || ! is_subclass_of($layout, Layout::class)) {
-            throw new RuntimeException("Layout \"{$page->layout}\" not found or invalid.");
-        }
-
-        $component = $layout::getComponent();
-
-        // Pass product slug as extra input
-        $data = method_exists($layout, 'getData')
-            ? $layout::getData($page, ['slug' => $slug])
-            : [];
-
-        $viewData = [
-            'page' => $page,
-            'component' => $component,
-            'slug' => $slug,
-            ...$data,
-        ];
-
-        return Blade::render(
-            <<<'BLADE'
-<x-dynamic-component
-    :component="$component"
-    :page="$page"
-    :product="$product ?? null"
-    :slug="$slug"
-/>
-BLADE,
-            $viewData
-        );
-    }
-
-    public function collection(Request $request, string $slug): string
-    {
-        $collectionPageSlug = ShopHelper::getShopSlug().'/'.ShopHelper::getCollectionSlug();
-
-        /** @var PageRoutesService $routesService */
-        $routesService = resolve(PageRoutesService::class);
-
-        /** @var Page|null $page */
-        $page = $routesService->getPageFromUri('/'.$collectionPageSlug);
-
-        if (! $page) {
-            abort(404, 'Collection base page not found');
-        }
-
-        $layout = FilamentFabricator::getLayoutFromName($page->layout);
-
-        if (! $layout || ! is_subclass_of($layout, Layout::class)) {
-            throw new RuntimeException("Layout \"{$page->layout}\" not found or invalid.");
-        }
-
-        $component = $layout::getComponent();
-
-        $data = method_exists($layout, 'getData')
-            ? $layout::getData($page, ['slug' => $slug])
-            : [];
-
-        $viewData = [
-            'page' => $page,
-            'component' => $component,
-            'slug' => $slug,
-            ...$data,
-        ];
-
-        return Blade::render(
-            <<<'BLADE'
-<x-dynamic-component
-    :component="$component"
-    :page="$page"
-    :collection="$collection ?? null"
-    :slug="$slug"
-/>
-BLADE,
-            $viewData
-        );
     }
 }

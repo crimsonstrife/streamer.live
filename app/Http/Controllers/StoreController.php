@@ -6,11 +6,21 @@ use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
 use App\Services\FourthwallService;
 use App\Settings\FourthwallSettings;
+use App\Traits\HasCacheSupport;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
+use Throwable;
+use Z3d0X\FilamentFabricator\Facades\FilamentFabricator;
+use Z3d0X\FilamentFabricator\Layouts\Layout;
+use Z3d0X\FilamentFabricator\Models\Contracts\Page;
+use Z3d0X\FilamentFabricator\Services\PageRoutesService;
 
 class StoreController extends Controller
 {
+    use HasCacheSupport;
+
     protected FourthwallService $fourthwallService;
 
     protected CartHelper $cartHelper;
@@ -66,12 +76,93 @@ class StoreController extends Controller
     /**
      * Show the store homepage with all collections.
      */
-    public function index()
+    public function index(): string
+    {
+        return $this->rememberTagged(
+            ['shop', 'shop:index'],
+            'shop:index',
+            fn () => $this->renderIndex()
+        );
+    }
+
+    /**
+     * @throws Throwable
+     */
+    private function renderIndex(): string
     {
         $shopSlug = ShopHelper::getShopSlug();
-        // Fetch collections from the database instead of API
         $collections = Collection::all();
 
-        return view($shopSlug.'.index', compact('collections'));
+        return view($shopSlug.'.index', [
+            'collections' => $collections,
+        ])->render();
+    }
+
+    public function product(Request $request, string $slug): string
+    {
+        return $this->rememberTagged(
+            ['shop', "product:$slug"],
+            "product:$slug",
+            fn () => $this->renderProduct($slug)
+        );
+    }
+
+    private function renderProduct(string $slug): string
+    {
+        $pageSlug = ShopHelper::getShopSlug().'/'.ShopHelper::getProductSlug();
+        $page = app(PageRoutesService::class)->getPageFromUri('/'.$pageSlug);
+        abort_unless($page, 404);
+
+        $layout = FilamentFabricator::getLayoutFromName($page->layout);
+        abort_unless($layout && is_subclass_of($layout, Layout::class), 500);
+
+        $component = $layout::getComponent();
+        $data = method_exists($layout, 'getData') ? $layout::getData($page, ['slug' => $slug]) : [];
+
+        return Blade::render(
+            <<<'BLADE'
+<x-dynamic-component
+    :component="$component"
+    :page="$page"
+    :product="$product ?? null"
+    :slug="$slug"
+/>
+BLADE,
+            array_merge(['component' => $component, 'page' => $page, 'slug' => $slug], $data)
+        );
+    }
+
+    public function collection(Request $request, string $slug): string
+    {
+        return $this->rememberTagged(
+            ['shop', "collection:$slug"],
+            "collection:$slug",
+            fn () => $this->renderCollection($slug)
+        );
+    }
+
+    private function renderCollection(string $slug): string
+    {
+        $pageSlug = ShopHelper::getShopSlug().'/'.ShopHelper::getCollectionSlug();
+        $page = app(PageRoutesService::class)->getPageFromUri('/'.$pageSlug);
+        abort_unless($page, 404);
+
+        $layout = FilamentFabricator::getLayoutFromName($page->layout);
+        abort_unless($layout && is_subclass_of($layout, Layout::class), 500);
+
+        $component = $layout::getComponent();
+        $data = method_exists($layout, 'getData') ? $layout::getData($page, ['slug' => $slug]) : [];
+
+        return Blade::render(
+            <<<'BLADE'
+<x-dynamic-component
+    :component="$component"
+    :page="$page"
+    :collection="$collection ?? null"
+    :slug="$slug"
+/>
+BLADE,
+            array_merge(['component' => $component, 'page' => $page, 'slug' => $slug], $data)
+        );
     }
 }

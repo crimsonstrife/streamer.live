@@ -1,3 +1,4 @@
+@php use App\Utilities\BlogHelper; @endphp
 @aware(['page', 'post', 'comments'])
 @push('styles')
     <style>
@@ -150,7 +151,7 @@
     <div class="alert alert-danger">Comments block requires a post context.</div>
 @else
     @php
-        $blogSlug = \App\Utilities\BlogHelper::getBlogSlug();
+        $blogSlug = BlogHelper::getBlogSlug();
             // Grab sort from query-string (default = newest)
             $sort = request()->query('sort', 'newest');
             // Filter only approved top-level comments
@@ -176,7 +177,7 @@
             <div class="dropdown">
                 <button
                     class="btn sort-btn btn-link dropdown-toggle hstack align-items-center gap-2 py-1 px-2 fw-normal"
-                        data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                    data-bs-toggle="dropdown" role="button" aria-expanded="false">
                     <span class="ski" style="font-size:1.5em;"><x-fas-arrow-down-wide-short height="2rem" width="auto"/></span>
                     <span>Sort by</span>
                 </button>
@@ -210,7 +211,8 @@
                 @endphp
                 {{-- Reply Banner (bootstrap collapse toggles “show” on this element) --}}
                 <div class="collapse mb-3" id="replyCommentT">
-                    <div class="alert alert-info py-2 px-3 mb-2">Replying to <strong id="replyingToName">someone</strong>
+                    <div class="alert alert-info py-2 px-3 mb-2">Replying to <strong
+                            id="replyingToName">someone</strong>
                         <button type="button" class="btn-close float-end" aria-label="Cancel reply"
                                 onclick="clearReply()"></button>
                     </div>
@@ -220,19 +222,26 @@
                         <img class="rounded-circle comment-img" src="{{ $user->profile_photo_url }}" height="50px"
                              width="50px" alt="profile photo">
                         <div class="flex-grow-1 ms-3">
-                            <form method="POST" action="{{ route($blogSlug.'.comment.submit', ['post' => $post->slug]) }}">
+                            <form method="POST"
+                                  action="{{ route($blogSlug.'.comment.submit', ['post' => $post->slug]) }}">
                                 @csrf
                                 <div class="form-group">
                                     <input type="hidden" name="reply_id" id="reply_id" value="">
                                     <input type="hidden" name="post_id" value="{{ $post->id }}">
                                     <div class="form-floating comment-compose mb-2">
-                                        <label for="commentMessage" style="position: relative;">Leave a comment here</label>
-                                        <x-content-editor id="commentMessage" name="commentMessage" :mentions="true" class="form-control w-100" rows="3" required />
+                                        <label for="commentMessage" style="position: relative;">Leave a comment
+                                            here</label>
+                                        <x-content-editor id="commentMessage" name="commentMessage" :mentions="true"
+                                                          class="form-control w-100" rows="3" required/>
                                     </div>
                                 </div>
                                 <div class="hstack justify-content-end gap-1">
-                                    <button type="reset" class="btn btn-sm btn-secondary rounded-pill">Cancel</button>
-                                    <button type="submit" class="btn btn-sm btn-primary rounded-pill">Comment</button>
+                                    <x-button>
+                                        {{ __('Comment') }}
+                                    </x-button>
+                                    <x-secondary-button>
+                                        {{ __('Cancel') }}
+                                    </x-secondary-button>
                                 </div>
                             </form>
                         </div>

@@ -134,7 +134,8 @@
                                         @foreach($mediaItems as $index => $media)
                                             <div class="carousel-item @if($index === 0) active @endif">
                                                 <div class="position-relative">
-                                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded shadow" alt="{{ $media->getCustomProperty('image_alt_text') ?? 'Product image' }}">
+                                                    <img src="{{ $media->getUrl() }}" class="img-fluid rounded shadow"
+                                                         alt="{{ $media->getCustomProperty('image_alt_text') ?? 'Product image' }}">
                                                     @php
                                                         $modelName = $media->getCustomProperty('model_name') ?? null;
                                                         $modelSize = $media->getCustomProperty('model_size_worn') ?? null;
@@ -191,11 +192,11 @@
                         <div class="mb-2 d-flex align-items-center">
                             @for ($i = 1; $i <= 5; $i++)
                                 @if ($product->average_rating >= $i)
-                                    <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                    <x-fas-star class="text-warning" height="1rem" width="auto"/>
                                 @elseif ($product->average_rating >= $i - 0.5)
-                                    <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto" />
+                                    <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"/>
                                 @else
-                                    <x-far-star class="text-muted" height="1rem" width="auto" />
+                                    <x-far-star class="text-muted" height="1rem" width="auto"/>
                                 @endif
                             @endfor
 
@@ -302,11 +303,12 @@
                                     <div>
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($product->average_rating >= $i)
-                                                <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                                <x-fas-star class="text-warning" height="1rem" width="auto"/>
                                             @elseif ($product->average_rating >= $i - 0.5)
-                                                <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"  />
+                                                <x-fas-star-half-stroke class="text-warning" height="1rem"
+                                                                        width="auto"/>
                                             @else
-                                                <x-far-star class="text-muted" height="1rem" width="auto"  />
+                                                <x-far-star class="text-muted" height="1rem" width="auto"/>
                                             @endif
                                         @endfor
                                     </div>
@@ -385,10 +387,17 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="review" class="form-label" style="position: relative;">Your Review</label>
-                                    <x-content-editor id="reviewMessage" name="review" class="form-control w-100" rows="3" required />
+                                    <label for="review" class="form-label" style="position: relative;">Your
+                                        Review</label>
+                                    <x-content-editor id="reviewMessage" name="review" class="form-control w-100"
+                                                      rows="3" required/>
                                 </div>
-                                <button type="submit" class="btn btn-outline-primary">Submit Review</button>
+                                <x-button>
+                                    {{ __('Submit Review') }}
+                                </x-button>
+                                <x-secondary-button>
+                                    {{ __('Cancel') }}
+                                </x-secondary-button>
                             </form>
                         </div>
                     @endauth

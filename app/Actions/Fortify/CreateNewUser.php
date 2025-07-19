@@ -2,8 +2,8 @@
 
 namespace App\Actions\Fortify;
 
-use App\Models\AuthObjects\User;
 use App\Models\AuthObjects\Role;
+use App\Models\AuthObjects\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laragear\Turnstile\Facades\Turnstile;
@@ -22,7 +22,7 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input): User
     {
         Validator::make($input, [
-            'username' => ['required', 'string', 'max:255', 'unique:users'],
+            'username' => ['required', 'string', 'max:255', 'unique:users', 'blasp_check'],
             // User's birthdate is required and must be a date, should be validated to ensure it is in the past and the user is at least 13 years old
             'birthdate' => ['required', 'date', 'before:today', 'before:-13 years'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
