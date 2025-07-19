@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\AuthObjects\Role;
 use App\Models\AuthObjects\User;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -18,15 +18,17 @@ use Gerenuk\FilamentBanhammer\Resources\Actions\BanAction;
 use Gerenuk\FilamentBanhammer\Resources\Actions\BanBulkAction;
 use Gerenuk\FilamentBanhammer\Resources\Actions\UnbanAction;
 use Gerenuk\FilamentBanhammer\Resources\Actions\UnbanBulkAction;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
     protected static ?string $navigationGroup = 'Users & Roles';
+
     protected static ?string $navigationIcon = 'fas-user';
+
     protected ?string $heading = 'Manage Users';
+
     protected ?string $subheading = 'Users are the people who use the application.';
 
     public static function form(Form $form): Form
@@ -35,8 +37,8 @@ class UserResource extends Resource
             ->schema([
                 TextInput::make('username')->required()->maxLength(255)->unique(),
                 TextInput::make('email')->required()->email()->maxLength(255)->unique(),
-                TextInput::make('first_name')->required()->maxLength(255),
-                TextInput::make('last_name')->required()->maxLength(255),
+                TextInput::make('first_name')->maxLength(255),
+                TextInput::make('last_name')->maxLength(255),
                 Select::make('roles')
                     ->multiple()
                     ->relationship('roles', 'name')
@@ -79,9 +81,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \App\Filament\Resources\UserResource\Pages\ListUsers::route('/'),
-            'create' => \App\Filament\Resources\UserResource\Pages\CreateUser::route('/create'),
-            'edit' => \App\Filament\Resources\UserResource\Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

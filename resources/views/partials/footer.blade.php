@@ -26,7 +26,9 @@
                     <div class="d-flex flex-column flex-sm-row w-100 gap-2">
                         <label for="newsletter-email" class="visually-hidden">Email address</label>
                         <input id="newsletter-email" name="email" type="email" class="form-control" placeholder="Email address" required>
-                        <button class="btn btn-primary" type="button">Subscribe</button>
+                        <x-button>
+                            {{ __('Subscribe') }}
+                        </x-button>
                     </div>
                 </form>
                 <p class="mt-3 small">
