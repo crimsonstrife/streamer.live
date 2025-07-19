@@ -10,6 +10,7 @@ return [
     App\Providers\HorizonServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
     App\Providers\OnboardingServiceProvider::class,
+    App\Providers\PulseServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
     Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
     Spatie\EloquentSortable\EloquentSortableServiceProvider::class,

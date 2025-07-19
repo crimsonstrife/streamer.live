@@ -18,7 +18,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         $this->hideSensitiveRequestDetails();
 
-        $isLocal = $this->app->environment('local');
+        $isLocal = $this->app->environment('local') || env('FORCE_TELESCOPE_TRACKING', false);
 
         Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
             return $isLocal ||
@@ -35,7 +35,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     protected function hideSensitiveRequestDetails(): void
     {
-        if ($this->app->environment('local')) {
+        if ($this->app->environment('local') || env('FORCE_TELESCOPE_TRACKING', false)) {
             return;
         }
 
