@@ -19,7 +19,9 @@ class EmoteController extends Controller
 
         // Cache for 10 minutes; adjust duration as needed
         $matches = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($q) {
-            return Emote::when($q, fn ($query) => $query->where('code', 'like', "%{$q}%")
+            return Emote::when(
+                $q,
+                fn ($query) => $query->where('code', 'like', "%{$q}%")
             )
                 ->limit(50)
                 ->get()
