@@ -161,7 +161,7 @@ class Product extends BaseModel implements HasMedia, Searchable, Sitemapable
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('state','=','ACTIVE');
+        return $query->where('state', '=', 'ACTIVE');
     }
 
     /**
