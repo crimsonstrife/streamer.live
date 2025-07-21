@@ -162,7 +162,7 @@ class Product extends BaseModel implements HasMedia, Searchable, Sitemapable
 
     public function scopeAvailable(Builder $query): Builder|_IH_Product_QB
     {
-        return $query->where('state','=','AVAILABLE');
+        return $query->where('state', '=', 'AVAILABLE');
     }
 
     /**
