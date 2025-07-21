@@ -6,7 +6,7 @@
     <div class="card-body">
         <h5 class="card-title">
             @if ($this->enabled)
-                @if ($showingConfirmation)
+                @if ($showingConfirmation || (session('status') == 'two-factor-authentication-enabled'))
                     {{ __('Finish enabling two-factor authentication.') }}
                 @else
                     {{ __('You have enabled two-factor authentication.') }}
@@ -24,7 +24,7 @@
             @if ($showingQrCode)
                 <div class="mt-3 alert alert-info">
                     <p class="fw-bold">
-                        @if ($showingConfirmation)
+                        @if ($showingConfirmation || (session('status') == 'two-factor-authentication-enabled'))
                             {{ __('To finish enabling two-factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.') }}
                         @else
                             {{ __('Two-factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.') }}
@@ -44,7 +44,7 @@
                     </p>
                 </div>
 
-                @if ($showingConfirmation)
+                @if ($showingConfirmation || (session('status') == 'two-factor-authentication-enabled'))
                     <div class="mt-3">
                         <label for="code" class="form-label">{{ __('Enter Code') }}</label>
                         <input type="text" id="code" class="form-control w-50" inputmode="numeric" autofocus autocomplete="one-time-code"
@@ -83,7 +83,7 @@
                             {{ __('Regenerate Recovery Codes') }}
                         </button>
                     </x-confirms-password>
-                @elseif ($showingConfirmation)
+                @elseif ($showingConfirmation || (session('status') == 'two-factor-authentication-enabled'))
                     <x-confirms-password wire:then="confirmTwoFactorAuthentication">
                         <button class="btn btn-success me-2" wire:loading.attr="disabled">
                             {{ __('Confirm') }}
@@ -97,7 +97,7 @@
                     </x-confirms-password>
                 @endif
 
-                @if ($showingConfirmation)
+                @if ($showingConfirmation || (session('status') == 'two-factor-authentication-enabled'))
                     <x-confirms-password wire:then="disableTwoFactorAuthentication">
                         <button class="btn btn-warning" wire:loading.attr="disabled">
                             {{ __('Cancel') }}
