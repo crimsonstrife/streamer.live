@@ -72,6 +72,6 @@
 @if (file_exists(public_path('build/js/tinymce-tribute.js')))
     <script src="{{ asset('build/js/tinymce-tribute.js') }}" referrerpolicy="origin"></script>
     @endif
-
+@cookieconsentview
 </body> <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
 </html>  <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
