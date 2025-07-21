@@ -19,6 +19,7 @@ use App\Models\Font;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Support\Facades\Route;
@@ -126,8 +127,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      *
      * @return \Illuminate\Contracts\View\View
      */
-    Route::get('/email/verify/{id}/{hash}', function () {
-        return view('auth.verify-email');
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect(route('verification.complete'))->with('success', 'Email has been verified!');
     })->middleware([
         'auth:sanctum',
         config('jetstream.auth_session'),
@@ -161,8 +163,10 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      *
      * @return \Illuminate\Contracts\View\View
      */
-    Route::post('/email/verify/send', function () {
-        return view('auth.verify-email');
+    Route::post('/email/verify/send', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('message', 'Verification link sent!');
     })->middleware([
         'auth:sanctum',
         config('jetstream.auth_session'),
