@@ -18,6 +18,11 @@ use Illuminate\Http\Middleware\ValidatePostSize;
 use Illuminate\Session\Middleware\StartSession;
 use Shieldon\Firewall\Firewall;
 use Shieldon\Firewall\HttpResolver;
+use Treblle\SecurityHeaders\Http\Middleware\CertificateTransparencyPolicy;
+use Treblle\SecurityHeaders\Http\Middleware\PermissionsPolicy;
+use Treblle\SecurityHeaders\Http\Middleware\RemoveHeaders;
+use Treblle\SecurityHeaders\Http\Middleware\SetReferrerPolicy;
+use Treblle\SecurityHeaders\Http\Middleware\StrictTransportSecurity;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +39,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     // We put it in the `storage/shieldon_firewall` directory.
     $storage = __DIR__.'/../storage/shieldon_firewall';
 
-    $firewall = new Firewall();
+    $firewall = new Firewall;
 
     $firewall->configure($storage);
 
@@ -44,7 +49,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
     $response = $firewall->run();
 
     if ($response->getStatusCode() !== 200) {
-        $httpResolver = new HttpResolver();
+        $httpResolver = new HttpResolver;
         $httpResolver($response);
     }
 }
@@ -66,6 +71,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ValidatePostSize::class,
             TrimStrings::class,
             ConvertEmptyStringsToNull::class,
+            RemoveHeaders::class,
+            SetReferrerPolicy::class,
+            StrictTransportSecurity::class,
+            CertificateTransparencyPolicy::class,
+            PermissionsPolicy::class,
         ]);
 
         // Apply to all "web" routes

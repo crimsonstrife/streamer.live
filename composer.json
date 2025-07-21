@@ -132,6 +132,7 @@
         "tinymce/tinymce": "^7.9",
         "tomatophp/filament-menus": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
+        "treblle/security-headers": "^0.0.3",
         "xetaio/xetaravel-mentions": "^11.0",
         "z3d0x/filament-fabricator": "^2.4"
     },
