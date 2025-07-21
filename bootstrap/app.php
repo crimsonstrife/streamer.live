@@ -71,11 +71,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ValidatePostSize::class,
             TrimStrings::class,
             ConvertEmptyStringsToNull::class,
-            RemoveHeaders::class,
-            SetReferrerPolicy::class,
-            StrictTransportSecurity::class,
-            CertificateTransparencyPolicy::class,
-            PermissionsPolicy::class,
+            // RemoveHeaders::class,
+            // SetReferrerPolicy::class,
+            // StrictTransportSecurity::class,
+            // CertificateTransparencyPolicy::class,
+            // PermissionsPolicy::class,
+            // AddCspHeaders::class,
         ]);
 
         // Apply to all "web" routes
