@@ -31,6 +31,9 @@ class RunSelfUpdate extends Command
         $this->info("Updating to version: $version");
 
         $release = $updater->source()->fetch($version);
+
+        $this->info("Fetched Release: " . $release->getRelease());
+
         $updated = $updater->source()->update($release);
 
         return $updated ? CommandAlias::SUCCESS : CommandAlias::FAILURE;
