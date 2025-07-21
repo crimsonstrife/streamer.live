@@ -32,9 +32,9 @@ class Updates extends Page
         $updater = app(UpdaterManager::class);
 
         $this->releases = collect($updater->source()->getReleases()->json() ?? [])
-            ->filter(fn($release) => isset($release['tag_name']) &&
+            ->filter(fn ($release) => isset($release['tag_name']) &&
                 version_compare($release['tag_name'], $this->currentVersion, '>'))
-            ->sortByDesc(fn($release) => $release['tag_name'])
+            ->sortByDesc(fn ($release) => $release['tag_name'])
             ->values()
             ->all();
 
