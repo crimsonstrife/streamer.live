@@ -332,6 +332,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->isSuperAdmin() || $this->isAdmin() || $panel->isModerator() || $this->can('is-panel-user') || $this->can('access-filament');
+        return $this->isSuperAdmin() || $this->isAdmin() || $this->isModerator() || $this->can('is-panel-user') || $this->can('access-filament');
     }
 }
