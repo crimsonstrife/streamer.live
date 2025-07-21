@@ -41,15 +41,42 @@
                 }
 
                 .thumbnail-column {
-                    margin-right: 5%;
-                    height: 100%;
-                    max-height: 600px;
-                    width: 6rem;
+                    gap: 0.5rem;
+                    overflow: hidden !important;
+                    width: 5rem;
                 }
 
-                .thumbnail-column img {
+                .thumbnail-column #thumbnailContainer img {
+                    width: 4rem;
+                    height: auto;
+                    object-fit: cover;
                     border: 2px solid transparent;
                     transition: border 0.2s ease-in-out;
+                    flex-shrink: 0;
+                }
+
+                #thumbnailContainer {
+                    display: inline-flex;
+                    flex-direction: column;
+                    max-height: 600px;
+                    width: 3rem;
+                    overflow: hidden !important;
+                    position: relative;
+                }
+
+                @media only screen and (max-width: 600px) {
+                    .thumbnail-column {
+                        width: 100% !important;
+                        flex-wrap: nowrap;
+                        overflow: hidden !important;
+                    }
+
+                    #thumbnailContainer {
+                        margin-right: 0;
+                        flex-direction: row;
+                        overflow: hidden !important;
+                        width: 100% !important;
+                    }
                 }
 
                 .thumbnail-column img:hover {
@@ -59,8 +86,8 @@
                 #thumbnailContainer {
                     max-height: 600px;
                     width: 3rem;
-                    margin-right: 50%;
                     position: relative;
+                    overflow: hidden !important;
                 }
 
                 .carousel.vertical .carousel-inner {
@@ -91,6 +118,113 @@
                 }
             </style>
         @endpush
+        <style>
+            .carousel-item .model-info {
+                transition: opacity 0.3s ease;
+                opacity: 0;
+                pointer-events: none;
+            }
+
+            .carousel-item:hover .model-info {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .carousel-item .info-badge {
+                font-size: clamp(1rem, 2.5vw, 2rem); /* scales between 1rem and 2rem */
+                padding: 0.4em;
+                opacity: 0.8;
+                transition: opacity 0.2s;
+                z-index: 5;
+                line-height: 1;
+            }
+
+            .carousel-item:hover .info-badge {
+                opacity: 1;
+            }
+
+            .max-product-width {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            .thumbnail-column {
+                gap: 0.5rem;
+                overflow: hidden !important;
+                width: 5rem;
+            }
+
+            .thumbnail-column #thumbnailContainer img {
+                width: 4rem;
+                height: auto;
+                object-fit: cover;
+                border: 2px solid transparent;
+                transition: border 0.2s ease-in-out;
+                flex-shrink: 0;
+            }
+
+            #thumbnailContainer {
+                display: inline-flex;
+                flex-direction: column;
+                max-height: 600px;
+                width: 3rem;
+                position: relative;
+                overflow: hidden !important;
+            }
+
+            @media only screen and (max-width: 600px) {
+                .thumbnail-column {
+                    width: 100% !important;
+                    max-height: none !important;
+                    flex-wrap: nowrap;
+                    overflow: hidden !important;
+                }
+
+                #thumbnailContainer {
+                    margin-right: 0;
+                    flex-direction: row;
+                    width: 100% !important;
+                }
+            }
+
+            .thumbnail-column img:hover {
+                border-color: #0d6efd;
+            }
+
+            #thumbnailContainer {
+                max-height: 600px;
+                width: 3rem;
+                position: relative;
+                overflow: hidden !important;
+            }
+
+            .carousel.vertical .carousel-inner {
+                display: flex;
+                flex-direction: column;
+                height: 600px; /* Or whatever fits your layout */
+                overflow: hidden;
+                position: relative;
+            }
+
+            .carousel.vertical .carousel-item {
+                transition: transform 0.6s ease-in-out;
+                flex: 0 0 100%;
+                max-height: 600px;
+            }
+
+            .carousel.vertical .carousel-item-next.carousel-item-left,
+            .carousel.vertical .carousel-item-prev.carousel-item-right {
+                transform: translateX(-100%);
+            }
+
+            .carousel.vertical .active.carousel-item-left {
+                transform: translateX(100%);
+            }
+
+            .carousel.vertical .active.carousel-item-right {
+                transform: translateX(-100%);
+            }
+        </style>
         @php $mediaItems = $product->getMedia('images'); @endphp
         <div class="container py-4">
             @include('shop.partials.promo-banner')
@@ -98,11 +232,11 @@
                 <div class="col-md-6">
                     @if ($mediaItems->isNotEmpty())
                         <!-- Main Image Carousel -->
-                        <div class="row justify-content-center">
-                            <!-- Thumbnail Column -->
-                            <div class="col-auto col-sm-2 col-md-2 col-lg-1 thumbnail-column">
-                                <!-- Carousel Prev Button (moved here) -->
-                                <button class="btn btn-outline-secondary mb-2" onclick="navigateCarousel('prev')">
+                        <div class="d-flex flex-column flex-md-row justify-content-center align-items-start gap-3">
+                        <!-- Thumbnail Column -->
+                            <div class="thumbnail-column d-flex flex-md-column flex-row overflow-auto align-items-center justify-content-md-start justify-content-between">
+                                <!-- Carousel Prev Button -->
+                                <button class="btn btn-outline-secondary mb-2 d-none d-md-block" onclick="navigateCarousel('prev')">
                                     <i class="bi bi-chevron-up"></i>
                                 </button>
 
@@ -121,8 +255,8 @@
                                     @endif
                                 </div>
 
-                                <!-- Carousel Next Button (moved here) -->
-                                <button class="btn btn-outline-secondary mt-2" onclick="navigateCarousel('next')">
+                                <!-- Carousel Next Button -->
+                                <button class="btn btn-outline-secondary mt-2 d-none d-md-block" onclick="navigateCarousel('next')">
                                     <i class="bi bi-chevron-down"></i>
                                 </button>
                             </div>
