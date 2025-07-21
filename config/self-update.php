@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Console\Commands\SyncVersionEnv;
 use Codedge\Updater\Notifications\Notifiable;
 use Codedge\Updater\Notifications\Notifications\UpdateAvailable;
 use Codedge\Updater\Notifications\Notifications\UpdateFailed;
@@ -50,7 +51,7 @@ return [
             'repository_vendor' => env('SELF_UPDATER_REPO_VENDOR', 'crimsonstrife'),
             'repository_name' => env('SELF_UPDATER_REPO_NAME', 'streamer.live'),
             'repository_url' => 'https://github.com/crimsonstrife/streamer.live',
-            'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', '/var/www/self-updater/'),
+            'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
             'private_access_token' => env('SELF_UPDATER_GITHUB_PRIVATE_ACCESS_TOKEN', ''),
             'use_branch' => env('SELF_UPDATER_USE_BRANCH', ''),
             // 'package_file_name'    => env('SELF_UPDATER_PACKAGE_FILE_NAME', 'regex:releaseV.*\.zip'),
@@ -124,7 +125,7 @@ return [
     |
     */
 
-    'log_events' => env('SELF_UPDATER_LOG_EVENTS', false),
+    'log_events' => env('SELF_UPDATER_LOG_EVENTS', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -175,7 +176,10 @@ return [
             // ]
         ],
         'post_update' => [
-
+            'updater:sync-version-env' => [
+                'class' => SyncVersionEnv::class,
+                'params' => [],
+            ],
         ],
     ],
 

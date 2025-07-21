@@ -2,92 +2,85 @@
 
 namespace App\Filament\Admin\Pages;
 
-use Filament\Pages\Page;
 use Codedge\Updater\UpdaterManager;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
+use Throwable;
 
 class Updates extends Page
 {
     protected static ?string $navigationIcon = 'fas-cloud-arrow-down';
+
     protected static string $view = 'filament.admin.pages.updates';
+
     protected static ?string $navigationGroup = 'Settings';
 
     public string $currentVersion = '';
+
     public ?string $availableVersion = null;
+
+    public array $releases = [];
+
+    public ?string $selectedVersion = null;
 
     public function mount(UpdaterManager $updater): void
     {
-        $this->currentVersion = config('self-update.version_installed') ?? $updater->source()->getVersionInstalled();
-
-        if ($updater->source()->isNewVersionAvailable()) {
-            $this->availableVersion = $updater->source()->getVersionAvailable();
-        }
+        $this->currentVersion = $updater->source()->getVersionInstalled();
+        $this->loadReleases();
     }
 
-    public function checkForUpdate(): void
+    public function loadReleases(): void
     {
         $updater = app(UpdaterManager::class);
 
-        $this->availableVersion = $updater->source()->isNewVersionAvailable()
-            ? $updater->source()->getVersionAvailable()
-            : null;
+        $this->releases = collect($updater->source()->getReleases()->json() ?? [])
+            ->filter(function ($release) {
+                return isset($release['tag_name']) &&
+                    version_compare($release['tag_name'], $this->currentVersion, '>');
+            })
+            ->sortByDesc(function ($release) {
+                return $release['tag_name'];
+            })
+            ->values()
+            ->all();
 
-        Notification::make()
-            ->title($this->availableVersion ? "Update Available" : "Up to Date")
-            ->success()
-            ->send();
+        // Set the newest available version from the filtered list
+        $this->availableVersion = $this->releases[0]['tag_name'] ?? null;
     }
 
-    public function runUpdate(): void
+    public function runSelectedUpdate(string $version): void
     {
-        $updater = app(UpdaterManager::class);
-
-        if (! $updater->source()->isNewVersionAvailable()) {
+        $this->selectedVersion = $version;
+        if (! $this->selectedVersion) {
             Notification::make()
-                ->title('No update found')
+                ->title('No version selected')
                 ->danger()
                 ->send();
+
             return;
         }
 
+        $updater = app(UpdaterManager::class);
+
         try {
-            $versionAvailable = $updater->source()->getVersionAvailable();
-            $release = $updater->source()->fetch($versionAvailable);
-
-            Log::info('Available releases', [
-                'url' => $updater->getDefaultSourceRepository() ?? 'N/A',
-                'versionAvailable' => $updater->source()->getVersionAvailable(),
-                'release' => $release,
-                'path' => method_exists($release, 'getStoragePath') ? $release->getStoragePath() : 'no method',
-            ]);
-
-            Log::info('Attempting to update', [
-                'available_version' => $versionAvailable,
-                'release_data' => $release,
-            ]);
-
+            $release = $updater->source()->fetch($this->selectedVersion);
             $updated = $updater->source()->update($release);
 
             if ($updated) {
+                $this->updateConfigVersion($this->selectedVersion);
+                $this->currentVersion = $this->selectedVersion;
+                $this->loadReleases();
+
                 Notification::make()
-                    ->title("Updated to {$versionAvailable}")
+                    ->title("Updated to {$this->selectedVersion}")
                     ->success()
                     ->send();
-
-                $this->updateConfigVersion($versionAvailable);
-                $this->mount($updater);
-
-                Log::info("Update successful to version {$versionAvailable}");
             } else {
-                Log::warning('Updater returned false without exception', [
-                    'version' => $versionAvailable,
-                    'release' => $release,
-                ]);
-
-                throw new \Exception('Update failed: updater returned false');
+                throw new RuntimeException('Update failed: updater returned false');
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Update failed', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -101,16 +94,14 @@ class Updates extends Page
         }
     }
 
-    protected function updateConfigVersion(string $newVersion): void
+    public function updateConfigVersion(string $newVersion): void
     {
         $configFilePath = config_path('self-update.php');
-
         if (! file_exists($configFilePath)) {
-            throw new \RuntimeException('Configuration file does not exist.');
+            throw new RuntimeException('Configuration file does not exist.');
         }
 
         $configContent = file_get_contents($configFilePath);
-
         $updatedContent = preg_replace(
             "/'version_installed'\s*=>\s*'[^']*'/",
             "'version_installed' => '{$newVersion}'",
@@ -119,10 +110,6 @@ class Updates extends Page
 
         if ($updatedContent !== null) {
             file_put_contents($configFilePath, $updatedContent);
-        } else {
-            throw new \RuntimeException('Failed to update the version in the configuration file.');
         }
-
-        Log::info("Updated version_installed in config to {$newVersion}");
     }
 }
