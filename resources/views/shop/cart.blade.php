@@ -4,10 +4,10 @@
             Shopping Cart
         </h2>
     </x-slot>
-    @php $settings = app(\App\Settings\FourthwallSettings::class); @endphp
+    @php use App\Models\StoreObjects\Promotion;use App\Settings\FourthwallSettings;$settings = app(FourthwallSettings::class); @endphp
     @php
-        $orderPromotions = \App\Models\StoreObjects\Promotion::live()->entireOrder()->get();
-        $productPromotions = \App\Models\StoreObjects\Promotion::live()->selectedProducts()->with('products')->get();
+        $orderPromotions = Promotion::live()->entireOrder()->get();
+        $productPromotions = Promotion::live()->selectedProducts()->with('products')->get();
     @endphp
     @if (! $settings->enable_integration)
         <div class="alert alert-warning text-center">
@@ -66,26 +66,19 @@
                                     @foreach ($cart['items'] as $item)
                                         @php
                                             $variantId = $item->variant->id;
-                                            if ($item->variant->product->images->isNotEmpty())
-                                            {
-                                                $image = $item->variant->product->images->first();
-                                            }
-                                            else
-                                            {
-                                                $image = null;
-                                            }
+                                            $mediaItem = $item->variant->product->getMedia('images')->first();
                                         @endphp
                                         @php
-                                            $applied = $productPromotions
-                                              ->filter(fn($p) => $p->products->contains('id', $item->variant->product->id));
+                                            $applied = $productPromotions->filter(fn($p) => $p->products->contains('id', $item->variant->product->id));
                                         @endphp
                                         <tr>
                                             <td class="d-flex align-items-center">
                                                 <a href="{{ route('shop.product', ['slug' => $item->variant->product->slug]) }}"
                                                    style="text-decoration: none; color: inherit;">
-                                                    @if ($item->variant->product->images->isNotEmpty())
-                                                        <img src="{!! asset($image->local_path) ?? $image->url !!}"
-                                                             alt="{{ $image->alt_text }}" class="rounded me-3"
+                                                    @if ($mediaItem)
+                                                        <img src="{{ $mediaItem->getUrl() }}"
+                                                             alt="{{ $mediaItem->getCustomProperty('image_alt_text') ?? 'Product image' }}"
+                                                             class="rounded me-3"
                                                              width="60"
                                                              height="60">
                                                     @endif
@@ -117,7 +110,7 @@
                                                     @endphp
                                                     <span class="{{ $badgeCls }} ms-2">
                                                         @if($promo->title === 'TWITCHSUB')
-                                                            <x-fab-twitch class="me-1" width="1rem" />
+                                                            <x-fab-twitch class="me-1" width="1rem"/>
                                                         @endif
                                                         {!! $promo->customer_message !!}
                                                     </span>
@@ -126,7 +119,8 @@
                                             <td>
                                                 <a href="{{ route($shopPrefix.'.cart.remove', $variantId) }}"
                                                    class="btn btn-danger btn-sm">
-                                                    <x-fas-trash-can height="1rem" width="auto"/> Remove
+                                                    <x-fas-trash-can height="1rem" width="auto"/>
+                                                    Remove
                                                 </a>
                                             </td>
                                         </tr>
@@ -146,13 +140,16 @@
 
                                 <div class="mt-4 d-flex justify-content-between">
                                     <a href="{{ route($shopPrefix.'.page') }}" class="btn btn-secondary">
-                                        <x-fas-arrow-left height="1rem" width="auto"/> Continue Shopping
+                                        <x-fas-arrow-left height="1rem" width="auto"/>
+                                        Continue Shopping
                                     </a>
                                     <button type="submit" class="btn btn-primary">
-                                        <x-fas-arrows-rotate height="1rem" width="auto"/> Update Cart
+                                        <x-fas-arrows-rotate height="1rem" width="auto"/>
+                                        Update Cart
                                     </button>
                                     <a href="{{ route($shopPrefix.'.cart.checkout') }}" class="btn btn-success">
-                                        <x-fas-cash-register height="1rem" width="auto"/> Proceed to Checkout
+                                        <x-fas-cash-register height="1rem" width="auto"/>
+                                        Proceed to Checkout
                                     </a>
                                 </div>
                             </form>
@@ -160,7 +157,8 @@
                             <p class="text-center text-muted fs-5">Your cart is empty.</p>
                             <div class="text-center">
                                 <a href="{{ route($shopPrefix.'.page') }}" class="btn btn-primary">
-                                    <x-fas-shop height="1rem" width="auto"/> Go to Shop
+                                    <x-fas-shop height="1rem" width="auto"/>
+                                    Go to Shop
                                 </a>
                             </div>
                         @endif
