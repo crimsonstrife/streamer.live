@@ -101,13 +101,12 @@
 
         /* Overrides */
         body {
-            font-family: var(--font-primary);
-        }
-
-        h1, h2, h3, h4, h5, h6 {
             font-family: var(--font-secondary);
         }
 
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-primary);
+        }
         a {
             color: var(--color-link);
         }
