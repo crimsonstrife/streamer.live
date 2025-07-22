@@ -60,7 +60,7 @@
         "guzzlehttp/guzzle": "^7.9",
         "ibrahim-bougaoua/filaprogress": "^0.1.0",
         "illuminate/support": "*",
-        "indracollective/laravel-revisor-filament": "^0.0.2",
+        "indracollective/laravel-revisor-filament": "^0.0.3",
         "joaopaulolndev/filament-edit-profile": "^1.0",
         "kalnoy/nestedset": "^6.0",
         "lakm/laravel-comments": "^3.0",
