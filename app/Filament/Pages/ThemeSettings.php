@@ -32,21 +32,28 @@ class ThemeSettings extends SettingsPage
                         Forms\Components\ColorPicker::make('font_color')->label('Default Font Color'),
                         Forms\Components\ColorPicker::make('font_alt_color')->label('Alternate Font Color'),
                         Forms\Components\Select::make('font_family')
-                            ->label('Font Family')
+                            ->label('Header Font Family')
                             ->options(fn () => [
-                                    'system' => 'System UI',
-                                ] + Font::pluck('name', 'slug')->toArray())
+                                'system' => 'System UI',
+                            ] + Font::pluck('name', 'slug')->toArray())
                             ->default('system')
                             ->searchable(),
-//                        Forms\Components\Select::make('button_style')
-//                            ->label('Button Style')
-//                            ->options([
-//                                'rounded' => 'Rounded',
-//                                'outline' => 'Outline',
-//                                'pill' => 'Pill',
-//                                'flat' => 'Flat',
-//                            ])
-//                            ->default('rounded'),
+                        Forms\Components\Select::make('font_family_alt')
+                            ->label('Body Font Family')
+                            ->options(fn () => [
+                                'system' => 'System UI',
+                            ] + Font::pluck('name', 'slug')->toArray())
+                            ->default('system')
+                            ->searchable(),
+                        //                        Forms\Components\Select::make('button_style')
+                        //                            ->label('Button Style')
+                        //                            ->options([
+                        //                                'rounded' => 'Rounded',
+                        //                                'outline' => 'Outline',
+                        //                                'pill' => 'Pill',
+                        //                                'flat' => 'Flat',
+                        //                            ])
+                        //                            ->default('rounded'),
                         Forms\Components\ColorPicker::make('disabled_color')->label('Disabled Item/Link Color'),
                         Forms\Components\ColorPicker::make('link_color')->label('Link Color'),
                         Forms\Components\ColorPicker::make('hover_color')->label('Hover Color'),
