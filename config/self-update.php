@@ -182,7 +182,6 @@ return [
                 'class' => ComposerInstall::class,
                 'params' => [],
             ],
-            'migrate',
             'updater:sync-version-env' => [
                 'class' => SyncVersionEnv::class,
                 'params' => [],
