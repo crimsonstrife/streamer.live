@@ -21,7 +21,7 @@ class BlogCommentController extends Controller
     public function store(Request $request, Post $post): RedirectResponse
     {
         $data = $request->validate([
-            'commentMessage' => ['required', 'string', 'max:1000'],
+            'commentMessage' => 'required|string|max:1000|min:1',
         ]);
 
         $parentComment = null;

@@ -12,7 +12,12 @@ class SearchController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $results = (new Search())
+        // Validate that 'query' input is provided and not empty
+        $request->validate([
+            'query' => 'required|string|min:1', // Ensures 'query' is not null, is a string, and has at least 1 character
+        ]);
+
+        $results = (new Search)
             ->registerAspect(PostSearchAspect::class)
             ->registerAspect(ProductSearchAspect::class)
             ->registerAspect(PageSearchAspect::class)

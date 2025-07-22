@@ -524,7 +524,7 @@
                                     <label for="review" class="form-label" style="position: relative;">Your
                                         Review</label>
                                     <x-content-editor id="reviewMessage" name="review" class="form-control w-100"
-                                                      rows="3" required/>
+                                                      rows="3"/>
                                 </div>
                                 <x-button>
                                     {{ __('Submit Review') }}

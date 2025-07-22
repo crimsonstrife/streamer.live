@@ -20,13 +20,13 @@ class ProductReviewController extends Controller
     {
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'review' => 'required|string|max:1000',
+            'review' => 'required|string|max:1000|min:1',
         ]);
 
         $user = $request->user();
 
         try {
-            $review = new ProductReview();
+            $review = new ProductReview;
             $isVerified = $review->verifyPurchase($user->id, $product->id);
 
             $cleanReview = Purifier::clean($validated['review'], 'default');
