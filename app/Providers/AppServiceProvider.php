@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Filament\Resources\PostResource;
 use App\Http\Livewire\Profile\UpdateProfileInformationForm as AppUpdateProfile;
 use App\Models\BlogObjects\Comment;
+use App\Models\SecurityObjects\IPFilter;
 use App\Observers\CommentObserver;
 use App\Services\CustomMediaPathGenerator;
 use App\Services\FourthwallService;
@@ -25,6 +26,7 @@ use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -76,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService());
+        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService);
 
         $this->app->tag(
             [
@@ -105,6 +107,12 @@ class AppServiceProvider extends ServiceProvider
         if (! Schema::hasTable('settings')) {
             return;
         }
+
+        Cache::remember('ip_filter:blacklist', 3600, function () {
+            return IPFilter::where('type', 'blacklist')
+                ->pluck('ip_address')
+                ->all();
+        });
 
         Event::listen(function (SocialiteWasCalled $event) {
             $event->extendSocialite('twitch', Provider::class);
