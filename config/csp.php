@@ -80,6 +80,8 @@ return [
             'https://static-cdn.jtvnw.net',
             'https://cdn.discordapp.com',
             'https://ui-avatars.com',
+            'https://gravatar.com',
+            'https://www.gravatar.com',
         ]],
         [Directive::FONT, [
             Keyword::SELF,
