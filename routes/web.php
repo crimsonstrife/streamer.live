@@ -40,7 +40,7 @@ use Shieldon\Firewall\Panel;
 
 Route::any('/firewall/panel/{path?}', function () {
 
-    $panel = new Panel();
+    $panel = new Panel;
     $panel->csrf(['_token' => csrf_token()]);
     $panel->entry();
 
@@ -129,6 +129,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
+
         return redirect(route('verification.complete'))->with('success', 'Email has been verified!');
     })->middleware([
         'auth:sanctum',
@@ -202,37 +203,17 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () {
         Route::get('/', [BlogController::class, 'index'])->name('index');
         Route::get('/{slug}', [BlogController::class, 'show'])->name('post');
-        Route::post('/{post}/comment', [BlogCommentController::class, 'store'])
-            ->middleware([
-                'auth',
-                'auth.banned',
-                'ip.banned',
-                'logout.banned',
-            ])
-            ->name('comment.submit');
-        // Post reactions
-        Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])
-            ->name('reaction.toggle')
-            ->middleware(
-                [
-                    'auth',
-                    'auth.banned',
-                    'ip.banned',
-                    'logout.banned',
-                ]
-            );
-
-        // Route::get('category/{slug}', [BlogController::class, 'category'])->name('category');
-
-        // Comment reactions
-        Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
-            ->name('comment.reaction.toggle')
-            ->middleware([
-                'auth',
-                'auth.banned',
-                'ip.banned',
-                'logout.banned',
-            ]);
+        Route::middleware([
+            'auth:sanctum',
+            config('jetstream.auth_session'),
+            'auth.banned',
+            'ip.banned',
+            'logout.banned',
+        ])->group(function () {
+            Route::post('/{post}/comment', [BlogCommentController::class, 'store'])->name('comment.submit');
+            Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])->name('reaction.toggle');
+            Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])->name('comment.reaction.toggle');
+        });
     });
 
     Route::middleware(['store.enabled'])
