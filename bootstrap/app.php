@@ -18,6 +18,7 @@ use Illuminate\Http\Middleware\ValidatePostSize;
 use Illuminate\Session\Middleware\StartSession;
 use Shieldon\Firewall\Firewall;
 use Shieldon\Firewall\HttpResolver;
+use Spatie\Csp\AddCspHeaders;
 use Treblle\SecurityHeaders\Http\Middleware\CertificateTransparencyPolicy;
 use Treblle\SecurityHeaders\Http\Middleware\PermissionsPolicy;
 use Treblle\SecurityHeaders\Http\Middleware\RemoveHeaders;
@@ -71,23 +72,24 @@ return Application::configure(basePath: dirname(__DIR__))
             ValidatePostSize::class,
             TrimStrings::class,
             ConvertEmptyStringsToNull::class,
+            CheckIPFilter::class,
             // RemoveHeaders::class,
             // SetReferrerPolicy::class,
             // StrictTransportSecurity::class,
             // CertificateTransparencyPolicy::class,
             // PermissionsPolicy::class,
-            // AddCspHeaders::class,
         ]);
 
         // Apply to all "web" routes
-        $middleware->web(append: [
-            CheckIPFilter::class,
-            // SecurityHeaders::class,
-        ]);
+        $middleware->web(
+            append: [
+                // SecurityHeaders::class,
+                AddCspHeaders::class,
+            ]);
 
         // Apply to all "api" routes
         $middleware->api(append: [
-            CheckIPFilter::class,
+            // SecurityHeaders::class,
         ]);
 
         $middleware->alias([
