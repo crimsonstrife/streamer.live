@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Console\Commands\ComposerInstall;
 use App\Console\Commands\PostUpdateCleanup;
+use App\Console\Commands\RunMigrations;
 use App\Console\Commands\SyncVersionEnv;
 use Codedge\Updater\Notifications\Notifiable;
 use Codedge\Updater\Notifications\Notifications\UpdateAvailable;
@@ -180,6 +181,10 @@ return [
         'post_update' => [
             'updater:composer-install' => [
                 'class' => ComposerInstall::class,
+                'params' => [],
+            ],
+            'updater:run-migrations' => [
+                'class' => RunMigrations::class,
                 'params' => [],
             ],
             'updater:sync-version-env' => [
