@@ -18,7 +18,9 @@ class LookFeelSettings extends Settings
 
     public ?string $font_family;
 
-    public ?int    $base_font_size;
+    public ?string $font_family_alt;
+
+    public ?int $base_font_size;
 
     public ?string $disabled_color;
 
