@@ -68,12 +68,12 @@
                   --font-primary: system-ui, sans-serif;
             @else
                   --font-primary: "{{ $style->font_family }}", system-ui, sans-serif;
-        @endif;
+        @endif
             @if($style->font_family_alt === 'system')
                    --font-secondary: system-ui, sans-serif;
             @else
                    --font-secondary: "{{ $style->font_family_alt }}", system-ui, sans-serif;
-        @endif;
+        @endif
 
             /* expose a CSS var for weight if you want dynamic control */
             --font-weight: {{ $settings->font_weight ?? 400 }};
