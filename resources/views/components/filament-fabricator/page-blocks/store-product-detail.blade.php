@@ -237,7 +237,7 @@
                             <div class="thumbnail-column d-flex flex-md-column flex-row overflow-auto align-items-center justify-content-md-start justify-content-between">
                                 <!-- Carousel Prev Button -->
                                 <button class="btn btn-outline-secondary mb-2 d-none d-md-block" onclick="navigateCarousel('prev')">
-                                    <x-fas-chevron-up />
+                                    <x-fas-chevron-up height="1rem" width="1rem" />
                                 </button>
 
                                 <!-- Scrollable Thumbnails -->
@@ -257,7 +257,7 @@
 
                                 <!-- Carousel Next Button -->
                                 <button class="btn btn-outline-secondary mt-2 d-none d-md-block" onclick="navigateCarousel('next')">
-                                    <x-fas-chevron-down />
+                                    <x-fas-chevron-down height="1rem" width="1rem" />
                                 </button>
                             </div>
 

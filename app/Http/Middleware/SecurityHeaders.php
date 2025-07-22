@@ -21,7 +21,7 @@ class SecurityHeaders
             "img-src 'self' data:; ".
             "object-src 'none'; ".
             "frame-ancestors 'none'; ".
-            "upgrade-insecure-requests"
+            'upgrade-insecure-requests'
         );
 
         // Clickjacking protection
