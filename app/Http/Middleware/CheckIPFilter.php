@@ -90,17 +90,16 @@ class CheckIPFilter
             }
         }
 
-        $path = '/'.$request->path();
+        $path = '/'.ltrim($request->path(), '/');
         foreach (config('ip-filter.suspicious_patterns', []) as $pattern) {
             if (! preg_match($pattern, $path)) {
                 continue;
             }
 
+            // Ensure default value atomically
             $cacheKey = "ip_filter:{$ip}:bad404s";
-
-            // ensure the key exists with TTL
-            Cache::remember($cacheKey, config('ip-filter.suspicious_ttl'), fn () => 0);
-            $count = Cache::increment($cacheKey);
+            Cache::add($cacheKey, 0, config('ip-filter.suspicious_ttl')); // Will only add if the key doesn't exist
+            $count = Cache::increment($cacheKey); // Atomically increment the count
 
             if ($count >= config('ip-filter.404_threshold')) {
                 Log::warning("Auto-blacklisting {$ip}: {$count} 404s to {$path}");
