@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -21,7 +22,7 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('ip_filters', function (Blueprint $table) {
-            $table->dropIndex(['type', 'ip_address']);
+            $table->dropIndex('ip_filters_type_address_index');
         });
     }
 };

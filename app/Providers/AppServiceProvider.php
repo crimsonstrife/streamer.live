@@ -78,7 +78,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService());
+        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService);
 
         $this->app->tag(
             [
@@ -110,6 +110,12 @@ class AppServiceProvider extends ServiceProvider
 
         Cache::remember('ip_filter:blacklist', 3600, function () {
             return IPFilter::where('type', 'blacklist')
+                ->pluck('ip_address')
+                ->all();
+        });
+
+        Cache::remember('ip_filter:whitelist', 3600, function () {
+            return IPFilter::where('type', 'whitelist')
                 ->pluck('ip_address')
                 ->all();
         });
