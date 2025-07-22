@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use LaravelIdea\Helper\App\Models\StoreObjects\_IH_Product_QB;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
@@ -159,9 +160,9 @@ class Product extends BaseModel implements HasMedia, Searchable, Sitemapable
         return $this->price ? $this->price->formatted() : 'N/A';
     }
 
-    public function scopeActive(Builder $query): Builder
+    public function scopeAvailable(Builder $query): Builder|_IH_Product_QB
     {
-        return $query->where('state','=','ACTIVE');
+        return $query->where('state', '=', 'AVAILABLE');
     }
 
     /**

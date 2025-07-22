@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Pages;
 use Codedge\Updater\UpdaterManager;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Throwable;
@@ -12,17 +13,12 @@ use Throwable;
 class Updates extends Page
 {
     protected static ?string $navigationIcon = 'fas-cloud-arrow-down';
-
     protected static string $view = 'filament.admin.pages.updates';
-
     protected static ?string $navigationGroup = 'Settings';
 
     public string $currentVersion = '';
-
     public ?string $availableVersion = null;
-
     public array $releases = [];
-
     public ?string $selectedVersion = null;
 
     public function mount(UpdaterManager $updater): void
@@ -36,39 +32,33 @@ class Updates extends Page
         $updater = app(UpdaterManager::class);
 
         $this->releases = collect($updater->source()->getReleases()->json() ?? [])
-            ->filter(function ($release) {
-                return isset($release['tag_name']) &&
-                    version_compare($release['tag_name'], $this->currentVersion, '>');
-            })
-            ->sortByDesc(function ($release) {
-                return $release['tag_name'];
-            })
+            ->filter(fn ($release) => isset($release['tag_name']) &&
+                version_compare($release['tag_name'], $this->currentVersion, '>'))
+            ->sortByDesc(fn ($release) => $release['tag_name'])
             ->values()
             ->all();
 
-        // Set the newest available version from the filtered list
         $this->availableVersion = $this->releases[0]['tag_name'] ?? null;
     }
 
     public function runSelectedUpdate(string $version): void
     {
         $this->selectedVersion = $version;
+
         if (! $this->selectedVersion) {
             Notification::make()
                 ->title('No version selected')
                 ->danger()
                 ->send();
-
             return;
         }
 
-        $updater = app(UpdaterManager::class);
-
         try {
-            $release = $updater->source()->fetch($this->selectedVersion);
-            $updated = $updater->source()->update($release);
+            $exitCode = Artisan::call('app:self-update', [
+                'version' => $this->selectedVersion,
+            ]);
 
-            if ($updated) {
+            if ($exitCode === 0) {
                 $this->updateConfigVersion($this->selectedVersion);
                 $this->currentVersion = $this->selectedVersion;
                 $this->loadReleases();
@@ -78,7 +68,7 @@ class Updates extends Page
                     ->success()
                     ->send();
             } else {
-                throw new RuntimeException('Update failed: updater returned false');
+                throw new RuntimeException('Update command failed. Check logs.');
             }
         } catch (Throwable $e) {
             Log::error('Update failed', [

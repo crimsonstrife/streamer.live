@@ -1,3 +1,4 @@
+@php use App\Utilities\BlogHelper; @endphp
 @aware(['page'])
 @push('styles')
     <style>
@@ -80,12 +81,12 @@
     </style>
 @endpush
 @php
-    $blogSlug = \App\Utilities\BlogHelper::getBlogSlug();
+    $blogSlug = BlogHelper::getBlogSlug();
 @endphp
 <div class="container py-4">
     <h2 class="mb-4">Latest Posts</h2>
     <div class="row mb-2">
-        @foreach($posts ?? [] as $post)
+        @foreach($posts as $post)
             @php
                 $postMedia = $post->getMedia("images");
             @endphp
@@ -95,35 +96,26 @@
                     $postFeaturedImageAltText = $postMedia[0]->getCustomProperty('image_alt_text');
                 @endphp
             @endif
-            <div class="col-md-10">
-                <div
-                    class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
                     @if ($postMedia->isNotEmpty())
-                        <div class="col-auto d-none d-lg-block">
-                            <div class="overflow-hidden mx-auto" style="max-width:250px; height:250px;">
-                                <img
-                                    src="{{ $postFeaturedImageUrl }}"
-                                    alt="{{ $postFeaturedImageAltText ?? $post->title . ' Featured Image' }}" focusable="false"
-                                    class="card-img-top w-100 h-100 object-fit-cover"
-                                >
-                            </div>
-                        </div>
+                        <img src="{{ $postFeaturedImageUrl }}" class="card-img-top"
+                             alt="{{ $postFeaturedImageAltText ?? $post->title . ' Featured Image' }}">
                     @endif
-                    <div class="col p-4 d-flex flex-column position-static">
-                        <strong class="d-inline-block mb-2">{{ $post->category->name }}</strong>
-                        <h3 class="mb-0">{{ $post->title }}</h3>
-                        <div class="mb-1 text-body-secondary">{{ $post->created_at->format('F j, Y') }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $post->title }}</h5>
                         <p class="mb-auto text-muted">
                             {{ Illuminate\Support\Str::limit(strip_tags($post->excerpt ?? $post->content), 30) }}
                         </p>
                         <p class="text-muted mb-1">
                             <span>
-                                <x-fas-comments height="1rem" width="1rem" />{{ $post->comments_count ?? 0 }} {{ Str::plural('comment', $post->comments_count ?? 0) }}
+                                <x-fas-comments height="1rem"
+                                                width="1rem"/>{{ $post->comments_count ?? 0 }} {{ Str::plural('comment', $post->comments_count ?? 0) }}
                             </span>
                         </p>
                         <a href="{{ route($blogSlug.'.post', ['slug' => $post->slug]) }}"
                            class="icon-link gap-1 icon-link-hover stretched-link">Read More
-                            <x-fas-chevron-right height="1rem" width="auto" />
+                            <x-fas-chevron-right height="1rem" width="auto"/>
                         </a>
                     </div>
                 </div>

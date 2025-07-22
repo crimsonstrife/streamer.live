@@ -51,7 +51,7 @@ class GenerateSitemap extends Command
         $sitemap->add($products);
 
         // Dynamic Post pages
-        $posts = Post::published()->get();
+        $posts = Post::all();
         $sitemap->add($posts);
 
         $sitemap->writeToFile(public_path('sitemap.xml'));

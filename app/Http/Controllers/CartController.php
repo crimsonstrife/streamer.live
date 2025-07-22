@@ -64,9 +64,16 @@ class CartController extends Controller
                 return redirect()->back()->with('error', 'Variant not found.');
             }
 
-            $added = $this->cartHelper->getOrCreateCart($variant->provider_id, $quantity);
+            $cartID = $this->cartHelper->getCartId();
+            $created = false;
+            $added = false;
+            if (! $cartID) {
+                $created = $this->fourthwallService->createCart($variant->provider_id, $quantity);
+            } else {
+                $added = $this->fourthwallService->addToCart($cartID, $variant->provider_id, $quantity);
+            }
 
-            if (! $added) {
+            if (! $added && ! $created) {
                 return redirect()->back()->with('error', 'Failed to add product to cart.');
             }
 

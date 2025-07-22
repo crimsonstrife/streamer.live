@@ -1,7 +1,8 @@
 @php
-    $settings = app(\App\Settings\TwitchSettings::class);
+    use App\Settings\LookFeelSettings;use App\Settings\TwitchSettings;use App\Utilities\StreamHelper;$settings = app(TwitchSettings::class);
+    $style = app(LookFeelSettings::class);
+    $display_mode = $style->mode;
 @endphp
-
 @if (! $settings->enable_integration)
     <div class="filament-alert filament-alert-warning">
         <strong>Warning:</strong> Twitch integration is disabled.
@@ -14,7 +15,7 @@
 @else
     @php
         $streamer_username = $channel ?? $settings->channel_name;
-        $streamHelper      = app(\App\Utilities\StreamHelper::class);
+        $streamHelper      = app(StreamHelper::class);
         $streamStatus      = $streamHelper->getStreamStatus($streamer_username);
         $isLive            = ($streamStatus === 'live');
     @endphp
@@ -23,7 +24,8 @@
         <link rel="stylesheet" href="{{ asset('css/live-bar.css') }}">
     @endonce
 
-    <div class="livebar gold" data-live="{{ $isLive ? '1' : '0'}}">
+    <div class="{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }} livebar active"
+         data-live="{{ $isLive ? '1' : '0'}}">
         <div class="livebar content">
             <div class="text">{{ strtoupper($streamer_username) }} IS LIVE NOW</div>
             <div class="pulses">

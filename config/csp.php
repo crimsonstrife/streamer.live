@@ -1,7 +1,7 @@
 <?php
 
-// use Spatie\Csp\Directive;
-// use Spatie\Csp\Keyword;
+use Spatie\Csp\Directive;
+use Spatie\Csp\Keyword;
 
 return [
 
@@ -17,7 +17,78 @@ return [
      * Register additional global CSP directives here.
      */
     'directives' => [
-        // [Directive::SCRIPT, [Keyword::UNSAFE_EVAL, Keyword::UNSAFE_INLINE]],
+        [Directive::SCRIPT, [
+            Keyword::SELF,
+            Keyword::UNSAFE_INLINE,
+            Keyword::UNSAFE_EVAL,
+            config('app.url'),
+            'https://embed.twitch.tv',
+            'https://player.twitch.tv',
+            'https://cdn.discordapp.com',
+        ]],
+        [Directive::SCRIPT_ELEM, [
+            Keyword::SELF,
+            config('app.url'),
+            Keyword::UNSAFE_INLINE,
+        ]],
+        [Directive::SCRIPT_ATTR, [
+            Keyword::SELF,
+            config('app.url'),
+            Keyword::UNSAFE_INLINE,
+        ]],
+        [Directive::STYLE, [
+            Keyword::SELF,
+            config('app.url'),
+            Keyword::UNSAFE_INLINE,
+        ]],
+        [Directive::STYLE_ELEM, [
+            Keyword::SELF,
+            config('app.url'),
+            Keyword::UNSAFE_INLINE,
+            'https://fonts.bunny.net',
+        ]],
+        [Directive::STYLE_ATTR, [
+            Keyword::SELF,
+            config('app.url'),
+            Keyword::UNSAFE_INLINE,
+        ]],
+        [Directive::CONNECT, [
+            Keyword::SELF,
+            config('app.url'),
+            'https://api.twitch.tv',
+            'wss://eventsub-beta.twitch.tv',
+            'https://discord.com',
+            'https://discordapp.com',
+        ]],
+        [Directive::FRAME, [
+            Keyword::SELF,
+            config('app.url'),
+            'https://player.twitch.tv',
+            'https://www.twitch.tv',
+            'https://discord.com/widget',
+        ]],
+        [Directive::FRAME_ANCESTORS, [
+            Keyword::SELF,
+            config('app.url'),
+            'https://www.twitch.tv',
+            'https://discord.com',
+        ]],
+        [Directive::IMG, [
+            Keyword::SELF,
+            config('app.url'),
+            'data:',
+            'https://static-cdn.jtvnw.net',
+            'https://cdn.discordapp.com',
+            'https://ui-avatars.com',
+            'https://gravatar.com',
+            'https://www.gravatar.com',
+        ]],
+        [Directive::FONT, [
+            Keyword::SELF,
+            config('app.url'),
+            'data:',
+            'https://fonts.bunny.net',
+        ]],
     ],
 
     /*
