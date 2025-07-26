@@ -26,7 +26,7 @@ class ProductReviewController extends Controller
         $user = $request->user();
 
         try {
-            $review = new ProductReview;
+            $review = new ProductReview();
             $isVerified = $review->verifyPurchase($user->id, $product->id);
 
             $cleanReview = Purifier::clean($validated['review'], 'default');
