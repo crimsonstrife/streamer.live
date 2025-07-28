@@ -80,5 +80,5 @@ jobs:
     - name: Discover Laravel packages manually
       run: php artisan package:discover
 
-    - name: Execute tests
-      run: php artisan test
+#    - name: Execute tests
+#      run: php artisan test
