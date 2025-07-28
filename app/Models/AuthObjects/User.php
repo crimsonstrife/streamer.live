@@ -7,7 +7,9 @@ use App\Models\BlogObjects\Author;
 use App\Models\SharedObjects\OnboardingProgress;
 use App\Traits\HasAdvancedPermissions;
 use App\Traits\IsPermissible;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
@@ -72,7 +74,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read int|null $tokens_count The count of personal access tokens for the user.
  */
 #[AllowDynamicProperties]
-class User extends Authenticatable implements HasAvatar, MustVerifyEmail, Onboardable
+class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail, Onboardable
 {
     use Bannable;
     use GetsOnboarded;
@@ -311,5 +313,25 @@ class User extends Authenticatable implements HasAvatar, MustVerifyEmail, Onboar
             ['step_key' => 'onboarding.dismissed'],
             ['completed_at' => now()]
         );
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->can('is-admin');
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->can('is-super-admin');
+    }
+
+    public function isModerator(): bool
+    {
+        return $this->can('is-moderator');
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isSuperAdmin() || $this->isAdmin() || $this->isModerator() || $this->can('is-panel-user') || $this->can('access-filament');
     }
 }

@@ -1,3 +1,5 @@
+@php use App\Settings\SiteSettings; @endphp
+@php use App\Settings\LookFeelSettings; @endphp
 {{-- header.blade.php --}}
 @props([
     'page'        => null,
@@ -13,13 +15,13 @@
     'date'        => null,
 ])
 @php
-    $settings    = app(\App\Settings\SiteSettings::class);
+    $settings    = app(SiteSettings::class);
     $siteName    = $settings->site_name ?? config('app.name', 'Streamer.live');
     $showName    = $settings->show_site_name;
     $logoHeight  = 50;
     $logoWidth   = null;
 @endphp
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -41,12 +43,13 @@
     <x-seo.directive/>
 
     <!-- Fonts (self-hosted variable fonts) -->
-    <link rel="stylesheet" href="{{ route('assets.fonts.css') }}" />
+    <link rel="stylesheet" href="{{ route('assets.fonts.css') }}"/>
 
     <title>{{ $siteName }}</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @cookieconsentscripts
 
     <!-- Styles -->
     @livewireStyles
@@ -55,21 +58,26 @@
     @stack('styles')
 
     @php
-        $style = app(\App\Settings\LookFeelSettings::class);
+        $style = app(LookFeelSettings::class);
         $display_mode = $style->mode;
     @endphp
     <style>
         :root {
             /* the chosen font slug */
             @if($style->font_family === 'system')
-                --font-primary: system-ui, sans-serif;
+                  --font-primary: system-ui, sans-serif;
             @else
-                --font-primary: "{{ $style->font_family }}", system-ui, sans-serif;
-           @endif;
+                  --font-primary: "{{ $style->font_family }}", system-ui, sans-serif;
+        @endif
+            @if($style->font_family_alt === 'system')
+                   --font-secondary: system-ui, sans-serif;
+            @else
+                   --font-secondary: "{{ $style->font_family_alt }}", system-ui, sans-serif;
+        @endif
 
             /* expose a CSS var for weight if you want dynamic control */
             --font-weight: {{ $settings->font_weight ?? 400 }};
-            --color-primary:   {{ $style->primary_color }};
+            --color-primary: {{ $style->primary_color }};
             --color-secondary: {{ $style->secondary_color }};
             --color-accent: {{ $style->accent_color }};
             --color-font: {{ $style->font_color }};
@@ -83,7 +91,7 @@
             --color-warning: {{ $style->warning_color }};
             --color-error: {{ $style->error_color }};
             /* override Bootstrap vars */
-            --bs-primary:   var(--color-primary);
+            --bs-primary: var(--color-primary);
             --bs-secondary: var(--color-secondary);
             --bs-nav-link-color: var(--color-link);
             --bs-pagination-active-bg: var(--color-active);
@@ -93,9 +101,12 @@
 
         /* Overrides */
         body {
-            font-family: var(--font-primary);
+            font-family: var(--font-secondary);
         }
 
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-primary);
+        }
         a {
             color: var(--color-link);
         }
@@ -112,7 +123,7 @@
             filter: brightness(0.9);
         }
 
-        .text-primary{
+        .text-primary {
             color: var(--color-font) !important;
         }
 

@@ -18,10 +18,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use LaravelIdea\Helper\App\Models\StoreObjects\_IH_Product_QB;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
+use Spatie\Sitemap\Contracts\Sitemapable;
+use Spatie\Sitemap\Tags\Url;
 use Spatie\Tags\HasTags;
 
 /**
@@ -65,7 +68,7 @@ use Spatie\Tags\HasTags;
  *
  * @mixin Eloquent
  */
-class Product extends BaseModel implements HasMedia, Searchable
+class Product extends BaseModel implements HasMedia, Searchable, Sitemapable
 {
     use HasTags;
     use InteractsWithMedia;
@@ -155,6 +158,11 @@ class Product extends BaseModel implements HasMedia, Searchable
     public function getFormattedPriceAttribute(): string
     {
         return $this->price ? $this->price->formatted() : 'N/A';
+    }
+
+    public function scopeAvailable(Builder $query): Builder|_IH_Product_QB
+    {
+        return $query->where('state', '=', 'AVAILABLE');
     }
 
     /**
@@ -305,5 +313,15 @@ class Product extends BaseModel implements HasMedia, Searchable
     {
         // admin overrides status and access
         return $user->can('is-admin') || $user->can('is-super-admin');
+    }
+
+    public function toSitemapTag(): Url|string|array
+    {
+        $shopSlug = ShopHelper::getShopSlug();
+        $productSlug = ShopHelper::getProductSlug();
+        return Url::create($shopSlug."/{$productSlug}/".$this->slug)
+            ->setLastModificationDate(Carbon::create($this->updated_at))
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+            ->setPriority(0.1);
     }
 }

@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers\PostFeaturedImageRelationManager;
+use App\Models\AuthObjects\User;
 use App\Models\BlogObjects\Author;
 use App\Models\BlogObjects\Post;
-use Filament\Forms\Components\Actions\Action;
+use App\Traits\HasContentEditor;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -18,8 +21,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use App\Filament\Resources\PostResource\Pages;
-use App\Traits\HasContentEditor;
 
 class PostResource extends Resource
 {
@@ -64,7 +65,7 @@ class PostResource extends Resource
                                     ->icon('fas-plus')
                                     ->action(function ($get, $set) {
                                         $title = $get('title');
-                                        if (!empty($title)) {
+                                        if (! empty($title)) {
                                             $set('slug', Str::slug($title));
                                         }
                                     })
@@ -104,7 +105,7 @@ class PostResource extends Resource
                                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->name) // Uses accessor safely
                                     ->disabled(fn (?Author $record) => $record?->user_id && ! auth()->user()->can('updateUserLink'))
                                     ->options(function (?Author $record) {
-                                        $query = \App\Models\AuthObjects\User::query();
+                                        $query = User::query();
 
                                         // Exclude users already linked to other authors
                                         if ($record) {

@@ -1,13 +1,13 @@
 @php
-    /** @var \App\Models\Font $font */
-    $fontRecord = $getRecord();
+    /** @var Font $font */
+    use App\Models\Font;$fontRecord = $getRecord();
     $fonts = App\Models\Font::all();
 @endphp
 
 <style>
     @foreach($fonts as $font)
         @php
-            $url = $font->is_builtin ? asset("{$font->file_path}") : $font->getFirstMediaUrl('fonts');
+            $url = $font->is_builtin ? Storage::url($font->file_path) : $font->getFirstMediaUrl('fonts');
             // determine range, either from model or default:
             $wMin = $font->weight_min ?? 100;
             $wMax = $font->weight_max ?? 900;

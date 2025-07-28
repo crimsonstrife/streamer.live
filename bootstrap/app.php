@@ -1,14 +1,29 @@
 <?php
 
 use App\Http\Middleware\CheckIPFilter;
-use App\Http\Middleware\EnsureGuestMode;
 use App\Http\Middleware\EnsureStoreEnabled;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks;
+use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Middleware\TrustHosts;
+use Illuminate\Http\Middleware\TrustProxies;
+use Illuminate\Http\Middleware\ValidatePostSize;
+use Illuminate\Session\Middleware\StartSession;
 use Shieldon\Firewall\Firewall;
 use Shieldon\Firewall\HttpResolver;
+use Spatie\Csp\AddCspHeaders;
+use Treblle\SecurityHeaders\Http\Middleware\CertificateTransparencyPolicy;
+use Treblle\SecurityHeaders\Http\Middleware\PermissionsPolicy;
+use Treblle\SecurityHeaders\Http\Middleware\RemoveHeaders;
+use Treblle\SecurityHeaders\Http\Middleware\SetReferrerPolicy;
+use Treblle\SecurityHeaders\Http\Middleware\StrictTransportSecurity;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +38,7 @@ if (isset($_SERVER['REQUEST_URI'])) {
 
     // This directory must be writable.
     // We put it in the `storage/shieldon_firewall` directory.
-    $storage =  __DIR__ . '/../storage/shieldon_firewall';
+    $storage = __DIR__.'/../storage/shieldon_firewall';
 
     $firewall = new Firewall();
 
@@ -48,14 +63,34 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Apply to all "web" routes
-        $middleware->web(append: [
+        $middleware->use([
+            InvokeDeferredCallbacks::class,
+            // TrustHosts::class,
+            TrustProxies::class,
+            HandleCors::class,
+            PreventRequestsDuringMaintenance::class,
+            ValidatePostSize::class,
+            TrimStrings::class,
+            ConvertEmptyStringsToNull::class,
             CheckIPFilter::class,
+            // RemoveHeaders::class,
+            // SetReferrerPolicy::class,
+            // StrictTransportSecurity::class,
+            // CertificateTransparencyPolicy::class,
+            // PermissionsPolicy::class,
         ]);
+
+        // Apply to all "web" routes
+        $middleware->web(
+            append: [
+                // SecurityHeaders::class,
+                AddCspHeaders::class,
+            ]
+        );
 
         // Apply to all "api" routes
         $middleware->api(append: [
-            CheckIPFilter::class,
+            // SecurityHeaders::class,
         ]);
 
         $middleware->alias([
@@ -63,6 +98,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'firewall' => ShieldonFirewall::class,
             'ip-filter' => CheckIPFilter::class,
         ]);
+
+        $middleware->trustProxies('*');
+        // $middleware->trustHosts();
+        // $middleware->append(StartSession::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

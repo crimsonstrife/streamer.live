@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\AuthObjects\User;
 use App\Models\StoreObjects\Order;
 use App\Models\StoreObjects\OrderItem;
 use App\Models\StoreObjects\ProductVariant;
-use App\Models\AuthObjects\User;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class OrderSyncService
 {

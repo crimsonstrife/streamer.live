@@ -18,13 +18,13 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     public function update(User $user, array $input): void
     {
         Validator::make($input, [
-            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'first_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
-            'display_name' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id), 'blasp_check'],
+            'first_name' => ['nullable', 'string', 'max:255', 'blasp_check'],
+            'last_name' => ['nullable', 'string', 'max:255', 'blasp_check'],
+            'display_name' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id), 'blasp_check'],
             'birthdate' => ['required', 'date'],
-            'pronouns' => ['nullable', 'string', 'max:255'],
-            'location' => ['nullable', 'string', 'max:255'],
+            'pronouns' => ['nullable', 'string', 'max:255', 'blasp_check'],
+            'location' => ['nullable', 'string', 'max:255', 'blasp_check'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ])->validateWithBag('updateProfileInformation');

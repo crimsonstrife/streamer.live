@@ -1,5 +1,6 @@
 @php
-    $settings = app(\App\Settings\TwitchSettings::class);
+    use App\Settings\LookFeelSettings;use App\Settings\TwitchSettings;use function PHPUnit\Framework\isFalse;$settings = app(TwitchSettings::class);
+    $themeSettings = app(LookFeelSettings::class);
 @endphp
 
 @if (! $settings->enable_integration)
@@ -15,8 +16,13 @@
         // fall back to the saved default channel if none was provided
         $channel           = $channel ?? ($data['channel'] ?? $settings->channel_name);
         $chat              = $chat ?? ($data['chat'] ?? false);
-        $autoplay          = $autoplay ?? ($data['autoplay'] ?? false);
-        $horizontal_layout = $horizontal_layout ?? ($data['horizontal_layout'] ?? false);
+        $autoplay          = $autoplay ?? ($data['autoplay'] ?? 'false');
+        $muted             = 'false';
+        $autoplay             = 'false'; // hardcoding for now
+        if($autoplay) { $muted = 'true'; }
+    $horizontal_layout = $horizontal_layout ?? ($data['horizontal_layout'] ?? false);
+        $theme             = $themeSettings->theme ?? 'light';
+        $host              = parse_url(config('app.url'), PHP_URL_HOST);
     @endphp
 
     <div class="px-4 py-4 md:py-8">
@@ -24,16 +30,10 @@
             <div style="display: flex; flex-direction: {{ $horizontal_layout ? 'row' : 'column' }};">
                 <div class="aspect-w-16 aspect-h-9">
                     <iframe
-                        src="https://embed.twitch.tv/?allowfullscreen=true
-                             &channel={{ $channel }}
-                             &autoplay={{ $autoplay ? 'true' : 'false' }}
-                             &layout=video
-                             &parent={{ request()->getHost() }}"
-                        width="100%" height="600"
-                        allow="autoplay; fullscreen"
-                        scrolling="no"
-                        sandbox="allow-modals allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-storage-access-by-user-activation"
-                        id="stream_embed">
+                        src="https://player.twitch.tv/?channel={{ $channel }}&parent={{ request()->getHost() }}"
+                        height="auto"
+                        width="100%"
+                        allowfullscreen>
                     </iframe>
                 </div>
 

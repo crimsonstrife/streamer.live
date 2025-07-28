@@ -1,0 +1,99 @@
+name: Build & Upload Release
+
+on:
+  push:
+    tags:
+      - 'v*' # e.g. v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository (with Git LFS)
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+
+    - name: Install Git LFS
+      run: |
+        git lfs install
+        git lfs pull
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, bcmath, fileinfo
+        coverage: none
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Create SQLite database file
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Prepare CI-safe .env
+      run: |
+        cp .env.example .env
+        echo "APP_ENV=testing" >> .env
+        echo "APP_DEBUG=false" >> .env
+        echo "DB_CONNECTION=sqlite" >> .env
+        echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
+        echo "CACHE_STORE=file" >> .env
+        echo "SESSION_DRIVER=array" >> .env
+        echo "QUEUE_CONNECTION=sync" >> .env
+
+    - name: Install Composer dependencies (no dev, no post-autoload-dump)
+      run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
+
+    - name: Install Node dependencies
+      run: npm ci
+
+    - name: Build frontend assets (required for icon registration)
+      run: npm run build
+
+    - name: Generate Laravel application key
+      run: php artisan key:generate
+
+    - name: Run artisan publish commands
+      run: php artisan tinymce:publish
+
+    - name: Clear Laravel config/cache
+      run: |
+        php artisan config:clear
+        php artisan cache:clear
+
+    - name: Run database migrations
+      run: php artisan migrate --force
+
+    - name: Discover Laravel packages manually
+      run: php artisan package:discover
+
+    - name: Update SELF_UPDATER_VERSION_INSTALLED in .env.example
+      run: |
+        version="${GITHUB_REF##*/}"
+        echo "Setting SELF_UPDATER_VERSION_INSTALLED=$version in .env.example"
+        sed -i "/^SELF_UPDATER_VERSION_INSTALLED=/c\SELF_UPDATER_VERSION_INSTALLED=$version" .env.example || echo "SELF_UPDATER_VERSION_INSTALLED=$version" >> .env.example
+
+    - name: Create ZIP for release
+      run: |
+        mkdir -p release
+        zip -r release/laravel-release.zip . \
+          app bootstrap config database public resources routes vendor \
+          artisan composer.json composer.lock package.json public/build \
+          -x "**/node_modules/**" "**/storage/logs/**" "**/storage/framework/**" "**/.git/**" "**/.env" "**/tests/**"
+
+    - name: Upload release ZIP to GitHub
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/laravel-release.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

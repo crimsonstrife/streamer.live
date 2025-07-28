@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlogCommentController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
@@ -11,12 +12,14 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TicketController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Models\Font;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Support\Facades\Route;
@@ -124,8 +127,10 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      *
      * @return \Illuminate\Contracts\View\View
      */
-    Route::get('/email/verify/{id}/{hash}', function () {
-        return view('auth.verify-email');
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return redirect(route('verification.complete'))->with('success', 'Email has been verified!');
     })->middleware([
         'auth:sanctum',
         config('jetstream.auth_session'),
@@ -159,8 +164,10 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      *
      * @return \Illuminate\Contracts\View\View
      */
-    Route::post('/email/verify/send', function () {
-        return view('auth.verify-email');
+    Route::post('/email/verify/send', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('message', 'Verification link sent!');
     })->middleware([
         'auth:sanctum',
         config('jetstream.auth_session'),
@@ -194,37 +201,19 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::get('/search', SearchController::class)->name('search');
 
     Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () {
-        Route::get('/', FabricatorPageController::class)->name('index');
-        Route::get('/{slug}', [FabricatorPageController::class, 'post'])->name('post');
-        Route::post('/{post}/comment', [BlogCommentController::class, 'store'])
-            ->middleware([
-                'auth',
-                'auth.banned',
-                'ip.banned',
-                'logout.banned',
-            ])
-            ->name('comment.submit');
-        // Post reactions
-        Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])
-            ->name('reaction.toggle')
-            ->middleware(
-                [
-                    'auth',
-                    'auth.banned',
-                    'ip.banned',
-                    'logout.banned',
-                ]
-            );
-
-        // Comment reactions
-        Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
-            ->name('comment.reaction.toggle')
-            ->middleware([
-                'auth',
-                'auth.banned',
-                'ip.banned',
-                'logout.banned',
-            ]);
+        Route::get('/', [BlogController::class, 'index'])->name('index');
+        Route::get('/{slug}', [BlogController::class, 'show'])->name('post');
+        Route::middleware([
+            'auth:sanctum',
+            config('jetstream.auth_session'),
+            'auth.banned',
+            'ip.banned',
+            'logout.banned',
+        ])->group(function () {
+            Route::post('/{post}/comment', [BlogCommentController::class, 'store'])->name('comment.submit');
+            Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])->name('reaction.toggle');
+            Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])->name('comment.reaction.toggle');
+        });
     });
 
     Route::middleware(['store.enabled'])
@@ -254,9 +243,9 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
             Route::prefix($shopSlug)->name($shopSlug.'.')->group(function () {
                 $productSlug = ShopHelper::getProductSlug();         // 'product'
                 $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
-                Route::get("$productSlug/{slug}", [FabricatorPageController::class, 'product'])->name('product');
-                Route::get("$collectionSlug/{slug}", [FabricatorPageController::class, 'collection'])->name('collection');
-                Route::get('category/{slug}', [FabricatorPageController::class, 'category'])->name('category');
+                Route::get("$productSlug/{slug}", [StoreController::class, 'product'])->name('product');
+                Route::get("$collectionSlug/{slug}", [StoreController::class, 'collection'])->name('collection');
+                // Route::get('category/{slug}', [StoreController::class, 'category'])->name('category');
                 Route::get('/', FabricatorPageController::class)->name('page');
                 Route::get('{slug}', FabricatorPageController::class)->where('slug', '.*')->name('fabricator.page.shop.fallback');
                 // List the current user’s orders
@@ -280,7 +269,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
 
         foreach ($fonts as $font) {
             $url = $font->is_builtin
-                ? asset((string) ($font->file_path))
+                ? Storage::url($font->file_path)
                 : $font->getFirstMediaUrl('fonts');
             $wMin = $font->weight_min ?? 100;
             $wMax = $font->weight_max ?? 900;

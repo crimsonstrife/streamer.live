@@ -26,7 +26,9 @@
                     <div class="d-flex flex-column flex-sm-row w-100 gap-2">
                         <label for="newsletter-email" class="visually-hidden">Email address</label>
                         <input id="newsletter-email" name="email" type="email" class="form-control" placeholder="Email address" required>
-                        <button class="btn btn-primary" type="button">Subscribe</button>
+                        <x-button>
+                            {{ __('Subscribe') }}
+                        </x-button>
                     </div>
                 </form>
                 <p class="mt-3 small">
@@ -53,11 +55,23 @@
 
 <!-- Page Specific Scripts -->
 @stack('scripts')
+{{-- JQuery --}}
+@if (file_exists(public_path('build/vendors/jquery/jquery.min.js')))
+    <script src="{{ asset('build/vendors/jquery/jquery.min.js') }}" referrerpolicy="origin"></script>
+@endif
+
+{{-- TinyMCE --}}
+@if (file_exists(public_path('build/vendors/tributejs/tribute.js')))
+    <script src="{{ asset('build/vendors/tributejs/tribute.js') }}" referrerpolicy="origin"></script>
+@endif
 
     {{-- TinyMCE --}}
     @if (file_exists(public_path('vendor/tinymce/tinymce.min.js')))
         <script src="{{ asset('vendor/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
     @endif
-
+@if (file_exists(public_path('build/js/tinymce-tribute.js')))
+    <script src="{{ asset('build/js/tinymce-tribute.js') }}" referrerpolicy="origin"></script>
+    @endif
+@cookieconsentview
 </body> <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
 </html>  <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->

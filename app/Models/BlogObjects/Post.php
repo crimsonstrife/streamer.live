@@ -22,11 +22,13 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use LaravelIdea\Helper\App\Models\_IH_Post_QB;
+use \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
 use Spatie\Searchable\SearchResult;
+use Spatie\Sitemap\Contracts\Sitemapable;
+use Spatie\Sitemap\Tags\Url;
 use Spatie\Sluggable\SlugOptions;
 use Spatie\Tags\HasTags;
 use Spatie\Tags\Tag;
@@ -77,7 +79,7 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  *
  * @mixin Eloquent
  */
-class Post extends BasePost implements CommentableContract, HasMedia, Searchable
+class Post extends BasePost implements CommentableContract, HasMedia, Searchable, Sitemapable
 {
     use HasComments;
     use HasReactions;
@@ -169,7 +171,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         parent::boot();
 
         static::creating(static function ($model) {
-            // If there is no slug provided, generate one from the title
             $currentSlug = $model->slug;
 
             if ($currentSlug === '' || $currentSlug === null) {
@@ -178,7 +179,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         });
 
         static::updating(static function ($model) {
-            // If there is no slug provided, generate one from the title, otherwise keep the existing slug
             $currentSlug = $model->slug;
 
             if ($currentSlug === '' || $currentSlug === null) {
@@ -186,6 +186,14 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
             } else {
                 $model->slug = $currentSlug;
             }
+        });
+
+        static::saved(function (Post $post) {
+            BlogHelper::clearPostCache($post);
+        });
+
+        static::deleted(function (Post $post) {
+            BlogHelper::clearPostCache($post);
         });
     }
 
@@ -213,17 +221,17 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         return $this->banner !== null;
     }
 
-    public function scopePublished(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
+    public function scopePublished(Builder $query): Builder|_IH_Post_QB
     {
         return $query->whereNotNull('published_at');
     }
 
-    public function scopeDraft(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
+    public function scopeDraft(Builder $query): Builder|_IH_Post_QB
     {
         return $query->whereNull('published_at');
     }
 
-    public function scopeAnnouncements(Builder $query): \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB|Builder|_IH_Post_QB
+    public function scopeAnnouncements(Builder $query): Builder|_IH_Post_QB
     {
         return $query->whereNotNull('is_announcement', true);
     }
@@ -362,5 +370,14 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
     {
         // admin overrides status and access
         return $user->can('is-admin') || $user->can('is-super-admin');
+    }
+
+    public function toSitemapTag(): Url|string|array
+    {
+        $blogSlug = BlogHelper::getBlogSlug();
+        return Url::create($blogSlug.'/'.$this->slug)
+            ->setLastModificationDate(Carbon::create($this->updated_at))
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
+            ->setPriority(0.1);
     }
 }
