@@ -16,40 +16,69 @@ jobs:
       DB_DATABASE: ${{ github.workspace }}/database/database.sqlite
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout repository (with Git LFS)
+      uses: actions/checkout@v4
+      with:
+        lfs: true
 
-      - name: Setup PHP with SQLite
-        uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-        with:
-          php-version: '8.3'
-          extensions: sqlite
+    - name: Install Git LFS
+      run: |
+        git lfs install
+        git lfs pull
 
-      - name: Create SQLite database
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, bcmath, fileinfo
+        coverage: none
 
-      - name: Copy .env
-        run: |
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
 
-      - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Create SQLite database file
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
 
-      - name: Create cache table migration
-        run: php artisan cache:table
+    - name: Prepare CI-safe .env
+      run: |
+        cp .env.example .env
+        echo "APP_ENV=testing" >> .env
+        echo "APP_DEBUG=false" >> .env
+        echo "DB_CONNECTION=sqlite" >> .env
+        echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
+        echo "CACHE_STORE=file" >> .env
+        echo "SESSION_DRIVER=array" >> .env
+        echo "QUEUE_CONNECTION=sync" >> .env
 
-      - name: Run migrations
-        run: php artisan migrate --force
+    - name: Install Composer dependencies (no dev, no post-autoload-dump)
+      run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
-      - name: Generate key
-        run: php artisan key:generate
+    - name: Install Node dependencies
+      run: npm ci
 
-      - name: Directory Permissions
-        run: chmod -R 777 storage bootstrap/cache
+    - name: Build frontend assets (required for icon registration)
+      run: npm run build
 
-      - name: Clear Laravel cache
-        run: php artisan cache:clear
+    - name: Generate Laravel application key
+      run: php artisan key:generate
 
-      - name: Execute tests
-        run: php artisan test
+    - name: Run artisan publish commands
+      run: php artisan tinymce:publish
+
+    - name: Clear Laravel config/cache
+      run: |
+        php artisan config:clear
+        php artisan cache:clear
+
+    - name: Run database migrations
+      run: php artisan migrate --force
+
+    - name: Discover Laravel packages manually
+      run: php artisan package:discover
+
+    - name: Execute tests
+      run: php artisan test
