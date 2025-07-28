@@ -24,6 +24,11 @@ const sidebars = {
         },
         {
             type: 'doc',
+            id: 'page-builder',
+            label: 'Page Builder Guide',
+        },
+        {
+            type: 'doc',
             id: 'features',
             label: 'Features',
         },
@@ -37,6 +42,7 @@ const sidebars = {
                 'twitch-discord',
                 'store-setup',
                 'self-updater',
+                'block-library',
             ],
         },
         {

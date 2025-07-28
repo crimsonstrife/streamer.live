@@ -82,12 +82,19 @@ const config = {
                 },
                 items: [
                     {
-                        type: 'docSidebar',
-                        sidebarId: 'tutorialSidebar',
-                        position: 'left',
-                        label: 'Tutorial',
+                        to: '/', label: 'Home',
+                        position: 'left'
                     },
-                    {to: '/blog', label: 'Blog', position: 'left'},
+                    {
+                        to: '/docs/getting-started',
+                        label: 'Docs',
+                        position: 'left'
+                    },
+                    {
+                        to: '/blog',
+                        label: 'Blog',
+                        position: 'left'
+                    },
                     {
                         href: 'https://github.com/crimsonstrife/streamer.live',
                         label: 'GitHub',
@@ -102,22 +109,21 @@ const config = {
                         title: 'Docs',
                         items: [
                             {
-                                label: 'Tutorial',
-                                to: '/docs/getting-started',
+                                label: 'Getting Started',
+                                to: '/docs/getting-started'
+                            },
+                            {
+                                label: 'Features',
+                                to: '/docs/features'
                             },
                         ],
                     },
                     {
                         title: 'Community',
                         items: [
-                            {
-                                label: 'Discord',
-                                href: 'https://discord.gg/GXnhpTCQTT',
-                            },
-                            {
-                                label: 'X',
-                                href: 'https://x.com/imcrimsonstrife',
-                            },
+                            {label: 'Twitch', href: 'https://twitch.tv/crimsonstrife'},
+                            {label: 'Discord', href: 'https://discord.gg/GXnhpTCQTT'},
+                            {label: 'Twitter', href: 'https://twitter.com/imcrimsonstrife'},
                         ],
                     },
                     {
