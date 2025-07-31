@@ -92,7 +92,7 @@ APP_URL="' . request()->getSchemeAndHttpHost() . '"
 
         $env = $cleanString.$databaseSetting;
         try {
-            $dbh = new PDO('mysql:host='.$dbHost, $dbUsername, $dbPassword);
+            $dbh = new PDO('mysql:host='.$dbHost.';port='.$dbPort, $dbUsername, $dbPassword);
 
             $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
