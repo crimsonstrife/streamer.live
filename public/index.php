@@ -14,8 +14,8 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 require __DIR__.'/../vendor/autoload.php';
 
 // Make sure we have *some* .env on disk. If none, clone the example.
-$envPath     = __DIR__ . '/../.env';
-$examplePath = __DIR__ . '/../.env.example';
+$envPath = __DIR__.'/../.env';
+$examplePath = __DIR__.'/../.env.example';
 
 if (! file_exists($envPath)) {
     if (file_exists($examplePath)) {
@@ -37,7 +37,7 @@ if (empty($loadedKey)) {
     $tempKey = 'base64:'.base64_encode(random_bytes(32));
     // Make sure all getenv()/$_ENV/$_SERVER calls see it
     putenv("APP_KEY={$tempKey}");
-    $_ENV['APP_KEY']    = $tempKey;
+    $_ENV['APP_KEY'] = $tempKey;
     $_SERVER['APP_KEY'] = $tempKey;
 }
 
