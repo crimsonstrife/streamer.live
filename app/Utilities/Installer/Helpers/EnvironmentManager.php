@@ -6,8 +6,8 @@ use Exception;
 use Froiden\LaravelInstaller\Helpers\Reply;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use PDO;
+use PDOException;
 
 class EnvironmentManager
 {
@@ -32,12 +32,10 @@ class EnvironmentManager
 
     /**
      * Get the content of the .env file.
-     *
-     * @return string
      */
     public function getEnvContent(): string
     {
-        if (!file_exists($this->envPath)) {
+        if (! file_exists($this->envPath)) {
             if (file_exists($this->envExamplePath)) {
                 copy($this->envExamplePath, $this->envPath);
             } else {
@@ -51,7 +49,6 @@ class EnvironmentManager
     /**
      * Save the edited content to the file.
      *
-     * @param Request $input
      * @return RedirectResponse|array|string[]
      */
     public function saveFile(Request $input): array|RedirectResponse
@@ -66,30 +63,28 @@ class EnvironmentManager
         $dbUsername = $input->get('username');
         $dbPassword = $input->get('password');
 
-        $databaseSetting = <<<EOD
-DB_HOST={$dbHost}
-DB_PORT={$dbPort}
-DB_DATABASE={$dbName}
-DB_USERNAME={$dbUsername}
-DB_PASSWORD="{$dbPassword}"
-APP_URL="{$request->getSchemeAndHttpHost()}"
-EOD;
+        $databaseSetting = 'DB_HOST='.$dbHost.'
+        DB_PORT='.$dbPort.'
+DB_DATABASE='.$dbName.'
+DB_USERNAME='.$dbUsername.'
+DB_PASSWORD="'.$dbPassword.'"
+APP_URL="'.request()->getSchemeAndHttpHost().'"
+';
 
         // @ignoreCodingStandard
-        $rows       = explode("\n", $env);
+        $rows = explode("\n", $env);
         $unwantedKeys = [
             'DB_HOST',
             'DB_PORT',
             'DB_DATABASE',
             'DB_USERNAME',
             'DB_PASSWORD',
-            'APP_URL'
+            'APP_URL',
         ];
-        $unwantedPattern = '/^(' . implode('|', array_map('preg_quote', $unwantedKeys)) . ')=/i';
+        $unwantedPattern = '/^('.implode('|', array_map('preg_quote', $unwantedKeys)).')=/i';
         $cleanArray = preg_grep($unwantedPattern, $rows, PREG_GREP_INVERT);
 
         $cleanString = implode("\n", $cleanArray);
-
 
         $env = $cleanString.$databaseSetting;
         try {
@@ -115,7 +110,7 @@ EOD;
             }
 
             $redirectTo = route('LaravelInstaller::requirements');
-            $message    = 'Database settings correct';
+            $message = 'Database settings correct';
 
             // Non-AJAX requests get a real 302
             if (! $input->ajax() && ! $input->wantsJson()) {
@@ -127,9 +122,8 @@ EOD;
             // AJAX (or wantsJson) gets the JSON that helper.js knows how to handle
             return Reply::redirect($redirectTo, $message);
 
-
-        } catch (\PDOException|\Exception $e) {
-            return Reply::error('DB Error: ' . $e->getMessage());
+        } catch (PDOException|Exception $e) {
+            return Reply::error('DB Error: '.$e->getMessage());
         }
     }
 }

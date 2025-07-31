@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use Spatie\LaravelSettings\Events\LoadingSettings;
@@ -51,7 +53,7 @@ class SettingsMapper extends SpatieSettingsMapper
 
             // Ensure the configuration is now present.
             if (! $this->has($settingsClass)) {
-                logger()->warning("Settings class '{$settingsClass}' could not be initialized in SettingsMapper.");
+                Log::warning("Settings class '{$settingsClass}' could not be initialized in SettingsMapper.");
                 throw new InvalidArgumentException("Settings class '{$settingsClass}' is not properly configured.");
             }
         }
@@ -80,12 +82,19 @@ class SettingsMapper extends SpatieSettingsMapper
 
     public function fetchProperties(string $settingsClass, Collection $names): Collection
     {
-        // 1) If the settings table isn't there yet, bail out immediately.
-        if (! Schema::hasTable('settings')) {
+        // If the settings table isn't there yet, bail out immediately.
+        try {
+            if (! Schema::hasTable('settings')) {
+                return collect();
+            }
+        } catch (Exception $e) {
+            // DB isn’t ready—just skip.
+            Log::warning($e->getMessage());
+
             return collect();
         }
 
-        // 2) Now that we know the table exists, go ahead and load from the repo.
+        // Now that we know the table exists, go ahead and load from the repo.
         $config = $this->getConfig($settingsClass);
 
         $raw = $config
@@ -106,7 +115,6 @@ class SettingsMapper extends SpatieSettingsMapper
                 return $payload;
             });
     }
-
 
     private function fillMissingSettingsWithDefaultValues(SettingsConfig $config, Collection $properties): Collection
     {
@@ -175,7 +183,7 @@ class SettingsMapper extends SpatieSettingsMapper
             ->toArray();
 
         if (! empty($missingSettings)) {
-            logger()->warning("Missing settings detected for '{$config->getName()}': ".implode(', ', $missingSettings));
+            Log::warning("Missing settings detected for '{$config->getName()}': ".implode(', ', $missingSettings));
         }
     }
 

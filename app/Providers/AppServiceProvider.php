@@ -20,15 +20,16 @@ use App\Settings\LookFeelSettings;
 use App\Settings\SEOSettings;
 use App\Settings\SiteSettings;
 use App\Utilities\CartHelper;
+use App\Utilities\Installer\Helpers\EnvironmentManager as CustomEnvManager;
 use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
 use Froiden\LaravelInstaller\Helpers\EnvironmentManager as BaseEnvManager;
-use App\Utilities\Installer\Helpers\EnvironmentManager as CustomEnvManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -52,11 +53,6 @@ class AppServiceProvider extends ServiceProvider
     {
         // Skip entirely when running in the console (i.e. Artisan commands)
         if ($this->app->runningInConsole()) {
-            return;
-        }
-
-        // Double-check that the table exists
-        if (! Schema::hasTable('settings')) {
             return;
         }
 
@@ -86,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService());
+        $this->app->singleton('secure-guest-mode', fn ($app) => new SecureGuestModeService);
 
         $this->app->tag(
             [
@@ -111,8 +107,24 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
+        // If we're using sqlite *and* the file on disk doesn't exist yet,
+        // override it to in-memory so Schema::hasTable() won't blow up.
+        if (DB::getDefaultConnection() === 'sqlite') {
+            $path = config('database.connections.sqlite.database');
+
+            // if it’s not already :memory: and the file is missing...
+            if ($path !== ':memory:' && ! file_exists($path)) {
+                config(['database.connections.sqlite.database' => ':memory:']);
+            }
+        }
+
         // Double-check that the table exists
-        if (! Schema::hasTable('settings')) {
+        try {
+            if (! Schema::hasTable('settings')) {
+                return;
+            }
+        } catch (Exception $e) {
+            // DB isn’t ready—just skip.
             return;
         }
 
