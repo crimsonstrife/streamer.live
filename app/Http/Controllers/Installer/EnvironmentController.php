@@ -25,7 +25,8 @@ class EnvironmentController extends Controller
     public function save(UpdateRequest $request)
     {
         // Generate a new key exactly as `artisan key:generate` would
-        $rawKey = Artisan::call('key:generate', ['--show' => true]);
+        Artisan::call('key:generate', ['--show' => true]);
+        $rawKey = Artisan::output();
         $appKey = trim($rawKey);
 
         // Merge it into the request so saveFile() will write it
