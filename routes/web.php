@@ -48,7 +48,7 @@ use Shieldon\Firewall\Panel;
 
 Route::any('/firewall/panel/{path?}', function () {
 
-    $panel = new Panel;
+    $panel = new Panel();
     $panel->csrf(['_token' => csrf_token()]);
     $panel->entry();
 
