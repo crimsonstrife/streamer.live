@@ -9,8 +9,6 @@
     <link rel="icon" type="image/png" href="{{ asset('installer/img/favicon/favicon-16x16.png') }}" sizes="16x16"/>
     <link rel="icon" type="image/png" href="{{ asset('installer/img/favicon/favicon-32x32.png') }}" sizes="32x32"/>
     <link rel="icon" type="image/png" href="{{ asset('installer/img/favicon/favicon-96x96.png') }}" sizes="96x96"/>
-
-
     <link href="{{ asset('installer/css/style.min.css') }}" rel="stylesheet"/>
     @yield('style')
 
@@ -25,6 +23,8 @@
         <ul class="step">
             <li class="step__divider"></li>
             <li class="step__item {{ isActive('LaravelInstaller::final') }}"><i class="step__icon database"></i></li>
+            <li class="step__divider"></li>
+            <li class="step__item {{ isActive('LaravelInstaller::credentials') }}"><i class="step__icon credentials"></i></li>
             <li class="step__divider"></li>
             <li class="step__item {{ isActive('LaravelInstaller::permissions') }}"><i class="step__icon permissions"></i></li>
             <li class="step__divider"></li>
