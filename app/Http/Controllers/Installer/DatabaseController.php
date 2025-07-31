@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Installer;
 
+use Froiden\LaravelInstaller\Helpers\DatabaseManager;
 use Illuminate\Routing\Controller;
-use App\Utilities\Installer\Helpers\DatabaseManager;
 use Illuminate\Http\Request;
 
 class DatabaseController extends Controller

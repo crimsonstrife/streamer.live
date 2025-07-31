@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\Installer\CredentialsController;
 use App\Http\Controllers\Installer\DatabaseController;
 use App\Http\Controllers\Installer\EnvironmentController;
 use App\Http\Controllers\NewsletterController;
@@ -21,10 +22,10 @@ use App\Models\Font;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
-use Froiden\LaravelInstaller\Controllers\FinalController;
-use Froiden\LaravelInstaller\Controllers\PermissionsController;
-use Froiden\LaravelInstaller\Controllers\WelcomeController;
-use Froiden\LaravelInstaller\Controllers\RequirementsController;
+use App\Http\Controllers\Installer\FinalController;
+use App\Http\Controllers\Installer\PermissionsController;
+use App\Http\Controllers\Installer\WelcomeController;
+use App\Http\Controllers\Installer\RequirementsController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -330,6 +331,10 @@ Route::group([
     // Permissions
     Route::get('permissions', [PermissionsController::class, 'permissions'])
         ->name('permissions');
+
+    // Admin Credentials
+    Route::get('credentials',     [CredentialsController::class,  'showForm'])->name('credentials');
+    Route::post('credentials',    [CredentialsController::class,  'saveForm'])->name('credentialsSave');
 
     // Database
     Route::get('database', [DatabaseController::class, 'database'])
