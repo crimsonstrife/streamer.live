@@ -135,7 +135,8 @@
         "treblle/security-headers": "^0.0.3",
         "whitecube/laravel-cookie-consent": "^1.3",
         "xetaio/xetaravel-mentions": "^11.0",
-        "z3d0x/filament-fabricator": "^2.4"
+        "z3d0x/filament-fabricator": "^2.4",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
