@@ -19,11 +19,19 @@
 @endsection
 @section('container')
     <form method="post" action="{{ route('LaravelInstaller::environmentSave') }}" id="env-form">
+        @csrf
         <div class="form-group">
             <label class="col-sm-2 control-label">Hostname</label>
 
             <div class="col-sm-10">
                 <input type="text" name="hostname" class="form-control" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Port</label>
+
+            <div class="col-sm-10">
+                <input type="text" name="port" class="form-control" >
             </div>
         </div>
         <div class="form-group">
@@ -44,6 +52,7 @@
                 <input type="text" name="database" class="form-control">
             </div>
         </div>
+        <input type="hidden" name="APP_KEY" value="{{ old('APP_KEY', config('app.key')) }}">
         <div class="modal-footer">
             <div class="buttons">
                 <button class="button" onclick="checkEnv();return false">

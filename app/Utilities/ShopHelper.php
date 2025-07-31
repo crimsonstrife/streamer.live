@@ -4,6 +4,7 @@ namespace App\Utilities;
 
 use App\Models\Page;
 use App\Models\StoreObjects\OrderItem;
+use Exception;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -55,8 +56,12 @@ class ShopHelper
      */
     private static function fetchShopSlug(): string
     {
-        if (Schema::hasTable('pages')) {
-            return Page::where('type', 'shop')->value('slug') ?? self::DEFAULT_SHOP_SLUG;
+        try {
+            if (Schema::hasTable('pages')) {
+                return Page::where('type', 'shop')->value('slug') ?? self::DEFAULT_SHOP_SLUG;
+            }
+        } catch (Exception $e) {
+            // DB isn’t ready—just skip.
         }
 
         return self::DEFAULT_SHOP_SLUG;
@@ -64,8 +69,12 @@ class ShopHelper
 
     private static function fetchCollectionSlug(): string
     {
-        if (Schema::hasTable('pages')) {
-            return Page::where('type', 'collection_detail')->value('slug') ?? self::DEFAULT_COLLECTION_SLUG;
+        try {
+            if (Schema::hasTable('pages')) {
+                return Page::where('type', 'collection_detail')->value('slug') ?? self::DEFAULT_COLLECTION_SLUG;
+            }
+        } catch (Exception $e) {
+            // DB isn’t ready—just skip.
         }
 
         return self::DEFAULT_COLLECTION_SLUG;
@@ -76,8 +85,12 @@ class ShopHelper
      */
     private static function fetchProductSlug(): string
     {
-        if (Schema::hasTable('pages')) {
-            return Page::where('type', 'product_detail')->value('slug') ?? self::DEFAULT_PRODUCT_SLUG;
+        try {
+            if (Schema::hasTable('pages')) {
+                return Page::where('type', 'product_detail')->value('slug') ?? self::DEFAULT_PRODUCT_SLUG;
+            }
+        } catch (Exception $e) {
+            // DB isn’t ready—just skip.
         }
 
         return self::DEFAULT_PRODUCT_SLUG;
