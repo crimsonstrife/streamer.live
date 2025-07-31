@@ -66,13 +66,14 @@ class EnvironmentManager
         $dbUsername = $input->get('username');
         $dbPassword = $input->get('password');
 
-        $databaseSetting = 'DB_HOST=' . $dbHost . '
-        DB_PORT=' . $dbPort . '
-DB_DATABASE=' . $dbName . '
-DB_USERNAME=' . $dbUsername . '
-DB_PASSWORD="' . $dbPassword . '"
-APP_URL="' . request()->getSchemeAndHttpHost() . '"
-';
+        $databaseSetting = <<<EOD
+DB_HOST={$dbHost}
+DB_PORT={$dbPort}
+DB_DATABASE={$dbName}
+DB_USERNAME={$dbUsername}
+DB_PASSWORD="{$dbPassword}"
+APP_URL="{$request->getSchemeAndHttpHost()}"
+EOD;
 
         // @ignoreCodingStandard
         $rows       = explode("\n", $env);
