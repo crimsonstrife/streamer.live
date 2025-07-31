@@ -25,6 +25,8 @@ use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
+use Froiden\LaravelInstaller\Helpers\EnvironmentManager as BaseEnvManager;
+use App\Utilities\Installer\Helpers\EnvironmentManager as CustomEnvManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
@@ -61,6 +63,12 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->isLocal()) {
             // Register additional local services
         }
+
+        // Bind the package helper interface to override:
+        $this->app->bind(
+            BaseEnvManager::class,
+            CustomEnvManager::class
+        );
 
         app()->bind(PathGenerator::class, CustomMediaPathGenerator::class);
 

@@ -93,6 +93,10 @@ return Application::configure(basePath: dirname(__DIR__))
             // SecurityHeaders::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'install/*',
+        ]);
+
         $middleware->alias([
             'store.enabled' => EnsureStoreEnabled::class,
             'firewall' => ShieldonFirewall::class,
