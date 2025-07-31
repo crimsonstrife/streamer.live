@@ -8,7 +8,6 @@ use Illuminate\View\View;
 
 class RequirementsController extends Controller
 {
-
     /**
      * @var RequirementsChecker
      */

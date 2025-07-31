@@ -9,7 +9,6 @@ use Illuminate\View\View;
 
 class PermissionsController extends Controller
 {
-
     /**
      * @var PermissionsChecker
      */

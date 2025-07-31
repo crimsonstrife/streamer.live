@@ -333,8 +333,8 @@ Route::group([
         ->name('permissions');
 
     // Admin Credentials
-    Route::get('credentials',     [CredentialsController::class,  'showForm'])->name('credentials');
-    Route::post('credentials',    [CredentialsController::class,  'saveForm'])->name('credentialsSave');
+    Route::get('credentials', [CredentialsController::class,  'showForm'])->name('credentials');
+    Route::post('credentials', [CredentialsController::class,  'saveForm'])->name('credentialsSave');
 
     // Database
     Route::get('database', [DatabaseController::class, 'database'])

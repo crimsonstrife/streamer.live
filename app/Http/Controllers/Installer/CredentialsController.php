@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Installer;
 
 use App\Actions\Fortify\PasswordValidationRules;
