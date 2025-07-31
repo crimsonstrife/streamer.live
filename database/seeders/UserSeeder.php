@@ -79,7 +79,7 @@ class UserSeeder extends Seeder
             'last_name' => $lastName,
             'username' => $username,
             'email' => $email,
-            'password' => bcrypt($password),
+            'password' => $this->isHashed($password) ? $password : bcrypt($password),
         ]);
 
         if ($superAdmin) {
