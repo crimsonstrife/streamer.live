@@ -76,8 +76,16 @@ APP_URL="' . request()->getSchemeAndHttpHost() . '"
 
         // @ignoreCodingStandard
         $rows       = explode("\n", $env);
-        $unwanted   = "DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD|APP_URL";
-        $cleanArray = preg_grep("/$unwanted/i", $rows, PREG_GREP_INVERT);
+        $unwantedKeys = [
+            'DB_HOST',
+            'DB_PORT',
+            'DB_DATABASE',
+            'DB_USERNAME',
+            'DB_PASSWORD',
+            'APP_URL'
+        ];
+        $unwantedPattern = '/^(' . implode('|', array_map('preg_quote', $unwantedKeys)) . ')=/i';
+        $cleanArray = preg_grep($unwantedPattern, $rows, PREG_GREP_INVERT);
 
         $cleanString = implode("\n", $cleanArray);
 
