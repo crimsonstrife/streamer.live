@@ -99,12 +99,12 @@ APP_URL="' . request()->getSchemeAndHttpHost() . '"
             // First check if database exists
             $stmt = $dbh->query('CREATE DATABASE IF NOT EXISTS `'.$dbName.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;');
             // Save settings in session
-            $_SESSION['db_username'] = $dbUsername;
-            $_SESSION['db_password'] = $dbPassword;
-            $_SESSION['db_name']     = $dbName;
-            $_SESSION['db_host']     = $dbHost;
-            $_SESSION['db_port']     = $dbPort;
-            $_SESSION['db_success']  = true;
+            session()->put('db_username', $dbUsername);
+            session()->put('db_password', $dbPassword);
+            session()->put('db_name', $dbName);
+            session()->put('db_host', $dbHost);
+            session()->put('db_port', $dbPort);
+            session()->put('db_success', true);
             $message = 'Database settings correct';
 
             try {
