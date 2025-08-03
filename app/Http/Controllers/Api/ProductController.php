@@ -6,15 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductController extends Controller
 {
     /**
      * Retrieves a paginated collection of product resources.
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): JsonResponse
     {
         $query = Product::query();
 
@@ -25,7 +25,8 @@ class ProductController extends Controller
 
         return ProductResource::collection(
             $query->paginate(20)
-        );
+        )->response()
+            ->header('Cache-Control', 'public, max-age=360');
     }
 
     /**
@@ -33,12 +34,14 @@ class ProductController extends Controller
      *
      * @param  Product  $product  The product instance to display.
      */
-    public function show(Product $product): ProductResource
+    public function show(Product $product): JsonResponse
     {
-        return new ProductResource($product);
+        return (new ProductResource($product))
+            ->response()
+            ->header('Cache-Control', 'public, max-age=360');
     }
 
-    public function byCollection(string $slug): AnonymousResourceCollection
+    public function byCollection(string $slug): JsonResponse
     {
         $collection = Collection::where('slug', $slug)->firstOrFail();
 
@@ -46,6 +49,8 @@ class ProductController extends Controller
             ->products()
             ->paginate(20);
 
-        return ProductResource::collection($products);
+        return ProductResource::collection($products)
+            ->response()
+            ->header('Cache-Control', 'public, max-age=360');
     }
 }
