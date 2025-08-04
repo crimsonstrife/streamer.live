@@ -19,7 +19,9 @@ class ProductController extends Controller
         $query = Product::query();
 
         if ($slug = $request->query('collection')) {
-            $query->whereHas('collections', fn ($q) => $q->where('slug', $slug)
+            $query->whereHas(
+                'collections',
+                fn ($q) => $q->where('slug', $slug)
             );
         }
 
