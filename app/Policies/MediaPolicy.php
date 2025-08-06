@@ -68,7 +68,7 @@ class MediaPolicy
         // Convert the class name to a hyphenated string
         $modelName = Str::kebab(class_basename($modelType));
 
-        // Allow if user can update the related model, create media, or is an admin or super-admin
+        // Allow if user can update the related model & create media, or is an admin or super-admin
         return ($user->can("update-{$modelName}", $model) && $user->can("create-media")) || $user->can('is-admin') || $user->can('is-super-admin');
     }
 
