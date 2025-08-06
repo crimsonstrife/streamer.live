@@ -81,6 +81,10 @@ class PostResource extends Resource
                                 'sm' => 2,
                             ]),
 
+                        Forms\Components\FileUpload::make('featured_image')
+                        ->directory('posts')
+                        ->multiple(false),
+
                         self::getContentEditor('content'),
 
                         Forms\Components\Select::make('blog_author_id')
