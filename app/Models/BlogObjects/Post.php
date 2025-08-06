@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB;
+use LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
