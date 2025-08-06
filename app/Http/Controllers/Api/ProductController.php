@@ -11,8 +11,8 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    const PAGE_SIZE = '20';
-    const CACHE_DURATION_SECONDS = '360';
+    public const PAGE_SIZE = '20';
+    public const CACHE_DURATION_SECONDS = '360';
 
     /**
      * Retrieves a paginated collection of product resources.
