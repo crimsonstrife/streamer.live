@@ -6,6 +6,7 @@ use App\Models\SecurityObjects\GeoFilter;
 use App\Models\SecurityObjects\IPFilter;
 use App\Services\GeoLocationService;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -120,12 +121,18 @@ class CheckIPFilter
     {
         $cacheKey = "ip_filter:{$type}";
 
-        return Cache::remember(
-            $cacheKey,
-            config('ip-filter.cache_ttl'),
-            fn () => IPFilter::where('type', $type)
-                ->pluck('ip_address')
-                ->toArray()
-        );
+        try {
+            return Cache::remember(
+                $cacheKey,
+                config('ip-filter.cache_ttl'),
+                fn () => IPFilter::where('type', $type)
+                    ->pluck('ip_address')
+                    ->toArray()
+            );
+        } catch (Exception $e) {
+            Log::error("Failed to fetch IP list for '{$type}': {$e->getMessage()}");
+
+            return [];
+        }
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckIPFilter;
+use App\Http\Middleware\EnsureNotInstalled;
 use App\Http\Middleware\EnsureStoreEnabled;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShieldonFirewall;
@@ -93,10 +94,15 @@ return Application::configure(basePath: dirname(__DIR__))
             // SecurityHeaders::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'install/*',
+        ]);
+
         $middleware->alias([
             'store.enabled' => EnsureStoreEnabled::class,
             'firewall' => ShieldonFirewall::class,
             'ip-filter' => CheckIPFilter::class,
+            'not.installed' => EnsureNotInstalled::class,
         ]);
 
         $middleware->trustProxies('*');

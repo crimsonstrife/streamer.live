@@ -77,11 +77,20 @@ jobs:
     - name: Discover Laravel packages manually
       run: php artisan package:discover
 
+    - name: Clean up CI artifacts before packaging
+      run: |
+        rm -f .env
+        rm -f database/database.sqlite
+
     - name: Update SELF_UPDATER_VERSION_INSTALLED in .env.example
       run: |
         version="${GITHUB_REF##*/}"
         echo "Setting SELF_UPDATER_VERSION_INSTALLED=$version in .env.example"
         sed -i "/^SELF_UPDATER_VERSION_INSTALLED=/c\SELF_UPDATER_VERSION_INSTALLED=$version" .env.example || echo "SELF_UPDATER_VERSION_INSTALLED=$version" >> .env.example
+
+    - name: Prepare release-ready .env
+      run: |
+        cp .env.example .env
 
     - name: Create ZIP for release
       run: |
