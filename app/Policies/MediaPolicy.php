@@ -55,7 +55,7 @@ class MediaPolicy
 
         // This media isn't model specific, so just check permissions
         if ($modelType === null && $modelId === null) {
-            return $user->can("create-media") || ($user->can('is-admin') || $user->can('is-super-admin'));
+            return $user->can("create-media") || $user->can('is-admin') || $user->can('is-super-admin');
         }
 
         // Retrieve the model
