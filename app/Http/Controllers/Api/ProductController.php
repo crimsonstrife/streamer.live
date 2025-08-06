@@ -18,7 +18,8 @@ class ProductController extends Controller
     {
         $query = Product::query();
 
-        if ($slug = $request->query('collection')) {
+        $slug = $request->query('collection');
+        if ($slug) {
             $query->whereHas(
                 'collections',
                 fn ($q) => $q->where('slug', $slug)
@@ -26,9 +27,9 @@ class ProductController extends Controller
         }
 
         return ProductResource::collection(
-            $query->paginate(20)
+            $query->paginate(self::PAGE_SIZE)
         )->response()
-            ->header('Cache-Control', 'public, max-age=360');
+            ->header('Cache-Control', 'public, max-age=' . self::CACHE_DURATION_SECONDS);
     }
 
     /**
@@ -43,13 +44,19 @@ class ProductController extends Controller
             ->header('Cache-Control', 'public, max-age=360');
     }
 
+    /**
+     * Retrieves a paginated collection of products for the specified collection.
+     *
+     * @param  string  $slug  The slug identifier of the collection.
+     * @return JsonResponse
+     */
     public function byCollection(string $slug): JsonResponse
     {
         $collection = Collection::where('slug', $slug)->firstOrFail();
 
         $products = $collection
             ->products()
-            ->paginate(20);
+            ->paginate(self::PAGE_SIZE);
 
         return ProductResource::collection($products)
             ->response()
