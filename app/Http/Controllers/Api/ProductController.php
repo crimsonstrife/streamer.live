@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    const PAGE_SIZE = '20';
+    const CACHE_DURATION_SECONDS = '360';
+
     /**
      * Retrieves a paginated collection of product resources.
      */
@@ -41,7 +44,7 @@ class ProductController extends Controller
     {
         return (new ProductResource($product))
             ->response()
-            ->header('Cache-Control', 'public, max-age=360');
+            ->header('Cache-Control', 'public, max-age=' . self::CACHE_DURATION_SECONDS);
     }
 
     /**
@@ -60,6 +63,6 @@ class ProductController extends Controller
 
         return ProductResource::collection($products)
             ->response()
-            ->header('Cache-Control', 'public, max-age=360');
+            ->header('Cache-Control', 'public, max-age=' . self::CACHE_DURATION_SECONDS);
     }
 }
