@@ -54,12 +54,11 @@ Route::any('/firewall/panel/{path?}', function () {
 
 })->where('path', '(.*)');
 
-$installer = app(InstalledFileManager::class);
-if (! $installer->isInstalled()) {
+if (! file_exists(storage_path('installed'))) {
     Route::group([
         'prefix' => 'install',
         'as' => 'LaravelInstaller::',
-        'middleware' => ['web', 'install'],
+        'middleware' => ['web', 'install', 'not.installed'],
     ], function () {
         // Welcome
         Route::get('/', [WelcomeController::class, 'welcome'])
