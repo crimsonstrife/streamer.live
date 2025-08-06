@@ -127,6 +127,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
     protected $appends = [
         'banner_url',
         'has_banner',
+        'featured_image'
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -379,5 +380,10 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
             ->setLastModificationDate(Carbon::create($this->updated_at))
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
             ->setPriority(0.1);
+    }
+
+    public function getFeaturedImageAttribute(): ?string
+    {
+        return $this->getFirstMediaUrl();
     }
 }
