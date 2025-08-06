@@ -48,11 +48,17 @@ class MediaPolicy
      */
     public function create(User $user, string $modelType = null, int $modelId = null): bool
     {
+        // Ensure both $modelType and $modelId are set together, or both are null
+        if (($modelType === null && $modelId !== null) || ($modelType !== null && $modelId === null)) {
+            return false; // Invalid state, deny permission
+        }
+
+        // This media isn't model specific, so just check permissions
         if ($modelType === null && $modelId === null) {
-            // This media isn't model specific, so just check permissions
             return $user->can("create-media") || ($user->can('is-admin') || $user->can('is-super-admin'));
         }
 
+        // Retrieve the model
         $model = app($modelType)::find($modelId);
 
         if (! $model) {
