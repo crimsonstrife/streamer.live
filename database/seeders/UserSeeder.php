@@ -40,19 +40,55 @@ class UserSeeder extends Seeder
             }
         }
 
-        // Generate a password using faker
-        $password = $this->generatePassword();
+        // Create the admin user from session
+        $suppliedEmail    = session('installer.credentials.email');
+        $suppliedPassword = session('installer.credentials.password');
+        $suppliedUsername = session('installer.credentials.username');
+        $suppliedFirstName = session('installer.credentials.firstname');
+        $suppliedLastName = session('installer.credentials.lastname');
+        if (!$suppliedPassword) {
+            // Generate a password using faker
+            $password = $this->generatePassword();
+        } else {
+            $password = $suppliedPassword;
+        }
+        if (!$suppliedEmail) {
+            $email = 'admin@streamer.local';
+        } else {
+            $email = $suppliedEmail;
+        }
+        if (!$suppliedFirstName) {
+            $firstName = 'Admin';
+        } else {
+            $firstName = $suppliedFirstName;
+        }
+        if (!$suppliedLastName) {
+            $lastName = 'User';
+        } else {
+            $lastName = $suppliedLastName;
+        }
+        if (!$suppliedUsername) {
+            $username = 'admin';
+        } else {
+            $username = $suppliedUsername;
+        }
 
         // Create a super admin user
         $superAdmin = User::factory()->create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'username' => 'admin',
-            'email' => 'admin@streamer.local',
-            'password' => $password,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'username' => $username,
+            'email' => $email,
+            'password' => $this->isHashed($password) ? $password : bcrypt($password),
         ]);
 
         if ($superAdmin) {
+            // store in session for the final step
+            session([
+                'installer.credentials.email'    => $superAdmin->email,
+                'installer.credentials.password' => $password,
+                'installer.credentials.username' => $superAdmin->username,
+            ]);
             $superAdmin->assignRole('super-admin');
         }
     }
@@ -72,7 +108,7 @@ class UserSeeder extends Seeder
         // Wait for the user to see the password
         sleep(10); // 10 seconds
 
-        // Return the hashed password
-        return bcrypt($password);
+        // Return the password
+        return $password;
     }
 }

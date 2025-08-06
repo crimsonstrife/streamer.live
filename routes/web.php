@@ -6,6 +6,13 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\Installer\CredentialsController;
+use App\Http\Controllers\Installer\DatabaseController;
+use App\Http\Controllers\Installer\EnvironmentController;
+use App\Http\Controllers\Installer\FinalController;
+use App\Http\Controllers\Installer\PermissionsController;
+use App\Http\Controllers\Installer\RequirementsController;
+use App\Http\Controllers\Installer\WelcomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\OrderController;
@@ -19,6 +26,7 @@ use App\Models\Font;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
+use Froiden\LaravelInstaller\Helpers\InstalledFileManager;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -45,6 +53,50 @@ Route::any('/firewall/panel/{path?}', function () {
     $panel->entry();
 
 })->where('path', '(.*)');
+
+if (! file_exists(storage_path('installed'))) {
+    Route::group([
+        'prefix' => 'install',
+        'as' => 'LaravelInstaller::',
+        'middleware' => ['web', 'install', 'not.installed'],
+    ], function () {
+        // Welcome
+        Route::get('/', [WelcomeController::class, 'welcome'])
+            ->name('welcome');
+
+        // Environment form (GET)
+        Route::get('environment', [EnvironmentController::class, 'environment'])
+            ->name('environment');
+
+        // Environment save (POST)
+        Route::post('environment/save', [EnvironmentController::class, 'save'])
+            ->name('environmentSave');
+
+        // (Optional) keep the original GET so old links still work
+        Route::get('environment/save', [EnvironmentController::class, 'save'])
+            ->name('environmentSave');
+
+        // Requirements
+        Route::get('requirements', [RequirementsController::class, 'requirements'])
+            ->name('requirements');
+
+        // Permissions
+        Route::get('permissions', [PermissionsController::class, 'permissions'])
+            ->name('permissions');
+
+        // Admin Credentials
+        Route::get('credentials', [CredentialsController::class, 'showForm'])->name('credentials');
+        Route::post('credentials', [CredentialsController::class, 'saveForm'])->name('credentialsSave');
+
+        // Database
+        Route::get('database', [DatabaseController::class, 'database'])
+            ->name('database');
+
+        // Final
+        Route::get('final', [FinalController::class, 'finish'])
+            ->name('final');
+    });
+}
 
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {

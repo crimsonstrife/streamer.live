@@ -20,13 +20,16 @@ use App\Settings\LookFeelSettings;
 use App\Settings\SEOSettings;
 use App\Settings\SiteSettings;
 use App\Utilities\CartHelper;
+use App\Utilities\Installer\Helpers\EnvironmentManager as CustomEnvManager;
 use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
 use Exception;
 use Filament\FilamentManager;
+use Froiden\LaravelInstaller\Helpers\EnvironmentManager as BaseEnvManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -53,14 +56,15 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        // Double-check that the table exists
-        if (! Schema::hasTable('settings')) {
-            return;
-        }
-
         if ($this->app->isLocal()) {
             // Register additional local services
         }
+
+        // Bind the package helper interface to override:
+        $this->app->bind(
+            BaseEnvManager::class,
+            CustomEnvManager::class
+        );
 
         app()->bind(PathGenerator::class, CustomMediaPathGenerator::class);
 
@@ -103,8 +107,24 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
+        // If we're using sqlite *and* the file on disk doesn't exist yet,
+        // override it to in-memory so Schema::hasTable() won't blow up.
+        if (DB::getDefaultConnection() === 'sqlite') {
+            $path = config('database.connections.sqlite.database');
+
+            // if it’s not already :memory: and the file is missing...
+            if ($path !== ':memory:' && ! file_exists($path)) {
+                config(['database.connections.sqlite.database' => ':memory:']);
+            }
+        }
+
         // Double-check that the table exists
-        if (! Schema::hasTable('settings')) {
+        try {
+            if (! Schema::hasTable('settings')) {
+                return;
+            }
+        } catch (Exception $e) {
+            // DB isn’t ready—just skip.
             return;
         }
 
