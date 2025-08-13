@@ -40,7 +40,7 @@
         "doctrine/dbal": "^4.2",
         "drewm/mailchimp-api": "^2.5",
         "elmudo-dev/filament-custom-attribute-file-upload": "^1.1",
-        "enshrined/svg-sanitize": "^0.21.0",
+        "enshrined/svg-sanitize": "^0.22.0",
         "fakerphp/faker": "^1.24",
         "filament/actions": "^3.3",
         "filament/filament": "^3.3",
