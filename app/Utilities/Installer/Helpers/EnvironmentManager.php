@@ -6,6 +6,7 @@ use Exception;
 use Froiden\LaravelInstaller\Helpers\Reply;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use PDO;
 use PDOException;
 
@@ -53,79 +54,76 @@ class EnvironmentManager
      */
     public function saveFile(Request $input): array|RedirectResponse
     {
+        $message   = trans('messages.environment.success');
+        $env       = $this->getEnvContent();
 
-        $message = trans('messages.environment.success');
+        // Gather inputs (add driver & port; default to mysql/3306)
+        $driver   = $input->get('driver', 'mysql');       // add a <select> in your form if you support others
+        $dbHost   = $input->get('hostname', '127.0.0.1');
+        $dbPort   = $input->get('port',     '3306');
+        $dbName   = $input->get('database');
+        $dbUser   = $input->get('username');
+        $dbPass   = $input->get('password');
+        $appUrl   = request()->getSchemeAndHttpHost();
 
-        $env = $this->getEnvContent();
-        $dbName = $input->get('database');
-        $dbHost = $input->get('hostname');
-        $dbPort = $input->get('port');
-        $dbUsername = $input->get('username');
-        $dbPassword = $input->get('password');
+        // Strip any existing DB_* lines cleanly (handles Windows/Unix newlines)
+        $env = preg_replace(
+            '/^(DB_(CONNECTION|HOST|PORT|DATABASE|USERNAME|PASSWORD|SOCKET|URL))=.*$\R?/mi',
+            '',
+            $env
+        );
+        // also strip APP_URL so we can rewrite it
+        $env = preg_replace('/^APP_URL=.*$\R?/mi', '', $env);
 
-        $databaseSetting = 'DB_CONNECTION=mysql'.
-            'DB_HOST="'.$dbHost.'"
-        DB_PORT="'.$dbPort.'"
-        DB_DATABASE="'.$dbName.'"
-        DB_USERNAME="'.$dbUsername.'"
-        DB_PASSWORD="'.$dbPassword.'"
-        APP_URL="'.request()->getSchemeAndHttpHost().'"
-        ';
+        // Ensure we end with exactly one newline before appending
+        $env = rtrim($env) . PHP_EOL;
 
-        // @ignoreCodingStandard
-        $rows = explode("\n", $env);
-        $unwantedKeys = [
-            'DB_CONNECTION',
-            'DB_HOST',
-            'DB_PORT',
-            'DB_DATABASE',
-            'DB_USERNAME',
-            'DB_PASSWORD',
-            'APP_URL',
-        ];
-        $unwantedPattern = '/^('.implode('|', array_map('preg_quote', $unwantedKeys)).')=/i';
-        $cleanArray = preg_grep($unwantedPattern, $rows, PREG_GREP_INVERT);
-
-        $cleanString = implode("\n", $cleanArray);
-
-        $env = $cleanString.$databaseSetting;
-        try {
-            $dbh = new PDO('mysql:host='.$dbHost.';port='.$dbPort, $dbUsername, $dbPassword);
-
-            $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            // First check if database exists
-            $stmt = $dbh->query('CREATE DATABASE IF NOT EXISTS `'.$dbName.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;');
-            // Save settings in session
-            session()->put('db_username', $dbUsername);
-            session()->put('db_password', $dbPassword);
-            session()->put('db_name', $dbName);
-            session()->put('db_host', $dbHost);
-            session()->put('db_port', $dbPort);
-            session()->put('db_success', true);
-            $message = 'Database settings correct';
-
-            try {
-                file_put_contents($this->envPath, $env);
-            } catch (Exception $e) {
-                $message = trans('messages.environment.errors');
+        // Helper to quote env values safely
+        $q = function ($v) {
+            if ($v === null) return '';
+            // quote if it has spaces, #, or quotes
+            if (preg_match('/\s|"|#/', (string) $v)) {
+                return '"' . str_replace('"', '\"', (string) $v) . '"';
             }
+            return (string) $v;
+        };
 
-            $redirectTo = route('LaravelInstaller::requirements');
+        // Append the database + app url block
+        $env .= <<<ENV
+
+DB_CONNECTION={$driver}
+DB_HOST={$q($dbHost)}
+DB_PORT={$q($dbPort)}
+DB_DATABASE={$q($dbName)}
+DB_USERNAME={$q($dbUser)}
+DB_PASSWORD={$q($dbPass)}
+APP_URL={$q($appUrl)}
+
+ENV;
+
+        try {
+            file_put_contents($this->envPath, $env);
+
+            // optional but helpful: make sure next request sees fresh config
+            Artisan::call('config:clear');
+            Artisan::call('cache:clear');
+
             $message = 'Database settings correct';
 
-            // Non-AJAX requests get a real 302
+            // For non-AJAX callers, do a real redirect (your override)
             if (! $input->ajax() && ! $input->wantsJson()) {
-                return redirect()
-                    ->to($redirectTo)
+                return redirect()->route('LaravelInstaller::requirements')
                     ->with('message', $message);
             }
 
-            // AJAX (or wantsJson) gets the JSON that helper.js knows how to handle
-            return Reply::redirect($redirectTo, $message);
+            // For AJAX callers, return JSON understood by helper.js
+            return Reply::redirect(
+                route('LaravelInstaller::requirements'),
+                $message
+            );
 
-        } catch (PDOException|Exception $e) {
-            return Reply::error('DB Error: '.$e->getMessage());
+        } catch (\Throwable $e) {
+            return Reply::error('ENV write error: '.$e->getMessage());
         }
     }
 }
