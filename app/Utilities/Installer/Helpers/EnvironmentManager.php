@@ -7,6 +7,7 @@ use Froiden\LaravelInstaller\Helpers\Reply;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use PDO;
 use PDOException;
 
@@ -102,28 +103,37 @@ APP_URL={$q($appUrl)}
 ENV;
 
         try {
+            // Write the .env
             file_put_contents($this->envPath, $env);
 
-            // optional but helpful: make sure next request sees fresh config
-            Artisan::call('config:clear');
-            Artisan::call('cache:clear');
+            // Flip the runtime DB config for *this* request
+            config([
+                'database.default'                               => $driver,   // e.g. 'mysql'
+                "database.connections.$driver.host"              => $dbHost,
+                "database.connections.$driver.port"              => $dbPort,
+                "database.connections.$driver.database"          => $dbName,
+                "database.connections.$driver.username"          => $dbUser,
+                "database.connections.$driver.password"          => $dbPass,
+            ]);
+
+            DB::purge($driver);
+            DB::setDefaultConnection($driver);
+
+            // verify the connection now, fail fast with a clear message
+            DB::connection()->getPdo();
 
             $message = 'Database settings correct';
 
-            // For non-AJAX callers, do a real redirect (your override)
+            // Immediately exit the request (no views that might query DB)
             if (! $input->ajax() && ! $input->wantsJson()) {
                 return redirect()->route('LaravelInstaller::requirements')
                     ->with('message', $message);
             }
 
-            // For AJAX callers, return JSON understood by helper.js
-            return Reply::redirect(
-                route('LaravelInstaller::requirements'),
-                $message
-            );
+            return Reply::redirect(route('LaravelInstaller::requirements'), $message);
 
         } catch (\Throwable $e) {
-            return Reply::error('ENV write error: '.$e->getMessage());
+            return Reply::error('ENV write error: ' . $e->getMessage());
         }
     }
 }
