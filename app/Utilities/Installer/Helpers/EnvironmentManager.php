@@ -8,7 +8,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Random\RandomException;
 
 class EnvironmentManager
 {
@@ -17,13 +16,10 @@ class EnvironmentManager
 
     public function __construct()
     {
-        $this->envPath       = base_path('.env');
+        $this->envPath        = base_path('.env');
         $this->envExamplePath = base_path('.env.example');
     }
 
-    /**
-     * Get current .env contents (ensuring the file exists).
-     */
     public function getEnvContent(): string
     {
         if (! file_exists($this->envPath)) {
@@ -33,22 +29,16 @@ class EnvironmentManager
                 touch($this->envPath);
             }
         }
-
         return file_get_contents($this->envPath);
     }
 
     /**
-     * Save DB settings + APP_URL (+ APP_KEY if missing), then flip runtime config.
-     *
-     * @param Request $input
-     * @return RedirectResponse|array
-     * @throws RandomException
+     * Save DB settings + APP_URL, keep existing APP_KEY stable, flip runtime config.
      */
     public function saveFile(Request $input): array|RedirectResponse
     {
         $env = $this->getEnvContent();
 
-        // Gather inputs (default to MySQL on 3306)
         $driver = $input->get('driver', 'mysql');
         $dbHost = $input->get('hostname', '127.0.0.1');
         $dbPort = $input->get('port', '3306');
@@ -57,31 +47,26 @@ class EnvironmentManager
         $dbPass = $input->get('password');
         $appUrl = request()->getSchemeAndHttpHost();
 
-        // Remove any existing DB_* / APP_URL / APP_KEY lines (handle Windows/Unix newlines).
+        // Strip DB_* and APP_URL (but leave APP_KEY alone)
         $env = preg_replace('/^(DB_(CONNECTION|HOST|PORT|DATABASE|USERNAME|PASSWORD|SOCKET|URL))=.*$\R?/mi', '', $env);
         $env = preg_replace('/^APP_URL=.*$\R?/mi', '', $env);
-        $env = preg_replace('/^APP_KEY=.*$\R?/mi', '', $env);
 
-        // Helper to quote env values when needed
         $q = static function ($v): string {
             if ($v === null) return '';
             $v = (string) $v;
             return preg_match('/\s|"|#/', $v) ? '"' . str_replace('"', '\"', $v) . '"' : $v;
         };
 
-        // Ensure we end with one newline before appending
         $env = rtrim($env) . PHP_EOL;
 
-        // Ensure a stable APP_KEY (generate if the current process doesn't have a valid one)
-        $existingKey = env('APP_KEY');
-        if (! $existingKey || ! Str::startsWith($existingKey, 'base64:')) {
-            $plain   = random_bytes(32);
-            $appKey  = 'base64:' . base64_encode($plain);
-        } else {
-            $appKey = $existingKey;
+        // Use the persisted key from .env (index.php ensured it exists)
+        $appKey = env('APP_KEY');
+        if (! $appKey || ! Str::startsWith($appKey, 'base64:')) {
+            // ultra-safe fallback (shouldn’t happen because index.php set it)
+            $appKey = 'base64:' . base64_encode(random_bytes(32));
+            $env .= "APP_KEY={$appKey}" . PHP_EOL;
         }
 
-        // Append DB block + APP_URL + APP_KEY
         $env .= <<<ENV
 
 DB_CONNECTION={$driver}
@@ -91,15 +76,13 @@ DB_DATABASE={$q($dbName)}
 DB_USERNAME={$q($dbUser)}
 DB_PASSWORD={$q($dbPass)}
 APP_URL={$q($appUrl)}
-APP_KEY={$appKey}
 
 ENV;
 
         try {
-            // Persist .env
             file_put_contents($this->envPath, $env);
 
-            // Switch runtime DB config for THIS request
+            // Flip DB connection for THIS request
             config([
                 'database.default'                               => $driver,
                 "database.connections.$driver.host"              => $dbHost,
@@ -108,25 +91,24 @@ ENV;
                 "database.connections.$driver.username"          => $dbUser,
                 "database.connections.$driver.password"          => $dbPass,
             ]);
-
             DB::purge($driver);
             DB::setDefaultConnection($driver);
-            // verify the connection now (fail fast with clean error)
-            DB::connection()->getPdo();
+            DB::connection()->getPdo(); // fail fast if bad creds
 
-            // Switch the runtime encrypter to the (new) APP_KEY
+            // Rebind encrypter with the persisted key so decrypt/encrypt works now
             config(['app.key' => $appKey]);
             $keyBytes = base64_decode(Str::after($appKey, 'base64:'));
             app()->instance('encrypter', new Encrypter($keyBytes, config('app.cipher')));
 
             $message = 'Database settings correct';
 
-            // Immediately move to the next step; avoid rendering views that might hit DB again
             if (! $input->ajax() && ! $input->wantsJson()) {
-                return redirect()
-                    ->route('LaravelInstaller::requirements')
-                    ->with('message', $message);
+                return redirect()->route('LaravelInstaller::requirements')
+                    ->with('installer_message', $message);
             }
+
+            // Keep a flash around so next page can show it even after AJAX redirect
+            session()->flash('installer_message', $message);
 
             return Reply::redirect(route('LaravelInstaller::requirements'), $message);
 
