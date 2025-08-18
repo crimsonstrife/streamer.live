@@ -2,38 +2,27 @@
 
 namespace App\Utilities\Installer\Helpers;
 
-use Exception;
 use Froiden\LaravelInstaller\Helpers\Reply;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use PDO;
-use PDOException;
+use Illuminate\Support\Str;
+use Random\RandomException;
 
 class EnvironmentManager
 {
-    /**
-     * @var string
-     */
-    private $envPath;
+    private string $envPath;
+    private string $envExamplePath;
 
-    /**
-     * @var string
-     */
-    private $envExamplePath;
-
-    /**
-     * Set the .env and .env.example paths.
-     */
     public function __construct()
     {
-        $this->envPath = base_path('.env');
+        $this->envPath       = base_path('.env');
         $this->envExamplePath = base_path('.env.example');
     }
 
     /**
-     * Get the content of the .env file.
+     * Get current .env contents (ensuring the file exists).
      */
     public function getEnvContent(): string
     {
@@ -49,47 +38,50 @@ class EnvironmentManager
     }
 
     /**
-     * Save the edited content to the file.
+     * Save DB settings + APP_URL (+ APP_KEY if missing), then flip runtime config.
      *
-     * @return RedirectResponse|array|string[]
+     * @param Request $input
+     * @return RedirectResponse|array
+     * @throws RandomException
      */
     public function saveFile(Request $input): array|RedirectResponse
     {
-        $message   = trans('messages.environment.success');
-        $env       = $this->getEnvContent();
+        $env = $this->getEnvContent();
 
-        // Gather inputs (add driver & port; default to mysql/3306)
-        $driver   = $input->get('driver', 'mysql');       // add a <select> in your form if you support others
-        $dbHost   = $input->get('hostname', '127.0.0.1');
-        $dbPort   = $input->get('port',     '3306');
-        $dbName   = $input->get('database');
-        $dbUser   = $input->get('username');
-        $dbPass   = $input->get('password');
-        $appUrl   = request()->getSchemeAndHttpHost();
+        // Gather inputs (default to MySQL on 3306)
+        $driver = $input->get('driver', 'mysql');
+        $dbHost = $input->get('hostname', '127.0.0.1');
+        $dbPort = $input->get('port', '3306');
+        $dbName = $input->get('database');
+        $dbUser = $input->get('username');
+        $dbPass = $input->get('password');
+        $appUrl = request()->getSchemeAndHttpHost();
 
-        // Strip any existing DB_* lines cleanly (handles Windows/Unix newlines)
-        $env = preg_replace(
-            '/^(DB_(CONNECTION|HOST|PORT|DATABASE|USERNAME|PASSWORD|SOCKET|URL))=.*$\R?/mi',
-            '',
-            $env
-        );
-        // also strip APP_URL so we can rewrite it
+        // Remove any existing DB_* / APP_URL / APP_KEY lines (handle Windows/Unix newlines).
+        $env = preg_replace('/^(DB_(CONNECTION|HOST|PORT|DATABASE|USERNAME|PASSWORD|SOCKET|URL))=.*$\R?/mi', '', $env);
         $env = preg_replace('/^APP_URL=.*$\R?/mi', '', $env);
+        $env = preg_replace('/^APP_KEY=.*$\R?/mi', '', $env);
 
-        // Ensure we end with exactly one newline before appending
-        $env = rtrim($env) . PHP_EOL;
-
-        // Helper to quote env values safely
-        $q = function ($v) {
+        // Helper to quote env values when needed
+        $q = static function ($v): string {
             if ($v === null) return '';
-            // quote if it has spaces, #, or quotes
-            if (preg_match('/\s|"|#/', (string) $v)) {
-                return '"' . str_replace('"', '\"', (string) $v) . '"';
-            }
-            return (string) $v;
+            $v = (string) $v;
+            return preg_match('/\s|"|#/', $v) ? '"' . str_replace('"', '\"', $v) . '"' : $v;
         };
 
-        // Append the database + app url block
+        // Ensure we end with one newline before appending
+        $env = rtrim($env) . PHP_EOL;
+
+        // Ensure a stable APP_KEY (generate if the current process doesn't have a valid one)
+        $existingKey = env('APP_KEY');
+        if (! $existingKey || ! Str::startsWith($existingKey, 'base64:')) {
+            $plain   = random_bytes(32);
+            $appKey  = 'base64:' . base64_encode($plain);
+        } else {
+            $appKey = $existingKey;
+        }
+
+        // Append DB block + APP_URL + APP_KEY
         $env .= <<<ENV
 
 DB_CONNECTION={$driver}
@@ -99,16 +91,17 @@ DB_DATABASE={$q($dbName)}
 DB_USERNAME={$q($dbUser)}
 DB_PASSWORD={$q($dbPass)}
 APP_URL={$q($appUrl)}
+APP_KEY={$appKey}
 
 ENV;
 
         try {
-            // Write the .env
+            // Persist .env
             file_put_contents($this->envPath, $env);
 
-            // Flip the runtime DB config for *this* request
+            // Switch runtime DB config for THIS request
             config([
-                'database.default'                               => $driver,   // e.g. 'mysql'
+                'database.default'                               => $driver,
                 "database.connections.$driver.host"              => $dbHost,
                 "database.connections.$driver.port"              => $dbPort,
                 "database.connections.$driver.database"          => $dbName,
@@ -118,15 +111,20 @@ ENV;
 
             DB::purge($driver);
             DB::setDefaultConnection($driver);
-
-            // verify the connection now, fail fast with a clear message
+            // verify the connection now (fail fast with clean error)
             DB::connection()->getPdo();
+
+            // Switch the runtime encrypter to the (new) APP_KEY
+            config(['app.key' => $appKey]);
+            $keyBytes = base64_decode(Str::after($appKey, 'base64:'));
+            app()->instance('encrypter', new Encrypter($keyBytes, config('app.cipher')));
 
             $message = 'Database settings correct';
 
-            // Immediately exit the request (no views that might query DB)
+            // Immediately move to the next step; avoid rendering views that might hit DB again
             if (! $input->ajax() && ! $input->wantsJson()) {
-                return redirect()->route('LaravelInstaller::requirements')
+                return redirect()
+                    ->route('LaravelInstaller::requirements')
                     ->with('message', $message);
             }
 
