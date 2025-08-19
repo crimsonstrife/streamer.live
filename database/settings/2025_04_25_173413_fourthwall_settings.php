@@ -7,9 +7,9 @@ return new class () extends SettingsMigration {
     {
         $this->migrator->add('fourthwall.enable_integration', config('services.fourthwall.enabled', false));
         $this->migrator->add('fourthwall.base_url', config('services.fourthwall.base_url', 'https://storefront-api.fourthwall.com'));
-        $this->migrator->addEncrypted('fourthwall.storefront_token', config('services.fourthwall.storefront_token', null));
+        $this->migrator->addEncrypted('fourthwall.storefront_token', null);
         $this->migrator->add('fourthwall.storefront_url', config('services.fourthwall.storefront_url', 'https://storefront.fourthwall.com'));
-        $this->migrator->addEncrypted('fourthwall.webhook_secret', config('services.fourthwall.webhook_secret', null));
+        $this->migrator->addEncrypted('fourthwall.webhook_secret', null);
         $this->migrator->add('fourthwall.ssl_verify', config('services.fourthwall.verify', true));
     }
 
