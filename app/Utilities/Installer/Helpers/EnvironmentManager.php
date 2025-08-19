@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Utilities\Installer\Helpers;
 
 use Froiden\LaravelInstaller\Helpers\Reply;
@@ -29,60 +28,90 @@ class EnvironmentManager
                 touch($this->envPath);
             }
         }
-        return file_get_contents($this->envPath);
+        return file_get_contents($this->envPath) ?: '';
     }
 
     /**
-     * Save DB settings + APP_URL, keep existing APP_KEY stable, flip runtime config.
+     * Save DB settings + APP_URL (keep existing APP_KEY), flip runtime config.
+     *
+     * @param Request $input
+     * @return RedirectResponse|array
      */
     public function saveFile(Request $input): array|RedirectResponse
     {
-        $env = $this->getEnvContent();
-
-        $driver = $input->get('driver', 'mysql');
-        $dbHost = $input->get('hostname', '127.0.0.1');
-        $dbPort = $input->get('port', '3306');
-        $dbName = $input->get('database');
-        $dbUser = $input->get('username');
-        $dbPass = $input->get('password');
+        // Collect values (defaults for MySQL)
+        $driver = $input->string('driver')->toString() ?: 'mysql';
+        $dbHost = $input->string('hostname')->toString() ?: '127.0.0.1';
+        $dbPort = $input->string('port')->toString()     ?: ($driver === 'mysql' ? '3306' : '');
+        $dbName = $input->string('database')->toString();
+        $dbUser = $input->string('username')->toString();
+        $dbPass = $input->string('password')->toString();
         $appUrl = request()->getSchemeAndHttpHost();
 
-        // Strip DB_* and APP_URL (but leave APP_KEY alone)
-        $env = preg_replace('/^(DB_(CONNECTION|HOST|PORT|DATABASE|USERNAME|PASSWORD|SOCKET|URL))=.*$\R?/mi', '', $env);
-        $env = preg_replace('/^APP_URL=.*$\R?/mi', '', $env);
+        // Prepare new key/values to merge
+        $updates = [
+            'DB_CONNECTION' => $driver,
+            'DB_HOST'       => $dbHost,
+            'DB_PORT'       => $dbPort,
+            'DB_DATABASE'   => $dbName,
+            'DB_USERNAME'   => $dbUser,
+            'DB_PASSWORD'   => $dbPass,
+            'APP_URL'       => $appUrl,
+        ];
 
-        $q = static function ($v): string {
-            if ($v === null) return '';
-            $v = (string) $v;
-            return preg_match('/\s|"|#/', $v) ? '"' . str_replace('"', '\"', $v) . '"' : $v;
+        // Backup current .env
+        $original = $this->getEnvContent();
+        $backup   = $this->envPath.'.installer.bak.'.date('Ymd_His');
+        @file_put_contents($backup, $original);
+
+        // Merge: replace existing lines by key; append missing keys at bottom.
+        $lines     = preg_split("/\r\n|\n|\r/", $original) ?: [];
+        $seenKeys  = [];
+
+        $isTargetKey = static function (string $line, string $key): bool {
+            // Match exact KEY=… at line start, ignoring whitespace
+            return (bool) preg_match('/^\s*'.preg_quote($key, '/').'=/i', $line);
         };
 
-        $env = rtrim($env) . PHP_EOL;
+        $quote = static function (?string $v): string {
+            $v ??= '';
+            // Quote if contains spaces, #, or quotes
+            return preg_match('/\s|"|#/', $v) ? '"'.str_replace('"', '\"', $v).'"' : $v;
+        };
 
-        // Use the persisted key from .env (index.php ensured it exists)
-        $appKey = env('APP_KEY');
-        if (! $appKey || ! Str::startsWith($appKey, 'base64:')) {
-            // ultra-safe fallback (shouldn’t happen because index.php set it)
-            $appKey = 'base64:' . base64_encode(random_bytes(32));
-            $env .= "APP_KEY={$appKey}" . PHP_EOL;
+        // Replace in-place
+        foreach ($lines as &$line) {
+            foreach ($updates as $key => $val) {
+                if ($isTargetKey($line, $key)) {
+                    $line = $key.'='.$quote($val);
+                    $seenKeys[$key] = true;
+                }
+            }
+        }
+        unset($line);
+
+        // Append any keys not present
+        foreach ($updates as $key => $val) {
+            if (! isset($seenKeys[$key])) {
+                $lines[] = $key.'='.$quote($val);
+            }
         }
 
-        $env .= <<<ENV
-
-DB_CONNECTION={$driver}
-DB_HOST={$q($dbHost)}
-DB_PORT={$q($dbPort)}
-DB_DATABASE={$q($dbName)}
-DB_USERNAME={$q($dbUser)}
-DB_PASSWORD={$q($dbPass)}
-APP_URL={$q($appUrl)}
-
-ENV;
-
+        // Atomic write
+        $newEnv = rtrim(implode(PHP_EOL, $lines)).PHP_EOL;
         try {
-            file_put_contents($this->envPath, $env);
+            $tmp = $this->envPath.'.tmp';
+            file_put_contents($tmp, $newEnv);
+            @chmod($tmp, 0664);
+            rename($tmp, $this->envPath); // atomic on same filesystem
+        } catch (\Throwable $e) {
+            // restore backup on failure
+            @file_put_contents($this->envPath, $original);
+            return Reply::error('ENV write error: '.$e->getMessage());
+        }
 
-            // Flip DB connection for THIS request
+        // Flip runtime DB and encrypter for THIS request
+        try {
             config([
                 'database.default'                               => $driver,
                 "database.connections.$driver.host"              => $dbHost,
@@ -91,29 +120,33 @@ ENV;
                 "database.connections.$driver.username"          => $dbUser,
                 "database.connections.$driver.password"          => $dbPass,
             ]);
+
             DB::purge($driver);
             DB::setDefaultConnection($driver);
-            DB::connection()->getPdo(); // fail fast if bad creds
+            DB::connection()->getPdo(); // fail fast
 
-            // Rebind encrypter with the persisted key so decrypt/encrypt works now
-            config(['app.key' => $appKey]);
-            $keyBytes = base64_decode(Str::after($appKey, 'base64:'));
-            app()->instance('encrypter', new Encrypter($keyBytes, config('app.cipher')));
+            // Rebind encrypter to persisted APP_KEY so decrypt/encrypt works now
+            $appKey  = env('APP_KEY');
+            if ($appKey && Str::startsWith($appKey, 'base64:')) {
+                $keyBytes = base64_decode(Str::after($appKey, 'base64:'));
+                app()->instance('encrypter', new Encrypter($keyBytes, config('app.cipher')));
+            }
 
             $message = 'Database settings correct';
 
             if (! $input->ajax() && ! $input->wantsJson()) {
-                return redirect()->route('LaravelInstaller::requirements')
+                return redirect()
+                    ->route('LaravelInstaller::requirements')
                     ->with('installer_message', $message);
             }
 
-            // Keep a flash around so next page can show it even after AJAX redirect
             session()->flash('installer_message', $message);
-
             return Reply::redirect(route('LaravelInstaller::requirements'), $message);
 
         } catch (\Throwable $e) {
-            return Reply::error('ENV write error: ' . $e->getMessage());
+            // If runtime flip fails, restore backup so you’re not left with a broken .env
+            @file_put_contents($this->envPath, $original);
+            return Reply::error('DB config error: '.$e->getMessage());
         }
     }
 }
