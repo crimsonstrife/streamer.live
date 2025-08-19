@@ -174,8 +174,13 @@ class AppServiceProvider extends ServiceProvider
             PostResource::class,
         ]);
 
-        if (Schema::hasTable('pages')) {
-            view()->share('shopSlug', ShopHelper::getShopSlug());
+        try {
+            if (Schema::hasTable('pages')) {
+                view()->share('shopSlug', ShopHelper::getShopSlug());
+            }
+        } catch (Exception $e) {
+            // DB isn’t ready—just skip.
+            return;
         }
 
         // this will override the alias Jetstream registered
