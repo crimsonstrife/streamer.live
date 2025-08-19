@@ -104,7 +104,16 @@ class EnvironmentManager
             $tmp = $this->envPath.'.tmp';
             file_put_contents($tmp, $newEnv);
             @chmod($tmp, 0664);
-            rename($tmp, $this->envPath); // atomic on same filesystem
+            $renameSuccess = @rename($tmp, $this->envPath); // atomic on same filesystem
+            if (!$renameSuccess) {
+                // Fallback: non-atomic write if rename fails (e.g., cross-filesystem)
+                $fallbackSuccess = @file_put_contents($this->envPath, $newEnv);
+                // Clean up temp file
+                @unlink($tmp);
+                if ($fallbackSuccess === false) {
+                    throw new \RuntimeException('Failed to write .env file atomically and non-atomically.');
+                }
+            }
         } catch (\Throwable $e) {
             // restore backup on failure
             @file_put_contents($this->envPath, $original);
