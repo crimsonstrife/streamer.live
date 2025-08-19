@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Utilities\Installer\Helpers;
 
 use Froiden\LaravelInstaller\Helpers\Reply;
@@ -42,7 +43,7 @@ class EnvironmentManager
         // Collect values (defaults for MySQL)
         $driver = $input->string('driver')->toString() ?: 'mysql';
         $dbHost = $input->string('hostname')->toString() ?: '127.0.0.1';
-        $dbPort = $input->string('port')->toString()     ?: ($driver === 'mysql' ? '3306' : '');
+        $dbPort = $input->string('port')->toString() ?: ($driver === 'mysql' ? '3306' : '');
         $dbName = $input->string('database')->toString();
         $dbUser = $input->string('username')->toString();
         $dbPass = $input->string('password')->toString();

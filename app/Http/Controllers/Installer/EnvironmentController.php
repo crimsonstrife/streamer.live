@@ -9,7 +9,9 @@ use Random\RandomException;
 
 class EnvironmentController extends Controller
 {
-    public function __construct(protected EnvironmentManager $environmentManager) {}
+    public function __construct(protected EnvironmentManager $environmentManager)
+    {
+    }
 
     public function environment()
     {
