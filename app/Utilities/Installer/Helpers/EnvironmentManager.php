@@ -76,8 +76,16 @@ class EnvironmentManager
 
         $quote = static function (?string $v): string {
             $v ??= '';
-            // Quote if contains spaces, #, or quotes
-            return preg_match('/\s|"|#/', $v) ? '"'.str_replace('"', '\"', $v).'"' : $v;
+            // Quote if contains spaces, #, quotes, newlines, carriage returns, or backslashes
+            if (preg_match('/\s|"|#|\n|\r|\\\\/', $v)) {
+                $escaped = str_replace(
+                    ['\\', '"', "\n", "\r"],
+                    ['\\\\', '\\"', '\\n', '\\r'],
+                    $v
+                );
+                return '"' . $escaped . '"';
+            }
+            return $v;
         };
 
         // Replace in-place
