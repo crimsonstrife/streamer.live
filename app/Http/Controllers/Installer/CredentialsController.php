@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Installer;
 use App\Actions\Fortify\PasswordValidationRules;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Str;
 
 class CredentialsController extends Controller
@@ -24,9 +25,9 @@ class CredentialsController extends Controller
             $username = null;
         } else {
             $request->validate([
-                'ADMIN_EMAIL'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'ADMIN_PASSWORD' => $this->passwordRules(),
-                'ADMIN_USERNAME' => ['required', 'string', 'max:255', 'unique:users', 'blasp_check'],
+                'ADMIN_EMAIL'    => ['required', 'string', 'email', 'max:255'],
+                'ADMIN_USERNAME' => ['required', 'string', 'max:255', 'alpha_dash'],
+                'ADMIN_PASSWORD' => ['required', Password::min(8)],
             ]);
             $email    = $request->input('ADMIN_EMAIL');
             $password = $request->input('ADMIN_PASSWORD');

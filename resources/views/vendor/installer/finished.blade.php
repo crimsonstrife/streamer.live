@@ -1,8 +1,14 @@
 @extends('vendor.installer.layouts.master')
 
 @section('title', trans('installer_messages.final.title'))
+
 @section('container')
-    <p class="paragraph" style="text-align: center;">{{ session('message')['message'] }}</p>
+    @php $flash = session('installer_message') ?? session('message'); @endphp
+    @if($flash)
+        <p class="paragraph" style="text-align: center;">
+            {{ is_array($flash) ? ($flash['message'] ?? ($flash['status'] ?? '')) : $flash }}
+        </p>
+    @endif
 
     @if(! empty($email) && ! empty($password))
         <div class="credentials-box">
