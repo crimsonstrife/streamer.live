@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "315e5a5e3cd7ed035a80645a7a1101c2",
+    "content-hash": "49be7323042865e81a0c08c11a42616f",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -4428,16 +4428,16 @@
         },
         {
             "name": "froiden/laravel-installer",
-            "version": "1.9.0",
+            "version": "11.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Froiden/laravel-installer.git",
-                "reference": "ed1968f79cc35631d44e42d064353e5a32111c9c"
+                "reference": "d06362a45a07531969fec475f71f07bfdc286c10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Froiden/laravel-installer/zipball/ed1968f79cc35631d44e42d064353e5a32111c9c",
-                "reference": "ed1968f79cc35631d44e42d064353e5a32111c9c",
+                "url": "https://api.github.com/repos/Froiden/laravel-installer/zipball/d06362a45a07531969fec475f71f07bfdc286c10",
+                "reference": "d06362a45a07531969fec475f71f07bfdc286c10",
                 "shasum": ""
             },
             "type": "library",
@@ -4462,9 +4462,9 @@
             "description": "Laravel web installer",
             "support": {
                 "issues": "https://github.com/Froiden/laravel-installer/issues",
-                "source": "https://github.com/Froiden/laravel-installer/tree/1.9.0"
+                "source": "https://github.com/Froiden/laravel-installer/tree/11.0.0"
             },
-            "time": "2024-02-10T05:44:39+00:00"
+            "time": "2024-08-13T10:47:34+00:00"
         },
         {
             "name": "fruitcake/php-cors",
