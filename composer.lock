@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "11601ee5ca4cd1d59ca693493ac472e0",
+    "content-hash": "315e5a5e3cd7ed035a80645a7a1101c2",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -6580,16 +6580,16 @@
         },
         {
             "name": "laravel/horizon",
-            "version": "v5.33.3",
+            "version": "v5.33.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/horizon.git",
-                "reference": "aabcd425b34005182acc4c22aae48692684cb765"
+                "reference": "baa36725ed24dbbcd7ddb4ba3dcfd4c0f22028ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/aabcd425b34005182acc4c22aae48692684cb765",
-                "reference": "aabcd425b34005182acc4c22aae48692684cb765",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/baa36725ed24dbbcd7ddb4ba3dcfd4c0f22028ed",
+                "reference": "baa36725ed24dbbcd7ddb4ba3dcfd4c0f22028ed",
                 "shasum": ""
             },
             "require": {
@@ -6654,9 +6654,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/horizon/issues",
-                "source": "https://github.com/laravel/horizon/tree/v5.33.3"
+                "source": "https://github.com/laravel/horizon/tree/v5.33.2"
             },
-            "time": "2025-08-11T14:55:49+00:00"
+            "time": "2025-08-05T02:30:15+00:00"
         },
         {
             "name": "laravel/jetstream",
@@ -16541,21 +16541,21 @@
         },
         {
             "name": "stephenjude/filament-jetstream",
-            "version": "0.0.16",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stephenjude/filament-jetstream.git",
-                "reference": "40963cc838c6d6b7994a7e28381d76c16e6a297b"
+                "reference": "e004df5d8ec03b5fa4bfd1a438d563342b8e3700"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stephenjude/filament-jetstream/zipball/40963cc838c6d6b7994a7e28381d76c16e6a297b",
-                "reference": "40963cc838c6d6b7994a7e28381d76c16e6a297b",
+                "url": "https://api.github.com/repos/stephenjude/filament-jetstream/zipball/e004df5d8ec03b5fa4bfd1a438d563342b8e3700",
+                "reference": "e004df5d8ec03b5fa4bfd1a438d563342b8e3700",
                 "shasum": ""
             },
             "require": {
                 "filament/filament": "^3.0",
-                "illuminate/contracts": "^10.0|^11.0|^12.0",
+                "illuminate/contracts": "^10.0|^11.0",
                 "laravel/jetstream": "^4.2|^5.0",
                 "php": "^8.1",
                 "spatie/laravel-package-tools": "^1.15.0"
@@ -16613,7 +16613,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-05T17:36:49+00:00"
+            "time": "2025-08-04T18:10:03+00:00"
         },
         {
             "name": "symfony/clock",
