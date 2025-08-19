@@ -865,9 +865,18 @@ const H = b((qe, xe) => {
       },
       p: function (g) {
         return (
-          { M: a, y, w: o, d, D: f, h: u, m: r, s: e, ms: i, Q: _ }[
-            g
-          ] ||
+          {
+            M: a,
+            y,
+            w: o,
+            d,
+            D: f,
+            h: u,
+            m: r,
+            s: e,
+            ms: i,
+            Q: _
+          }[g] ||
                     String(g || '')
                       .toLowerCase()
                       .replace(/s$/, '')
