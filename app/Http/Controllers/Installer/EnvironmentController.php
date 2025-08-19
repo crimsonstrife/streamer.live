@@ -5,15 +5,12 @@ namespace App\Http\Controllers\Installer;
 use Illuminate\Routing\Controller;
 use App\Utilities\Installer\Helpers\EnvironmentManager;
 use Froiden\LaravelInstaller\Request\UpdateRequest;
-use Illuminate\Support\Facades\Artisan;
+use Random\RandomException;
 
 class EnvironmentController extends Controller
 {
-    protected EnvironmentManager $environmentManager;
-
-    public function __construct(EnvironmentManager $environmentManager)
+    public function __construct(protected EnvironmentManager $environmentManager)
     {
-        $this->environmentManager = $environmentManager;
     }
 
     public function environment()
@@ -22,17 +19,12 @@ class EnvironmentController extends Controller
         return view('vendor.installer.environment', compact('envConfig'));
     }
 
+    /**
+     * @throws RandomException
+     */
     public function save(UpdateRequest $request)
     {
-        // Generate a new key exactly as `artisan key:generate` would
-        Artisan::call('key:generate', ['--show' => true]);
-        $rawKey = Artisan::output();
-        $appKey = trim($rawKey);
-
-        // Merge it into the request so saveFile() will write it
-        $request->merge(['APP_KEY' => $appKey]);
-
-        // Delegate back to the EnvironmentManager
+        // Do NOT generate a new key here — it’s already persisted in .env from index.php
         return $this->environmentManager->saveFile($request);
     }
 }
