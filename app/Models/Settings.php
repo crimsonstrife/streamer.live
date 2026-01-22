@@ -253,6 +253,9 @@ abstract class Settings extends SpatieSettings implements Onboardable
         return $this;
     }
 
+    /**
+     * @throws MissingSettings
+     */
     private function loadValues(?array $values = null): self
     {
         if ($this->loaded) {
@@ -262,13 +265,13 @@ abstract class Settings extends SpatieSettings implements Onboardable
         // hydrate the mapper + config first
         $this->ensureConfigIsLoaded();
 
-        $values ??= $this->mapper->load(static::class);
+        $values ??= $this->mapper->load(static::class)->toArray();
 
         $this->loaded = true;
         $this->fill($values);
         $this->originalValues = collect($values);
 
-        event(new SettingsLoaded($this));
+        event(new SettingsLoaded($this , false));
 
         return $this;
     }
