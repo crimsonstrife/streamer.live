@@ -283,7 +283,7 @@ abstract class Settings extends SpatieSettings implements Onboardable
             $this->originalValues = collect($values);
         }
 
-        event(new SettingsLoaded($this , false));
+        event(new SettingsLoaded($this, false));
 
         return $this;
     }

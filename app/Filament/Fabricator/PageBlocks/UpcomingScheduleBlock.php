@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Filament\Fabricator\PageBlocks;
 
 use App\Models\Event;
@@ -51,7 +52,7 @@ class UpcomingScheduleBlock extends PageBlock
             ->get();
 
         if ($local->isNotEmpty()) {
-            $raw = $local->map(fn($e) => [
+            $raw = $local->map(fn ($e) => [
                 'title' => $e->title,
                 'iso'   => $e->starts_at->toIso8601String(),   // raw UTC
                 'time'  => $e->starts_at->format($format),     // server‐rendered fallback
@@ -60,7 +61,7 @@ class UpcomingScheduleBlock extends PageBlock
         } else {
             // 4. Fallback to Twitch schedule
             $segments = app(TwitchService::class)->getUpcomingStreams($limit) ?? [];
-            $raw = collect($segments)->map(fn($seg) => [
+            $raw = collect($segments)->map(fn ($seg) => [
                 'title' => $seg['title'] ?? 'Twitch Event',
                 'iso'   => Carbon::parse($seg['start_time'])->toIso8601String(),
                 'time'  => Carbon::parse($seg['start_time'])->format($format),
