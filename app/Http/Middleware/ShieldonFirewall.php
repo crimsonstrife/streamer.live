@@ -4,45 +4,37 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Shieldon\Firewall\Captcha\Csrf;
 use Shieldon\Firewall\Firewall;
-use Shieldon\Firewall\HttpResolver;
 use Symfony\Component\HttpFoundation\Response;
 
 class ShieldonFirewall
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param Request $request
-     * @param Closure $next
-     * @return mixed
-     */
-    public function handle(Request $request, Closure $next): mixed
+    public function handle(Request $request, Closure $next): Response
     {
         $firewall = new Firewall();
 
-        // The directory in where Shieldon Firewall will place its files.
         $storage = storage_path('shieldon_firewall');
-        ;
-
         $firewall->configure($storage);
 
-        // Base URL for control panel.
         $firewall->controlPanel('/firewall/panel/');
 
-        $firewall->getKernel()->setCaptcha(
-            new Csrf([
-                'name' => '_token',
-                'value' => csrf_token(),
-            ])
-        );
+        // IMPORTANT: Do not bind Shieldon's CSRF captcha to Laravel's _token.
+        // Remove this until login is stable. Reintroduce later with a distinct field name if needed.
+        // $firewall->getKernel()->setCaptcha(...);
 
-        $response = $firewall->run();
+        $shieldonResponse = $firewall->run();
 
-        if ($response->getStatusCode() !== 200) {
-            $httpResolver = new HttpResolver();
-            $httpResolver($response);
+        if ($shieldonResponse->getStatusCode() !== 200) {
+            // Convert Shieldon's PSR-7 style response headers/body into a Laravel response.
+            $headers = [];
+            foreach ($shieldonResponse->getHeaders() as $name => $values) {
+                $headers[$name] = implode(', ', $values);
+            }
+
+            return response(
+                (string) $shieldonResponse->getBody(),
+                $shieldonResponse->getStatusCode()
+            )->withHeaders($headers);
         }
 
         return $next($request);

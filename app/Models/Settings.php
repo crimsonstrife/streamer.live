@@ -5,6 +5,7 @@ namespace App\Models;
 use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Support\Collection;
+use JsonException;
 use ReflectionProperty;
 use Spatie\LaravelSettings\Events\SavingSettings;
 use Spatie\LaravelSettings\Events\SettingsLoaded;
@@ -118,10 +119,13 @@ abstract class Settings extends SpatieSettings implements Onboardable
     {
         /** @var StoreObjects\Collection $encrypted */
         /** @var StoreObjects\Collection $nonEncrypted */
-        [$encrypted, $nonEncrypted] = $this->toCollection()->partition(
+        $partitions = $this->toCollection()->partition(
             fn ($value, string $name) => $this->config->isEncrypted($name)
         );
 
+        [$encrypted, $nonEncrypted] = [$partitions[0], $partitions[1]];
+
+        /** @var TYPE_NAME $nonEncrypted */
         return array_merge(
             $encrypted->map(fn ($value) => Crypto::encrypt($value))->all(),
             $nonEncrypted->all()
@@ -138,8 +142,9 @@ abstract class Settings extends SpatieSettings implements Onboardable
         /** @var StoreObjects\Collection $nonEncrypted */
         [$encrypted, $nonEncrypted] = collect($data)->partition(
             fn ($value, string $name) => $this->config->isEncrypted($name)
-        );
+        )->values()->toArray();
 
+        /** @var TYPE_NAME $nonEncrypted */
         $data = array_merge(
             $encrypted->map(fn ($value) => Crypto::decrypt($value))->all(),
             $nonEncrypted->all()
@@ -221,17 +226,18 @@ abstract class Settings extends SpatieSettings implements Onboardable
             ]);
     }
 
-    public function toArray(): array
-    {
-        return $this->toCollection()->toArray();
-    }
-
+    /**
+     * @throws JsonException
+     */
     public function toJson($options = 0): string
     {
-        return json_encode($this->toArray(), $options);
+        return json_encode($this->toArray(), JSON_THROW_ON_ERROR | $options);
     }
 
-    public function toResponse($request)
+    /**
+     * @throws JsonException
+     */
+    public function toResponse($request): \Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
         return response()->json($this->toJson());
     }
@@ -243,6 +249,9 @@ abstract class Settings extends SpatieSettings implements Onboardable
         return $this->config->getRepository();
     }
 
+    /**
+     * @throws MissingSettings
+     */
     public function refresh(): self
     {
         $this->config->clearCachedLockedProperties();
@@ -256,7 +265,7 @@ abstract class Settings extends SpatieSettings implements Onboardable
     /**
      * @throws MissingSettings
      */
-    private function loadValues(?array $values = null): self
+    private function loadValues(StoreObjects\Collection|array $values = null): self
     {
         if ($this->loaded) {
             return $this;
@@ -265,11 +274,14 @@ abstract class Settings extends SpatieSettings implements Onboardable
         // hydrate the mapper + config first
         $this->ensureConfigIsLoaded();
 
-        $values ??= $this->mapper->load(static::class)->toArray();
+        $values ??= $this->mapper->load(static::class);
+
 
         $this->loaded = true;
-        $this->fill($values);
-        $this->originalValues = collect($values);
+        if ($values !== null) {
+            $this->fill($values);
+            $this->originalValues = collect($values);
+        }
 
         event(new SettingsLoaded($this , false));
 

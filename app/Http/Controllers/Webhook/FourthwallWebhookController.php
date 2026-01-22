@@ -38,7 +38,7 @@ class FourthwallWebhookController extends Controller
      */
     public function __construct()
     {
-        $this->enabled = app(FourthwallSettings::class)->enabled;
+        $this->enabled = app(FourthwallSettings::class)->enable_integration;
 
         if ($this->enabled) {
             $this->secret = app(FourthwallSettings::class)->webhook_secret;
