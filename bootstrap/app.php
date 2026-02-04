@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Middleware\CheckIPFilter;
+use App\Http\Middleware\DebugInstanceFingerprint;
 use App\Http\Middleware\EnsureNotInstalled;
 use App\Http\Middleware\EnsureStoreEnabled;
+use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
@@ -57,7 +59,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ShieldonFirewall::class,
                 // SecurityHeaders::class,
                 AddCspHeaders::class,
-            ]
+                //DebugInstanceFingerprint::class,
+            ],
+            prepend: [
+            EncryptCookies::class,
+                ]
         );
 
         // Apply to all "api" routes
