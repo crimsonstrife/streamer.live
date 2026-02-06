@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Middleware\CheckIPFilter;
+use App\Http\Middleware\DebugInstanceFingerprint;
 use App\Http\Middleware\EnsureNotInstalled;
 use App\Http\Middleware\EnsureStoreEnabled;
+use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
@@ -25,36 +27,6 @@ use Treblle\SecurityHeaders\Http\Middleware\PermissionsPolicy;
 use Treblle\SecurityHeaders\Http\Middleware\RemoveHeaders;
 use Treblle\SecurityHeaders\Http\Middleware\SetReferrerPolicy;
 use Treblle\SecurityHeaders\Http\Middleware\StrictTransportSecurity;
-
-/*
-|--------------------------------------------------------------------------
-| Run The Shieldon Firewall
-|--------------------------------------------------------------------------
-|
-| Shieldon Firewall will watch all HTTP requests coming to your website.
-| Running Shieldon Firewall before initializing Laravel will avoid possible
-| conflicts with Laravel's built-in functions.
-*/
-if (isset($_SERVER['REQUEST_URI'])) {
-
-    // This directory must be writable.
-    // We put it in the `storage/shieldon_firewall` directory.
-    $storage = __DIR__.'/../storage/shieldon_firewall';
-
-    $firewall = new Firewall();
-
-    $firewall->configure($storage);
-
-    // The base url for the control panel.
-    $firewall->controlPanel('/firewall/panel/');
-
-    $response = $firewall->run();
-
-    if ($response->getStatusCode() !== 200) {
-        $httpResolver = new HttpResolver();
-        $httpResolver($response);
-    }
-}
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -84,9 +56,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // Apply to all "web" routes
         $middleware->web(
             append: [
+                ShieldonFirewall::class,
                 // SecurityHeaders::class,
                 AddCspHeaders::class,
-            ]
+                //DebugInstanceFingerprint::class,
+            ],
+            prepend: [
+            EncryptCookies::class,
+                ]
         );
 
         // Apply to all "api" routes

@@ -95,7 +95,7 @@ jobs:
     - name: Create ZIP for release
       run: |
         mkdir -p release
-        zip -r release/laravel-release.zip . \
+        zip -r release/streamer-release.zip . \
           app bootstrap config database public resources routes vendor \
           artisan composer.json composer.lock package.json public/build \
           -x "**/node_modules/**" "**/storage/logs/**" "**/storage/framework/**" "**/.git/**" "**/.env" "**/tests/**"
@@ -103,6 +103,6 @@ jobs:
     - name: Upload release ZIP to GitHub
       uses: softprops/action-gh-release@v1
       with:
-        files: release/laravel-release.zip
+        files: release/streamer-release.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

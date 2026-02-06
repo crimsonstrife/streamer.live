@@ -98,6 +98,27 @@ if (! file_exists(storage_path('installed'))) {
     });
 }
 
+Route::get('/__debug/instance', function () {
+    $fp = fn ($v) => $v ? substr(hash('sha256', $v), 0, 12) : null;
+
+    return response()->json([
+        'host' => gethostname(),
+        'php' => PHP_VERSION,
+        'base_path' => base_path(),
+        'public_path' => public_path(),
+        'env_file' => app()->environmentFile(),
+        'env_path' => app()->environmentPath(),
+        'env_full' => app()->environmentPath() . DIRECTORY_SEPARATOR . app()->environmentFile(),
+        'env_exists' => file_exists(app()->environmentPath() . DIRECTORY_SEPARATOR . app()->environmentFile()),
+        'env_mtime' => @filemtime(app()->environmentPath() . DIRECTORY_SEPARATOR . app()->environmentFile()),
+        'app_key_fp_config' => $fp((string) config('app.key')),
+        'app_key_fp_getenv' => $fp((string) getenv('APP_KEY')),
+        'app_key_fp__env' => $fp((string) ($_ENV['APP_KEY'] ?? null)),
+        'config_cached' => app()->configurationIsCached(),
+        'cached_config_path' => app()->getCachedConfigPath(),
+    ]);
+});
+
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {
     $blogSlug = BlogHelper::getBlogSlug(); // 'blog'
