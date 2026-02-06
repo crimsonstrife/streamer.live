@@ -384,6 +384,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
 
     public function getFeaturedImageAttribute(): ?string
     {
-        return $this->getFirstMediaUrl();
+        return $this->getFirstMediaUrl('featured_image');
     }
 }
