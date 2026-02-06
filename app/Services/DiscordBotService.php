@@ -19,7 +19,7 @@ class DiscordBotService
     /**
      * @var bool Indicates whether the Discord integration is enabled.
      */
-    protected bool $enabled;
+    public bool $enabled;
 
     /**
      * @var string The base URL for the Discord API.

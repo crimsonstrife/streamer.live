@@ -19,6 +19,9 @@
                 <div class="flex items-center space-x-2">
                     <span class="inline-block h-3 w-3 rounded-full bg-red-600"></span>
                     <span class="text-lg font-semibold">Live Now</span>
+                    <a href="{{ $url }}" target="_blank" class="text-sm font-medium text-primary-600 hover:underline">
+                        Open stream
+                    </a>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">

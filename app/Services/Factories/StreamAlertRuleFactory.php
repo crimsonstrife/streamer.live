@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace App\Services\Factories;
 
 use App\Models\StreamAlertRule;
 use Illuminate\Database\Eloquent\Factories\Factory;
