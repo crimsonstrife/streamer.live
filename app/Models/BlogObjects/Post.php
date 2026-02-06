@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use \LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB;
+use LaravelIdea\Helper\Stephenjude\FilamentBlog\Models\_IH_Post_QB;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Searchable\Searchable;
@@ -127,6 +127,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
     protected $appends = [
         'banner_url',
         'has_banner',
+        'featured_image'
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -379,5 +380,10 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
             ->setLastModificationDate(Carbon::create($this->updated_at))
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
             ->setPriority(0.1);
+    }
+
+    public function getFeaturedImageAttribute(): ?string
+    {
+        return $this->getFirstMediaUrl('featured_image');
     }
 }
