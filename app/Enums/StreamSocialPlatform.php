@@ -31,4 +31,3 @@ enum StreamSocialPlatform: string implements HasLabel, HasIcon
         return array_map(static fn (self $case) => $case->value, self::cases());
     }
 }
-

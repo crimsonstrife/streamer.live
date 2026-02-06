@@ -20,7 +20,8 @@ class PublishStreamSocialPosts implements ShouldQueue
 
     public function __construct(
         private readonly SocialPosterFactory $factory,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws Throwable
