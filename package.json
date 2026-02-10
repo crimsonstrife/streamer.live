@@ -24,7 +24,7 @@
         "@redmine-ui/tributejs": "^6.1.2",
         "bootstrap": "^5.3.6",
         "bootstrap-icons": "^1.13.1",
-        "jquery": "^3.7.1",
+        "jquery": "^4.0.0",
         "jquery-ui": "^1.14.1",
         "swiper": "^11.2.8",
         "tinymce": "^8.0.2",
