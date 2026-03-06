@@ -16,12 +16,16 @@ class StreamSocialPostRule extends BaseModel
         'category_pattern',     // nullable = any category
         'message_template',
         'enabled',
+        'sort_order',
+        'options',
     ];
 
     protected function casts(): array
     {
         return [
             'enabled' => 'boolean',
+            'sort_order' => 'integer',
+            'options' => 'array',
         ];
     }
 

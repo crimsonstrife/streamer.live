@@ -131,6 +131,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\HeroResource::class,
                 Resources\MediaResource::class,
                 Resources\StreamAlertRuleResource::class,
+                Resources\StreamSocialAccountResource::class,
                 Resources\TicketResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')

@@ -61,6 +61,8 @@ class PublishStreamSocialPosts implements ShouldQueue
             ->where('enabled', true)
             ->where('event', 'live')
             ->with('account')
+            ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
 
         foreach ($rules as $rule) {

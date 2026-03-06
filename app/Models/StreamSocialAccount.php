@@ -23,4 +23,9 @@ class StreamSocialAccount extends BaseModel
             'meta' => 'array',
         ];
     }
+
+    public function postRules()
+    {
+        return $this->hasMany(StreamSocialPostRule::class, 'stream_social_account_id');
+    }
 }
