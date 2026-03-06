@@ -18,8 +18,8 @@ use App\Utilities\BlogHelper;
 use Brickx\MaintenanceSwitch\MaintenanceSwitchPlugin;
 use Exception;
 use Filament\Events\TenantSet;
-use Filament\Facades\Filament;
-use Filament\Http\Middleware\Authenticate;
+use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
@@ -31,14 +31,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets;
 use Guava\Tutorials\TutorialsPlugin;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Event;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Laravel\Fortify\Fortify;
 use Laravel\Jetstream\Jetstream;
@@ -92,7 +85,7 @@ class AdminPanelProvider extends PanelProvider
         Jetstream::$registersRoutes = true;
 
         /**
-         * Listen and switch team if tenant was changed
+         * Listen and switch team if the tenant was changed
          */
         Event::listen(
             TenantSet::class,
@@ -161,12 +154,14 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->middleware([
-                StartSession::class,
-                ShareErrorsFromSession::class,
-                SubstituteBindings::class,
+                'web',
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
+            ], isPersistent: true)
+            ->authMiddleware([
+                FilamentAuthenticate::class,
+                EnsureEmailIsVerified::class,
+            ], isPersistent: true)
             ->plugins([
                 ShortUrlPlugin::make(),
                 FilamentFabricatorPlugin::make(),
