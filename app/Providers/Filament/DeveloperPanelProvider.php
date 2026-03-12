@@ -4,8 +4,8 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\AccountWidget;
 use Exception;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
@@ -13,12 +13,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 use Stephenjude\FilamentDebugger\DebuggerPlugin;
 
@@ -51,19 +45,14 @@ class DeveloperPanelProvider extends PanelProvider
                 Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
+                'web',
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
+            ], isPersistent: true)
             ->authMiddleware([
-                Authenticate::class,
-            ])
+                FilamentAuthenticate::class,
+                EnsureEmailIsVerified::class,
+            ], isPersistent: true)
             ->plugins([
                 DebuggerPlugin::make(),
                 FilamentSpatieLaravelHealthPlugin::make(),

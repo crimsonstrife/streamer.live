@@ -24,10 +24,10 @@
         "@redmine-ui/tributejs": "^6.1.2",
         "bootstrap": "^5.3.6",
         "bootstrap-icons": "^1.13.1",
+        "dompurify": "^3.2.6",
         "jquery": "^3.7.1",
         "jquery-ui": "^1.14.1",
-        "swiper": "^11.2.8",
-        "tinymce": "^8.0.2",
-        "dompurify": "^3.2.6"
+        "swiper": "^12.1.2",
+        "tinymce": "^8.0.2"
     }
 }
