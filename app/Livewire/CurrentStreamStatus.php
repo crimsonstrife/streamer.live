@@ -3,9 +3,10 @@
 namespace App\Livewire;
 
 use App\Settings\TwitchSettings;
-use Filament\Widgets\Widget;
-use App\Services\TwitchService;
 use Carbon\Carbon;
+use Filament\Widgets\Widget;
+use Illuminate\Support\Facades\Cache;
+use Throwable;
 
 class CurrentStreamStatus extends Widget
 {
@@ -18,12 +19,12 @@ class CurrentStreamStatus extends Widget
 
     protected function getViewData(): array
     {
-        $stream = app(TwitchService::class)->getStreamData();
-        $streamSettings = app(TwitchSettings::class);
+        $settings = app(TwitchSettings::class);
 
-        if (! $stream) {
+        // If Twitch integration is disabled, treat as offline regardless of cache.
+        if (! $settings->enable_integration) {
             return [
-                'twitchEnabled' => $streamSettings->enable_integration,
+                'twitchEnabled' => false,
                 'isLive'   => false,
                 'game'     => null,
                 'viewers'  => null,
@@ -31,15 +32,64 @@ class CurrentStreamStatus extends Widget
             ];
         }
 
-        $duration = Carbon::parse($stream[0]['started_at'])
-            ->diffForHumans(now(), ['parts' => 3, 'short' => true]);
+        $username = strtolower(trim($settings->channel_name ?? config('services.twitch.channel_name') ?? ''));
+
+        if ($username === '') {
+            return [
+                'twitchEnabled' => true,
+                'isLive'   => false,
+                'game'     => null,
+                'viewers'  => null,
+                'duration' => null,
+            ];
+        }
+
+        $statusKey  = "twitch_stream_status_{$username}";
+        $payloadKey = "twitch_stream_payload_{$username}";
+
+        $status  = Cache::get($statusKey, 'offline');
+        $payload = Cache::get($payloadKey);
+
+        $isLive = ($status === 'live');
+
+        if (! $isLive || ! is_array($payload)) {
+            return [
+                'twitchEnabled' => true,
+                'isLive'   => false,
+                'game'     => null,
+                'viewers'  => null,
+                'duration' => null,
+            ];
+        }
+
+        // Support either your normalized payload or the raw Twitch stream array.
+        $game = $payload['category']
+            ?? $payload['game_name']
+            ?? 'Unknown Game';
+
+        $viewers = $payload['viewer_count']
+            ?? $payload['viewers']
+            ?? null;
+
+        $startedAt = $payload['started_at'] ?? null;
+
+        $duration = null;
+        if ($startedAt) {
+            try {
+                $duration = Carbon::parse($startedAt)
+                    ->diffForHumans(now(), ['parts' => 3, 'short' => true]);
+            } catch (Throwable) {
+                $duration = null;
+            }
+        }
 
         return [
-            'twitchEnabled' => $streamSettings->enable_integration,
+            'twitchEnabled' => true,
             'isLive'   => true,
-            'game'     => $stream[0]['game_name'] ?? 'Unknown Game',
-            'viewers'  => $stream[0]['viewer_count'],
+            'game'     => $game,
+            'viewers'  => $viewers,
             'duration' => $duration,
+            'url'      => $payload['url'] ?? "https://twitch.tv/{$username}",
         ];
     }
 }
