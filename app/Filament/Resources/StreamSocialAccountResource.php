@@ -56,23 +56,17 @@ class StreamSocialAccountResource extends Resource
                     Group::make()
                         ->visible(fn (Get $get) => $get('platform') === StreamSocialPlatform::X->value)
                         ->schema([
-                            Placeholder::make('x_token_status')
-                                ->label('X Access Token')
+                            Placeholder::make('x_connection_status')
+                                ->label('X Connection')
                                 ->content(function (?StreamSocialAccount $record) {
-                                    $has = (bool) (($record?->credentials['user_access_token'] ?? null));
-                                    return $has ? 'Configured' : 'Not configured';
-                                }),
+                                    $has = (bool) (
+                                        ($record?->credentials['access_token'] ?? null)
+                                        || ($record?->credentials['user_access_token'] ?? null) // legacy
+                                    );
 
-                            TextInput::make('credentials.user_access_token')
-                                ->label('User Access Token')
-                                ->password()
-                                ->revealable()
-                                // Don’t show existing token in the UI
-                                ->afterStateHydrated(fn (TextInput $c) => $c->state(''))
-                                // Only write if the user typed something
-                                ->dehydrated(fn ($state) => filled($state))
-                                ->helperText('Paste a user-context access token with tweet/write permissions. Leaving blank keeps existing.')
-                                ->maxLength(2048),
+                                    return $has ? 'Connected' : 'Not connected';
+                                })
+                                ->helperText('Use the “Connect X” action on this page to authorize posting.'),
                         ]),
 
                     // Bluesky

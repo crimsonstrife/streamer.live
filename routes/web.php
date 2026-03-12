@@ -19,6 +19,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Social\XOAuthController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TicketController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
@@ -365,7 +366,7 @@ CSS;
 
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
-        ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
+        ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/|admin\/).*$')
         ->name('fabricator.page.global.fallback');
 });
 
@@ -421,10 +422,20 @@ Route::get('auth/twitch/callback', function (Request $request) {
         ->with('success', 'Twitch account linked successfully!');
 })->name('twitch.oauth.callback');
 
+Route::middleware(['web', 'auth', 'verified'])
+    ->prefix('admin/social/x')
+    ->name('social.x.')
+    ->group(function () {
+        Route::get('{account}/connect', [XOAuthController::class, 'connect'])
+            ->whereNumber('account')
+            ->name('connect');
+        Route::get('callback', [XOAuthController::class, 'callback'])->name('callback');
+    });
+
 Route::resource('icons', IconController::class)
     ->only(['store', 'index']);
 
 Route::get('/{slug}', FabricatorPageController::class)
     // don’t match any system URI
-    ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
+    ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/|admin\/).*$')
     ->name('fabricator.page.global.fallback');

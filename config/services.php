@@ -82,6 +82,13 @@ return [
         'redirect' => env('TWITTER_REDIRECT_URI'),
     ],
 
+    'x' => [
+        'client_id' => env('X_CLIENT_ID'),
+        'client_secret' => env('X_CLIENT_SECRET'),
+        'redirect' => env('X_REDIRECT_URI'),
+        'scopes' => preg_split('/\s+/', trim(env('X_SCOPES', 'tweet.read tweet.write users.read offline.access'))),
+    ],
+
     'maxmind' => [
         'license_key' => env('MAXMIND_KEY'),
         'account_id' => env('MAXMIND_ACCOUNT_ID'),
