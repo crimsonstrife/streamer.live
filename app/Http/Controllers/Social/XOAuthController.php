@@ -6,13 +6,16 @@ use App\Enums\StreamSocialPlatform;
 use App\Filament\Resources\StreamSocialAccountResource;
 use App\Http\Controllers\Controller;
 use App\Models\StreamSocialAccount;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
-class XOAuthController  extends Controller
+class XOAuthController extends Controller
 {
     /**
      * Redirect the admin to X OAuth authorize URL (PKCE).
@@ -109,10 +112,45 @@ class XOAuthController  extends Controller
                 ->with('error', 'X authorization callback resolved to a non-X social account.');
         }
 
-        $tokenResponse = $this->exchangeAuthorizationCode(
-            code: $code,
-            codeVerifier: $payload['code_verifier'],
-        );
+        try {
+            $tokenResponse = $this->exchangeAuthorizationCode(
+                code: $code,
+                codeVerifier: $payload['code_verifier'],
+            );
+        } catch (ConnectionException $exception) {
+            Log::warning('X token exchange connection failure.', [
+                'account_id' => $account->getKey(),
+                'message' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->to(StreamSocialAccountResource::getUrl('edit', ['record' => $account]))
+                ->with('error', 'X token exchange failed because X could not be reached. Please try again.');
+        } catch (RequestException $exception) {
+            $response = $exception->response;
+            $responseData = $response?->json();
+
+            $oauthError = is_array($responseData) ? ($responseData['error'] ?? null) : null;
+            $oauthDescription = is_array($responseData) ? ($responseData['error_description'] ?? null) : null;
+
+            Log::warning('X token exchange request failure.', [
+                'account_id' => $account->getKey(),
+                'status' => $response?->status(),
+                'error' => $oauthError,
+                'error_description' => $oauthDescription,
+                'response' => $responseData,
+            ]);
+
+            $message = match ($oauthError) {
+                'invalid_grant' => 'X token exchange failed because the authorization code is invalid or expired. Please try connecting again.',
+                'invalid_request' => 'X token exchange failed because the request was rejected by X. Please try again.',
+                default => 'X token exchange failed. Please try again.',
+            };
+
+            return redirect()
+                ->to(StreamSocialAccountResource::getUrl('edit', ['record' => $account]))
+                ->with('error', $message);
+        }
 
         // Persist tokens into encrypted credentials.
         $creds = $account->credentials ?? [];
@@ -126,7 +164,7 @@ class XOAuthController  extends Controller
             $creds['expires_at'] = now()->addSeconds((int) $tokenResponse['expires_in'])->timestamp;
         }
 
-        // Clean up legacy key if you previously pasted tokens
+        // Clean up legacy key
         unset($creds['user_access_token']);
 
         $account->credentials = $creds;
@@ -138,7 +176,7 @@ class XOAuthController  extends Controller
     }
 
     /**
-     * Optional: disconnect endpoint (you can also do this via a Filament action).
+     * disconnect endpoint.
      */
     public function disconnect(StreamSocialAccount $account)
     {
@@ -160,14 +198,12 @@ class XOAuthController  extends Controller
     private function exchangeAuthorizationCode(string $code, string $codeVerifier): array
     {
         $clientId     = config('services.x.client_id');
-        $clientSecret = config('services.x.client_secret'); // optional (public vs confidential clients)
+        $clientSecret = config('services.x.client_secret');
         $redirect     = config('services.x.redirect');
 
         // X token endpoint per docs. :contentReference[oaicite:7]{index=7}
         $request = Http::asForm()->acceptJson();
 
-        // If you have a client secret (confidential client), Basic Auth is commonly used.
-        // If you don't, include client_id in the body (public client).
         if ($clientSecret) {
             $request = $request->withBasicAuth($clientId, $clientSecret);
         }
