@@ -183,12 +183,12 @@
             "@php artisan ide-helper:generate",
             "@php artisan ide-helper:meta",
             "@php artisan migrate",
-            "npm ci",
+            "npm update",
             "npm run build"
         ],
         "post-install-cmd": [
             "@php artisan migrate",
-            "npm ci",
+            "npm install",
             "npm run build",
             "@php artisan db:seed",
             "@php artisan installer:finish"
