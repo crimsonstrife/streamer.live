@@ -120,9 +120,39 @@
                                     @endif
 
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                        @if (Route::has('dashboard'))
+                                            <li>
+                                                <a class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+                                                   href="{{ route('dashboard') }}">
+                                                    Dashboard
+                                                </a>
+                                            </li>
+                                        @endif
                                         <li><span class="dropdown-item-text text-muted">{{ __('Manage Account') }}</span></li>
                                         <li><a class="dropdown-item" href="{{ route('profile.show') }}">{{ __('Profile') }}</a></li>
+                                            @if (Route::has('tickets.index'))
+                                                <li>
+                                                    <a class="dropdown-item {{ request()->routeIs('tickets.*') ? 'active' : '' }}"
+                                                       href="{{ route('tickets.index') }}">
+                                                        Support Tickets
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ route('tickets.create') }}">
+                                                        Open a Ticket
+                                                    </a>
+                                                </li>
+                                            @endif
 
+                                            @if (Route::has('shop.orders.index'))
+                                                <li>
+                                                    <a class="dropdown-item {{ request()->routeIs('shop.orders.*') ? 'active' : '' }}"
+                                                       href="{{ route('shop.orders.index') }}">
+                                                        My Orders
+                                                    </a>
+                                                </li>
+                                            @endif
                                         @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                             <li><a class="dropdown-item"
                                                    href="{{ route('api-tokens.index') }}">{{ __('API Tokens') }}</a></li>
