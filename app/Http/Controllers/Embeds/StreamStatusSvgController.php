@@ -13,6 +13,21 @@ class StreamStatusSvgController extends Controller
 {
     public function __invoke(Request $request, string $username)
     {
+        $data = $this->buildBadgeData($request, $username);
+
+        $svg = view('embeds.stream-status', $data)->render();
+
+        return response($svg, 200)->withHeaders([
+            'Content-Type' => 'image/svg+xml; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=30, stale-while-revalidate=30',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cross-Origin-Resource-Policy' => 'cross-origin',
+            'X-Badge-Cache-Bust' => $data['cacheBust'] ?: 'none',
+        ]);
+    }
+
+    protected function buildBadgeData(Request $request, string $username): array
+    {
         $username = Str::lower(trim($username));
 
         $statusKey   = "twitch_stream_status_{$username}";
@@ -34,7 +49,7 @@ class StreamStatusSvgController extends Controller
             : null;
 
         $duration = null;
-        if ($isLive && !empty($payload['started_at'])) {
+        if ($isLive && ! empty($payload['started_at'])) {
             try {
                 $duration = Carbon::parse($payload['started_at'])
                     ->diffForHumans(now(), ['parts' => 2, 'short' => true]);
@@ -44,7 +59,7 @@ class StreamStatusSvgController extends Controller
         }
 
         $lastLive = null;
-        if (!$isLive) {
+        if (! $isLive) {
             $lastLiveSource = $lastMeta['ended_at'] ?? $lastMeta['started_at'] ?? null;
 
             if ($lastLiveSource) {
@@ -70,28 +85,25 @@ class StreamStatusSvgController extends Controller
         $showCategory = filter_var($request->query('show_category', true), FILTER_VALIDATE_BOOL);
         $showLastLive = filter_var($request->query('show_last_live', true), FILTER_VALIDATE_BOOL);
 
-        $twitchUrl = $payload['url']
-            ?? $lastMeta['url']
-            ?? "https://twitch.tv/{$username}";
+        $cacheBust = preg_replace(
+            '/[^A-Za-z0-9._:-]/',
+            '',
+            (string) ($request->query('cb', $request->query('v', '')))
+        );
 
-        $svg = view('embeds.stream-status', [
+        return [
             'username'     => $username,
             'isLive'       => $isLive,
             'game'         => $game,
             'viewers'      => $viewers,
             'duration'     => $duration,
             'lastLive'     => $lastLive,
-            'twitchUrl'    => $twitchUrl,
             'showCategory' => $showCategory,
             'showLastLive' => $showLastLive,
             'theme'        => $theme,
             'compact'      => $compact,
-        ])->render();
-
-        return response($svg, 200)
-            ->header('Content-Type', 'image/svg+xml; charset=UTF-8')
-            ->header('Cache-Control', 'public, max-age=30, stale-while-revalidate=30')
-            ->header('X-Content-Type-Options', 'nosniff');
+            'cacheBust'    => $cacheBust,
+        ];
     }
 
     protected function hex(?string $value, string $default): string

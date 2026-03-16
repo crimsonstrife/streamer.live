@@ -54,8 +54,8 @@
 
         @keyframes pulse-ring {
             0%   { opacity: 0.55; transform: scale(1); }
-            70%  { opacity: 0;    transform: scale(1.9); }
-            100% { opacity: 0;    transform: scale(1.9); }
+            70%  { opacity: 0; transform: scale(1.9); }
+            100% { opacity: 0; transform: scale(1.9); }
         }
 
         .pulse-ring {
@@ -72,30 +72,28 @@
           fill="#{{ $theme['bg'] }}"
           stroke="#{{ $theme['border'] }}" />
 
-    <a href="{{ $twitchUrl }}" target="_blank" rel="noopener noreferrer">
+    @if($isLive)
+        <circle class="pulse-ring" cx="24" cy="32" r="7" fill="{{ $statusColor }}" />
+    @endif
+
+    <circle cx="24" cy="32" r="7" fill="{{ $statusColor }}">
         @if($isLive)
-            <circle class="pulse-ring" cx="24" cy="32" r="7" fill="{{ $statusColor }}" />
+            <animate attributeName="opacity" values="1;0.85;1" dur="1.6s" repeatCount="indefinite" />
         @endif
+    </circle>
 
-        <circle cx="24" cy="32" r="7" fill="{{ $statusColor }}">
-            @if($isLive)
-                <animate attributeName="opacity" values="1;0.85;1" dur="1.6s" repeatCount="indefinite" />
-            @endif
-        </circle>
+    <text x="40" y="26"
+          class="badge-text"
+          fill="#{{ $theme['fg'] }}"
+          font-size="16"
+          font-weight="700">
+        {{ strtoupper($username) }} • {{ $statusText }}
+    </text>
 
-        <text x="40" y="26"
-              class="badge-text"
-              fill="#{{ $theme['fg'] }}"
-              font-size="16"
-              font-weight="700">
-            {{ strtoupper($username) }} • {{ $statusText }}
-        </text>
-
-        <text x="40" y="45"
-              class="badge-text"
-              fill="#{{ $theme['muted'] }}"
-              font-size="13">
-            {{ $line2 }}
-        </text>
-    </a>
+    <text x="40" y="45"
+          class="badge-text"
+          fill="#{{ $theme['muted'] }}"
+          font-size="13">
+        {{ $line2 }}
+    </text>
 </svg>
