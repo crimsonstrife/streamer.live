@@ -24,15 +24,15 @@ class BlogController extends Controller
     /**
      * Displays the blog index page.
      *
-     * Caches the rendered index page for improved performance. If the cache store supports tagging,
-     * the cache is tagged with 'blog' for easier invalidation.
+     * This is rendered fresh on every request, so the request / session-aware UI
+     * (auth menu, cookie banners, etc.) stays accurate.
      *
      * @param  Request  $request  The incoming HTTP request.
      * @return string The rendered blog index page.
      */
     public function index(Request $request): string
     {
-        return $this->rememberTaggedForever('blog', 'blog.index', fn () => $this->renderIndex($request));
+        return $this->renderIndex($request);
     }
 
     /**
@@ -48,7 +48,7 @@ class BlogController extends Controller
     private function renderIndex(Request $request): string
     {
         $slug = BlogHelper::getBlogSlug();
-        $uri = '/'.ltrim($slug, '/');
+        $uri = '/' . ltrim($slug, '/');
 
         $page = app(PageRoutesService::class)->getPageFromUri($uri);
         abort_unless($page, 404);
@@ -73,8 +73,8 @@ class BlogController extends Controller
     /**
      * Displays a specific blog post.
      *
-     * Caches the rendered post for 30 minutes. If the cache store supports tagging,
-     * the cache is tagged with 'blog' and the specific post slug for easier invalidation.
+     * Only the post model data is cached. The final rendered page is generated
+     * fresh on every request, so the auth / session / cookie-aware UI remains correct.
      *
      * @param  Request  $request  The incoming HTTP request.
      * @param  string  $slug  The slug of the blog post.
@@ -82,31 +82,41 @@ class BlogController extends Controller
      */
     public function show(Request $request, string $slug): string
     {
-        return $this->rememberTagged(['blog', "post:$slug"], "post:$slug", fn () => $this->renderPost($slug));
+        $post = $this->rememberTagged(
+            ['blog', "post:$slug"],
+            "post.model:$slug",
+            fn () => Post::with(['author', 'tags', 'comments.replies'])
+                ->whereSlug($slug)
+                ->firstOrFail()
+        );
+
+        return $this->renderPost($slug, $post);
     }
 
     /**
      * Renders a specific blog post.
      *
-     * Retrieves the post data and renders it using the appropriate layout and Blade component.
+     * Retrieves the page data and renders it using the appropriate layout and Blade component.
      *
      * @param  string  $slug  The slug of the blog post.
+     * @param  Post  $post  The resolved blog post model.
      * @return string The rendered blog post.
      *
      * @throws HttpException If the page or layout is not found.
      */
-    private function renderPost(string $slug): string
+    private function renderPost(string $slug, Post $post): string
     {
-        $postPageSlug = BlogHelper::getBlogSlug().'/post';
-        $page = app(PageRoutesService::class)->getPageFromUri('/'.$postPageSlug);
+        $postPageSlug = BlogHelper::getBlogSlug() . '/post';
+        $page = app(PageRoutesService::class)->getPageFromUri('/' . $postPageSlug);
         abort_unless($page, 404);
 
         $layout = FilamentFabricator::getLayoutFromName($page->layout);
         abort_unless($layout && is_subclass_of($layout, Layout::class), 500);
 
         $component = $layout::getComponent();
-        $post = Post::with(['author', 'tags', 'comments.replies'])->whereSlug($slug)->firstOrFail();
-        $data = method_exists($layout, 'getData') ? $layout::getData($page, ['slug' => $slug, 'post' => $post]) : [];
+        $data = method_exists($layout, 'getData')
+            ? $layout::getData($page, ['slug' => $slug, 'post' => $post])
+            : [];
 
         return Blade::render(
             <<<'BLADE'

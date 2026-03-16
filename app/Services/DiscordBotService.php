@@ -210,4 +210,38 @@ class DiscordBotService
             }
         });
     }
+
+    public function getGuildCounts(): ?array
+    {
+        $guildId = $this->getGuildId();
+
+        if (! $guildId || ! $this->apiToken) {
+            return null;
+        }
+
+        $cacheKey = "discord.guild-counts.{$guildId}";
+
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($guildId) {
+            try {
+                $response = Http::withOptions(['verify' => $this->verify_ssl])
+                    ->withToken($this->apiToken, 'Bot')
+                    ->get("{$this->baseUrl}/guilds/{$guildId}", [
+                        'with_counts' => 'true',
+                    ])
+                    ->throw()
+                    ->json();
+
+                return [
+                    'member_count' => $response['approximate_member_count'] ?? null,
+                    'presence_count' => $response['approximate_presence_count'] ?? null,
+                ];
+            } catch (Throwable $e) {
+                Log::error("DiscordBotService::getGuildCounts failed for guild {$guildId}", [
+                    'error' => $e->getMessage(),
+                ]);
+
+                return null;
+            }
+        });
+    }
 }

@@ -59,18 +59,45 @@ class CheckStreamerStatus implements ShouldQueue
             // 1) Banner cache (SHORT TTL; refreshed every run)
             Cache::put($statusKey, $isLive ? 'live' : 'offline', now()->addMinutes(5));
 
+            $lastMetaKey = "twitch_stream_last_meta_{$this->username}";
+            $twitchUrl   = "https://twitch.tv/{$this->username}";
+
             if ($isLive) {
-                Cache::put($payloadKey, [
+                $livePayload = [
                     'id'            => $streamId,
                     'title'         => $stream['title'] ?? null,
                     'game_name'     => $stream['game_name'] ?? null,
-                    'category'      => $stream['game_name'] ?? null, // alias for convenience
+                    'category'      => $stream['game_name'] ?? null,
                     'started_at'    => $stream['started_at'] ?? null,
                     'viewer_count'  => $stream['viewer_count'] ?? null,
                     'thumbnail_url' => $stream['thumbnail_url'] ?? null,
-                    'url'           => "https://twitch.tv/{$this->username}",
-                ], now()->addMinutes(5));
+                    'url'           => $twitchUrl,
+                ];
+
+                Cache::put($payloadKey, $livePayload, now()->addMinutes(5));
+
+                Cache::put($lastMetaKey, [
+                    'title'      => $livePayload['title'],
+                    'game_name'  => $livePayload['game_name'],
+                    'category'   => $livePayload['category'],
+                    'started_at' => $livePayload['started_at'],
+                    'ended_at'   => null,
+                    'url'        => $twitchUrl,
+                ], now()->addDays(30));
             } else {
+                $previousLive = Cache::get($payloadKey);
+
+                if (is_array($previousLive)) {
+                    Cache::put($lastMetaKey, [
+                        'title'      => $previousLive['title'] ?? null,
+                        'game_name'  => $previousLive['game_name'] ?? null,
+                        'category'   => $previousLive['category'] ?? null,
+                        'started_at' => $previousLive['started_at'] ?? null,
+                        'ended_at'   => now()->toIso8601String(),
+                        'url'        => $previousLive['url'] ?? $twitchUrl,
+                    ], now()->addDays(30));
+                }
+
                 Cache::forget($payloadKey);
             }
 

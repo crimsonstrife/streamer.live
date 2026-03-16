@@ -34,19 +34,18 @@ class DiscordCommunityBlock extends PageBlock
 
     public static function mutateData(array $data): array
     {
-        // Get the reusable service
         /** @var DiscordBotService $discord */
-        $discord   = app(DiscordBotService::class);
-        $guildId   = $discord->getGuildId();
-        $widget    = $discord->getGuildWidget() ?? [];
+        $discord = app(DiscordBotService::class);
 
-        // Compute outputs (falling back to form inputs or nulls)
-        $liveInvite    = $widget['instant_invite']      ?? ($data['invite_url'] ?? null);
-        $memberCount   = isset($widget['members']) ? count($widget['members']) : null;
-        $presenceCount = $widget['presence_count']      ?? null;
-        $embedWidget   = (bool) ($data['embed_widget'] ?? false);
+        $guildId = $discord->getGuildId();
+        $widget = $discord->getGuildWidget() ?? [];
+        $counts = $discord->getGuildCounts() ?? [];
 
-        // Merge into the data array
+        $liveInvite = $widget['instant_invite'] ?? ($data['invite_url'] ?? null);
+        $memberCount = $counts['member_count'] ?? null;
+        $presenceCount = $counts['presence_count'] ?? ($widget['presence_count'] ?? null);
+        $embedWidget = (bool) ($data['embed_widget'] ?? false);
+
         return array_merge($data, [
             'live_invite'    => $liveInvite,
             'member_count'   => $memberCount,
