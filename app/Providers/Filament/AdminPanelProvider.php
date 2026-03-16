@@ -133,6 +133,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\StreamAlertRuleResource::class,
                 Resources\StreamSocialAccountResource::class,
                 Resources\TicketResource::class,
+                Resources\BrandPartnerResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
