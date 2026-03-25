@@ -24,4 +24,17 @@ class SettingsMapperTest extends TestCase
         $this->assertTrue($properties->isEmpty());
         Log::shouldNotHaveReceived('warning', ['Operation not permitted']);
     }
+
+    public function test_it_rechecks_the_settings_table_availability_on_each_call(): void
+    {
+        Schema::shouldReceive('hasTable')
+            ->twice()
+            ->with('settings')
+            ->andReturn(false, false);
+
+        $mapper = new SettingsMapper();
+
+        $this->assertTrue($mapper->fetchProperties('unused-settings-class', new Collection(['enabled']))->isEmpty());
+        $this->assertTrue($mapper->fetchProperties('unused-settings-class', new Collection(['enabled']))->isEmpty());
+    }
 }

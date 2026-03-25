@@ -83,4 +83,81 @@ class ResilientCacheStoreTest extends TestCase
 
         $this->assertSame('ok', Cache::get('status'));
     }
+
+    public function test_it_skips_an_unavailable_fallback_store_and_uses_the_next_working_candidate(): void
+    {
+        Cache::extend('throwing', fn () => new Repository(new class implements Store
+        {
+            public function get($key): mixed
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function many(array $keys): array
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function put($key, $value, $seconds): bool
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function putMany(array $values, $seconds): bool
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function increment($key, $value = 1): int
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function decrement($key, $value = 1): int
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function forever($key, $value): bool
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function forget($key): bool
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function flush(): bool
+            {
+                throw new RuntimeException('Cache store unavailable.');
+            }
+
+            public function getPrefix(): string
+            {
+                return 'test';
+            }
+        }));
+
+        config([
+            'cache.default' => 'throwing',
+            'cache.stores.throwing' => [
+                'driver' => 'throwing',
+            ],
+            'cache.stores.also_throwing' => [
+                'driver' => 'throwing',
+            ],
+        ]);
+
+        app('cache')->forgetDriver();
+
+        $activeStore = ResilientCacheStore::ensureDefaultStoreAvailable('also_throwing');
+
+        $this->assertSame('file', $activeStore);
+        $this->assertSame('file', config('cache.default'));
+
+        Cache::put('status', 'ok', 60);
+
+        $this->assertSame('ok', Cache::get('status'));
+    }
 }

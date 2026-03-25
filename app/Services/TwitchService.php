@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\TwitchMetric;
 use App\Settings\TwitchSettings;
-use App\Support\ResilientCacheStore;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
@@ -40,8 +39,6 @@ class TwitchService
      */
     public function __construct()
     {
-        ResilientCacheStore::ensureDefaultStoreAvailable();
-
         $this->enabled = (bool) config('services.twitch.enabled', false);
         $this->channel_name = config('services.twitch.channel_name');
         $this->client_id = config('services.twitch.client_id');
@@ -558,7 +555,7 @@ class TwitchService
 
         $this->refreshAdminUserTokenIfNeeded();
 
-        return $this->resolveSettings()?->user_access_token;
+        return $settings->user_access_token;
     }
 
     /**

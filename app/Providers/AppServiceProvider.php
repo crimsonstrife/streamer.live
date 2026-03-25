@@ -54,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        ResilientCacheStore::ensureDefaultStoreAvailable();
+
         $this->app->bind(UpdaterContract::class, fn ($app) => $app->make(UpdaterManager::class));
 
         // Skip entirely when running in the console (i.e. Artisan commands)
@@ -111,8 +113,6 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             return;
         }
-
-        ResilientCacheStore::ensureDefaultStoreAvailable();
 
         // If we're using sqlite *and* the file on disk doesn't exist yet,
         // override it to in-memory so Schema::hasTable() won't blow up.

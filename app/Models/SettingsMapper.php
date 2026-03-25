@@ -19,8 +19,6 @@ class SettingsMapper extends SpatieSettingsMapper
     /** @var array<string, SettingsConfig> */
     private array $configs = [];
 
-    private ?bool $settingsTableAvailable = null;
-
     /**
      * @throws MissingSettings
      */
@@ -114,14 +112,11 @@ class SettingsMapper extends SpatieSettingsMapper
 
     private function settingsTableIsAvailable(): bool
     {
-        if (! is_null($this->settingsTableAvailable)) {
-            return $this->settingsTableAvailable;
-        }
-
         try {
-            return $this->settingsTableAvailable = Schema::hasTable('settings');
+            // Re-check every call so long-lived workers see schema changes after migrations.
+            return Schema::hasTable('settings');
         } catch (Exception) {
-            return $this->settingsTableAvailable = false;
+            return false;
         }
     }
 
