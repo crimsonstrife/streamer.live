@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\SelfUpdate\SelfUpdateOrchestrator;
+use App\Services\SelfUpdate\SelfUpdateStatusStore;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 use Throwable;
@@ -26,7 +27,7 @@ class RunSelfUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(SelfUpdateOrchestrator $orchestrator): int
+    public function handle(SelfUpdateOrchestrator $orchestrator, SelfUpdateStatusStore $statusStore): int
     {
         $version = $this->argument('version');
 
@@ -35,12 +36,16 @@ class RunSelfUpdate extends Command
             : 'Updating to the latest available version');
 
         try {
+            $statusStore->markRunning($version !== null ? (string) $version : null);
+
             $appliedVersion = $orchestrator->execute($version);
+            $statusStore->markSucceeded($appliedVersion);
 
             $this->info("Updated to version: {$appliedVersion}");
 
             return CommandAlias::SUCCESS;
         } catch (Throwable $e) {
+            $statusStore->markFailed($version !== null ? (string) $version : null, $e->getMessage());
             report($e);
             $this->error($e->getMessage());
 

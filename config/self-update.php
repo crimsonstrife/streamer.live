@@ -119,6 +119,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Update Status + Logs
+    |--------------------------------------------------------------------------
+    |
+    | These files are used by the background update launcher to report
+    | lifecycle status back to the admin UI and to capture command output.
+    |
+    */
+
+    'status_file' => env('SELF_UPDATER_STATUS_FILE', storage_path('app/self-update-status.json')),
+
+    'log_file' => env('SELF_UPDATER_LOG_FILE', storage_path('logs/self-update.log')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Event Logging
     |--------------------------------------------------------------------------
     |

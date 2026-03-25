@@ -4,6 +4,7 @@ namespace Tests\Feature\Console;
 
 use App\Services\SelfUpdate\ConfiguredCommandRunner;
 use App\Services\SelfUpdate\InstalledVersionStore;
+use App\Services\SelfUpdate\SelfUpdateStatusStore;
 use Codedge\Updater\Contracts\SourceRepositoryTypeContract;
 use Codedge\Updater\Contracts\UpdaterContract;
 use Codedge\Updater\Models\Release;
@@ -14,6 +15,7 @@ use Tests\TestCase;
 class RunSelfUpdateCommandTest extends TestCase
 {
     protected string $environmentPath;
+    protected string $statusPath;
 
     protected function setUp(): void
     {
@@ -26,12 +28,23 @@ class RunSelfUpdateCommandTest extends TestCase
             $this->environmentPath,
             "APP_NAME=Test\nSELF_UPDATER_VERSION_INSTALLED=v1.2.1-alpha\n"
         );
+
+        $statusPath = tempnam(sys_get_temp_dir(), 'self-update-status-');
+        $this->statusPath = $statusPath === false ? sys_get_temp_dir().'/self-update-status.json' : $statusPath;
+
+        config([
+            'self-update.status_file' => $this->statusPath,
+        ]);
     }
 
     protected function tearDown(): void
     {
         if (file_exists($this->environmentPath)) {
             unlink($this->environmentPath);
+        }
+
+        if (file_exists($this->statusPath)) {
+            unlink($this->statusPath);
         }
 
         parent::tearDown();
@@ -66,6 +79,12 @@ class RunSelfUpdateCommandTest extends TestCase
             'SELF_UPDATER_VERSION_INSTALLED=v1.3.2-alpha',
             (string) file_get_contents($this->environmentPath)
         );
+
+        $status = $this->app->make(SelfUpdateStatusStore::class)->read();
+
+        $this->assertSame('succeeded', $status['state']);
+        $this->assertSame('v1.3.2-alpha', $status['version']);
+        $this->assertNull($status['message']);
     }
 
     public function test_it_does_not_persist_the_new_version_when_post_update_hooks_fail(): void
@@ -98,5 +117,11 @@ class RunSelfUpdateCommandTest extends TestCase
             'SELF_UPDATER_VERSION_INSTALLED=v1.2.1-alpha',
             (string) file_get_contents($this->environmentPath)
         );
+
+        $status = $this->app->make(SelfUpdateStatusStore::class)->read();
+
+        $this->assertSame('failed', $status['state']);
+        $this->assertSame('v1.3.2-alpha', $status['version']);
+        $this->assertSame('Post-update hook failed.', $status['message']);
     }
 }

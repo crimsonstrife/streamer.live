@@ -2,13 +2,13 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Services\SelfUpdate\DetachedSelfUpdateLauncher;
+use App\Services\SelfUpdate\SelfUpdateStatusStore;
 use Codedge\Updater\Contracts\UpdaterContract;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use RuntimeException;
 use Throwable;
 
 class Updates extends Page
@@ -21,17 +21,25 @@ class Updates extends Page
     public ?string $availableVersion = null;
     public array $releases = [];
     public ?string $selectedVersion = null;
+    public string $updateState = 'idle';
+    public ?string $updateStatusVersion = null;
+    public ?string $updateStatusMessage = null;
+    public ?string $updateStatusUpdatedAt = null;
 
-    public function mount(UpdaterContract $updater): void
+    public function mount(): void
     {
-        $this->currentVersion = $updater->source()->getVersionInstalled();
+        $this->currentVersion = app(UpdaterContract::class)->source()->getVersionInstalled();
         $this->loadReleases();
+        $this->refreshUpdateStatus();
     }
 
     public function loadReleases(): void
     {
         $updater = app(UpdaterContract::class);
-        $payload = $updater->source()->getReleases()->json();
+        $source = $updater->source();
+
+        $this->currentVersion = $source->getVersionInstalled();
+        $payload = $source->getReleases()->json();
         $releases = is_array($payload) ? $payload : [];
 
         $this->releases = collect($releases)
@@ -46,6 +54,7 @@ class Updates extends Page
     public function runSelectedUpdate(string $version): void
     {
         $this->selectedVersion = $version;
+        $statusStore = app(SelfUpdateStatusStore::class);
 
         if (! $this->selectedVersion) {
             Notification::make()
@@ -55,25 +64,28 @@ class Updates extends Page
             return;
         }
 
+        if ($statusStore->isBusy()) {
+            Notification::make()
+                ->title('An update is already in progress')
+                ->body('Wait for the current update to finish before starting another one.')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
         try {
-            $exitCode = Artisan::call('app:self-update', [
-                'version' => $this->selectedVersion,
-            ]);
+            $statusStore->markQueued($this->selectedVersion);
+            app(DetachedSelfUpdateLauncher::class)->dispatch($this->selectedVersion);
+            $this->refreshUpdateStatus();
 
-            if ($exitCode === 0) {
-                $this->currentVersion = $this->selectedVersion;
-                $this->loadReleases();
-
-                Notification::make()
-                    ->title("Updated to {$this->selectedVersion}")
-                    ->success()
-                    ->send();
-            } else {
-                $output = trim(Artisan::output());
-
-                throw new RuntimeException($output !== '' ? $output : 'Update command failed. Check logs.');
-            }
+            Notification::make()
+                ->title("Update to {$this->selectedVersion} started")
+                ->body('The update is running in the background. This page will refresh its status automatically.')
+                ->success()
+                ->send();
         } catch (Throwable $e) {
+            $statusStore->markFailed($this->selectedVersion, $e->getMessage());
             Log::error('Update failed', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -84,6 +96,21 @@ class Updates extends Page
                 ->body($e->getMessage() ?: 'No error message provided. Check logs.')
                 ->danger()
                 ->send();
+        }
+    }
+
+    public function refreshUpdateStatus(): void
+    {
+        $status = app(SelfUpdateStatusStore::class)->read();
+
+        $this->updateState = $status['state'];
+        $this->updateStatusVersion = $status['version'];
+        $this->updateStatusMessage = $status['message'];
+        $this->updateStatusUpdatedAt = $status['updated_at'];
+
+        if ($this->updateState === 'succeeded' && $this->updateStatusVersion !== null) {
+            $this->currentVersion = $this->updateStatusVersion;
+            $this->synchronizeReleaseList();
         }
     }
 
@@ -155,5 +182,15 @@ class Updates extends Page
         }
 
         return false;
+    }
+
+    protected function synchronizeReleaseList(): void
+    {
+        $this->releases = collect($this->releases)
+            ->filter(fn (array $release) => isset($release['tag_name']) && version_compare($release['tag_name'], $this->currentVersion, '>'))
+            ->values()
+            ->all();
+
+        $this->availableVersion = $this->releases[0]['tag_name'] ?? null;
     }
 }

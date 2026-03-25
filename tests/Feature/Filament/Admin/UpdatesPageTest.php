@@ -3,6 +3,8 @@
 namespace Tests\Feature\Filament\Admin;
 
 use App\Filament\Admin\Pages\Updates;
+use App\Services\SelfUpdate\DetachedSelfUpdateLauncher;
+use App\Services\SelfUpdate\SelfUpdateStatusStore;
 use Codedge\Updater\Contracts\SourceRepositoryTypeContract;
 use Codedge\Updater\Contracts\UpdaterContract;
 use GuzzleHttp\Psr7\Response as Psr7Response;
@@ -13,6 +15,29 @@ use Tests\TestCase;
 
 class UpdatesPageTest extends TestCase
 {
+    protected string $statusPath;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $statusPath = tempnam(sys_get_temp_dir(), 'updates-page-status-');
+        $this->statusPath = $statusPath === false ? sys_get_temp_dir().'/updates-page-status.json' : $statusPath;
+
+        config([
+            'self-update.status_file' => $this->statusPath,
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        if (file_exists($this->statusPath)) {
+            unlink($this->statusPath);
+        }
+
+        parent::tearDown();
+    }
+
     public function test_it_sorts_releases_semantically_and_hides_releases_without_the_package_asset(): void
     {
         config([
@@ -47,6 +72,7 @@ class UpdatesPageTest extends TestCase
         ];
 
         $source = Mockery::mock(SourceRepositoryTypeContract::class);
+        $source->shouldReceive('getVersionInstalled')->once()->andReturn('v1.2.1-alpha');
         $source->shouldReceive('getReleases')->once()->andReturn(
             new Response(new Psr7Response(200, [], json_encode($payload)))
         );
@@ -85,6 +111,7 @@ class UpdatesPageTest extends TestCase
         ];
 
         $source = Mockery::mock(SourceRepositoryTypeContract::class);
+        $source->shouldReceive('getVersionInstalled')->once()->andReturn('v1.0.0');
         $source->shouldReceive('getReleases')->once()->andReturn(
             new Response(new Psr7Response(200, [], json_encode($payload)))
         );
@@ -106,5 +133,22 @@ class UpdatesPageTest extends TestCase
                     && $context['pattern'] === 'release['
                     && $context['package_file_name'] === 'regex:release[';
             });
+    }
+
+    public function test_it_queues_the_selected_update_for_background_execution(): void
+    {
+        $launcher = Mockery::mock(DetachedSelfUpdateLauncher::class);
+        $launcher->shouldReceive('dispatch')->once()->with('v1.4.0-alpha');
+
+        $this->app->instance(DetachedSelfUpdateLauncher::class, $launcher);
+
+        $page = new Updates();
+        $page->runSelectedUpdate('v1.4.0-alpha');
+
+        $status = $this->app->make(SelfUpdateStatusStore::class)->read();
+
+        $this->assertSame('queued', $status['state']);
+        $this->assertSame('v1.4.0-alpha', $status['version']);
+        $this->assertNull($status['message']);
     }
 }
