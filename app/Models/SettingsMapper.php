@@ -19,6 +19,8 @@ class SettingsMapper extends SpatieSettingsMapper
     /** @var array<string, SettingsConfig> */
     private array $configs = [];
 
+    private ?bool $settingsTableAvailable = null;
+
     /**
      * @throws MissingSettings
      */
@@ -78,13 +80,7 @@ class SettingsMapper extends SpatieSettingsMapper
 
     public function fetchProperties(string $settingsClass, Collection $names): Collection
     {
-        // If the settings table isn't there yet, bail out immediately.
-        try {
-            if (! Schema::hasTable('settings')) {
-                return collect();
-            }
-        } catch (Exception $e) {
-            Log::warning($e->getMessage());
+        if (! $this->settingsTableIsAvailable()) {
             return collect();
         }
 
@@ -114,6 +110,19 @@ class SettingsMapper extends SpatieSettingsMapper
 
                 return $payload;
             });
+    }
+
+    private function settingsTableIsAvailable(): bool
+    {
+        if (! is_null($this->settingsTableAvailable)) {
+            return $this->settingsTableAvailable;
+        }
+
+        try {
+            return $this->settingsTableAvailable = Schema::hasTable('settings');
+        } catch (Exception) {
+            return $this->settingsTableAvailable = false;
+        }
     }
 
     private function fillMissingSettingsWithDefaultValues(SettingsConfig $config, Collection $properties): Collection
