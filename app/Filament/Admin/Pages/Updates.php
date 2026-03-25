@@ -116,9 +116,33 @@ class Updates extends Page
             }
 
             if (Str::startsWith($packageFileName, 'regex:')) {
-                $pattern = '/'.Str::after($packageFileName, 'regex:').'/';
+                $rawPattern = Str::after($packageFileName, 'regex:');
+                $pattern = '~'.$rawPattern.'~';
 
-                if (@preg_match($pattern, $assetName) === 1) {
+                try {
+                    $result = preg_match($pattern, $assetName);
+                } catch (Throwable $e) {
+                    Log::error('Invalid regex pattern for update asset matching', [
+                        'pattern' => $rawPattern,
+                        'package_file_name' => $packageFileName,
+                        'preg_last_error' => preg_last_error(),
+                        'message' => $e->getMessage(),
+                    ]);
+
+                    continue;
+                }
+
+                if ($result === false) {
+                    Log::error('Invalid regex pattern for update asset matching', [
+                        'pattern' => $rawPattern,
+                        'package_file_name' => $packageFileName,
+                        'preg_last_error' => preg_last_error(),
+                    ]);
+
+                    continue;
+                }
+
+                if ($result === 1) {
                     return true;
                 }
 
