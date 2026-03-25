@@ -30,7 +30,7 @@ class PruneSelfUpdateLogs extends Command
 
         $logFile = (string) config('self-update.log_file', storage_path('logs/self-update.log'));
         $maxSizeBytes = (int) config('self-update.log_pruning.max_size_kb', 1024) * 1024;
-        $retentionDays = (int) config('self-update.log_pruning.retention_days', 14);
+        $retentionDays = max(1, (int) config('self-update.log_pruning.retention_days', 14));
 
         $this->rotateCurrentLogIfNeeded($logFile, $maxSizeBytes);
         $deletedArchives = $this->pruneArchivedLogs($logFile, $retentionDays);

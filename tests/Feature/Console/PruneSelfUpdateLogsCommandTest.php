@@ -81,4 +81,25 @@ class PruneSelfUpdateLogsCommandTest extends TestCase
         $this->assertSame('small log', (string) file_get_contents($this->currentLogPath));
         $this->assertFileDoesNotExist($this->logDirectory.'/self-update-20260325_120000.log');
     }
+
+    public function test_it_clamps_non_positive_retention_periods(): void
+    {
+        $recentArchivePath = $this->logDirectory.'/self-update-20260324_120000.log';
+
+        config([
+            'self-update.log_pruning.retention_days' => 0,
+        ]);
+
+        file_put_contents($this->oldArchivePath, 'old archive');
+        file_put_contents($recentArchivePath, 'recent archive');
+        touch($this->oldArchivePath, Carbon::now()->subDays(30)->timestamp);
+        touch($recentArchivePath, Carbon::now()->subHours(12)->timestamp);
+
+        $this->artisan('logs:prune-self-update')
+            ->expectsOutputToContain('Pruned 1 archived self-update log(s).')
+            ->assertExitCode(0);
+
+        $this->assertFileDoesNotExist($this->oldArchivePath);
+        $this->assertFileExists($recentArchivePath);
+    }
 }

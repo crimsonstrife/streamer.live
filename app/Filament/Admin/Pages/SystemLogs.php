@@ -127,7 +127,7 @@ class SystemLogs extends Page implements HasTable
         $tabs = collect(LogLevel::cases())
             ->mapWithKeys(fn (LogLevel $level): array => [
                 $level->value => Tab::make($level->getLabel())
-                    ->badge(fn (): ?int => Log::query()->where('log_level', $level)->count() ?: null)
+                    ->badge(fn (): ?int => Log::query()->where('log_level', $level->value)->count() ?: null)
                     ->badgeColor($level->getColor()),
             ])
             ->toArray();
