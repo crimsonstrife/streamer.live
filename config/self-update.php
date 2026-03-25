@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Console\Commands\ComposerInstall;
 use App\Console\Commands\PostUpdateCleanup;
 use App\Console\Commands\RunMigrations;
-use App\Console\Commands\SyncVersionEnv;
 use Codedge\Updater\Notifications\Notifiable;
 use Codedge\Updater\Notifications\Notifications\UpdateAvailable;
 use Codedge\Updater\Notifications\Notifications\UpdateFailed;
@@ -33,7 +31,7 @@ return [
     |
     */
 
-    'version_installed' => env('SELF_UPDATER_VERSION_INSTALLED', 'v1.2.1-alpha'),
+    'version_installed' => env('SELF_UPDATER_VERSION_INSTALLED', 'v1.3.2-alpha'),
 
     /*
     |--------------------------------------------------------------------------
@@ -57,7 +55,7 @@ return [
             'download_path' => env('SELF_UPDATER_DOWNLOAD_PATH', '/tmp'),
             'private_access_token' => env('SELF_UPDATER_GITHUB_PRIVATE_ACCESS_TOKEN', ''),
             'use_branch' => env('SELF_UPDATER_USE_BRANCH', ''),
-            // 'package_file_name'    => env('SELF_UPDATER_PACKAGE_FILE_NAME', 'regex:releaseV.*\.zip'),
+            'package_file_name' => env('SELF_UPDATER_PACKAGE_FILE_NAME', 'streamer-release.zip'),
         ],
         'gitlab' => [
             'base_url' => '',
@@ -179,16 +177,8 @@ return [
             // ]
         ],
         'post_update' => [
-            'updater:composer-install' => [
-                'class' => ComposerInstall::class,
-                'params' => [],
-            ],
             'updater:run-migrations' => [
                 'class' => RunMigrations::class,
-                'params' => [],
-            ],
-            'updater:sync-version-env' => [
-                'class' => SyncVersionEnv::class,
                 'params' => [],
             ],
             'updater:cleanup' => [

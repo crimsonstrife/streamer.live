@@ -5,6 +5,7 @@ namespace App\Utilities;
 use App\Models\BlogObjects\Post;
 use App\Models\Page;
 use Exception;
+use Throwable;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -59,7 +60,11 @@ class BlogHelper
      */
     public static function getBlogSlug(): string
     {
-        return Cache::rememberForever(self::BLOG_SLUG_CACHE_KEY, fn () => self::fetchSlug());
+        try {
+            return Cache::rememberForever(self::BLOG_SLUG_CACHE_KEY, fn () => self::fetchSlug());
+        } catch (Throwable) {
+            return self::fetchSlug();
+        }
     }
 
     /**

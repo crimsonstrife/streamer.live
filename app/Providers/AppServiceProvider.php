@@ -24,6 +24,8 @@ use App\Utilities\Installer\Helpers\EnvironmentManager as CustomEnvManager;
 use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
+use Codedge\Updater\Contracts\UpdaterContract;
+use Codedge\Updater\UpdaterManager;
 use Exception;
 use Filament\FilamentManager;
 use Froiden\LaravelInstaller\Helpers\EnvironmentManager as BaseEnvManager;
@@ -51,6 +53,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(UpdaterContract::class, fn ($app) => $app->make(UpdaterManager::class));
+
         // Skip entirely when running in the console (i.e. Artisan commands)
         if ($this->app->runningInConsole()) {
             return;
