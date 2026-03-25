@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25265bb6c82890ac1848f70bc5b98996",
+    "content-hash": "300525c99d2b935150223ccffc9f223e",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -81,6 +81,81 @@
                 }
             ],
             "time": "2025-02-06T23:07:23+00:00"
+        },
+        {
+            "name": "achyutn/filament-log-viewer",
+            "version": "v0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/achyutkneupane/filament-log-viewer.git",
+                "reference": "a86fb4eb7f4035f983b2df42b8d090998a1a1d33"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/achyutkneupane/filament-log-viewer/zipball/a86fb4eb7f4035f983b2df42b8d090998a1a1d33",
+                "reference": "a86fb4eb7f4035f983b2df42b8d090998a1a1d33",
+                "shasum": ""
+            },
+            "require": {
+                "calebporzio/sushi": "^2.5",
+                "filament/filament": "^3.0",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.23",
+                "rector/rector": "^2.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AchyutN\\FilamentLogViewer\\LogViewerProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AchyutN\\FilamentLogViewer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Achyut Neupane",
+                    "email": "achyutkneupane@gmail.com",
+                    "homepage": "https://achyut.com.np",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A Filament package to view and manage Laravel logs.",
+            "keywords": [
+                "Viewer",
+                "filament",
+                "laravel",
+                "log"
+            ],
+            "support": {
+                "issues": "https://github.com/achyutkneupane/filament-log-viewer/issues",
+                "source": "https://github.com/achyutkneupane/filament-log-viewer/tree/v0.7"
+            },
+            "funding": [
+                {
+                    "url": "https://www.buymeacoffee.com/achyutn",
+                    "type": "buy_me_a_coffee"
+                },
+                {
+                    "url": "https://github.com/achyutkneupane",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/Achyut",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2025-11-28T19:00:12+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",
@@ -24562,8 +24637,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3",
-        "ext-pdo": "*",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-pdo": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
