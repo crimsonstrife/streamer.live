@@ -131,6 +131,12 @@ return [
 
     'log_file' => env('SELF_UPDATER_LOG_FILE', storage_path('logs/self-update.log')),
 
+    'log_pruning' => [
+        'enabled' => env('SELF_UPDATER_LOG_PRUNING_ENABLED', true),
+        'max_size_kb' => env('SELF_UPDATER_LOG_MAX_SIZE_KB', 1024),
+        'retention_days' => env('SELF_UPDATER_LOG_RETENTION_DAYS', 14),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Event Logging

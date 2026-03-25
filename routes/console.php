@@ -1,11 +1,11 @@
 <?php
 
 use App\Console\Commands\CheckTwitchStreams;
+use App\Console\Commands\PruneSelfUpdateLogs;
 use App\Console\Commands\SyncFourthwallData;
-use App\Jobs\CheckStreamerStatus;
-use App\Services\DiscordBotService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -13,3 +13,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command(CheckTwitchStreams::class)->everyFiveMinutes();
 Schedule::command(SyncFourthwallData::class)->everyFifteenMinutes();
+Schedule::command(PruneSelfUpdateLogs::class)->hourly();

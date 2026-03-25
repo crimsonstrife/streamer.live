@@ -59,6 +59,7 @@ class PermissionSeeder extends Seeder
         'manage-tickets',
         'view-analytics',
         'view-settings',
+        'view-system-logs',
         'is-admin',
         'is-super-admin',
         'is-moderator',
