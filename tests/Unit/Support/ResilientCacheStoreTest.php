@@ -13,8 +13,7 @@ class ResilientCacheStoreTest extends TestCase
 {
     public function test_it_falls_back_to_a_working_cache_store_when_the_default_store_is_unavailable(): void
     {
-        Cache::extend('throwing', fn () => new Repository(new class implements Store
-        {
+        Cache::extend('throwing', fn () => new Repository(new class () implements Store {
             public function get($key): mixed
             {
                 throw new RuntimeException('Cache store unavailable.');
