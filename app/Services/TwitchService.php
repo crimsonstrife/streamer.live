@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\TwitchMetric;
 use App\Settings\TwitchSettings;
+use App\Support\ResilientCacheStore;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
@@ -28,6 +29,10 @@ class TwitchService
 
     private ?string $access_token;
 
+    private bool $settingsResolved = false;
+
+    private ?TwitchSettings $settings = null;
+
     public bool $ssl_verify;
 
     /**
@@ -35,24 +40,21 @@ class TwitchService
      */
     public function __construct()
     {
-        // Read the config first, then allow the Filament setting to override it if it's true
-        $configEnabled = config('services.twitch.enabled');
-        $settingEnabled = app(TwitchSettings::class)->enable_integration;
-        $configChannelName = config('services.twitch.channel_name');
-        $settingChannelName = app(TwitchSettings::class)->channel_name;
-        $configClientID = config('services.twitch.client_id');
-        $settingClientID = app(TwitchSettings::class)->client_id;
-        $configClientSecret = config('services.twitch.client_secret');
-        $settingClientSecret = app(TwitchSettings::class)->client_secret;
-        $configSSLVerify = config('services.twitch.verify');
-        $settingSSLVerify = app(TwitchSettings::class)->ssl_verify;
+        ResilientCacheStore::ensureDefaultStoreAvailable();
 
-        // Fallback to config only if the setting is false
-        $this->enabled = $settingEnabled ?? $configEnabled;
-        $this->channel_name = $settingChannelName ?? $configChannelName;
-        $this->client_id = $settingClientID ?? $configClientID;
-        $this->client_secret = $settingClientSecret ?? $configClientSecret;
-        $this->ssl_verify = $settingSSLVerify ?? $configSSLVerify;
+        $this->enabled = (bool) config('services.twitch.enabled', false);
+        $this->channel_name = config('services.twitch.channel_name');
+        $this->client_id = config('services.twitch.client_id');
+        $this->client_secret = config('services.twitch.client_secret');
+        $this->ssl_verify = (bool) config('services.twitch.verify', true);
+
+        if ($settings = $this->resolveSettings()) {
+            $this->enabled = $settings->enable_integration;
+            $this->channel_name = $settings->channel_name ?: $this->channel_name;
+            $this->client_id = $settings->client_id ?: $this->client_id;
+            $this->client_secret = $settings->client_secret ?: $this->client_secret;
+            $this->ssl_verify = $settings->ssl_verify;
+        }
     }
 
     /**
@@ -370,9 +372,7 @@ class TwitchService
             } catch (Throwable $e) {
                 Log::error('TwitchService:getFollowerCount failed, using fallback', ['error' => $e->getMessage()]);
 
-                return (int) TwitchMetric::where('metric', 'followers')
-                    ->orderByDesc('recorded_at')
-                    ->value('value') ?? 0;
+                return $this->latestMetricValue('followers');
             }
         });
     }
@@ -396,6 +396,10 @@ class TwitchService
         return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($broadcasterId) {
             try {
                 $token = $this->getAdminAuthToken();
+                if (! $token) {
+                    return $this->latestMetricValue('subscribers');
+                }
+
                 $resp = Http::withOptions(['verify' => $this->ssl_verify])
                     ->withHeaders([
                         'Client-ID' => $this->client_id,
@@ -412,9 +416,7 @@ class TwitchService
             } catch (Throwable $e) {
                 Log::error('TwitchService:getSubscriberCount failed, using fallback', ['error' => $e->getMessage()]);
 
-                return (int) TwitchMetric::where('metric', 'subscribers')
-                    ->orderByDesc('recorded_at')
-                    ->value('value') ?? 0;
+                return $this->latestMetricValue('subscribers');
             }
         });
     }
@@ -477,10 +479,7 @@ class TwitchService
                     'error' => $e->getMessage(),
                 ]);
 
-                return (int) TwitchMetric::where('metric', 'total_views')
-                    ->orderByDesc('recorded_at')
-                    ->value('value')
-                    ?? 0;
+                return $this->latestMetricValue('total_views');
             }
         });
     }
@@ -511,14 +510,19 @@ class TwitchService
      */
     protected function refreshAdminUserTokenIfNeeded(): void
     {
-        $settings = app(TwitchSettings::class);
-
-        // if no user token at all, or it hasn’t expired, nothing to do
-        if (! $settings->user_refresh_token || now()->lt($settings->user_token_expires)) {
+        $settings = $this->resolveSettings();
+        if (! $settings) {
             return;
         }
 
-        $this->authenticate();
+        // If there is no linked streamer token, subscriber counts are unavailable.
+        if (! $settings->user_access_token || ! $settings->user_refresh_token) {
+            return;
+        }
+
+        if ($settings->user_token_expires && now()->lt($settings->user_token_expires)) {
+            return;
+        }
 
         $response = Http::asForm()->post('https://id.twitch.tv/oauth2/token', [
             'grant_type' => 'refresh_token',
@@ -547,10 +551,14 @@ class TwitchService
      */
     protected function getAdminAuthToken(): ?string
     {
+        $settings = $this->resolveSettings();
+        if (! $settings?->user_access_token) {
+            return null;
+        }
+
         $this->refreshAdminUserTokenIfNeeded();
 
-        return app(TwitchSettings::class)->user_access_token
-            ?? $this->access_token;
+        return $this->resolveSettings()?->user_access_token;
     }
 
     /**
@@ -558,11 +566,16 @@ class TwitchService
      */
     protected function recordMetric(string $name, int $value): void
     {
-        TwitchMetric::create([
-            'metric' => $name,
-            'value' => $value,
-            'recorded_at' => now(),
-        ]);
+        try {
+            // Metric snapshots are best-effort and should not break the request path.
+            TwitchMetric::create([
+                'metric' => $name,
+                'value' => $value,
+                'recorded_at' => now(),
+            ]);
+        } catch (Throwable) {
+            //
+        }
     }
 
     /**
@@ -579,10 +592,7 @@ class TwitchService
 
         // Find the most recent metric at or before $days ago
         $cutoff = Carbon::now()->subDays($days);
-        $pastValue = TwitchMetric::where('metric', 'followers')
-            ->where('recorded_at', '<=', $cutoff)
-            ->orderByDesc('recorded_at')
-            ->value('value');
+        $pastValue = $this->metricValueAtOrBefore('followers', $cutoff);
 
         // Current total (this also records a new metric)
         $current = $this->getFollowerCount();
@@ -608,10 +618,7 @@ class TwitchService
         }
 
         $cutoff = Carbon::now()->subDays($days);
-        $pastValue = TwitchMetric::where('metric', 'subscribers')
-            ->where('recorded_at', '<=', $cutoff)
-            ->orderByDesc('recorded_at')
-            ->value('value');
+        $pastValue = $this->metricValueAtOrBefore('subscribers', $cutoff);
         $current = 0;
 
         try {
@@ -625,5 +632,47 @@ class TwitchService
         }
 
         return $current - $pastValue;
+    }
+
+    private function resolveSettings(): ?TwitchSettings
+    {
+        if ($this->settingsResolved) {
+            return $this->settings;
+        }
+
+        $this->settingsResolved = true;
+
+        try {
+            $this->settings = app(TwitchSettings::class);
+        } catch (Throwable) {
+            $this->settings = null;
+        }
+
+        return $this->settings;
+    }
+
+    private function latestMetricValue(string $metric): int
+    {
+        try {
+            return (int) (TwitchMetric::where('metric', $metric)
+                ->orderByDesc('recorded_at')
+                ->value('value') ?? 0);
+        } catch (Throwable) {
+            return 0;
+        }
+    }
+
+    private function metricValueAtOrBefore(string $metric, Carbon $cutoff): ?int
+    {
+        try {
+            $value = TwitchMetric::where('metric', $metric)
+                ->where('recorded_at', '<=', $cutoff)
+                ->orderByDesc('recorded_at')
+                ->value('value');
+
+            return is_null($value) ? null : (int) $value;
+        } catch (Throwable) {
+            return null;
+        }
     }
 }

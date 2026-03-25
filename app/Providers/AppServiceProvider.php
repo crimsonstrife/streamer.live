@@ -15,6 +15,7 @@ use App\Services\Spam\BlacklistEvaluator;
 use App\Services\Spam\StopForumSpamEvaluator;
 use App\Services\Spam\UrlEvaluator;
 use App\Services\SpamCheckService;
+use App\Support\ResilientCacheStore;
 use App\Services\TwitchService;
 use App\Settings\LookFeelSettings;
 use App\Settings\SEOSettings;
@@ -110,6 +111,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             return;
         }
+
+        ResilientCacheStore::ensureDefaultStoreAvailable();
 
         // If we're using sqlite *and* the file on disk doesn't exist yet,
         // override it to in-memory so Schema::hasTable() won't blow up.
