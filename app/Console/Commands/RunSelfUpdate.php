@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Codedge\Updater\UpdaterManager;
+use App\Services\SelfUpdate\SelfUpdateOrchestrator;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
+use Throwable;
 
 class RunSelfUpdate extends Command
 {
@@ -25,17 +26,25 @@ class RunSelfUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(UpdaterManager $updater): int
+    public function handle(SelfUpdateOrchestrator $orchestrator): int
     {
-        $version = $this->argument('version') ?? $updater->source()->getVersionAvailable();
-        $this->info("Updating to version: $version");
+        $version = $this->argument('version');
 
-        $release = $updater->source()->fetch($version);
+        $this->info($version
+            ? "Updating to version: {$version}"
+            : 'Updating to the latest available version');
 
-        $this->info("Fetched Release: " . $release->getRelease());
+        try {
+            $appliedVersion = $orchestrator->execute($version);
 
-        $updated = $updater->source()->update($release);
+            $this->info("Updated to version: {$appliedVersion}");
 
-        return $updated ? CommandAlias::SUCCESS : CommandAlias::FAILURE;
+            return CommandAlias::SUCCESS;
+        } catch (Throwable $e) {
+            report($e);
+            $this->error($e->getMessage());
+
+            return CommandAlias::FAILURE;
+        }
     }
 }

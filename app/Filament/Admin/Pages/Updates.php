@@ -2,11 +2,12 @@
 
 namespace App\Filament\Admin\Pages;
 
-use Codedge\Updater\UpdaterManager;
+use Codedge\Updater\Contracts\UpdaterContract;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use RuntimeException;
 use Throwable;
 
@@ -21,7 +22,7 @@ class Updates extends Page
     public array $releases = [];
     public ?string $selectedVersion = null;
 
-    public function mount(UpdaterManager $updater): void
+    public function mount(UpdaterContract $updater): void
     {
         $this->currentVersion = $updater->source()->getVersionInstalled();
         $this->loadReleases();
@@ -29,12 +30,13 @@ class Updates extends Page
 
     public function loadReleases(): void
     {
-        $updater = app(UpdaterManager::class);
+        $updater = app(UpdaterContract::class);
+        $payload = $updater->source()->getReleases()->json();
+        $releases = is_array($payload) ? $payload : [];
 
-        $this->releases = collect($updater->source()->getReleases()->json() ?? [])
-            ->filter(fn ($release) => isset($release['tag_name']) &&
-                version_compare($release['tag_name'], $this->currentVersion, '>'))
-            ->sortByDesc(fn ($release) => $release['tag_name'])
+        $this->releases = collect($releases)
+            ->filter(fn (array $release) => $this->isUpdateCandidate($release))
+            ->sort(fn (array $left, array $right) => version_compare($right['tag_name'], $left['tag_name']))
             ->values()
             ->all();
 
@@ -59,7 +61,6 @@ class Updates extends Page
             ]);
 
             if ($exitCode === 0) {
-                $this->updateConfigVersion($this->selectedVersion);
                 $this->currentVersion = $this->selectedVersion;
                 $this->loadReleases();
 
@@ -68,7 +69,9 @@ class Updates extends Page
                     ->success()
                     ->send();
             } else {
-                throw new RuntimeException('Update command failed. Check logs.');
+                $output = trim(Artisan::output());
+
+                throw new RuntimeException($output !== '' ? $output : 'Update command failed. Check logs.');
             }
         } catch (Throwable $e) {
             Log::error('Update failed', [
@@ -84,22 +87,49 @@ class Updates extends Page
         }
     }
 
-    public function updateConfigVersion(string $newVersion): void
+    protected function isUpdateCandidate(array $release): bool
     {
-        $configFilePath = config_path('self-update.php');
-        if (! file_exists($configFilePath)) {
-            throw new RuntimeException('Configuration file does not exist.');
+        if (! isset($release['tag_name'])) {
+            return false;
         }
 
-        $configContent = file_get_contents($configFilePath);
-        $updatedContent = preg_replace(
-            "/'version_installed'\s*=>\s*'[^']*'/",
-            "'version_installed' => '{$newVersion}'",
-            $configContent
-        );
-
-        if ($updatedContent !== null) {
-            file_put_contents($configFilePath, $updatedContent);
+        if (! version_compare($release['tag_name'], $this->currentVersion, '>')) {
+            return false;
         }
+
+        return $this->hasRequiredPackageAsset($release);
+    }
+
+    protected function hasRequiredPackageAsset(array $release): bool
+    {
+        $packageFileName = (string) config('self-update.repository_types.github.package_file_name', '');
+
+        if ($packageFileName === '') {
+            return true;
+        }
+
+        foreach ($release['assets'] ?? [] as $asset) {
+            $assetName = (string) ($asset['name'] ?? '');
+
+            if ($assetName === '') {
+                continue;
+            }
+
+            if (Str::startsWith($packageFileName, 'regex:')) {
+                $pattern = '/'.Str::after($packageFileName, 'regex:').'/';
+
+                if (@preg_match($pattern, $assetName) === 1) {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (Str::contains($assetName, $packageFileName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

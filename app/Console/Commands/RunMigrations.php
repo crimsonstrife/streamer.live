@@ -28,7 +28,15 @@ class RunMigrations extends Command
     {
         $this->info('Running database migrations...');
 
-        $this->call('migrate');
+        $exitCode = $this->call('migrate', [
+            '--force' => true,
+        ]);
+
+        if ($exitCode !== CommandAlias::SUCCESS) {
+            $this->error('Database migrations failed.');
+
+            return CommandAlias::FAILURE;
+        }
 
         $this->info('Migrations completed.');
 
