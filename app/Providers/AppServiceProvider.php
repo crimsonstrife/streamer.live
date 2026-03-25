@@ -15,6 +15,7 @@ use App\Services\Spam\BlacklistEvaluator;
 use App\Services\Spam\StopForumSpamEvaluator;
 use App\Services\Spam\UrlEvaluator;
 use App\Services\SpamCheckService;
+use App\Support\ResilientCacheStore;
 use App\Services\TwitchService;
 use App\Settings\LookFeelSettings;
 use App\Settings\SEOSettings;
@@ -53,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        ResilientCacheStore::ensureDefaultStoreAvailable();
+
         $this->app->bind(UpdaterContract::class, fn ($app) => $app->make(UpdaterManager::class));
 
         // Skip entirely when running in the console (i.e. Artisan commands)
