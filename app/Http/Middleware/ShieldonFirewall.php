@@ -11,13 +11,11 @@ class ShieldonFirewall
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $firewall = new Firewall();
-
-        // Shieldon may read from REMOTE_ADDR, HTTP_CF_CONNECTING_IP, HTTP_X_FORWARDED_FOR,
-        // or HTTP_X_FORWARDED_HOST depending on its config. Any of these can contain a
-        // value that is non-empty but not a valid IP, crashing gethostbyaddr(). Laravel's
-        // TrustProxies has already resolved the correct client IP in $request->ip(), so
-        // normalize all four sources to that value.
+        // The Firewall constructor calls new Kernel() → HttpFactory::createRequest() →
+        // ServerRequestFactory::fromGlobal() which snapshots $_SERVER immediately.
+        // We must normalize all four possible Shieldon IP source headers BEFORE
+        // instantiating the Firewall, otherwise it captures the raw (potentially invalid)
+        // values. Laravel's TrustProxies has already resolved the correct client IP.
         $ip = $request->ip();
 
         if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) {
@@ -35,6 +33,8 @@ class ShieldonFirewall
         $_SERVER['HTTP_CF_CONNECTING_IP'] = $ip;
         $_SERVER['HTTP_X_FORWARDED_FOR']  = $ip;
         $_SERVER['HTTP_X_FORWARDED_HOST'] = $ip;
+
+        $firewall = new Firewall();
 
         $storage = storage_path('shieldon_firewall');
         $firewall->configure($storage);
