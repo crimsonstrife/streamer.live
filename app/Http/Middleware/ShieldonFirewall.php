@@ -13,19 +13,28 @@ class ShieldonFirewall
     {
         $firewall = new Firewall();
 
-        // Shieldon reads HTTP_X_FORWARDED_FOR but can't handle comma-separated lists
-        // (e.g. "client, proxy1") or absent/invalid values. Laravel's TrustProxies has
-        // already resolved the correct client IP, so always normalize to a single valid IP.
+        // Shieldon may read from REMOTE_ADDR, HTTP_CF_CONNECTING_IP, HTTP_X_FORWARDED_FOR,
+        // or HTTP_X_FORWARDED_HOST depending on its config. Any of these can contain a
+        // value that is non-empty but not a valid IP, crashing gethostbyaddr(). Laravel's
+        // TrustProxies has already resolved the correct client IP in $request->ip(), so
+        // normalize all four sources to that value.
         $ip = $request->ip();
-        if ($ip && filter_var($ip, FILTER_VALIDATE_IP)) {
-            $_SERVER['HTTP_X_FORWARDED_FOR'] = $ip;
-        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            // Fall back to the first segment of the raw header value.
-            $first = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
-            if (filter_var($first, FILTER_VALIDATE_IP)) {
-                $_SERVER['HTTP_X_FORWARDED_FOR'] = $first;
-            }
+
+        if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) {
+            \Illuminate\Support\Facades\Log::warning('ShieldonFirewall: could not resolve a valid IP — Shieldon skipped', [
+                'request_ip'            => $request->ip(),
+                'REMOTE_ADDR'           => $_SERVER['REMOTE_ADDR'] ?? null,
+                'HTTP_CF_CONNECTING_IP' => $_SERVER['HTTP_CF_CONNECTING_IP'] ?? null,
+                'HTTP_X_FORWARDED_FOR'  => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+                'HTTP_X_FORWARDED_HOST' => $_SERVER['HTTP_X_FORWARDED_HOST'] ?? null,
+            ]);
+            return $next($request);
         }
+
+        $_SERVER['REMOTE_ADDR']           = $ip;
+        $_SERVER['HTTP_CF_CONNECTING_IP'] = $ip;
+        $_SERVER['HTTP_X_FORWARDED_FOR']  = $ip;
+        $_SERVER['HTTP_X_FORWARDED_HOST'] = $ip;
 
         $storage = storage_path('shieldon_firewall');
         $firewall->configure($storage);
