@@ -13,6 +13,12 @@ class ShieldonFirewall
     {
         $firewall = new Firewall();
 
+        // Shieldon may be configured to read the client IP from HTTP_X_FORWARDED_FOR.
+        // If that header is absent (direct requests, health checks, etc.) Shieldon crashes.
+        // Laravel's TrustProxies middleware has already resolved the real client IP,
+        // so we fall back to that value when the header is missing.
+        $_SERVER['HTTP_X_FORWARDED_FOR'] ??= $request->ip();
+
         $storage = storage_path('shieldon_firewall');
         $firewall->configure($storage);
 
