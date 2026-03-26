@@ -6,6 +6,7 @@ use App\Console\Commands\SyncFourthwallData;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Spatie\Health\Commands\RunHealthChecksCommand;
 use Spatie\Health\Commands\ScheduleCheckHeartbeatCommand;
 
 Artisan::command('inspire', function () {
@@ -15,4 +16,5 @@ Artisan::command('inspire', function () {
 Schedule::command(CheckTwitchStreams::class)->everyFiveMinutes();
 Schedule::command(SyncFourthwallData::class)->everyFifteenMinutes();
 Schedule::command(PruneSelfUpdateLogs::class)->hourly();
+Schedule::command(RunHealthChecksCommand::class)->everyFiveMinutes();
 Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute();

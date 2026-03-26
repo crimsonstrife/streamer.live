@@ -180,7 +180,8 @@ class AdminPanelProvider extends PanelProvider
                     ->postUrl(BlogHelper::getBlogSlug())
                     ->postSlug('slug'),
                 TutorialsPlugin::make(),
-                FilamentSpatieLaravelHealthPlugin::make(),
+                FilamentSpatieLaravelHealthPlugin::make()
+                    ->usingPage(\App\Filament\Admin\Pages\HealthCheckResults::class),
             ]);
 
         return $panel;
