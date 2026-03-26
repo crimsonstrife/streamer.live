@@ -40,10 +40,16 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Twitch\Provider;
+use Spatie\Health\Checks\Checks\CacheCheck;
+use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
+use Spatie\Health\Checks\Checks\HorizonCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
+use Spatie\Health\Checks\Checks\ScheduleCheck;
+use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 use Spatie\Health\Facades\Health;
+use Spatie\SecurityAdvisoriesHealthCheck\SecurityAdvisoriesCheck;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
 use Stephenjude\FilamentBlog\Resources\PostResource as PackagePostResource;
 
@@ -109,6 +115,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Health checks must be registered before the console guard so that
+        // artisan commands (e.g. health:schedule-check-heartbeat, health:check)
+        // can discover them when running via the scheduler.
+        Health::checks([
+            OptimizedAppCheck::new(),
+            DebugModeCheck::new(),
+            EnvironmentCheck::new(),
+            CacheCheck::new(),
+            DatabaseCheck::new(),
+            HorizonCheck::new(),
+            ScheduleCheck::new(),
+            UsedDiskSpaceCheck::new()->warnWhenUsedSpaceIsAbovePercentage(70)->failWhenUsedSpaceIsAbovePercentage(90),
+            SecurityAdvisoriesCheck::new(),
+        ]);
+
         // Skip entirely when running in the console (i.e. Artisan commands)
         if ($this->app->runningInConsole()) {
             return;
@@ -162,12 +183,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('filament', function () {
             return ViewHelpers::isFilament();
         });
-
-        Health::checks([
-            OptimizedAppCheck::new(),
-            DebugModeCheck::new(),
-            EnvironmentCheck::new(),
-        ]);
 
         app(FilamentManager::class)->getPanel('admin')->resources(
             array_filter(

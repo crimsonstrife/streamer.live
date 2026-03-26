@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "082e93581e53ed74d3aaabbaa7af20f7",
+    "content-hash": "67b6652e28ddf6409a3ce7ed9dbea21d",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -7473,16 +7473,16 @@
         },
         {
             "name": "livewire/livewire",
-            "version": "v3.7.11",
+            "version": "v3.7.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/livewire.git",
-                "reference": "addd6e8e9234df75f29e6a327ee2a745a7d67bb6"
+                "reference": "7fcb612d1274980d80703efb5658e58d6d37ada9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/livewire/zipball/addd6e8e9234df75f29e6a327ee2a745a7d67bb6",
-                "reference": "addd6e8e9234df75f29e6a327ee2a745a7d67bb6",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/7fcb612d1274980d80703efb5658e58d6d37ada9",
+                "reference": "7fcb612d1274980d80703efb5658e58d6d37ada9",
                 "shasum": ""
             },
             "require": {
@@ -7537,7 +7537,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
-                "source": "https://github.com/livewire/livewire/tree/v3.7.11"
+                "source": "https://github.com/livewire/livewire/tree/v3.7.12"
             },
             "funding": [
                 {
@@ -7545,7 +7545,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-26T00:58:19+00:00"
+            "time": "2026-03-25T23:04:42+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -12558,16 +12558,16 @@
         },
         {
             "name": "socialiteproviders/microsoft",
-            "version": "4.9.0",
+            "version": "4.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SocialiteProviders/Microsoft.git",
-                "reference": "1d6af46e96e8dd83a4de0b994cf93dcceeb87ecd"
+                "reference": "664c946a57994abeeca0208c3ed187dd3d73ccc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/1d6af46e96e8dd83a4de0b994cf93dcceeb87ecd",
-                "reference": "1d6af46e96e8dd83a4de0b994cf93dcceeb87ecd",
+                "url": "https://api.github.com/repos/SocialiteProviders/Microsoft/zipball/664c946a57994abeeca0208c3ed187dd3d73ccc4",
+                "reference": "664c946a57994abeeca0208c3ed187dd3d73ccc4",
                 "shasum": ""
             },
             "require": {
@@ -12604,7 +12604,7 @@
                 "issues": "https://github.com/socialiteproviders/providers/issues",
                 "source": "https://github.com/socialiteproviders/providers"
             },
-            "time": "2026-03-23T02:21:23+00:00"
+            "time": "2026-03-26T00:32:34+00:00"
         },
         {
             "name": "socialiteproviders/tiktok",
@@ -15271,6 +15271,82 @@
             "time": "2026-01-30T17:13:34+00:00"
         },
         {
+            "name": "spatie/packagist-api",
+            "version": "2.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/packagist-api.git",
+                "reference": "0ce5b849df19338f44902008ebc1f9e9e166a1b6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/packagist-api/zipball/0ce5b849df19338f44902008ebc1f9e9e166a1b6",
+                "reference": "0ce5b849df19338f44902008ebc1f9e9e166a1b6",
+                "shasum": ""
+            },
+            "require": {
+                "composer/semver": "^3.0",
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.17.3",
+                "phpunit/phpunit": "^11.5 || ^12.0",
+                "spatie/phpunit-snapshot-assertions": "^5.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Packagist\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Jolita Grazyte",
+                    "email": "jolita@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Mark Walet",
+                    "homepage": "https://markwalet.me",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Fetch package info from Packagist",
+            "homepage": "https://github.com/spatie/packagist-api",
+            "keywords": [
+                "api",
+                "packagist",
+                "spatie"
+            ],
+            "support": {
+                "source": "https://github.com/spatie/packagist-api/tree/2.1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-03-21T09:22:04+00:00"
+        },
+        {
             "name": "spatie/php-structure-discoverer",
             "version": "2.4.0",
             "source": {
@@ -15471,6 +15547,67 @@
                 }
             ],
             "time": "2026-02-25T07:59:20+00:00"
+        },
+        {
+            "name": "spatie/security-advisories-health-check",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/security-advisories-health-check.git",
+                "reference": "150a9ef1f90cedc7289bc34e6f2fa181d0d74765"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/security-advisories-health-check/zipball/150a9ef1f90cedc7289bc34e6f2fa181d0d74765",
+                "reference": "150a9ef1f90cedc7289bc34e6f2fa181d0d74765",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.3",
+                "spatie/packagist-api": "^2.1"
+            },
+            "require-dev": {
+                "nunomaduro/collision": "^8.0",
+                "pestphp/pest": "^4.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "spatie/laravel-health": "^1.22.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\SecurityAdvisoriesHealthCheck\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Laravel Health check to security advisories for PHP packages",
+            "homepage": "https://github.com/spatie/security-advisories-health-check",
+            "keywords": [
+                "laravel",
+                "security-advisories-health-check",
+                "spatie"
+            ],
+            "support": {
+                "source": "https://github.com/spatie/security-advisories-health-check/tree/1.3.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-10-02T14:36:02+00:00"
         },
         {
             "name": "spatie/temporary-directory",
@@ -22386,12 +22523,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "431b6b10797d5c2354a7d00fcf9000415dd52059"
+                "reference": "8522ed5a1cbb7828ed9bb1b3c12053f79da78155"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/431b6b10797d5c2354a7d00fcf9000415dd52059",
-                "reference": "431b6b10797d5c2354a7d00fcf9000415dd52059",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/8522ed5a1cbb7828ed9bb1b3c12053f79da78155",
+                "reference": "8522ed5a1cbb7828ed9bb1b3c12053f79da78155",
                 "shasum": ""
             },
             "conflict": {
@@ -22512,7 +22649,7 @@
                 "clickstorm/cs-seo": ">=6,<6.8|>=7,<7.5|>=8,<8.4|>=9,<9.3",
                 "co-stack/fal_sftp": "<0.2.6",
                 "cockpit-hq/cockpit": "<2.13.5",
-                "code16/sharp": "<9.11.1",
+                "code16/sharp": "<9.20",
                 "codeception/codeception": "<3.1.3|>=4,<4.1.22",
                 "codeigniter/framework": "<3.1.10",
                 "codeigniter4/framework": "<4.6.2",
@@ -22720,7 +22857,7 @@
                 "globalpayments/php-sdk": "<2",
                 "goalgorilla/open_social": "<12.3.11|>=12.4,<12.4.10|>=13.0.0.0-alpha1,<13.0.0.0-alpha11",
                 "gogentooss/samlbase": "<1.2.7",
-                "google/protobuf": "<3.4",
+                "google/protobuf": "<4.33.6",
                 "gos/web-socket-bundle": "<1.10.4|>=2,<2.6.1|>=3,<3.3",
                 "gp247/core": "<1.1.24",
                 "gree/jose": "<2.2.1",
@@ -23031,7 +23168,7 @@
                 "prestashop/blockwishlist": ">=2,<2.1.1",
                 "prestashop/contactform": ">=1.0.1,<4.3",
                 "prestashop/gamification": "<2.3.2",
-                "prestashop/prestashop": "<8.2.4|>=9.0.0.0-alpha1,<9.0.3",
+                "prestashop/prestashop": "<8.2.5|>=9.0.0.0-alpha1,<9.1",
                 "prestashop/productcomments": "<5.0.2",
                 "prestashop/ps_checkout": "<4.4.1|>=5,<5.0.5",
                 "prestashop/ps_contactinfo": "<=3.3.2",
@@ -23049,7 +23186,7 @@
                 "pubnub/pubnub": "<6.1",
                 "punktde/pt_extbase": "<1.5.1",
                 "pusher/pusher-php-server": "<2.2.1",
-                "putyourlightson/craft-sprig": ">=2,<2.15.2|>=3,<3.15.2",
+                "putyourlightson/craft-sprig": ">=2,<2.15.2|>=3,<3.7.2",
                 "pwweb/laravel-core": "<=0.3.6.0-beta",
                 "pxlrbt/filament-excel": "<1.1.14|>=2.0.0.0-alpha,<2.3.3",
                 "pyrocms/pyrocms": "<=3.9.1",
@@ -23058,7 +23195,7 @@
                 "rainlab/blog-plugin": "<1.4.1",
                 "rainlab/debugbar-plugin": "<3.1",
                 "rainlab/user-plugin": "<=1.4.5",
-                "ralffreit/mfa-email": "<=2",
+                "ralffreit/mfa-email": "<1.0.7|==2",
                 "rankmath/seo-by-rank-math": "<=1.0.95",
                 "rap2hpoutre/laravel-log-viewer": "<0.13",
                 "react/http": ">=0.7,<1.9",
@@ -23079,6 +23216,7 @@
                 "s-cart/s-cart": "<6.9",
                 "sabberworm/php-css-parser": ">=1,<1.0.1|>=2,<2.0.1|>=3,<3.0.1|>=4,<4.0.1|>=5,<5.0.9|>=5.1,<5.1.3|>=5.2,<5.2.1|>=6,<6.0.2|>=7,<7.0.4|>=8,<8.0.1|>=8.1,<8.1.1|>=8.2,<8.2.1|>=8.3,<8.3.1",
                 "sabre/dav": ">=1.6,<1.7.11|>=1.8,<1.8.9",
+                "saloonphp/saloon": "<4",
                 "samwilson/unlinked-wikibase": "<1.42",
                 "scheb/two-factor-bundle": "<3.26|>=4,<4.11",
                 "sensiolabs/connect": "<4.2.3",
@@ -23149,7 +23287,7 @@
                 "starcitizentools/short-description": ">=4,<4.0.1",
                 "starcitizentools/tabber-neue": ">=1.9.1,<2.7.2|>=3,<3.1.1",
                 "starcitizenwiki/embedvideo": "<=4",
-                "statamic/cms": "<5.73.14|>=6,<6.7.1",
+                "statamic/cms": "<5.73.16|>=6,<6.7.2",
                 "stormpath/sdk": "<9.9.99",
                 "studio-42/elfinder": "<=2.1.64",
                 "studiomitte/friendlycaptcha": "<0.1.4",
@@ -23328,6 +23466,7 @@
                 "xataface/xataface": "<3",
                 "xpressengine/xpressengine": "<3.0.15",
                 "yab/quarx": "<2.4.5",
+                "yansongda/pay": "<=3.7.19",
                 "yeswiki/yeswiki": "<=4.5.4",
                 "yetiforce/yetiforce-crm": "<6.5",
                 "yidashi/yii2cmf": "<=2",
@@ -23423,7 +23562,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-03-24T21:15:04+00:00"
+            "time": "2026-03-25T22:13:18+00:00"
         },
         {
             "name": "sebastian/cli-parser",

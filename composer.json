@@ -125,6 +125,7 @@
         "spatie/laravel-sitemap": "^7.3.6",
         "spatie/laravel-sluggable": "^3.7",
         "spatie/laravel-tags": "^4.9",
+        "spatie/security-advisories-health-check": "*",
         "stephenjude/filament-blog": "^4.0",
         "stephenjude/filament-debugger": "^4.0",
         "stephenjude/filament-feature-flags": "^3.0",
