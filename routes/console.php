@@ -18,3 +18,4 @@ Schedule::command(SyncFourthwallData::class)->everyFifteenMinutes();
 Schedule::command(PruneSelfUpdateLogs::class)->hourly();
 Schedule::command(RunHealthChecksCommand::class)->everyFiveMinutes();
 Schedule::command(ScheduleCheckHeartbeatCommand::class)->everyMinute();
+Schedule::command('horizon:snapshot')->everyFiveMinutes();
