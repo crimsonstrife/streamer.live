@@ -11,6 +11,29 @@ class ShieldonFirewall
 {
     public function handle(Request $request, Closure $next): Response
     {
+        // The Firewall constructor calls new Kernel() → HttpFactory::createRequest() →
+        // ServerRequestFactory::fromGlobal() which snapshots $_SERVER immediately.
+        // We must normalize all four possible Shieldon IP source headers BEFORE
+        // instantiating the Firewall, otherwise it captures the raw (potentially invalid)
+        // values. Laravel's TrustProxies has already resolved the correct client IP.
+        $ip = $request->ip();
+
+        if (!$ip || !filter_var($ip, FILTER_VALIDATE_IP)) {
+            \Illuminate\Support\Facades\Log::warning('ShieldonFirewall: could not resolve a valid IP — Shieldon skipped', [
+                'request_ip'            => $request->ip(),
+                'REMOTE_ADDR'           => $_SERVER['REMOTE_ADDR'] ?? null,
+                'HTTP_CF_CONNECTING_IP' => $_SERVER['HTTP_CF_CONNECTING_IP'] ?? null,
+                'HTTP_X_FORWARDED_FOR'  => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null,
+                'HTTP_X_FORWARDED_HOST' => $_SERVER['HTTP_X_FORWARDED_HOST'] ?? null,
+            ]);
+            return $next($request);
+        }
+
+        $_SERVER['REMOTE_ADDR']           = $ip;
+        $_SERVER['HTTP_CF_CONNECTING_IP'] = $ip;
+        $_SERVER['HTTP_X_FORWARDED_FOR']  = $ip;
+        $_SERVER['HTTP_X_FORWARDED_HOST'] = $ip;
+
         $firewall = new Firewall();
 
         $storage = storage_path('shieldon_firewall');

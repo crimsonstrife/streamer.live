@@ -26,7 +26,7 @@ class TwitchService
 
     public ?string $client_secret;
 
-    private ?string $access_token;
+    private ?string $access_token = null;
 
     private bool $settingsResolved = false;
 
@@ -308,6 +308,8 @@ class TwitchService
             return [];
         }
 
+        $this->authenticate();
+
         // Use a per‐channel cache key in case changes are made to support multiple
         $cacheKey = "twitch.profile.{$broadcasterId}";
 
@@ -348,6 +350,8 @@ class TwitchService
         if (! $broadcasterId) {
             return 0;
         }
+
+        $this->authenticate();
 
         // Cache key per channel
         $cacheKey = "twitch.followers.{$broadcasterId}";
@@ -431,6 +435,8 @@ class TwitchService
         if (! $broadcasterId) {
             return 0;
         }
+
+        $this->authenticate();
 
         // Cache key per channel
         $cacheKey = "twitch.total_views.{$broadcasterId}";

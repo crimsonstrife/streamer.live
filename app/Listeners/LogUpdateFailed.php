@@ -9,12 +9,21 @@ class LogUpdateFailed
 {
     public function handle(UpdateFailed $event): void
     {
+        $release = null;
+        try {
+            $prop = new \ReflectionProperty($event, 'release');
+            $prop->setAccessible(true);
+            $release = $prop->getValue($event);
+        } catch (\ReflectionException) {
+            // property not accessible
+        }
+
         Log::error('self-update: UpdateFailed event from codedge/laravel-selfupdater', [
-            'release_version' => method_exists($event->release, 'getVersion')
-                ? $event->release->getVersion()
+            'release_version' => $release && method_exists($release, 'getVersion')
+                ? $release->getVersion()
                 : 'unknown',
-            'storage_path'    => method_exists($event->release, 'getStoragePath')
-                ? $event->release->getStoragePath()
+            'storage_path'    => $release && method_exists($release, 'getStoragePath')
+                ? $release->getStoragePath()
                 : 'unknown',
         ]);
     }
