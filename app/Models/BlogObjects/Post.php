@@ -133,7 +133,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
     protected $appends = [
         'banner_url',
         'has_banner',
-        'featured_image'
     ];
 
     /**
@@ -415,6 +414,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
 
     public function getFeaturedImageAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('featured_image');
+        return $this->getFirstMediaUrl('images');
     }
 }

@@ -10,11 +10,6 @@ class ListPostVersions extends ListVersions
 {
     protected static string $resource = PostResource::class;
 
-    protected function resolveRecord(int | string $key): Model
-    {
-        return $this->getModel()::withDraftContext()->findOrFail($key);
-    }
-
     public function hydrate(): void
     {
         if ($this->record instanceof Model && $this->record->getKey() && ! $this->record->isDraftTableRecord()) {
