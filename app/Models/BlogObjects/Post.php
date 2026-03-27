@@ -91,8 +91,8 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
         StripsAppendsForRevisor::saveNewVersion               insteadof HasRevisor;
         StripsAppendsForRevisor::syncToCurrentVersionRecord   insteadof HasRevisor;
         HasRevisor::applyStateToPublishedRecord as revisorApplyStateToPublishedRecord;
-        HasRevisor::saveNewVersion               as revisorSaveNewVersion;
-        HasRevisor::syncToCurrentVersionRecord   as revisorSyncToCurrentVersionRecord;
+        HasRevisor::saveNewVersion as revisorSaveNewVersion;
+        HasRevisor::syncToCurrentVersionRecord as revisorSyncToCurrentVersionRecord;
     }
     use HasSlug;
     use HasTags;
