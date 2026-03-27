@@ -8,6 +8,7 @@ use App\Models\StoreObjects\Promotion;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Schema;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 
 class StoreProductGrid extends PageBlock
@@ -18,9 +19,15 @@ class StoreProductGrid extends PageBlock
             ->schema([
                 TextInput::make('title')->label('Section Title')->required()->default('Products'),
                 Select::make('category_id')->label('Filter by Category')->searchable()->nullable()
-                    ->options(
-                        Category::where('type', 'product')->orderBy('name')->pluck('name', 'id')
-                    )->placeholder('All Categories'),
+                    ->options(function () {
+                        // if the table isn't there yet, return an empty list
+                        if (! Schema::hasTable('categories')) {
+                            return [];
+                        }
+
+                        return Category::where('type', 'product')->orderBy('name')->pluck('name', 'id');
+                    })
+                    ->placeholder('All Categories'),
                 TextInput::make('product_count')->label('Number of products to show')->numeric()->required()->default(12),
             ]);
     }
@@ -48,7 +55,7 @@ class StoreProductGrid extends PageBlock
         return [
             'title' => $data['title'] ?? 'Products',
             'products' => $productQuery->latest()->take($data['product_count'])->orderByDesc('created_at')->get(),
-            'orderPromotions'  => $orderPromotions,
+            'orderPromotions' => $orderPromotions,
             'productPromotions' => $productPromotions,
         ];
     }

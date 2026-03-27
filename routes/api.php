@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\EmoteController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\UserController;
@@ -16,8 +17,7 @@ use Illuminate\Support\Facades\Route;
  * The user is retrieved by calling the `user()` method on the `Request` object.
  * The route is protected by the `auth:api` middleware.
  *
- * @param Request $request The request object.
- *
+ * @param  Request  $request  The request object.
  * @return Authenticatable|null The authenticated user or null if not authenticated.
  */
 Route::get('/user', function (Request $request) {
@@ -27,13 +27,12 @@ Route::get('/user', function (Request $request) {
 /**
  * API Routes for the authenticated user.
  *
- * @param Request $request
+ * @param  Request  $request
  * @return Authenticatable|null
  */
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
 
 // Routes using Passport for authentication
 Route::middleware('passport-api')->group(function () {
@@ -79,3 +78,10 @@ Route::get('/icons', [IconController::class, 'fetchIcons']);
 Route::get('/emotes', [EmoteController::class, 'index']);
 
 Route::middleware('api')->get('/users/search', [UserController::class, 'search'])->name('users.search');
+
+Route::prefix('v1')->group(function () {
+    // Public product endpoints:
+    Route::get('products', [ProductController::class, 'index']);
+    Route::get('products/{product}', [ProductController::class, 'show']);
+    Route::get('collections/{slug}/products', [ProductController::class, 'byCollection']);
+});

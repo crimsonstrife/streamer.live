@@ -59,7 +59,7 @@
 
     @php
         $style = app(LookFeelSettings::class);
-        $display_mode = $style->mode;
+        $display_mode = $style->mode ?? 'light';
     @endphp
     <style>
         :root {
@@ -316,12 +316,13 @@
 <body class="{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }}">
 <x-banner/>
 <div class="min-vh-100 d-flex flex-column">
-    <x-filament-menu menu="header-nav-main"/>
-    <!-- Page Heading -->
-    <header class="py-3 mb-4 border-bottom">
-        <div class="container d-flex flex-wrap justify-content-center">
-            <a href="{{ route('fabricator.page.home') }}"
-               class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
+    <div id="header" class="container-fluid sticky-top">
+        <x-filament-menu menu="header-nav-main" display="{{ $display_mode }}"/>
+        <!-- Page Heading -->
+        <header class="py-3 {{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }} border-bottom">
+            <div class="container d-flex flex-wrap justify-content-center">
+                <a href="{{ route('fabricator.page.home') }}"
+                   class="d-flex align-items-center mb-3 mb-lg-0 me-lg-auto link-body-emphasis text-decoration-none">
                 <span class="fs-4" style="margin-right: 10%;">
                     <x-application-mark
                         :height="$logoHeight"
@@ -329,13 +330,14 @@
                         class="me-2"
                     />
                 </span>
-                @if ($showName)
-                    <span class="fs-4">{{ $siteName }}</span>
-                @endif
-            </a>
-            <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search" method="GET" action="{{ route('search') }}">
-                <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search">
-            </form>
-        </div>
-    </header>
+                    @if ($showName)
+                        <span class="fs-4">{{ $siteName }}</span>
+                    @endif
+                </a>
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0" role="search" method="GET" action="{{ route('search') }}">
+                    <input type="search" name="query" class="form-control" placeholder="Search..." aria-label="Search">
+                </form>
+            </div>
+        </header>
+    </div>
     <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::header() -->

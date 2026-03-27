@@ -11,6 +11,7 @@
             "permissions": [
                 "manage-settings",
                 "view-analytics",
+                "view-system-logs",
                 "access-filament",
                 "is-super-admin"
             ]
@@ -25,6 +26,7 @@
             "permissions": [
                 "manage-settings",
                 "view-analytics",
+                "view-system-logs",
                 "access-filament",
                 "is-admin"
             ]

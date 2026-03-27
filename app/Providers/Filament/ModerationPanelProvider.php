@@ -7,8 +7,7 @@ use App\Filament\Resources;
 use App\Filament\Widgets\AccountWidget;
 use App\Plugins\BanPlugin;
 use Exception;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
+use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
@@ -16,12 +15,7 @@ use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Guava\Tutorials\TutorialsPlugin;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
 class ModerationPanelProvider extends PanelProvider
@@ -62,19 +56,14 @@ class ModerationPanelProvider extends PanelProvider
             ])
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
             ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
+                'web',
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
+            ], isPersistent: true)
             ->authMiddleware([
-                Authenticate::class,
-            ])
+                FilamentAuthenticate::class,
+                EnsureEmailIsVerified::class,
+            ], isPersistent: true)
             ->plugins([
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),

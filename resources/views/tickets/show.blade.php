@@ -15,7 +15,7 @@
                 <strong>{{ $ticket->user->username }}</strong>
                 <small class="text-muted">{{ $ticket->created_at->diffForHumans() }}</small>
             </div>
-            <p class="mb-0">{!! nl2br($ticket->message) !!}</p>
+            <p class="mb-0">{!! nl2br(e($ticket->message)) !!}</p>
         </div>
     </div>
 
@@ -28,7 +28,7 @@
                     <strong>{{ $msg->commentedBy->name }}</strong>
                     <small class="text-muted">{{ $msg->created_at->diffForHumans() }}</small>
                 </div>
-                <p class="mb-0">{!! nl2br($msg->content) !!}</p>
+                <p class="mb-0">{!! nl2br(e($msg->content)) !!}</p>
             </div>
         @endforeach
 
@@ -58,7 +58,7 @@
                         <strong>{{ $note->commentedBy->name }}</strong>
                         <small class="text-muted">{{ $note->created_at->diffForHumans() }}</small>
                     </div>
-                    <p class="mb-0">{!! nl2br($note->content) !!}</p>
+                    <p class="mb-0">{!! nl2br(e($note->content)) !!}</p>
                 </div>
             @endforeach
 

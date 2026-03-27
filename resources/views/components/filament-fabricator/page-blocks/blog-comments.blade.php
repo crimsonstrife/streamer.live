@@ -232,7 +232,7 @@
                                         <label for="commentMessage" style="position: relative;">Leave a comment
                                             here</label>
                                         <x-content-editor id="commentMessage" name="commentMessage" :mentions="true"
-                                                          class="form-control w-100" rows="3" required/>
+                                                          class="form-control w-100" rows="3"/>
                                     </div>
                                 </div>
                                 <div class="hstack justify-content-end gap-1">

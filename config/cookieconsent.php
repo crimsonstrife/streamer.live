@@ -16,7 +16,9 @@ return [
 
     'url' => [
         'domain' => null,
-        'middleware' => [],
+        'middleware' => [
+            'web',
+        ],
         'prefix' => 'cookie-consent',
     ],
 
@@ -32,14 +34,14 @@ return [
     | The duration parameter represents the cookie's lifetime in minutes.
     |
     | The domain parameter, when defined, determines the cookie's activity domain.
-    | For multiple sub-domains, prefix your domain with "." (eg: ".mydomain.com").
+    | For multiple subdomains, prefix your domain with "." (eg: ".mydomain.com").
     |
     */
 
     'cookie' => [
         'name' => Str::slug(env('APP_NAME', 'laravel'), '_').'_cookie_consent',
         'duration' => (60 * 24 * 365),
-        'domain' => null,
+        'domain' => env('COOKIE_DOMAIN', null),
     ],
 
     /*
@@ -63,7 +65,7 @@ return [
     |
     | The ID parameter is required and represents your Google Analytics ID.
     |
-    | The anonymize parameter is optional and determines whether the user's IP
+    | The anonymized parameter is optional and determines whether the user's IP
     | address should be anonymized before being sent to Google Analytics.
     |
     */

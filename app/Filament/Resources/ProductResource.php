@@ -2,19 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use AntoineCorbin\Form\Components\AdvancedMediaLibraryFileUpload;
-use App\Filament\Resources\ProductResource\RelationManagers\ProductImageRelationManager;
 use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\ProductImageRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\PromotionRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\VariationsRelationManager;
-use App\Forms\Components\FixedAdvancedMediaLibraryFileUpload;
-use App\Models\Media;
 use App\Models\SharedObjects\Category;
 use App\Models\StoreObjects\Product;
+use App\Traits\HasContentEditor;
 use Filament\Forms;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -27,6 +22,8 @@ use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
+    use HasContentEditor;
+
     protected static ?string $model = Product::class;
 
     protected static ?string $slug = 'store/products';
@@ -43,10 +40,24 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->required()->disabled(),
-                Forms\Components\Textarea::make('description')->rows(6)->required(),
-                Forms\Components\Textarea::make('more_details')->rows(9),
-                Forms\Components\Textarea::make('product_information')->rows(5),
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')->required()->disabled(),
+                        self::getContentEditor('description')->required()->label('Description'),
+                    ])
+                    ->columns([
+                        'sm' => 2,
+                    ])
+                    ->columnSpan(2),
+                Forms\Components\Section::make()
+                    ->schema([
+                        self::getContentEditor('more_details')->label('More Details'),
+                        self::getContentEditor('product_information')->label('Product Information'),
+                    ])
+                    ->columns([
+                        'sm' => 1,
+                    ])
+                    ->columnSpan(1),
                 Forms\Components\TextInput::make('price')
                     ->label('Price')
                     ->required()
@@ -101,7 +112,7 @@ class ProductResource extends Resource
                     ->searchable(),
                 SpatieTagsInput::make('tags')
                     ->label(__('Product Tags'))->type('product'),
-            ]);
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table

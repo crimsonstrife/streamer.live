@@ -3,15 +3,25 @@
 use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Embeds\StreamStatusImageController;
+use App\Http\Controllers\Embeds\StreamStatusSvgController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\Installer\CredentialsController;
+use App\Http\Controllers\Installer\DatabaseController;
+use App\Http\Controllers\Installer\EnvironmentController;
+use App\Http\Controllers\Installer\FinalController;
+use App\Http\Controllers\Installer\PermissionsController;
+use App\Http\Controllers\Installer\RequirementsController;
+use App\Http\Controllers\Installer\WelcomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Social\XOAuthController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TicketController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
@@ -19,6 +29,7 @@ use App\Models\Font;
 use App\Settings\TwitchSettings;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
+use Froiden\LaravelInstaller\Helpers\InstalledFileManager;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -45,6 +56,71 @@ Route::any('/firewall/panel/{path?}', function () {
     $panel->entry();
 
 })->where('path', '(.*)');
+
+if (! file_exists(storage_path('installed'))) {
+    Route::group([
+        'prefix' => 'install',
+        'as' => 'LaravelInstaller::',
+        'middleware' => ['web', 'install', 'not.installed'],
+    ], function () {
+        // Welcome
+        Route::get('/', [WelcomeController::class, 'welcome'])
+            ->name('welcome');
+
+        // Environment form (GET)
+        Route::get('environment', [EnvironmentController::class, 'environment'])
+            ->name('environment');
+
+        // Environment save (POST)
+        Route::post('environment/save', [EnvironmentController::class, 'save'])
+            ->name('environmentSave');
+
+        // (Optional) keep the original GET so old links still work
+        Route::get('environment/save', [EnvironmentController::class, 'save'])
+            ->name('environmentSave');
+
+        // Requirements
+        Route::get('requirements', [RequirementsController::class, 'requirements'])
+            ->name('requirements');
+
+        // Permissions
+        Route::get('permissions', [PermissionsController::class, 'permissions'])
+            ->name('permissions');
+
+        // Admin Credentials
+        Route::get('credentials', [CredentialsController::class, 'showForm'])->name('credentials');
+        Route::post('credentials', [CredentialsController::class, 'saveForm'])->name('credentialsSave');
+
+        // Database
+        Route::get('database', [DatabaseController::class, 'database'])
+            ->name('database');
+
+        // Final
+        Route::get('final', [FinalController::class, 'finish'])
+            ->name('final');
+    });
+}
+
+Route::get('/__debug/instance', function () {
+    $fp = fn ($v) => $v ? substr(hash('sha256', $v), 0, 12) : null;
+
+    return response()->json([
+        'host' => gethostname(),
+        'php' => PHP_VERSION,
+        'base_path' => base_path(),
+        'public_path' => public_path(),
+        'env_file' => app()->environmentFile(),
+        'env_path' => app()->environmentPath(),
+        'env_full' => app()->environmentPath() . DIRECTORY_SEPARATOR . app()->environmentFile(),
+        'env_exists' => file_exists(app()->environmentPath() . DIRECTORY_SEPARATOR . app()->environmentFile()),
+        'env_mtime' => @filemtime(app()->environmentPath() . DIRECTORY_SEPARATOR . app()->environmentFile()),
+        'app_key_fp_config' => $fp((string) config('app.key')),
+        'app_key_fp_getenv' => $fp((string) getenv('APP_KEY')),
+        'app_key_fp__env' => $fp((string) ($_ENV['APP_KEY'] ?? null)),
+        'config_cached' => app()->configurationIsCached(),
+        'cached_config_path' => app()->getCachedConfigPath(),
+    ]);
+});
 
 // added the middleware but only to this group, the Filament routes are unaffected
 Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () {
@@ -129,6 +205,7 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
      */
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
+
         return redirect(route('verification.complete'))->with('success', 'Email has been verified!');
     })->middleware([
         'auth:sanctum',
@@ -202,37 +279,17 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
     Route::prefix($blogSlug)->name($blogSlug.'.')->group(function () {
         Route::get('/', [BlogController::class, 'index'])->name('index');
         Route::get('/{slug}', [BlogController::class, 'show'])->name('post');
-        Route::post('/{post}/comment', [BlogCommentController::class, 'store'])
-            ->middleware([
-                'auth',
-                'auth.banned',
-                'ip.banned',
-                'logout.banned',
-            ])
-            ->name('comment.submit');
-        // Post reactions
-        Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])
-            ->name('reaction.toggle')
-            ->middleware(
-                [
-                    'auth',
-                    'auth.banned',
-                    'ip.banned',
-                    'logout.banned',
-                ]
-            );
-
-        // Route::get('category/{slug}', [BlogController::class, 'category'])->name('category');
-
-        // Comment reactions
-        Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])
-            ->name('comment.reaction.toggle')
-            ->middleware([
-                'auth',
-                'auth.banned',
-                'ip.banned',
-                'logout.banned',
-            ]);
+        Route::middleware([
+            'auth:sanctum',
+            config('jetstream.auth_session'),
+            'auth.banned',
+            'ip.banned',
+            'logout.banned',
+        ])->group(function () {
+            Route::post('/{post}/comment', [BlogCommentController::class, 'store'])->name('comment.submit');
+            Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])->name('reaction.toggle');
+            Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])->name('comment.reaction.toggle');
+        });
     });
 
     Route::middleware(['store.enabled'])
@@ -311,7 +368,7 @@ CSS;
 
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
-        ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
+        ->where('slug', '^(?!api\/|public\/|storage\/|embeds\/|auth\/|build\/|admin\/).*$')
         ->name('fabricator.page.global.fallback');
 });
 
@@ -367,10 +424,20 @@ Route::get('auth/twitch/callback', function (Request $request) {
         ->with('success', 'Twitch account linked successfully!');
 })->name('twitch.oauth.callback');
 
+Route::middleware(['web', 'auth', 'verified'])
+    ->prefix('admin/social/x')
+    ->name('social.x.')
+    ->group(function () {
+        Route::get('{account}/connect', [XOAuthController::class, 'connect'])
+            ->whereNumber('account')
+            ->name('connect');
+        Route::get('callback', [XOAuthController::class, 'callback'])->name('callback');
+    });
+
 Route::resource('icons', IconController::class)
     ->only(['store', 'index']);
 
 Route::get('/{slug}', FabricatorPageController::class)
     // don’t match any system URI
-    ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/).*$')
+    ->where('slug', '^(?!api\/|public\/|storage\/|embeds\/|auth\/|build\/|admin\/).*$')
     ->name('fabricator.page.global.fallback');

@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use Exception;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use Spatie\LaravelSettings\Events\LoadingSettings;
@@ -23,16 +26,13 @@ class SettingsMapper extends SpatieSettingsMapper
     {
         $config = $this->getConfig($settingsClass);
 
-        // Attempt to fetch properties; if the repository is empty, initialize defaults.
         $properties = $this->fetchProperties(
             $settingsClass,
             $config->getReflectedProperties()->keys()
         );
 
-        // Dynamically fill missing settings with default values.
         $properties = $this->fillMissingSettingsWithDefaultValues($config, $properties);
 
-        // Modify behavior during migrations and non-production environments.
         if ($this->shouldEnforceMissingSettingsCheck()) {
             $this->ensureNoMissingSettings($config, $properties, 'loading');
         } else {
@@ -49,9 +49,8 @@ class SettingsMapper extends SpatieSettingsMapper
         if (! $this->has($settingsClass)) {
             $this->initialize($settingsClass);
 
-            // Ensure the configuration is now present.
             if (! $this->has($settingsClass)) {
-                logger()->warning("Settings class '{$settingsClass}' could not be initialized in SettingsMapper.");
+                Log::warning("Settings class '{$settingsClass}' could not be initialized in SettingsMapper.");
                 throw new InvalidArgumentException("Settings class '{$settingsClass}' is not properly configured.");
             }
         }
@@ -72,7 +71,6 @@ class SettingsMapper extends SpatieSettingsMapper
 
         $settingsConfig = parent::initialize($settingsClass);
 
-        // Add the settings config to the configs array.
         $this->configs[$settingsClass] = $settingsConfig;
 
         return $settingsConfig;
@@ -80,23 +78,28 @@ class SettingsMapper extends SpatieSettingsMapper
 
     public function fetchProperties(string $settingsClass, Collection $names): Collection
     {
-        // 1) If the settings table isn't there yet, bail out immediately.
-        if (! Schema::hasTable('settings')) {
+        if (! $this->settingsTableIsAvailable()) {
             return collect();
         }
 
-        // 2) Now that we know the table exists, go ahead and load from the repo.
         $config = $this->getConfig($settingsClass);
 
         $raw = $config
             ->getRepository()
             ->getPropertiesInGroup($config->getGroup());
 
+        $canDecrypt = (bool) config('app.key');
+
         return collect($raw)
             ->filter(fn ($payload, string $name) => $names->contains($name))
-            ->map(function ($payload, string $name) use ($config) {
-                if ($config->isEncrypted($name)) {
-                    $payload = Crypto::decrypt($payload);
+            ->map(function ($payload, string $name) use ($config, $canDecrypt) {
+                if ($config->isEncrypted($name) && $canDecrypt && $payload !== null && $payload !== '') {
+                    try {
+                        $payload = Crypto::decrypt($payload);
+                    } catch (DecryptException $e) {
+                        Log::warning("Settings decrypt failed for {$config->getGroup()}.{$name}: {$e->getMessage()}");
+                        $payload = null; // let defaults/backfill handle it
+                    }
                 }
 
                 if ($cast = $config->getCast($name)) {
@@ -107,6 +110,15 @@ class SettingsMapper extends SpatieSettingsMapper
             });
     }
 
+    private function settingsTableIsAvailable(): bool
+    {
+        try {
+            // Re-check every call so long-lived workers see schema changes after migrations.
+            return Schema::hasTable('settings');
+        } catch (Exception) {
+            return false;
+        }
+    }
 
     private function fillMissingSettingsWithDefaultValues(SettingsConfig $config, Collection $properties): Collection
     {
@@ -115,23 +127,17 @@ class SettingsMapper extends SpatieSettingsMapper
         foreach ($missingSettings as $missingSetting) {
             $reflectionProperty = $config->getReflectedProperties()[$missingSetting];
 
-            // Handle missing boolean properties.
             if ($reflectionProperty->getType() && $reflectionProperty->getType()->getName() === 'bool') {
                 $properties->put($missingSetting, false);
-                // Handle missing integer properties.
             } elseif ($reflectionProperty->getType() && $reflectionProperty->getType()->getName() === 'int') {
                 $properties->put($missingSetting, 0);
-                // Handle missing string properties.
             } elseif ($reflectionProperty->getType() && $reflectionProperty->getType()->getName() === 'string') {
                 $properties->put($missingSetting, '');
             } elseif ($reflectionProperty->hasDefaultValue()) {
-                // Use the default value if defined.
                 $properties->put($missingSetting, $reflectionProperty->getDefaultValue());
-            } elseif ($reflectionProperty->getType()->allowsNull()) {
-                // Use null if allowed by the type.
+            } elseif ($reflectionProperty->getType() && $reflectionProperty->getType()->allowsNull()) {
                 $properties->put($missingSetting, null);
             } else {
-                // Assign a sensible fallback for other types (optional).
                 $properties->put($missingSetting, null);
             }
         }
@@ -155,8 +161,10 @@ class SettingsMapper extends SpatieSettingsMapper
         $missingSettings = $config
             ->getReflectedProperties()
             ->filter(function ($reflectionProperty, $name) use ($properties) {
-                return ! $properties->has($name) &&
-                    (! $reflectionProperty->hasDefaultValue() && ! $reflectionProperty->getType()->allowsNull());
+                return ! $properties->has($name)
+                    && (! $reflectionProperty->hasDefaultValue()
+                        && $reflectionProperty->getType()
+                        && ! $reflectionProperty->getType()->allowsNull());
             })
             ->keys()
             ->toArray();
@@ -175,17 +183,15 @@ class SettingsMapper extends SpatieSettingsMapper
             ->toArray();
 
         if (! empty($missingSettings)) {
-            logger()->warning("Missing settings detected for '{$config->getName()}': ".implode(', ', $missingSettings));
+            Log::warning("Missing settings detected for '{$config->getName()}': " . implode(', ', $missingSettings));
         }
     }
 
     /**
      * @throws MissingSettings
      */
-    public function save(
-        string $settingsClass,
-        Collection $properties
-    ): Collection {
+    public function save(string $settingsClass, Collection $properties): Collection
+    {
         $config = $this->getConfig($settingsClass);
 
         $this->ensureNoMissingSettings($config, $properties, 'saving');

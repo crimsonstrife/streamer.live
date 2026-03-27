@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Middleware\CheckIPFilter;
+use App\Http\Middleware\EnsureNotInstalled;
 use App\Http\Middleware\EnsureStoreEnabled;
-use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShieldonFirewall;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -12,48 +12,9 @@ use Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\TrimStrings;
 use Illuminate\Http\Middleware\HandleCors;
-use Illuminate\Http\Middleware\TrustHosts;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Middleware\ValidatePostSize;
-use Illuminate\Session\Middleware\StartSession;
-use Shieldon\Firewall\Firewall;
-use Shieldon\Firewall\HttpResolver;
 use Spatie\Csp\AddCspHeaders;
-use Treblle\SecurityHeaders\Http\Middleware\CertificateTransparencyPolicy;
-use Treblle\SecurityHeaders\Http\Middleware\PermissionsPolicy;
-use Treblle\SecurityHeaders\Http\Middleware\RemoveHeaders;
-use Treblle\SecurityHeaders\Http\Middleware\SetReferrerPolicy;
-use Treblle\SecurityHeaders\Http\Middleware\StrictTransportSecurity;
-
-/*
-|--------------------------------------------------------------------------
-| Run The Shieldon Firewall
-|--------------------------------------------------------------------------
-|
-| Shieldon Firewall will watch all HTTP requests coming to your website.
-| Running Shieldon Firewall before initializing Laravel will avoid possible
-| conflicts with Laravel's built-in functions.
-*/
-if (isset($_SERVER['REQUEST_URI'])) {
-
-    // This directory must be writable.
-    // We put it in the `storage/shieldon_firewall` directory.
-    $storage = __DIR__.'/../storage/shieldon_firewall';
-
-    $firewall = new Firewall();
-
-    $firewall->configure($storage);
-
-    // The base url for the control panel.
-    $firewall->controlPanel('/firewall/panel/');
-
-    $response = $firewall->run();
-
-    if ($response->getStatusCode() !== 200) {
-        $httpResolver = new HttpResolver();
-        $httpResolver($response);
-    }
-}
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -61,11 +22,13 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            Route::middleware([])->group(base_path('routes/embeds.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->use([
             InvokeDeferredCallbacks::class,
-            // TrustHosts::class,
             TrustProxies::class,
             HandleCors::class,
             PreventRequestsDuringMaintenance::class,
@@ -73,17 +36,12 @@ return Application::configure(basePath: dirname(__DIR__))
             TrimStrings::class,
             ConvertEmptyStringsToNull::class,
             CheckIPFilter::class,
-            // RemoveHeaders::class,
-            // SetReferrerPolicy::class,
-            // StrictTransportSecurity::class,
-            // CertificateTransparencyPolicy::class,
-            // PermissionsPolicy::class,
         ]);
 
         // Apply to all "web" routes
         $middleware->web(
             append: [
-                // SecurityHeaders::class,
+                ShieldonFirewall::class,
                 AddCspHeaders::class,
             ]
         );
@@ -93,10 +51,15 @@ return Application::configure(basePath: dirname(__DIR__))
             // SecurityHeaders::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'install/*',
+        ]);
+
         $middleware->alias([
             'store.enabled' => EnsureStoreEnabled::class,
             'firewall' => ShieldonFirewall::class,
             'ip-filter' => CheckIPFilter::class,
+            'not.installed' => EnsureNotInstalled::class,
         ]);
 
         $middleware->trustProxies('*');

@@ -3,7 +3,7 @@
     "name": "crimsonstrife/streamer",
     "type": "application",
     "description": "A Laravel-based webapp for hosting content creator fan sites, aimed a streamers and their community building. Built with Laravel, Livewire, and Filament.",
-    "version": "1.2.1-alpha",
+    "version": "1.4.0-alpha",
     "keywords": [
         "laravel",
         "livewire",
@@ -23,7 +23,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
         "a21ns1g4ts/filament-short-url": "^0.1.5",
+        "achyutn/filament-log-viewer": "^0.7",
         "antoinecorbin/filament-advanced-spatie-media-library": "^1.0",
         "asmit/filament-mention": "^1.0",
         "asosick/filament-layout-manager": "^1.1",
@@ -40,7 +43,7 @@
         "doctrine/dbal": "^4.2",
         "drewm/mailchimp-api": "^2.5",
         "elmudo-dev/filament-custom-attribute-file-upload": "^1.1",
-        "enshrined/svg-sanitize": "^0.21.0",
+        "enshrined/svg-sanitize": "^0.22.0",
         "fakerphp/faker": "^1.24",
         "filament/actions": "^3.3",
         "filament/filament": "^3.3",
@@ -52,7 +55,7 @@
         "filament/spatie-laravel-tags-plugin": "^3.3",
         "filament/tables": "^3.3",
         "filament/widgets": "^3.3",
-        "froiden/laravel-installer": "1.9.0",
+        "froiden/laravel-installer": "11.0.0",
         "geoip2/geoip2": "^3.2",
         "gerenuk/filament-banhammer": "^1.1",
         "guava/calendar": "^1.14",
@@ -122,10 +125,11 @@
         "spatie/laravel-sitemap": "^7.3.6",
         "spatie/laravel-sluggable": "^3.7",
         "spatie/laravel-tags": "^4.9",
+        "spatie/security-advisories-health-check": "*",
         "stephenjude/filament-blog": "^4.0",
         "stephenjude/filament-debugger": "^4.0",
         "stephenjude/filament-feature-flags": "^3.0",
-        "stephenjude/filament-jetstream": "^0.0.16",
+        "stephenjude/filament-jetstream": "^0.1.0",
         "symfony/intl": "^7.3",
         "tapp/filament-auditing": "^3.0",
         "team-reflex/discord-php": "^10.4",
@@ -151,6 +155,9 @@
         "phpunit/phpunit": "^11.5.3"
     },
     "autoload": {
+        "files": [
+            "app/helpers.php"
+        ],
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
@@ -179,7 +186,17 @@
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "@php artisan tinymce:publish --ansi",
             "@php artisan ide-helper:generate",
-            "@php artisan ide-helper:meta"
+            "@php artisan ide-helper:meta",
+            "@php artisan migrate",
+            "npm update",
+            "npm run build"
+        ],
+        "post-install-cmd": [
+            "@php artisan migrate",
+            "npm install",
+            "npm run build",
+            "@php artisan db:seed",
+            "@php artisan installer:finish"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

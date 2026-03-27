@@ -2,10 +2,11 @@
 
 namespace App\Filament\Fabricator\PageBlocks;
 
+use App\Models\Hero;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Schema;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
-use App\Models\Hero;
 
 class HeroBlock extends PageBlock
 {
@@ -16,7 +17,7 @@ class HeroBlock extends PageBlock
                 Select::make('mode')
                     ->label('Display Mode')
                     ->options([
-                        'single'   => 'Single Hero Banner',
+                        'single' => 'Single Hero Banner',
                         'carousel' => 'Carousel of Heroes',
                     ])
                     ->default('single'),
@@ -24,11 +25,18 @@ class HeroBlock extends PageBlock
                 Select::make('heroes')
                     ->label('Select Hero(s)')
                     ->multiple()
-                    ->options(Hero::query()
-                        ->where('is_active', true)
-                        ->orderBy('sort_order')
-                        ->pluck('title', 'id')
-                        ->toArray())
+                    ->options(function () {
+                        // if the table isn't there yet, return an empty list
+                        if (! Schema::hasTable('heroes')) {
+                            return [];
+                        }
+
+                        return Hero::query()
+                            ->where('is_active', true)
+                            ->orderBy('sort_order')
+                            ->pluck('title', 'id')
+                            ->toArray();
+                    })
                     ->required(),
             ]);
     }

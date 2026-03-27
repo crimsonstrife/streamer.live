@@ -77,23 +77,33 @@ jobs:
     - name: Discover Laravel packages manually
       run: php artisan package:discover
 
+    - name: Clean up CI artifacts before packaging
+      run: |
+        rm -f .env
+        rm -f database/database.sqlite
+
     - name: Update SELF_UPDATER_VERSION_INSTALLED in .env.example
       run: |
         version="${GITHUB_REF##*/}"
         echo "Setting SELF_UPDATER_VERSION_INSTALLED=$version in .env.example"
         sed -i "/^SELF_UPDATER_VERSION_INSTALLED=/c\SELF_UPDATER_VERSION_INSTALLED=$version" .env.example || echo "SELF_UPDATER_VERSION_INSTALLED=$version" >> .env.example
 
+    - name: Prepare release-ready .env
+      run: |
+        cp .env.example .env
+
     - name: Create ZIP for release
       run: |
         mkdir -p release
-        zip -r release/laravel-release.zip . \
+        zip -r release/streamer-release.zip \
+          .env.example \
           app bootstrap config database public resources routes vendor \
-          artisan composer.json composer.lock package.json public/build \
+          artisan composer.json composer.lock package.json package-lock.json \
           -x "**/node_modules/**" "**/storage/logs/**" "**/storage/framework/**" "**/.git/**" "**/.env" "**/tests/**"
 
     - name: Upload release ZIP to GitHub
       uses: softprops/action-gh-release@v1
       with:
-        files: release/laravel-release.zip
+        files: release/streamer-release.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
