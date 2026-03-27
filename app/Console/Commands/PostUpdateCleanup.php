@@ -28,11 +28,19 @@ class PostUpdateCleanup extends Command
     {
         $this->info('Clearing caches...');
 
-        $this->callSilent('cache:clear');
-        $this->callSilent('config:clear');
-        $this->callSilent('view:clear');
-        $this->callSilent('route:clear');
-        $this->callSilent('event:clear');
+        foreach ([
+            'cache:clear',
+            'config:clear',
+            'view:clear',
+            'route:clear',
+            'event:clear',
+        ] as $command) {
+            if ($this->callSilent($command) !== CommandAlias::SUCCESS) {
+                $this->error("Command [{$command}] failed during cleanup.");
+
+                return CommandAlias::FAILURE;
+            }
+        }
 
         $this->info('Caches cleared and recompiled.');
 

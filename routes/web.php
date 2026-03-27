@@ -3,6 +3,8 @@
 use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Embeds\StreamStatusImageController;
+use App\Http\Controllers\Embeds\StreamStatusSvgController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
@@ -366,7 +368,7 @@ CSS;
 
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)
-        ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/|admin\/).*$')
+        ->where('slug', '^(?!api\/|public\/|storage\/|embeds\/|auth\/|build\/|admin\/).*$')
         ->name('fabricator.page.global.fallback');
 });
 
@@ -437,5 +439,5 @@ Route::resource('icons', IconController::class)
 
 Route::get('/{slug}', FabricatorPageController::class)
     // don’t match any system URI
-    ->where('slug', '^(?!api\/|public\/|storage\/|auth\/|build\/|admin\/).*$')
+    ->where('slug', '^(?!api\/|public\/|storage\/|embeds\/|auth\/|build\/|admin\/).*$')
     ->name('fabricator.page.global.fallback');

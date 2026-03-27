@@ -18,10 +18,12 @@ class XPoster implements SocialPoster
      */
     public function post(StreamSocialAccount $account, string $text, array $context = []): SocialPostResult
     {
-        $token = $account->credentials['user_access_token'] ?? null;
+        $token = $account->credentials['access_token']
+            ?? $account->credentials['user_access_token']
+            ?? null;
 
         if (! $token) {
-            throw new RuntimeException('X account missing user_access_token.');
+            throw new RuntimeException('X account is not authenticated (missing access token).');
         }
 
         $text = $this->truncate($text, 280);

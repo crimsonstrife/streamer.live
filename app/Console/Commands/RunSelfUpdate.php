@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Codedge\Updater\UpdaterManager;
+use App\Services\SelfUpdate\SelfUpdateOrchestrator;
+use App\Services\SelfUpdate\SelfUpdateStatusStore;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
+use Throwable;
 
 class RunSelfUpdate extends Command
 {
@@ -25,17 +27,29 @@ class RunSelfUpdate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(UpdaterManager $updater): int
+    public function handle(SelfUpdateOrchestrator $orchestrator, SelfUpdateStatusStore $statusStore): int
     {
-        $version = $this->argument('version') ?? $updater->source()->getVersionAvailable();
-        $this->info("Updating to version: $version");
+        $version = $this->argument('version');
 
-        $release = $updater->source()->fetch($version);
+        $this->info($version
+            ? "Updating to version: {$version}"
+            : 'Updating to the latest available version');
 
-        $this->info("Fetched Release: " . $release->getRelease());
+        try {
+            $statusStore->markRunning($version !== null ? (string) $version : null);
 
-        $updated = $updater->source()->update($release);
+            $appliedVersion = $orchestrator->execute($version);
+            $statusStore->markSucceeded($appliedVersion);
 
-        return $updated ? CommandAlias::SUCCESS : CommandAlias::FAILURE;
+            $this->info("Updated to version: {$appliedVersion}");
+
+            return CommandAlias::SUCCESS;
+        } catch (Throwable $e) {
+            $statusStore->markFailed($version !== null ? (string) $version : null, $e->getMessage());
+            report($e);
+            $this->error($e->getMessage());
+
+            return CommandAlias::FAILURE;
+        }
     }
 }

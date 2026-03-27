@@ -121,7 +121,7 @@ class FourthwallService
                         'description' => data_get($collectionData, 'description'),
                     ]
                 );
-                Log::info("Synced collection: {$collection->name}");
+                $this->logInfo("Synced collection: {$collection->name}");
 
                 // now paginate through that collection’s products
                 $this->syncProducts($collection);
@@ -131,7 +131,7 @@ class FourthwallService
             $page++;
         } while ($hasNextPage);
 
-        Log::info('All collections and their products synced.');
+        $this->logInfo('All collections and their products synced.');
     }
 
     /**
@@ -202,7 +202,7 @@ class FourthwallService
                             ]
                         );
 
-                        Log::info("Synced promotion: {$promotion->title}");
+                        $this->logInfo("Synced promotion: {$promotion->title}");
 
                         if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData, 'appliesTo.products'))) {
                             foreach (data_get($promotionData, 'appliesTo.products') as $productId) {
@@ -250,7 +250,7 @@ class FourthwallService
 
             $products = data_get($productsResponse, 'results', []);
             foreach ($products as $productData) {
-                Log::info('Syncing product: '.data_get($productData, 'name')." for collection: {$collection->name}");
+                $this->logInfo('Syncing product: '.data_get($productData, 'name')." for collection: {$collection->name}");
                 $product = Product::updateOrCreate(
                     ['provider_id' => data_get($productData, 'id')],
                     [
@@ -270,7 +270,7 @@ class FourthwallService
 
                 // Ensure product is linked to the collection (pivot table)
                 $product->collections()->syncWithoutDetaching([$collection->id]);
-                Log::info("Attached product: {$product->name} to collection: {$collection->name}");
+                $this->logInfo("Attached product: {$product->name} to collection: {$collection->name}");
 
                 if (! empty($productData['variants'])) {
                     $this->syncProductVariants($product, $productData['variants']);
@@ -290,7 +290,7 @@ class FourthwallService
             $page++;
         } while ($hasNextPage);
 
-        Log::info("Finished syncing products for collection {$collection->name}");
+        $this->logInfo("Finished syncing products for collection {$collection->name}");
     }
 
     /**
@@ -301,7 +301,7 @@ class FourthwallService
         if ($this->enabled) {
             foreach (array_chunk($variants, $this->productsChunkSize) as $variantBatch) {
                 foreach ($variantBatch as $variantData) {
-                    Log::info("Syncing product variant: {$variantData['name']} for product: {$product->name}");
+                    $this->logInfo("Syncing product variant: {$variantData['name']} for product: {$product->name}");
                     ProductVariant::updateOrCreate(
                         ['provider_id' => data_get($variantData, 'id')],
                         [
@@ -340,7 +340,7 @@ class FourthwallService
         if ($this->enabled) {
             foreach (array_chunk($images, 3) as $imageBatch) {
                 foreach ($imageBatch as $imageData) {
-                    Log::info("Dispatching image processing for product: {$product->name}");
+                    $this->logInfo("Dispatching image processing for product: {$product->name}");
                     ProcessProductImage::dispatchSync($product, $imageData);
                 }
 
@@ -364,7 +364,7 @@ class FourthwallService
                     'price' => null,
                     'compare_at_price' => null,
                 ]);
-                Log::info("Price skipped for product: {$product->name} (no variants)");
+                $this->logInfo("Price skipped for product: {$product->name} (no variants)");
 
                 return;
             }
@@ -374,7 +374,7 @@ class FourthwallService
                 'compare_at_price' => $product->variants->min('compare_at_price'),
             ]);
 
-            Log::info("Updated price for product: {$product->name}");
+            $this->logInfo("Updated price for product: {$product->name}");
         } else {
             Log::error('The Fourthwall integration is not enabled');
         }
@@ -402,8 +402,7 @@ class FourthwallService
                 ->first(fn ($media) => $media->getCustomProperty('provider_id') === $imageData['id']);
 
             if ($existing) {
-                Log::info("Image {$imageData['id']} already synced for product {$product->name}");
-
+                $this->logInfo("Image {$imageData['id']} already synced for product {$product->name}");
                 return;
             }
 
@@ -413,7 +412,6 @@ class FourthwallService
 
             if (! $response->successful()) {
                 Log::error('Failed to download image: '.data_get($imageData, 'url'));
-
                 return;
             }
 
@@ -438,7 +436,7 @@ class FourthwallService
                 throw new RuntimeException('The file is too big: '.$e->getMessage());
             }
 
-            Log::info("Stored image for product {$product->name}: {$filename}");
+            $this->logInfo("Stored image for product {$product->name}: {$filename}");
         } else {
             Log::error('The Fourthwall integration is not enabled');
         }
@@ -865,6 +863,24 @@ class FourthwallService
             $nextCursor = $payload['cursor'] ?? null;
         } while ($nextCursor);
 
-        Log::info('All Fourthwall orders synced.');
+        $this->logInfo('All Fourthwall orders synced.');
+    }
+
+    /**
+     * Determine whether informational logs should be written.
+     */
+    protected function shouldLogInfo(): bool
+    {
+        return ! app()->environment('production') || (bool) config('app.debug');
+    }
+
+    /**
+     * Write an info log only in non-production or when debug is enabled.
+     */
+    protected function logInfo(string $message, array $context = []): void
+    {
+        if ($this->shouldLogInfo()) {
+            Log::info($message, $context);
+        }
     }
 }

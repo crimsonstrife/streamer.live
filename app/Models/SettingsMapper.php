@@ -78,13 +78,7 @@ class SettingsMapper extends SpatieSettingsMapper
 
     public function fetchProperties(string $settingsClass, Collection $names): Collection
     {
-        // If the settings table isn't there yet, bail out immediately.
-        try {
-            if (! Schema::hasTable('settings')) {
-                return collect();
-            }
-        } catch (Exception $e) {
-            Log::warning($e->getMessage());
+        if (! $this->settingsTableIsAvailable()) {
             return collect();
         }
 
@@ -114,6 +108,16 @@ class SettingsMapper extends SpatieSettingsMapper
 
                 return $payload;
             });
+    }
+
+    private function settingsTableIsAvailable(): bool
+    {
+        try {
+            // Re-check every call so long-lived workers see schema changes after migrations.
+            return Schema::hasTable('settings');
+        } catch (Exception) {
+            return false;
+        }
     }
 
     private function fillMissingSettingsWithDefaultValues(SettingsConfig $config, Collection $properties): Collection

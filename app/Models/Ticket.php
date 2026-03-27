@@ -41,6 +41,16 @@ class Ticket extends Model implements CommentableContract
         return $query->where('user_id', $userId);
     }
 
+    public static function types(): array
+    {
+        return [
+            'order_support' => 'Order Support',
+            'unban_request' => 'Unban Request',
+            'general_support' => 'General Support',
+            'technical_issue' => 'Technical Issue',
+        ];
+    }
+
     /**
      * Who “owns” this ticket: either a user or a guest
      */

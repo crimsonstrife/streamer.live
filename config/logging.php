@@ -54,7 +54,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', env('LOG_STACK', 'single')),
+            'channels' => explode(',', env('LOG_STACK', 'daily')),
             'ignore_exceptions' => false,
         ],
 
@@ -128,9 +128,10 @@ return [
         ],
 
         'twitch' => [
-            'driver' => 'single',
+            'driver' => 'daily',
             'path' => storage_path('logs/twitch.log'),
             'level' => 'info',
+            'days' => env('TWITCH_LOG_DAILY_DAYS', env('LOG_DAILY_DAYS', 14)),
         ],
 
     ],

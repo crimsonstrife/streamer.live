@@ -1,5 +1,6 @@
 @php use App\Utilities\BlogHelper; @endphp
 @aware(['page'])
+
 @push('styles')
     <style>
         .bd-placeholder-img {
@@ -80,42 +81,52 @@
         }
     </style>
 @endpush
+
 @php
     $blogSlug = BlogHelper::getBlogSlug();
 @endphp
+
 <div class="container py-4">
     <h2 class="mb-4">Latest Posts</h2>
-    <div class="row mb-2">
+
+    <div class="fabricator-card-grid">
         @foreach($posts as $post)
             @php
-                $postMedia = $post->getMedia("images");
+                $postMedia = $post->getMedia('images');
             @endphp
+
             @if($postMedia->isNotEmpty())
                 @php
                     $postFeaturedImageUrl = $postMedia[0]->getUrl();
                     $postFeaturedImageAltText = $postMedia[0]->getCustomProperty('image_alt_text');
                 @endphp
             @endif
-            <div class="col-md-4 mb-4">
+
+            <div>
                 <div class="card shadow-sm h-100">
                     @if ($postMedia->isNotEmpty())
                         <img src="{{ $postFeaturedImageUrl }}" class="card-img-top"
                              alt="{{ $postFeaturedImageAltText ?? $post->title . ' Featured Image' }}">
                     @endif
+
                     <div class="card-body">
                         <h5 class="card-title">{{ $post->title }}</h5>
+
                         <p class="mb-auto text-muted">
                             {{ Illuminate\Support\Str::limit(strip_tags($post->excerpt ?? $post->content), 30) }}
                         </p>
+
                         <p class="text-muted mb-1">
                             <span>
-                                <x-fas-comments height="1rem"
-                                                width="1rem"/>{{ $post->comments_count ?? 0 }} {{ Str::plural('comment', $post->comments_count ?? 0) }}
+                                <x-fas-comments height="1rem" width="1rem" />
+                                {{ $post->comments_count ?? 0 }} {{ Str::plural('comment', $post->comments_count ?? 0) }}
                             </span>
                         </p>
-                        <a href="{{ route($blogSlug.'.post', ['slug' => $post->slug]) }}"
-                           class="icon-link gap-1 icon-link-hover stretched-link">Read More
-                            <x-fas-chevron-right height="1rem" width="auto"/>
+
+                        <a href="{{ route($blogSlug . '.post', ['slug' => $post->slug]) }}"
+                           class="icon-link gap-1 icon-link-hover stretched-link">
+                            Read More
+                            <x-fas-chevron-right height="1rem" width="auto" />
                         </a>
                     </div>
                 </div>
@@ -123,4 +134,3 @@
         @endforeach
     </div>
 </div>
-

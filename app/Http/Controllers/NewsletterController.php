@@ -3,44 +3,67 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Spatie\Newsletter\Facades\Newsletter;
 
 class NewsletterController extends Controller
 {
     public function subscribe(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'email'],
         ]);
 
+        if ($validator->fails()) {
+            return redirect($this->newsletterRedirectTarget($request))
+                ->withErrors($validator, 'newsletterSubscribe')
+                ->withInput();
+        }
+
         if (Newsletter::isSubscribed($request->email)) {
-            return back()->with('error', 'You’re already signed up.');
+            return redirect($this->newsletterRedirectTarget($request))
+                ->with('newsletter_error', 'You’re already signed up.')
+                ->withInput();
         }
 
         Newsletter::subscribe($request->email);
 
-        return back()->with('success', 'Thanks for subscribing!');
+        return redirect($this->newsletterRedirectTarget($request))
+            ->with('newsletter_success', 'Thanks for subscribing!');
     }
 
-    /** Show a simple “enter your email to unsubscribe” form */
-    public function showUnsubscribeForm()
-    {
-        return view('newsletter.unsubscribe');
-    }
-
-    /** Process the unsubscribe request */
     public function unsubscribe(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => ['required', 'email'],
         ]);
 
         if (! Newsletter::isSubscribed($request->email)) {
-            return back()->with('error', 'That address is not subscribed.');
+            return redirect()
+                ->route('newsletter.unsubscribe.form')
+                ->with('error', 'That address is not subscribed.')
+                ->withInput();
         }
 
         Newsletter::unsubscribe($request->email);
 
-        return back()->with('success', 'You’ve been unsubscribed.');
+        return redirect()
+            ->route('newsletter.unsubscribe.form')
+            ->with('success', 'You’ve been unsubscribed.');
+    }
+
+    protected function newsletterRedirectTarget(Request $request): string
+    {
+        $target = $request->string('redirect_to')->toString();
+
+        if (blank($target)) {
+            return url()->previous();
+        }
+
+        if (str_starts_with($target, url('/'))) {
+            return $target;
+        }
+
+        return url('/');
     }
 }

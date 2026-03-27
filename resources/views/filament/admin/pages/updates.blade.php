@@ -10,6 +10,45 @@
         Reload Releases
     </x-filament::button>
 
+    <div wire:poll.5s="refreshUpdateStatus" class="mb-6">
+        @if ($updateState !== 'idle')
+            <x-filament::section>
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium">Update Status</span>
+                        <x-filament::badge
+                            :color="match ($updateState) {
+                                'queued' => 'warning',
+                                'running' => 'info',
+                                'succeeded' => 'success',
+                                'failed' => 'danger',
+                                default => 'gray',
+                            }"
+                        >
+                            {{ ucfirst($updateState) }}
+                        </x-filament::badge>
+                    </div>
+
+                    @if ($updateStatusVersion)
+                        <p class="text-sm text-gray-700">
+                            Version: <strong>{{ $updateStatusVersion }}</strong>
+                        </p>
+                    @endif
+
+                    @if ($updateStatusMessage)
+                        <p class="text-sm text-gray-700">{{ $updateStatusMessage }}</p>
+                    @endif
+
+                    @if ($updateStatusUpdatedAt)
+                        <p class="text-xs text-gray-500">
+                            Last updated {{ Carbon::parse($updateStatusUpdatedAt)->diffForHumans() }}
+                        </p>
+                    @endif
+                </div>
+            </x-filament::section>
+        @endif
+    </div>
+
     @if (!empty($releases))
         <div class="grid gap-6 mt-6">
             @foreach ($releases as $release)
