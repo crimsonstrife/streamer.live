@@ -12,6 +12,8 @@ use App\Traits\HasReactions;
 use App\Traits\HasSlug;
 use App\Traits\IsPermissible;
 use App\Utilities\BlogHelper;
+use Indra\Revisor\Concerns\HasRevisor;
+use Indra\Revisor\Contracts\HasRevisor as HasRevisorContract;
 use ArrayAccess;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -79,10 +81,15 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  *
  * @mixin Eloquent
  */
-class Post extends BasePost implements CommentableContract, HasMedia, Searchable, Sitemapable
+class Post extends BasePost implements CommentableContract, HasMedia, HasRevisorContract, Searchable, Sitemapable
 {
     use HasComments;
     use HasReactions;
+    use HasRevisor {
+        applyStateToPublishedRecord as traitApplyStateToPublishedRecord;
+        saveNewVersion as traitSaveNewVersion;
+        syncToCurrentVersionRecord as traitSyncToCurrentVersionRecord;
+    }
     use HasSlug;
     use HasTags;
     use InteractsWithMedia;
@@ -102,7 +109,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         'excerpt',
         'banner',
         'content',
-        'published_at',
         'blog_author_id',
         'category_id',
         'comments_locked',
@@ -129,6 +135,41 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         'has_banner',
         'featured_image'
     ];
+
+    /**
+     * Strip virtual $appends (banner_url, has_banner, featured_image) before
+     * any Revisor attributesToArray() sync so computed accessors are never
+     * inserted into the draft/published/version tables as real columns.
+     */
+    public function applyStateToPublishedRecord(): static
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $this->traitApplyStateToPublishedRecord();
+        $this->setAppends($appends);
+
+        return $this;
+    }
+
+    public function saveNewVersion(): static|bool
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $result = $this->traitSaveNewVersion();
+        $this->setAppends($appends);
+
+        return $result;
+    }
+
+    public function syncToCurrentVersionRecord(): static|bool
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $result = $this->traitSyncToCurrentVersionRecord();
+        $this->setAppends($appends);
+
+        return $result;
+    }
 
     public function getSlugOptions(): SlugOptions
     {
@@ -220,16 +261,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
     public function hasBanner(): bool
     {
         return $this->banner !== null;
-    }
-
-    public function scopePublished(Builder $query): Builder|_IH_Post_QB
-    {
-        return $query->whereNotNull('published_at');
-    }
-
-    public function scopeDraft(Builder $query): Builder|_IH_Post_QB
-    {
-        return $query->whereNull('published_at');
     }
 
     public function scopeAnnouncements(Builder $query): Builder|_IH_Post_QB

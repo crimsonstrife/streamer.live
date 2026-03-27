@@ -8,6 +8,8 @@ use App\Models\BaseModel;
 use App\Models\SharedObjects\Category;
 use App\Traits\IsPermissible;
 use App\Utilities\ShopHelper;
+use Indra\Revisor\Concerns\HasRevisor;
+use Indra\Revisor\Contracts\HasRevisor as HasRevisorContract;
 use DB;
 use Eloquent;
 use Exception;
@@ -68,11 +70,30 @@ use Spatie\Tags\HasTags;
  *
  * @mixin Eloquent
  */
-class Product extends BaseModel implements HasMedia, Searchable, Sitemapable
+class Product extends BaseModel implements HasMedia, HasRevisorContract, Searchable, Sitemapable
 {
+    use HasRevisor {
+        applyStateToPublishedRecord as traitApplyStateToPublishedRecord;
+        saveNewVersion as traitSaveNewVersion;
+        syncToCurrentVersionRecord as traitSyncToCurrentVersionRecord;
+    }
     use HasTags;
     use InteractsWithMedia;
     use IsPermissible;
+
+    /**
+     * Auto-publish products on create/update so Fourthwall syncs
+     * go live immediately without manual publish steps.
+     */
+    public function shouldPublishOnCreated(): bool
+    {
+        return true;
+    }
+
+    public function shouldPublishOnUpdated(): bool
+    {
+        return true;
+    }
 
     protected $fillable = [
         'provider_id',
@@ -98,6 +119,41 @@ class Product extends BaseModel implements HasMedia, Searchable, Sitemapable
         'more_details',
         'product_information',
     ];
+
+    /**
+     * Strip virtual $appends (more_details, product_information) before
+     * any Revisor attributesToArray() sync so computed accessors are never
+     * inserted into the draft/published/version tables as real columns.
+     */
+    public function applyStateToPublishedRecord(): static
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $this->traitApplyStateToPublishedRecord();
+        $this->setAppends($appends);
+
+        return $this;
+    }
+
+    public function saveNewVersion(): static|bool
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $result = $this->traitSaveNewVersion();
+        $this->setAppends($appends);
+
+        return $result;
+    }
+
+    public function syncToCurrentVersionRecord(): static|bool
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $result = $this->traitSyncToCurrentVersionRecord();
+        $this->setAppends($appends);
+
+        return $result;
+    }
 
     /**
      * Cached additional data for this product.

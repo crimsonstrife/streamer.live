@@ -18,9 +18,11 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
+use Indra\RevisorFilament\Filament\StatusColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Indra\Revisor\Facades\Revisor;
 
 class PostResource extends Resource
 {
@@ -31,6 +33,11 @@ class PostResource extends Resource
     protected static ?string $slug = 'blog/posts';
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withDraftContext();
+    }
 
     protected static ?string $navigationGroup = 'Blog';
 
@@ -70,7 +77,11 @@ class PostResource extends Resource
                                         }
                                     })
                             )
-                            ->unique(Post::class, 'slug', fn ($record) => $record),
+                            ->unique(
+                                table: fn () => Revisor::getDraftTableFor((new Post)->getBaseTable()),
+                                column: 'slug',
+                                ignorable: fn (?Post $record) => $record,
+                            ),
 
                         Forms\Components\Textarea::make('excerpt')
                             ->label(__('filament-blog::filament-blog.excerpt'))
@@ -139,8 +150,6 @@ class PostResource extends Resource
                             ->searchable()
                             ->required(),
 
-                        Forms\Components\DatePicker::make('published_at')
-                            ->label(__('filament-blog::filament-blog.published_date')),
                         SpatieTagsInput::make('tags')
                             ->label(__('filament-blog::filament-blog.tags'))->type('blog'),
                     ])
@@ -191,31 +200,9 @@ class PostResource extends Resource
                     ->label(__('filament-blog::filament-blog.category_name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('published_at')
-                    ->label(__('filament-blog::filament-blog.published_at'))
-                    ->date()
-                    ->sortable(),
+                StatusColumn::make('revisor_status'),
             ])->defaultSort(config('filament-blog.sort.column', 'published_at'), config('filament-blog.sort.direction', 'asc'))
-            ->filters([
-                Tables\Filters\Filter::make('published_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('published_from')
-                            ->placeholder(fn ($state): string => 'Dec 18, '.now()->subYear()->format('Y')),
-                        Forms\Components\DatePicker::make('published_until')
-                            ->placeholder(fn ($state): string => now()->format('M d, Y')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['published_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('published_at', '>=', $date),
-                            )
-                            ->when(
-                                $data['published_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('published_at', '<=', $date),
-                            );
-                    }),
-            ]);
+            ->filters([]);
     }
 
     public static function getRelations(): array
@@ -231,6 +218,8 @@ class PostResource extends Resource
             'index' => Pages\ListPosts::route('/'),
             'create' => Pages\CreatePost::route('/create'),
             'edit' => Pages\EditPost::route('/{record}/edit'),
+            'versions' => Pages\ListPostVersions::route('/{record}/versions'),
+            'view_version' => Pages\ViewPostVersion::route('/{record}/versions/{version}'),
         ];
     }
 

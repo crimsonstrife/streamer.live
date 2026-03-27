@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\PostResource\Pages;
+namespace App\Filament\Resources\PageResource\Pages;
 
-use App\Filament\Resources\PostResource;
+use App\Filament\Resources\PageResource;
 use Illuminate\Database\Eloquent\Model;
-use Indra\RevisorFilament\Filament\EditRecord;
+use Indra\RevisorFilament\Filament\ListVersions;
 
-class EditPost extends EditRecord
+class ListPageVersions extends ListVersions
 {
-    protected static string $resource = PostResource::class;
+    protected static string $resource = PageResource::class;
 
     protected function resolveRecord(int | string $key): Model
     {
