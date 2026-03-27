@@ -7,6 +7,8 @@ use App\Models\StreamSocialPostRule;
 use App\Services\Factories\SocialPosterFactory;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -57,6 +59,8 @@ class PublishStreamSocialPosts implements ShouldQueue
             'started_at' => $startedAt,
         ];
 
+        $transientFailures = [];
+
         $rules = StreamSocialPostRule::query()
             ->where('enabled', true)
             ->where('event', 'live')
@@ -100,18 +104,28 @@ class PublishStreamSocialPosts implements ShouldQueue
                     'stream_id' => $streamId,
                     'external_id' => $result->externalId,
                 ]);
-            } catch (Throwable $e) {
-                // Release the dedupe key so a retry can happen (or keep it set to avoid repeated failures; your call)
+            } catch (ConnectionException | RequestException $e) {
+                // Transient: clear dedupe so a retry can re-attempt this rule
                 Cache::forget($dedupeKey);
 
-                Log::error("Social post failed via {$account->platform->value} (rule {$rule->id}): {$e->getMessage()}", [
+                Log::error("Social post transient failure via {$account->platform->value} (rule {$rule->id}): {$e->getMessage()}", [
                     'streamer' => $streamer,
                     'stream_id' => $streamId,
                 ]);
 
-                // Let queue retry handle transient errors
-                throw $e;
+                $transientFailures[] = $e;
+            } catch (Throwable $e) {
+                // Permanent/config error: keep dedupe set, log, continue — no retry
+                Log::error("Social post permanent failure via {$account->platform->value} (rule {$rule->id}): {$e->getMessage()}", [
+                    'streamer' => $streamer,
+                    'stream_id' => $streamId,
+                ]);
             }
+        }
+
+        // Trigger queue retry only if transient failures occurred
+        if (! empty($transientFailures)) {
+            throw $transientFailures[0];
         }
     }
 
