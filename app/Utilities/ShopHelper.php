@@ -5,6 +5,7 @@ namespace App\Utilities;
 use App\Models\Page;
 use App\Models\StoreObjects\OrderItem;
 use Exception;
+use Throwable;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -28,17 +29,29 @@ class ShopHelper
      */
     public static function getShopSlug(): string
     {
-        return Cache::rememberForever(self::SHOP_SLUG_CACHE_KEY, fn () => self::fetchShopSlug());
+        try {
+            return Cache::rememberForever(self::SHOP_SLUG_CACHE_KEY, fn () => self::fetchShopSlug());
+        } catch (Throwable) {
+            return self::fetchShopSlug();
+        }
     }
 
     public static function getProductSlug(): string
     {
-        return Cache::rememberForever(self::PRODUCT_SLUG_CACHE_KEY, fn () => self::fetchProductSlug());
+        try {
+            return Cache::rememberForever(self::PRODUCT_SLUG_CACHE_KEY, fn () => self::fetchProductSlug());
+        } catch (Throwable) {
+            return self::fetchProductSlug();
+        }
     }
 
     public static function getCollectionSlug(): string
     {
-        return Cache::rememberForever(self::COLLECTION_SLUG_CACHE_KEY, fn () => self::fetchCollectionSlug());
+        try {
+            return Cache::rememberForever(self::COLLECTION_SLUG_CACHE_KEY, fn () => self::fetchCollectionSlug());
+        } catch (Throwable) {
+            return self::fetchCollectionSlug();
+        }
     }
 
     /**

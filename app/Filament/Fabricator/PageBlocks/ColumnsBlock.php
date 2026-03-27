@@ -44,6 +44,9 @@ class ColumnsBlock extends PageBlock
             StoreProductDetail::getBlockSchema(),
             StoreRelatedProducts::getBlockSchema(),
             TwitchEmbed::getBlockSchema(),
+            AffiliateLinksBlock::getBlockSchema(),
+            SponsorSpotlightBlock::getBlockSchema(),
+            BrandPartnersBlock::getBlockSchema(),
         ];
     }
 

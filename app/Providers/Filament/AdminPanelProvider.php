@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Event;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Laravel\Fortify\Fortify;
 use Laravel\Jetstream\Jetstream;
+use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 use TomatoPHP\FilamentSeo\FilamentSeoPlugin;
 use Z3d0X\FilamentFabricator\FilamentFabricatorPlugin;
 
@@ -133,6 +134,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\StreamAlertRuleResource::class,
                 Resources\StreamSocialAccountResource::class,
                 Resources\TicketResource::class,
+                Resources\BrandPartnerResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -178,6 +180,8 @@ class AdminPanelProvider extends PanelProvider
                     ->postUrl(BlogHelper::getBlogSlug())
                     ->postSlug('slug'),
                 TutorialsPlugin::make(),
+                FilamentSpatieLaravelHealthPlugin::make()
+                    ->usingPage(\App\Filament\Admin\Pages\HealthCheckResults::class),
             ]);
 
         return $panel;

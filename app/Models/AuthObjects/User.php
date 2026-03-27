@@ -31,6 +31,7 @@ use Mchev\Banhammer\Traits\Bannable;
 use Spatie\Onboard\Concerns\GetsOnboarded;
 use Spatie\Onboard\Concerns\Onboardable;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -68,7 +69,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read Collection<int, Permission> $permissions The permissions assigned to the user.
  * @property-read int|null $permissions_count The count of permissions assigned to the user.
  * @property-read string $profile_photo_url The URL of the user's profile photo.
- * @property-read Collection<int, \Spatie\Permission\Models\Role> $roles The roles assigned to the user.
+ * @property-read Collection<int, Role> $roles The roles assigned to the user.
  * @property-read int|null $roles_count The count of roles assigned to the user.
  * @property-read Collection<int, PersonalAccessToken> $tokens The personal access tokens for the user.
  * @property-read int|null $tokens_count The count of personal access tokens for the user.
@@ -328,6 +329,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     public function isModerator(): bool
     {
         return $this->can('is-moderator');
+    }
+
+    public function canViewSystemLogs(): bool
+    {
+        return $this->can('view-system-logs') || $this->isAdmin() || $this->isSuperAdmin();
     }
 
     public function canAccessPanel(Panel $panel): bool

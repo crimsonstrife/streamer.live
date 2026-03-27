@@ -19,17 +19,46 @@
             </div>
 
             <div class="col-md-5 offset-md-1 mb-3">
-                <form action="{{ route('newsletter.subscribe') }}" method="POST">
+                <form action="{{ route('newsletter.subscribe') }}" method="POST" id="newsletter-signup">
                     @csrf
+                    <input type="hidden" name="redirect_to" value="{{ url()->current() }}#newsletter-signup">
+
                     <h5>Subscribe to the newsletter</h5>
                     <p>Keep up with what's new and exciting.</p>
+
+                    @if (session('newsletter_success'))
+                        <div class="alert alert-success mt-2 mb-3">
+                            {{ session('newsletter_success') }}
+                        </div>
+                    @endif
+
+                    @if (session('newsletter_error'))
+                        <div class="alert alert-danger mt-2 mb-3">
+                            {{ session('newsletter_error') }}
+                        </div>
+                    @endif
+
                     <div class="d-flex flex-column flex-sm-row w-100 gap-2">
                         <label for="newsletter-email" class="visually-hidden">Email address</label>
-                        <input id="newsletter-email" name="email" type="email" class="form-control" placeholder="Email address" required>
-                        <x-button>
+                        <input
+                            id="newsletter-email"
+                            name="email"
+                            type="email"
+                            class="form-control @error('email', 'newsletterSubscribe') is-invalid @enderror"
+                            placeholder="Email address"
+                            value="{{ old('email') }}"
+                            required
+                        >
+                        <x-button type="submit">
                             {{ __('Subscribe') }}
                         </x-button>
                     </div>
+
+                    @error('email', 'newsletterSubscribe')
+                    <div class="invalid-feedback d-block">
+                        {{ $message }}
+                    </div>
+                    @enderror
                 </form>
                 <p class="mt-3 small">
                     Already subscribed, but changed your mind? <a href="{{ route('newsletter.unsubscribe.form') }}">Unsubscribe</a>.

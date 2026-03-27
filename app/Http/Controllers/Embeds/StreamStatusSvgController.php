@@ -19,7 +19,9 @@ class StreamStatusSvgController extends Controller
 
         return response($svg, 200)->withHeaders([
             'Content-Type' => 'image/svg+xml; charset=UTF-8',
-            'Cache-Control' => 'public, max-age=30, stale-while-revalidate=30',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0, s-maxage=0',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
             'X-Content-Type-Options' => 'nosniff',
             'Cross-Origin-Resource-Policy' => 'cross-origin',
             'X-Badge-Cache-Bust' => $data['cacheBust'] ?: 'none',

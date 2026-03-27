@@ -15,6 +15,7 @@ use App\Services\Spam\BlacklistEvaluator;
 use App\Services\Spam\StopForumSpamEvaluator;
 use App\Services\Spam\UrlEvaluator;
 use App\Services\SpamCheckService;
+use App\Support\ResilientCacheStore;
 use App\Services\TwitchService;
 use App\Settings\LookFeelSettings;
 use App\Settings\SEOSettings;
@@ -24,6 +25,8 @@ use App\Utilities\Installer\Helpers\EnvironmentManager as CustomEnvManager;
 use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
+use Codedge\Updater\Contracts\UpdaterContract;
+use Codedge\Updater\UpdaterManager;
 use Exception;
 use Filament\FilamentManager;
 use Froiden\LaravelInstaller\Helpers\EnvironmentManager as BaseEnvManager;
@@ -37,10 +40,16 @@ use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Twitch\Provider;
+use Spatie\Health\Checks\Checks\CacheCheck;
+use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
 use Spatie\Health\Checks\Checks\EnvironmentCheck;
+use Spatie\Health\Checks\Checks\HorizonCheck;
 use Spatie\Health\Checks\Checks\OptimizedAppCheck;
+use Spatie\Health\Checks\Checks\ScheduleCheck;
+use Spatie\Health\Checks\Checks\UsedDiskSpaceCheck;
 use Spatie\Health\Facades\Health;
+use Spatie\SecurityAdvisoriesHealthCheck\SecurityAdvisoriesCheck;
 use Spatie\MediaLibrary\Support\PathGenerator\PathGenerator;
 use Stephenjude\FilamentBlog\Resources\PostResource as PackagePostResource;
 
@@ -51,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        ResilientCacheStore::ensureDefaultStoreAvailable();
+
+        $this->app->bind(UpdaterContract::class, fn ($app) => $app->make(UpdaterManager::class));
+
         // Skip entirely when running in the console (i.e. Artisan commands)
         if ($this->app->runningInConsole()) {
             return;
@@ -102,6 +115,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Health checks must be registered before the console guard so that
+        // artisan commands (e.g. health:schedule-check-heartbeat, health:check)
+        // can discover them when running via the scheduler.
+        Health::checks([
+            OptimizedAppCheck::new(),
+            DebugModeCheck::new(),
+            EnvironmentCheck::new(),
+            CacheCheck::new(),
+            DatabaseCheck::new(),
+            HorizonCheck::new(),
+            ScheduleCheck::new(),
+            UsedDiskSpaceCheck::new()->warnWhenUsedSpaceIsAbovePercentage(70)->failWhenUsedSpaceIsAbovePercentage(90),
+            SecurityAdvisoriesCheck::new(),
+        ]);
+
         // Skip entirely when running in the console (i.e. Artisan commands)
         if ($this->app->runningInConsole()) {
             return;
@@ -155,12 +183,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('filament', function () {
             return ViewHelpers::isFilament();
         });
-
-        Health::checks([
-            OptimizedAppCheck::new(),
-            DebugModeCheck::new(),
-            EnvironmentCheck::new(),
-        ]);
 
         app(FilamentManager::class)->getPanel('admin')->resources(
             array_filter(
