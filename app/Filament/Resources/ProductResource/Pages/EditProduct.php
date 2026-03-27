@@ -3,20 +3,15 @@
 namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
+use App\Filament\Traits\EnsuresDraftContext;
 use DB;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use Indra\RevisorFilament\Filament\EditRecord;
 
 class EditProduct extends EditRecord
 {
-    protected static string $resource = ProductResource::class;
+    use EnsuresDraftContext;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\DeleteAction::make(),
-        ];
-    }
+    protected static string $resource = ProductResource::class;
 
     protected function afterSave(): void
     {

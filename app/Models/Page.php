@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Traits\IsPermissible;
 use App\Utilities\ShopHelper;
+use Indra\Revisor\Concerns\HasRevisor;
+use Indra\Revisor\Contracts\HasRevisor as HasRevisorContract;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Searchable\Searchable;
@@ -12,10 +14,11 @@ use Spatie\Tags\HasTags;
 use Z3d0X\FilamentFabricator\Facades\FilamentFabricator;
 use Z3d0X\FilamentFabricator\Models\Page as BasePage;
 
-class Page extends BasePage implements Searchable
+class Page extends BasePage implements HasRevisorContract, Searchable
 {
-    use IsPermissible;
+    use HasRevisor;
     use HasTags;
+    use IsPermissible;
 
     public function __construct(array $attributes = [])
     {
@@ -24,6 +27,11 @@ class Page extends BasePage implements Searchable
         }
 
         parent::__construct($attributes);
+    }
+
+    public function getBaseTable(): string
+    {
+        return config('filament-fabricator.table_name', 'pages');
     }
 
     protected static function booted(): void

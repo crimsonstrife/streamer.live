@@ -19,7 +19,7 @@ class BlogPostList extends PageBlock
     public static function mutateData(array $data): array
     {
         return [
-            'posts' => Post::published()->withCount('comments')->latest()->paginate(10),
+            'posts' => Post::withPublishedContext()->withCount('comments')->latest()->paginate(10),
         ];
     }
 }

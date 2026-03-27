@@ -19,9 +19,11 @@ use Filament\Forms\Set;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
+use Indra\Revisor\Facades\Revisor;
 use Z3d0X\FilamentFabricator\Facades\FilamentFabricator;
 use Z3d0X\FilamentFabricator\Forms\Components\PageBuilder;
 use Z3d0X\FilamentFabricator\Models\Contracts\Page as PageContract;
+use App\Filament\Resources\PageResource\Pages as AppPages;
 use Z3d0X\FilamentFabricator\Resources\PageResource as BasePageResource;
 use Z3d0X\FilamentFabricator\Resources\PageResource\Pages;
 use Z3d0X\FilamentFabricator\View\ResourceSchemaSlot;
@@ -29,6 +31,11 @@ use Z3d0X\FilamentFabricator\View\ResourceSchemaSlot;
 class PageResource extends BasePageResource
 {
     protected static ?string $navigationIcon = 'fas-file';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withDraftContext();
+    }
     protected static ?string $navigationGroup = 'CMS';
     protected static ?string $slug = 'cms/pages';
     protected static ?int $navigationSort = 0;
@@ -80,7 +87,11 @@ class PageResource extends BasePageResource
 
                                 TextInput::make('slug')
                                     ->label(__('filament-fabricator::page-resource.labels.slug'))
-                                    ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('parent_id', $get('parent_id')))
+                                    ->unique(
+                                        table: fn () => Revisor::getDraftTableFor(config('filament-fabricator.table_name', 'pages')),
+                                        ignorable: fn (?PageContract $record) => $record,
+                                        modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('parent_id', $get('parent_id')),
+                                    )
                                     ->afterStateUpdated(function (Set $set) {
                                         $set('is_slug_changed_manually', true);
                                     })
@@ -169,7 +180,9 @@ class PageResource extends BasePageResource
             'index' => Pages\ListPages::route('/'),
             'create' => Pages\CreatePage::route('/create'),
             'view' => config('filament-fabricator.enable-view-page') ? Pages\ViewPage::route('/{record}') : null,
-            'edit' => Pages\EditPage::route('/{record}/edit'),
+            'edit' => AppPages\EditPage::route('/{record}/edit'),
+            'versions' => AppPages\ListPageVersions::route('/{record}/versions'),
+            'view_version' => AppPages\ViewPageVersion::route('/{record}/versions/{version}'),
         ]);
     }
 }

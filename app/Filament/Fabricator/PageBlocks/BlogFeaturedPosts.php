@@ -19,7 +19,7 @@ class BlogFeaturedPosts extends PageBlock
     public static function mutateData(array $data): array
     {
         return [
-            'featuredPosts' => Post::published()
+            'featuredPosts' => Post::withPublishedContext()
                 ->whereHas('tags', fn ($q) => $q->where('name', 'featured'))
                 ->latest()
                 ->take(3)

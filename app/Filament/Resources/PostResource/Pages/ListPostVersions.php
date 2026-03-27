@@ -4,9 +4,9 @@ namespace App\Filament\Resources\PostResource\Pages;
 
 use App\Filament\Resources\PostResource;
 use App\Filament\Traits\EnsuresDraftContext;
-use Indra\RevisorFilament\Filament\EditRecord;
+use Indra\RevisorFilament\Filament\ListVersions;
 
-class EditPost extends EditRecord
+class ListPostVersions extends ListVersions
 {
     use EnsuresDraftContext;
 

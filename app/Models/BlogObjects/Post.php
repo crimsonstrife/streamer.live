@@ -11,7 +11,10 @@ use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;
 use App\Traits\IsPermissible;
+use App\Traits\StripsAppendsForRevisor;
 use App\Utilities\BlogHelper;
+use Indra\Revisor\Concerns\HasRevisor;
+use Indra\Revisor\Contracts\HasRevisor as HasRevisorContract;
 use ArrayAccess;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -79,10 +82,18 @@ use Stephenjude\FilamentBlog\Models\Post as BasePost;
  *
  * @mixin Eloquent
  */
-class Post extends BasePost implements CommentableContract, HasMedia, Searchable, Sitemapable
+class Post extends BasePost implements CommentableContract, HasMedia, HasRevisorContract, Searchable, Sitemapable
 {
     use HasComments;
     use HasReactions;
+    use HasRevisor, StripsAppendsForRevisor {
+        StripsAppendsForRevisor::applyStateToPublishedRecord insteadof HasRevisor;
+        StripsAppendsForRevisor::saveNewVersion               insteadof HasRevisor;
+        StripsAppendsForRevisor::syncToCurrentVersionRecord   insteadof HasRevisor;
+        HasRevisor::applyStateToPublishedRecord as revisorApplyStateToPublishedRecord;
+        HasRevisor::saveNewVersion as revisorSaveNewVersion;
+        HasRevisor::syncToCurrentVersionRecord as revisorSyncToCurrentVersionRecord;
+    }
     use HasSlug;
     use HasTags;
     use InteractsWithMedia;
@@ -102,7 +113,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
         'excerpt',
         'banner',
         'content',
-        'published_at',
         'blog_author_id',
         'category_id',
         'comments_locked',
@@ -127,7 +137,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
     protected $appends = [
         'banner_url',
         'has_banner',
-        'featured_image'
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -220,16 +229,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
     public function hasBanner(): bool
     {
         return $this->banner !== null;
-    }
-
-    public function scopePublished(Builder $query): Builder|_IH_Post_QB
-    {
-        return $query->whereNotNull('published_at');
-    }
-
-    public function scopeDraft(Builder $query): Builder|_IH_Post_QB
-    {
-        return $query->whereNull('published_at');
     }
 
     public function scopeAnnouncements(Builder $query): Builder|_IH_Post_QB
@@ -384,6 +383,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, Searchable
 
     public function getFeaturedImageAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('featured_image');
+        return $this->getFirstMediaUrl('images');
     }
 }
