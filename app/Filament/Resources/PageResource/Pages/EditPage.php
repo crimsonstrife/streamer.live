@@ -3,17 +3,12 @@
 namespace App\Filament\Resources\PageResource\Pages;
 
 use App\Filament\Resources\PageResource;
-use Illuminate\Database\Eloquent\Model;
+use App\Filament\Traits\EnsuresDraftContext;
 use Indra\RevisorFilament\Filament\EditRecord;
 
 class EditPage extends EditRecord
 {
-    protected static string $resource = PageResource::class;
+    use EnsuresDraftContext;
 
-    public function hydrate(): void
-    {
-        if ($this->record instanceof Model && $this->record->getKey() && ! $this->record->isDraftTableRecord()) {
-            $this->record = ($this->record)::withDraftContext()->findOrFail($this->record->getKey());
-        }
-    }
+    protected static string $resource = PageResource::class;
 }

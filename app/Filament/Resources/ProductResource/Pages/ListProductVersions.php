@@ -3,17 +3,12 @@
 namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
-use Illuminate\Database\Eloquent\Model;
+use App\Filament\Traits\EnsuresDraftContext;
 use Indra\RevisorFilament\Filament\ListVersions;
 
 class ListProductVersions extends ListVersions
 {
-    protected static string $resource = ProductResource::class;
+    use EnsuresDraftContext;
 
-    public function hydrate(): void
-    {
-        if ($this->record instanceof Model && $this->record->getKey() && ! $this->record->isDraftTableRecord()) {
-            $this->record = ($this->record)::withDraftContext()->findOrFail($this->record->getKey());
-        }
-    }
+    protected static string $resource = ProductResource::class;
 }
