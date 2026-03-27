@@ -3,15 +3,20 @@
 namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
-use App\Filament\Traits\EnsuresDraftContext;
 use DB;
+use Illuminate\Database\Eloquent\Model;
 use Indra\RevisorFilament\Filament\EditRecord;
 
 class EditProduct extends EditRecord
 {
-    use EnsuresDraftContext;
-
     protected static string $resource = ProductResource::class;
+
+    public function hydrate(): void
+    {
+        if ($this->record instanceof Model && $this->record->getKey() && ! $this->record->isDraftTableRecord()) {
+            $this->record = ($this->record)::withDraftContext()->findOrFail($this->record->getKey());
+        }
+    }
 
     protected function afterSave(): void
     {

@@ -36,9 +36,7 @@ class PostResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->withDraftContext()
-            ->with(['author', 'category', 'media']);
+        return parent::getEloquentQuery()->withDraftContext();
     }
 
     protected static ?string $navigationGroup = 'Blog';
@@ -80,7 +78,7 @@ class PostResource extends Resource
                                     })
                             )
                             ->unique(
-                                table: fn () => Revisor::getDraftTableFor((new Post())->getBaseTable()),
+                                table: fn () => Revisor::getDraftTableFor((new Post)->getBaseTable()),
                                 column: 'slug',
                                 ignorable: fn (?Post $record) => $record,
                             ),
@@ -187,7 +185,7 @@ class PostResource extends Resource
             ->columns([
                 ImageColumn::make('id')
                     ->label('Preview')
-                    ->getStateUsing(fn ($record) => $record->getFirstMediaUrl('images'))
+                    ->getStateUsing(fn ($record) => $record->getFirstMediaUrl('posts'))
                     ->square(),
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('filament-blog::filament-blog.title'))
@@ -203,7 +201,7 @@ class PostResource extends Resource
                     ->searchable()
                     ->sortable(),
                 StatusColumn::make('revisor_status'),
-            ])->defaultSort('updated_at', 'desc')
+            ])->defaultSort(config('filament-blog.sort.column', 'published_at'), config('filament-blog.sort.direction', 'asc'))
             ->filters([]);
     }
 

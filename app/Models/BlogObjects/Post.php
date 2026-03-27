@@ -11,7 +11,6 @@ use App\Traits\HasComments;
 use App\Traits\HasReactions;
 use App\Traits\HasSlug;
 use App\Traits\IsPermissible;
-use App\Traits\StripsAppendsForRevisor;
 use App\Utilities\BlogHelper;
 use Indra\Revisor\Concerns\HasRevisor;
 use Indra\Revisor\Contracts\HasRevisor as HasRevisorContract;
@@ -86,13 +85,10 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
 {
     use HasComments;
     use HasReactions;
-    use HasRevisor, StripsAppendsForRevisor {
-        StripsAppendsForRevisor::applyStateToPublishedRecord insteadof HasRevisor;
-        StripsAppendsForRevisor::saveNewVersion               insteadof HasRevisor;
-        StripsAppendsForRevisor::syncToCurrentVersionRecord   insteadof HasRevisor;
-        HasRevisor::applyStateToPublishedRecord as revisorApplyStateToPublishedRecord;
-        HasRevisor::saveNewVersion as revisorSaveNewVersion;
-        HasRevisor::syncToCurrentVersionRecord as revisorSyncToCurrentVersionRecord;
+    use HasRevisor {
+        applyStateToPublishedRecord as traitApplyStateToPublishedRecord;
+        saveNewVersion as traitSaveNewVersion;
+        syncToCurrentVersionRecord as traitSyncToCurrentVersionRecord;
     }
     use HasSlug;
     use HasTags;
@@ -137,7 +133,43 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
     protected $appends = [
         'banner_url',
         'has_banner',
+        'featured_image'
     ];
+
+    /**
+     * Strip virtual $appends (banner_url, has_banner, featured_image) before
+     * any Revisor attributesToArray() sync so computed accessors are never
+     * inserted into the draft/published/version tables as real columns.
+     */
+    public function applyStateToPublishedRecord(): static
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $this->traitApplyStateToPublishedRecord();
+        $this->setAppends($appends);
+
+        return $this;
+    }
+
+    public function saveNewVersion(): static|bool
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $result = $this->traitSaveNewVersion();
+        $this->setAppends($appends);
+
+        return $result;
+    }
+
+    public function syncToCurrentVersionRecord(): static|bool
+    {
+        $appends = $this->getAppends();
+        $this->setAppends([]);
+        $result = $this->traitSyncToCurrentVersionRecord();
+        $this->setAppends($appends);
+
+        return $result;
+    }
 
     public function getSlugOptions(): SlugOptions
     {
@@ -383,6 +415,6 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
 
     public function getFeaturedImageAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('images');
+        return $this->getFirstMediaUrl('featured_image');
     }
 }
