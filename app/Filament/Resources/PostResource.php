@@ -80,7 +80,7 @@ class PostResource extends Resource
                                     })
                             )
                             ->unique(
-                                table: fn () => Revisor::getDraftTableFor((new Post)->getBaseTable()),
+                                table: fn () => Revisor::getDraftTableFor((new Post())->getBaseTable()),
                                 column: 'slug',
                                 ignorable: fn (?Post $record) => $record,
                             ),
