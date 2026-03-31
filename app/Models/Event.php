@@ -213,8 +213,8 @@ class Event extends Model implements Arrayable, Eventable
         ];
     }
 
-    public function toCalendarEvent(): array
+    public function toCalendarEvent(): CalendarEvent|array
     {
-        return $this->toArray();
+        return $this->toEvent();
     }
 }

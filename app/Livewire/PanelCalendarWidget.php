@@ -4,23 +4,21 @@ namespace App\Livewire;
 
 use App\Models\Event;
 use Guava\Calendar\Widgets\CalendarWidget;
-use Guava\Calendar\ValueObjects\CalendarEvent;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 class PanelCalendarWidget extends CalendarWidget
 {
     protected static string $view = 'guava-calendar::widgets.calendar';
 
-    //protected string $calendarView = 'resourceTimeGridWeek';
-
     public function getEvents(array $fetchInfo = []): Collection | array
     {
-        $calendarEvents = Event::all()
-            ->map(fn ($event) => $event->toCalendarEvent())->toArray();
+        $query = Event::query();
 
-        Log::debug('Events Array: ' . print_r($calendarEvents, true));
+        if (! empty($fetchInfo['start']) && ! empty($fetchInfo['end'])) {
+            $query->where('starts_at', '<', $fetchInfo['end'])
+                  ->where('ends_at', '>', $fetchInfo['start']);
+        }
 
-        return $calendarEvents;
+        return $query->get();
     }
 }
