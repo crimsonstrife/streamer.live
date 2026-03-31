@@ -25,11 +25,13 @@ return [
             'https://embed.twitch.tv',
             'https://player.twitch.tv',
             'https://cdn.discordapp.com',
+            'https://cdn.jsdelivr.net',
         ]],
         [Directive::SCRIPT_ELEM, [
             Keyword::SELF,
             config('app.url'),
             Keyword::UNSAFE_INLINE,
+            'https://cdn.jsdelivr.net',
         ]],
         [Directive::SCRIPT_ATTR, [
             Keyword::SELF,
@@ -46,6 +48,7 @@ return [
             config('app.url'),
             Keyword::UNSAFE_INLINE,
             'https://fonts.bunny.net',
+            'https://cdn.jsdelivr.net',
         ]],
         [Directive::STYLE_ATTR, [
             Keyword::SELF,
