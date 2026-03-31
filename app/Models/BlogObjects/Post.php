@@ -86,9 +86,9 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
     use HasComments;
     use HasReactions;
     use HasRevisor {
-        applyStateToPublishedRecord as traitApplyStateToPublishedRecord;
-        saveNewVersion as traitSaveNewVersion;
-        syncToCurrentVersionRecord as traitSyncToCurrentVersionRecord;
+        HasPublishing::applyStateToPublishedRecord as traitApplyStateToPublishedRecord;
+        HasVersioning::saveNewVersion as traitSaveNewVersion;
+        HasVersioning::syncToCurrentVersionRecord as traitSyncToCurrentVersionRecord;
     }
     use HasSlug;
     use HasTags;
@@ -184,7 +184,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
     }
 
     /**
-     * Can someone post a comment on this post?
+     * Can anyone post a comment on this post?
      */
     public function canComment(): bool
     {
@@ -241,7 +241,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
 
     /**
      * Get the column that serves as the source for the slug.
-     * Default is 'title', but it can be customized per model.
+     * The default is 'title', but it can be customized per model.
      */
     protected function slugSourceColumn(): string
     {
