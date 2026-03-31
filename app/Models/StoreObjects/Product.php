@@ -8,9 +8,7 @@ use App\Models\BaseModel;
 use App\Models\SharedObjects\Category;
 use App\Traits\IsPermissible;
 use App\Utilities\ShopHelper;
-use Indra\Revisor\Concerns\HasPublishing;
 use Indra\Revisor\Concerns\HasRevisor;
-use Indra\Revisor\Concerns\HasVersioning;
 use Indra\Revisor\Contracts\HasRevisor as HasRevisorContract;
 use DB;
 use Eloquent;
@@ -75,9 +73,9 @@ use Spatie\Tags\HasTags;
 class Product extends BaseModel implements HasMedia, HasRevisorContract, Searchable, Sitemapable
 {
     use HasRevisor {
-        HasPublishing::applyStateToPublishedRecord as traitApplyStateToPublishedRecord;
-        HasVersioning::saveNewVersion as traitSaveNewVersion;
-        HasVersioning::syncToCurrentVersionRecord as traitSyncToCurrentVersionRecord;
+        applyStateToPublishedRecord as traitApplyStateToPublishedRecord;
+        saveNewVersion as traitSaveNewVersion;
+        syncToCurrentVersionRecord as traitSyncToCurrentVersionRecord;
     }
     use HasTags;
     use InteractsWithMedia;
