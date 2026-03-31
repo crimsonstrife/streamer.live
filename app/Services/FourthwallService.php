@@ -100,40 +100,40 @@ class FourthwallService
     public function syncCollectionsAndProducts(): void
     {
         if (! $this->enabled) {
-            Log::error(‘Fourthwall integration is disabled.’);
+            Log::error('Fourthwall integration is disabled.');
             return;
         }
 
         Revisor::withDraftContext(function () {
             $page = 0;
             do {
-                // fetch one “page” of collections
-                $collectionsResponse = $this->getRequest(‘v1/collections’, [
-                    ‘page’ => $page,
-                    ‘size’ => $this->collectionsChunkSize,
+                // fetch one "page" of collections
+                $collectionsResponse = $this->getRequest('v1/collections', [
+                    'page' => $page,
+                    'size' => $this->collectionsChunkSize,
                 ]);
 
-                $collections = data_get($collectionsResponse, ‘results’, []);
+                $collections = data_get($collectionsResponse, 'results', []);
                 foreach ($collections as $collectionData) {
                     $collection = Collection::updateOrCreate(
-                        [‘provider_id’ => data_get($collectionData, ‘id’)],
+                        ['provider_id' => data_get($collectionData, 'id')],
                         [
-                            ‘name’        => data_get($collectionData, ‘name’),
-                            ‘slug’        => data_get($collectionData, ‘slug’),
-                            ‘description’ => data_get($collectionData, ‘description’),
+                            'name'        => data_get($collectionData, 'name'),
+                            'slug'        => data_get($collectionData, 'slug'),
+                            'description' => data_get($collectionData, 'description'),
                         ]
                     );
-                    $this->logInfo(“Synced collection: {$collection->name}”);
+                    $this->logInfo("Synced collection: {$collection->name}");
 
-                    // now paginate through that collection’s products
+                    // now paginate through that collection's products
                     $this->syncProducts($collection);
                 }
 
-                $hasNextPage = data_get($collectionsResponse, ‘paging.hasNextPage’, false);
+                $hasNextPage = data_get($collectionsResponse, 'paging.hasNextPage', false);
                 $page++;
             } while ($hasNextPage);
 
-            $this->logInfo(‘All collections and their products synced.’);
+            $this->logInfo('All collections and their products synced.');
         });
     }
 
@@ -717,7 +717,7 @@ class FourthwallService
         $inStock = null;
         $stockAmount = 0;
         $remoteProduct = null;
-        // Set a TTL that suits risk threshold—e.g., configurable seconds
+        // Set a TTL that suits risk threshold--e.g., configurable seconds
         $ttl = now()->addSeconds(self::STOCK_TTL_SECONDS);
 
         if ($this->enabled) {
@@ -811,7 +811,7 @@ class FourthwallService
     }
 
     /**
-     * Make a request to Fourthwall’s Open API (v1.0) with Basic Auth.
+     * Make a request to Fourthwall's Open API (v1.0) with Basic Auth.
      *
      * @throws RequestException
      *                          * @throws ConnectionException
@@ -844,7 +844,7 @@ class FourthwallService
             return;
         }
 
-        // Parameters you may want to page with—cursor, limit, etc.
+        // Parameters you may want to page with--cursor, limit, etc.
         $nextCursor = null;
 
         do {
