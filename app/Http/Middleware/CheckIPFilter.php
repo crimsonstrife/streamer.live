@@ -108,7 +108,7 @@ class CheckIPFilter
                     ['ip_address' => $ip, 'type' => 'blacklist'],
                     [
                         'reason' => "Auto-blacklisted after {$count} 404s to suspicious paths",
-                        'source' => 'auto',
+                        'source' => 'system',
                     ]
                 );
             }
