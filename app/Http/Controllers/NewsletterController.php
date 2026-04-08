@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Newsletter\Facades\Newsletter;
 
 class NewsletterController extends Controller
 {
+    public function showUnsubscribeForm(): View
+    {
+        return view('newsletter.unsubscribe');
+    }
+
     public function subscribe(Request $request)
     {
         $validator = Validator::make($request->all(), [
