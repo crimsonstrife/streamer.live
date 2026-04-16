@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Services\CssSanitizerService;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 use Indra\Revisor\Facades\Revisor;
+use Mews\Purifier\Facades\Purifier;
 use Z3d0X\FilamentFabricator\Facades\FilamentFabricator;
 use Z3d0X\FilamentFabricator\Forms\Components\PageBuilder;
 use Z3d0X\FilamentFabricator\Models\Contracts\Page as PageContract;
@@ -158,6 +160,27 @@ class PageResource extends BasePageResource
                                     ->label('SEO Keywords')
                                     ->hint('Select or create your keywords'),
                             ]),
+
+                        Section::make('Custom Code')
+                            ->icon('fas-code')
+                            ->description('Custom CSS and HTML injected into this page\'s <head>. Dangerous patterns are automatically stripped for security. Use with caution — custom code can break page layout or introduce vulnerabilities.')
+                            ->schema([
+                                Forms\Components\Textarea::make('custom_css')
+                                    ->label('Custom CSS')
+                                    ->rows(8)
+                                    ->placeholder("/* Page-specific styles */\n.my-class {\n    color: red;\n}")
+                                    ->helperText('CSS rules for this page only. Injected into a <style> tag. Dangerous patterns (expression(), javascript:, @import, etc.) are stripped automatically.')
+                                    ->dehydrateStateUsing(fn (?string $state) => $state ? app(CssSanitizerService::class)->sanitize($state) : null),
+
+                                Forms\Components\Textarea::make('custom_head_html')
+                                    ->label('Custom Head HTML')
+                                    ->rows(8)
+                                    ->placeholder('<link rel="stylesheet" href="https://...">')
+                                    ->helperText('HTML injected into <head>. Allowed: <style>, <link>, <meta> tags. Script tags are stripped for security.')
+                                    ->dehydrateStateUsing(fn (?string $state) => $state ? Purifier::clean($state, 'head_html') : null),
+                            ])
+                            ->collapsible()
+                            ->collapsed(),
 
                         Group::make()->schema(FilamentFabricator::getSchemaSlot(ResourceSchemaSlot::SIDEBAR_AFTER)),
                     ]),
