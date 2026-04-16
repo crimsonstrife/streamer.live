@@ -77,7 +77,7 @@ if (! file_exists(storage_path('installed'))) {
 
         // (Optional) keep the original GET so old links still work
         Route::get('environment/save', [EnvironmentController::class, 'save'])
-            ->name('environmentSave');
+            ->name('environmentSaveGet');
 
         // Requirements
         Route::get('requirements', [RequirementsController::class, 'requirements'])
