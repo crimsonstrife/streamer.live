@@ -52,6 +52,8 @@ class Page extends BasePage implements HasRevisorContract, Searchable
         'blocks',
         'seo_title',
         'seo_description',
+        'custom_css',
+        'custom_head_html',
     ];
 
     protected $guarded = [];

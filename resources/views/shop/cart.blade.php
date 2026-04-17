@@ -4,10 +4,10 @@
             Shopping Cart
         </h2>
     </x-slot>
-    @php use App\Models\StoreObjects\Promotion;use App\Settings\FourthwallSettings;$settings = app(FourthwallSettings::class); @endphp
     @php
-        $orderPromotions = Promotion::live()->entireOrder()->get();
-        $productPromotions = Promotion::live()->selectedProducts()->with('products')->get();
+        $settings = app(\App\Settings\FourthwallSettings::class);
+        $orderPromotions = \App\Models\StoreObjects\Promotion::live()->entireOrder()->get();
+        $productPromotions = \App\Models\StoreObjects\Promotion::live()->selectedProducts()->with('products')->get();
     @endphp
     @if (! $settings->enable_integration)
         <div class="alert alert-warning text-center">

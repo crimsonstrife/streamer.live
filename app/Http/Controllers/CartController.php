@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\StoreObjects\ProductVariant;
 use App\Services\FourthwallService;
-use App\Settings\FourthwallSettings;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Http\RedirectResponse;
@@ -20,9 +19,6 @@ class CartController extends Controller
 
     public function __construct(FourthwallService $fourthwallService, CartHelper $cartHelper)
     {
-        if (! app(FourthwallSettings::class)->enable_integration) {
-            abort(404);
-        }
         $this->fourthwallService = $fourthwallService;
         $this->cartHelper = $cartHelper;
     }

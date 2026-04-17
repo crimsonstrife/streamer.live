@@ -52,6 +52,8 @@ class FourthwallService
 
     protected const STOCK_TTL_SECONDS = 30;
 
+    protected const MAX_PAGINATION_PAGES = 100;
+
     /**
      * FourthwallService constructor.
      * Initializes a new instance of the FourthwallService class.
@@ -131,6 +133,11 @@ class FourthwallService
 
                 $hasNextPage = data_get($collectionsResponse, 'paging.hasNextPage', false);
                 $page++;
+
+                if ($page >= self::MAX_PAGINATION_PAGES) {
+                    Log::warning("Fourthwall collections sync hit max pagination limit of " . self::MAX_PAGINATION_PAGES . " pages.");
+                    break;
+                }
             } while ($hasNextPage);
 
             $this->logInfo('All collections and their products synced.');
@@ -293,6 +300,11 @@ class FourthwallService
 
             $hasNextPage = data_get($productsResponse, 'paging.hasNextPage', false);
             $page++;
+
+            if ($page >= self::MAX_PAGINATION_PAGES) {
+                Log::warning("Fourthwall products sync for collection {$collection->name} hit max pagination limit of " . self::MAX_PAGINATION_PAGES . " pages.");
+                break;
+            }
         } while ($hasNextPage);
 
         $this->logInfo("Finished syncing products for collection {$collection->name}");
@@ -346,7 +358,7 @@ class FourthwallService
             foreach (array_chunk($images, 3) as $imageBatch) {
                 foreach ($imageBatch as $imageData) {
                     $this->logInfo("Dispatching image processing for product: {$product->name}");
-                    ProcessProductImage::dispatchSync($product, $imageData);
+                    ProcessProductImage::dispatch($product, $imageData);
                 }
 
                 if ($this->enable_garbage_collection) {

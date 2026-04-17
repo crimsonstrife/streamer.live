@@ -60,7 +60,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        ResilientCacheStore::ensureDefaultStoreAvailable();
+        // Run after all providers register (so deferred 'cache' binding is available)
+        // but before any boot() method — Telescope's DumpWatcher touches the default
+        // cache store during its own boot and only catches Exception, not Error.
+        $this->app->booting(function () {
+            ResilientCacheStore::ensureDefaultStoreAvailable();
+        });
 
         $this->app->bind(UpdaterContract::class, fn ($app) => $app->make(UpdaterManager::class));
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\CustomMediaPathGenerator;
+use Illuminate\Support\Facades\Storage;
 
 class Media extends \Spatie\MediaLibrary\MediaCollections\Models\Media
 {
@@ -17,6 +18,12 @@ class Media extends \Spatie\MediaLibrary\MediaCollections\Models\Media
 
     public function getMediaUrl(): string
     {
-        return url(app(CustomMediaPathGenerator::class)->getPath($this).$this->file_name);
+        $path = app(CustomMediaPathGenerator::class)->getPath($this).$this->file_name;
+
+        if (config("filesystems.disks.{$this->disk}.driver") === 's3') {
+            return Storage::disk($this->disk)->url($path);
+        }
+
+        return url($path);
     }
 }

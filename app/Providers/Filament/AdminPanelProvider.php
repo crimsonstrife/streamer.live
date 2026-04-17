@@ -12,6 +12,7 @@ use App\Livewire\RecentFollowers;
 use App\Livewire\UpcomingStream;
 use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
+use App\Plugins\ContentTypesPlugin;
 use App\Plugins\MenusPlugin;
 use App\Plugins\ShortUrlPlugin;
 use App\Utilities\BlogHelper;
@@ -135,6 +136,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\StreamSocialAccountResource::class,
                 Resources\TicketResource::class,
                 Resources\BrandPartnerResource::class,
+                Resources\ContentTypeResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -169,6 +171,7 @@ class AdminPanelProvider extends PanelProvider
                 ShortUrlPlugin::make(),
                 FilamentFabricatorPlugin::make(),
                 BlogPlugin::make(),
+                ContentTypesPlugin::make(),
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
                 MaintenanceSwitchPlugin::make(),
