@@ -23,6 +23,7 @@ use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Indra\Revisor\Middleware\DraftMiddleware;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
@@ -162,6 +163,7 @@ class AdminPanelProvider extends PanelProvider
                 'web',
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                DraftMiddleware::class,
             ], isPersistent: true)
             ->authMiddleware([
                 FilamentAuthenticate::class,
