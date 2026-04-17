@@ -488,6 +488,67 @@ class TwitchService
     }
 
     /**
+     * Fetch the channel's videos (VODs) from Helix, with caching and pagination.
+     *
+     * @param  int  $limit  Number of videos to return (Helix max 100).
+     * @param  string|null  $cursor  Pagination cursor from a previous response.
+     * @param  string  $type  One of 'all', 'archive', 'highlight', 'upload'.
+     * @return array{data: array, pagination: ?string}
+     *
+     * @throws ConnectionException
+     */
+    public function getChannelVideos(int $limit = 24, ?string $cursor = null, string $type = 'archive'): array
+    {
+        $broadcasterId = $this->getBroadcasterId();
+        if (! $broadcasterId) {
+            return ['data' => [], 'pagination' => null];
+        }
+
+        $this->authenticate();
+
+        $limit = max(1, min(100, $limit));
+        $type = in_array($type, ['all', 'archive', 'highlight', 'upload'], true) ? $type : 'archive';
+
+        $cacheKey = "twitch.videos.{$broadcasterId}.{$type}.{$limit}.".($cursor ?: 'first');
+
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($broadcasterId, $limit, $cursor, $type) {
+            try {
+                $query = [
+                    'user_id' => $broadcasterId,
+                    'first'   => $limit,
+                    'type'    => $type,
+                    'sort'    => 'time',
+                ];
+
+                if ($cursor) {
+                    $query['after'] = $cursor;
+                }
+
+                $response = Http::withOptions(['verify' => $this->ssl_verify])
+                    ->withHeaders([
+                        'Client-ID'     => $this->client_id,
+                        'Authorization' => "Bearer {$this->access_token}",
+                    ])
+                    ->get('https://api.twitch.tv/helix/videos', $query)
+                    ->throw()
+                    ->json();
+
+                return [
+                    'data'       => $response['data'] ?? [],
+                    'pagination' => $response['pagination']['cursor'] ?? null,
+                ];
+            } catch (Throwable $e) {
+                Log::error('TwitchService::getChannelVideos failed', [
+                    'error' => $e->getMessage(),
+                    'type'  => $type,
+                ]);
+
+                return ['data' => [], 'pagination' => null];
+            }
+        });
+    }
+
+    /**
      * @throws RequestException
      * @throws ConnectionException
      */
