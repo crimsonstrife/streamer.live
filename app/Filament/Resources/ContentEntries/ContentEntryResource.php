@@ -17,17 +17,42 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Indra\Revisor\Facades\Revisor;
+use LogicException;
 
 abstract class ContentEntryResource extends Resource
 {
     protected static ?string $model = ContentEntry::class;
 
     /**
-     * Subclasses must return the ContentType this resource manages.
+     * Subclasses must set the ContentType id this resource manages.
      */
-    abstract public static function getContentType(): ContentType;
+    protected static ?int $contentTypeId = null;
 
-    abstract public static function getContentTypeId(): int;
+    /** @var array<class-string, ContentType> */
+    private static array $contentTypeCache = [];
+
+    public static function getContentTypeId(): int
+    {
+        if (static::$contentTypeId === null) {
+            throw new LogicException(sprintf(
+                '%s must define $contentTypeId. This class should not be used directly; use a generated subclass from ContentEntryResourceRegistrar.',
+                static::class,
+            ));
+        }
+
+        return static::$contentTypeId;
+    }
+
+    public static function getContentType(): ContentType
+    {
+        return self::$contentTypeCache[static::class]
+            ??= ContentType::findOrFail(static::getContentTypeId());
+    }
+
+    public static function isDiscovered(): bool
+    {
+        return static::$contentTypeId !== null;
+    }
 
     public static function getEloquentQuery(): Builder
     {

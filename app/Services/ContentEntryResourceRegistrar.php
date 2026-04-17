@@ -75,7 +75,6 @@ class ContentEntryResourceRegistrar
 namespace App\Filament\Resources\ContentEntries\Generated;
 
 use App\Filament\Resources\ContentEntries\ContentEntryResource;
-use App\Models\ContentObjects\ContentType;
 
 class {$prefix}Resource extends ContentEntryResource
 {
@@ -87,20 +86,7 @@ class {$prefix}Resource extends ContentEntryResource
     protected static ?string \$pluralModelLabel = '{$name}';
     protected static ?string \$recordTitleAttribute = 'title';
 
-    private static ?ContentType \$contentTypeCache = null;
-
-    public static function getContentType(): ContentType
-    {
-        if (self::\$contentTypeCache === null) {
-            self::\$contentTypeCache = ContentType::find({$id});
-        }
-        return self::\$contentTypeCache;
-    }
-
-    public static function getContentTypeId(): int
-    {
-        return {$id};
-    }
+    protected static ?int \$contentTypeId = {$id};
 
     public static function getPages(): array
     {
