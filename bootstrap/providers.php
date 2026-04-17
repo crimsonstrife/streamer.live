@@ -14,7 +14,7 @@ return [
     App\Providers\OnboardingServiceProvider::class,
     App\Providers\PulseServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
-    Froiden\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
+    App\Providers\Installer\LaravelInstallerServiceProvider::class,
     Spatie\EloquentSortable\EloquentSortableServiceProvider::class,
     Xetaio\Mentions\Providers\MentionServiceProvider::class,
     nickurt\Akismet\ServiceProvider::class,

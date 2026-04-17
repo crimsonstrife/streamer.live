@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
 use App\Services\FourthwallService;
-use App\Settings\FourthwallSettings;
 use App\Traits\HasCacheSupport;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
@@ -27,9 +26,6 @@ class StoreController extends Controller
 
     public function __construct(FourthwallService $fourthwallService, CartHelper $cartHelper)
     {
-        if (! app(FourthwallSettings::class)->enable_integration) {
-            abort(404);
-        }
         $this->fourthwallService = $fourthwallService;
         $this->cartHelper = $cartHelper;
     }

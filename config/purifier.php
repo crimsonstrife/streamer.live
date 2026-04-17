@@ -33,6 +33,14 @@ return [
             'AutoFormat.AutoParagraph' => true,
             'AutoFormat.RemoveEmpty' => true,
         ],
+        'head_html' => [
+            'HTML.Doctype'             => 'HTML 4.01 Transitional',
+            'HTML.Allowed'             => 'style,link[rel|href|type|media|crossorigin|integrity],meta[name|content|property|charset|http-equiv]',
+            'CSS.AllowedProperties'    => '*',
+            'HTML.SafeIframe'          => false,
+            'AutoFormat.AutoParagraph' => false,
+            'AutoFormat.RemoveEmpty'   => false,
+        ],
         'default_allow_scripts' => [
             'HTML.Doctype' => 'HTML 4.01 Transitional',
             'HTML.Allowed' => '*[*]', // Allow everything (DANGEROUS, be careful)

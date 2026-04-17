@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Embeds\StreamStatusImageController;
 use App\Http\Controllers\Embeds\StreamStatusSvgController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ContentTypeController;
 use App\Http\Controllers\FabricatorPageController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\Installer\CredentialsController;
@@ -77,7 +78,7 @@ if (! file_exists(storage_path('installed'))) {
 
         // (Optional) keep the original GET so old links still work
         Route::get('environment/save', [EnvironmentController::class, 'save'])
-            ->name('environmentSave');
+            ->name('environmentSaveGet');
 
         // Requirements
         Route::get('requirements', [RequirementsController::class, 'requirements'])
@@ -365,6 +366,23 @@ CSS;
         return response($css, 200)
             ->header('Content-Type', 'text/css');
     })->name('assets.fonts.css');
+
+    // Dynamic content type routes (registered before Fabricator fallback)
+    if (\Illuminate\Support\Facades\Schema::hasTable('content_types')) {
+        $contentTypes = \App\Models\ContentObjects\ContentType::where('is_active', true)
+            ->whereNotNull('route_prefix')
+            ->get();
+
+        foreach ($contentTypes as $ct) {
+            $prefix = ltrim($ct->route_prefix, '/');
+            Route::get($prefix, [ContentTypeController::class, 'index'])
+                ->name("content-type.{$ct->slug}.index")
+                ->defaults('contentTypeSlug', $ct->slug);
+            Route::get("{$prefix}/{entrySlug}", [ContentTypeController::class, 'show'])
+                ->name("content-type.{$ct->slug}.show")
+                ->defaults('contentTypeSlug', $ct->slug);
+        }
+    }
 
     // Global fallback for Fabricator pages, but exclude any system URI
     Route::get('/{slug}', FabricatorPageController::class)

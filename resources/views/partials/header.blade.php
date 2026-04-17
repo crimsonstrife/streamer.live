@@ -341,3 +341,12 @@
         </header>
     </div>
     <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::header() -->
+    {{-- Per-page custom CSS --}}
+    @if($page?->custom_css)
+        <style>{!! app(\App\Services\CssSanitizerService::class)->sanitize($page->custom_css) !!}</style>
+@endif
+
+{{-- Per-page custom head HTML --}}
+@if($page?->custom_head_html)
+    {!! \Mews\Purifier\Facades\Purifier::clean($page->custom_head_html, 'head_html') !!}
+@endif

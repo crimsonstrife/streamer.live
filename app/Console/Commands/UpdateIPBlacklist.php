@@ -32,11 +32,8 @@ class UpdateIPBlacklist extends Command
      */
     public function handle(): void
     {
-        // bump memory for this process
-        ini_set('memory_limit', '256M');
-
         Log::info('[update:blacklist] Starting blacklist update.');
-        $this->info('Fetching blacklist from AbuseIPDB…');
+        $this->info('Fetching blacklist from AbuseIPDB...');
 
         try {
             $response = Http::timeout(60)
@@ -62,10 +59,10 @@ class UpdateIPBlacklist extends Command
         // decode the full payload
         $payload = $response->json();
 
-        // verify the “data” key is actually present and is an array
+        // verify the "data" key is actually present and is an array
         if (! is_array($payload) || ! array_key_exists('data', $payload)) {
             Log::error(
-                '[update:blacklist] Unexpected AbuseIPDB response format, missing “data” key',
+                '[update:blacklist] Unexpected AbuseIPDB response format, missing "data" key',
                 ['payload' => $payload]
             );
 
@@ -74,21 +71,43 @@ class UpdateIPBlacklist extends Command
             return;
         }
 
-        // at this point we know it’s safe
+        // at this point we know it's safe
         $blacklist = $payload['data'];
+        unset($payload); // free the full response payload
+
         $batchSize = 500;
         $batch     = [];
         $count     = 0;
 
-        // Collect all upstream IPs for comparison
-        $upstreamIpAddresses = collect($blacklist)->pluck('ipAddress')->all();
+        // Collect upstream IPs in chunks and delete stale entries in batches
+        // to avoid a single massive whereNotIn query
+        $upstreamIpSet = [];
+        foreach ($blacklist as $ipData) {
+            $upstreamIpSet[$ipData['ipAddress']] = true;
+        }
 
-        // Remove or mark as stale any blacklist IPs not present upstream
         DB::table('ip_filters')
             ->where('type', 'blacklist')
             ->where('source', 'abuseipdb')
-            ->whereNotIn('ip_address', $upstreamIpAddresses)
-            ->delete();
+            ->select('ip_address')
+            ->orderBy('id')
+            ->chunk(1000, function ($rows) use ($upstreamIpSet) {
+                $toDelete = [];
+                foreach ($rows as $row) {
+                    if (! isset($upstreamIpSet[$row->ip_address])) {
+                        $toDelete[] = $row->ip_address;
+                    }
+                }
+                if (! empty($toDelete)) {
+                    DB::table('ip_filters')
+                        ->where('type', 'blacklist')
+                        ->where('source', 'abuseipdb')
+                        ->whereIn('ip_address', $toDelete)
+                        ->delete();
+                }
+            });
+
+        unset($upstreamIpSet);
 
         foreach ($blacklist as $ipData) {
             $batch[] = [
@@ -111,10 +130,12 @@ class UpdateIPBlacklist extends Command
             }
         }
 
+        unset($blacklist);
+
         // Final partial batch
         if (count($batch) > 0) {
             DB::table('ip_filters')
-                ->upsert($batch, ['ip_address'], ['type', 'reason', 'updated_at']);
+                ->upsert($batch, ['ip_address'], ['type', 'reason', 'source', 'updated_at']);
 
             $count += count($batch);
             Log::info("[update:blacklist] Processed final batch of " . count($batch) . ", total: {$count}.");
