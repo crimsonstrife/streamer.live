@@ -12,6 +12,7 @@ use App\Livewire\RecentFollowers;
 use App\Livewire\UpcomingStream;
 use App\Plugins\BanPlugin;
 use App\Plugins\BlogPlugin;
+use App\Plugins\ContentTypesPlugin;
 use App\Plugins\MenusPlugin;
 use App\Plugins\ShortUrlPlugin;
 use App\Utilities\BlogHelper;
@@ -22,6 +23,7 @@ use Filament\Http\Middleware\Authenticate as FilamentAuthenticate;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Indra\Revisor\Middleware\DraftMiddleware;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\SpatieLaravelTranslatablePlugin;
@@ -135,6 +137,7 @@ class AdminPanelProvider extends PanelProvider
                 Resources\StreamSocialAccountResource::class,
                 Resources\TicketResource::class,
                 Resources\BrandPartnerResource::class,
+                Resources\ContentTypeResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -160,6 +163,7 @@ class AdminPanelProvider extends PanelProvider
                 'web',
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                DraftMiddleware::class,
             ], isPersistent: true)
             ->authMiddleware([
                 FilamentAuthenticate::class,
@@ -169,6 +173,7 @@ class AdminPanelProvider extends PanelProvider
                 ShortUrlPlugin::make(),
                 FilamentFabricatorPlugin::make(),
                 BlogPlugin::make(),
+                ContentTypesPlugin::make(),
                 FilamentEditProfilePlugin::make()
                     ->shouldRegisterNavigation(false),
                 MaintenanceSwitchPlugin::make(),

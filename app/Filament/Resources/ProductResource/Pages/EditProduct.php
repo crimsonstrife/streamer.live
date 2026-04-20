@@ -4,18 +4,18 @@ namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
 use DB;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
+use Indra\RevisorFilament\Filament\EditRecord;
 
 class EditProduct extends EditRecord
 {
     protected static string $resource = ProductResource::class;
 
-    protected function getHeaderActions(): array
+    public function hydrate(): void
     {
-        return [
-            Actions\DeleteAction::make(),
-        ];
+        if ($this->record instanceof Model && $this->record->getKey() && ! $this->record->isDraftTableRecord()) {
+            $this->record = ($this->record)::withDraftContext()->findOrFail($this->record->getKey());
+        }
     }
 
     protected function afterSave(): void

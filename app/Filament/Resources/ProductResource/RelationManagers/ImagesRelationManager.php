@@ -19,7 +19,7 @@ class ImagesRelationManager extends RelationManager
                 ->label('Image')
                 ->image()
                 ->directory(fn ($livewire) => 'products/'.$livewire->ownerRecord->provider_id)
-                ->disk('public')
+                ->disk(config('filesystems.upload_disk', 'public'))
                 ->required(),
             Forms\Components\TextInput::make('alt_text')
                 ->label('Alt Text')
@@ -43,7 +43,7 @@ class ImagesRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\ImageColumn::make('local_path')
                     ->label('Image')
-                    ->disk('public')
+                    ->disk(config('filesystems.upload_disk', 'public'))
                     ->url(fn ($record) => $record->image_url)->height(50),
                 Tables\Columns\TextColumn::make('alt_text')->wrap(),
                 Tables\Columns\TextColumn::make('model_name'),

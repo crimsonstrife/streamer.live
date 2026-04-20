@@ -28,6 +28,11 @@ class ProductResource extends Resource
 
     protected static ?string $slug = 'store/products';
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->withDraftContext();
+    }
+
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationGroup = 'Store';
@@ -150,6 +155,8 @@ class ProductResource extends Resource
         return [
             'index' => Pages\ListProducts::route('/'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'versions' => Pages\ListProductVersions::route('/{record}/versions'),
+            'view_version' => Pages\ViewProductVersion::route('/{record}/versions/{version}'),
         ];
     }
 }

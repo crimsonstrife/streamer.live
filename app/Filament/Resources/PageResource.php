@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Services\CssSanitizerService;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -19,9 +20,12 @@ use Filament\Forms\Set;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
+use Indra\Revisor\Facades\Revisor;
+use Mews\Purifier\Facades\Purifier;
 use Z3d0X\FilamentFabricator\Facades\FilamentFabricator;
 use Z3d0X\FilamentFabricator\Forms\Components\PageBuilder;
 use Z3d0X\FilamentFabricator\Models\Contracts\Page as PageContract;
+use App\Filament\Resources\PageResource\Pages as AppPages;
 use Z3d0X\FilamentFabricator\Resources\PageResource as BasePageResource;
 use Z3d0X\FilamentFabricator\Resources\PageResource\Pages;
 use Z3d0X\FilamentFabricator\View\ResourceSchemaSlot;
@@ -29,6 +33,11 @@ use Z3d0X\FilamentFabricator\View\ResourceSchemaSlot;
 class PageResource extends BasePageResource
 {
     protected static ?string $navigationIcon = 'fas-file';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withDraftContext();
+    }
     protected static ?string $navigationGroup = 'CMS';
     protected static ?string $slug = 'cms/pages';
     protected static ?int $navigationSort = 0;
@@ -80,7 +89,11 @@ class PageResource extends BasePageResource
 
                                 TextInput::make('slug')
                                     ->label(__('filament-fabricator::page-resource.labels.slug'))
-                                    ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('parent_id', $get('parent_id')))
+                                    ->unique(
+                                        table: fn () => Revisor::getDraftTableFor(config('filament-fabricator.table_name', 'pages')),
+                                        ignorable: fn (?PageContract $record) => $record,
+                                        modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('parent_id', $get('parent_id')),
+                                    )
                                     ->afterStateUpdated(function (Set $set) {
                                         $set('is_slug_changed_manually', true);
                                     })
@@ -148,6 +161,27 @@ class PageResource extends BasePageResource
                                     ->hint('Select or create your keywords'),
                             ]),
 
+                        Section::make('Custom Code')
+                            ->icon('fas-code')
+                            ->description('Custom CSS and HTML injected into this page\'s <head>. Dangerous patterns are automatically stripped for security. Use with caution — custom code can break page layout or introduce vulnerabilities.')
+                            ->schema([
+                                Forms\Components\Textarea::make('custom_css')
+                                    ->label('Custom CSS')
+                                    ->rows(8)
+                                    ->placeholder("/* Page-specific styles */\n.my-class {\n    color: red;\n}")
+                                    ->helperText('CSS rules for this page only. Injected into a <style> tag. Dangerous patterns (expression(), javascript:, @import, etc.) are stripped automatically.')
+                                    ->dehydrateStateUsing(fn (?string $state) => $state ? app(CssSanitizerService::class)->sanitize($state) : null),
+
+                                Forms\Components\Textarea::make('custom_head_html')
+                                    ->label('Custom Head HTML')
+                                    ->rows(8)
+                                    ->placeholder('<link rel="stylesheet" href="https://...">')
+                                    ->helperText('HTML injected into <head>. Allowed: <style>, <link>, <meta> tags. Script tags are stripped for security.')
+                                    ->dehydrateStateUsing(fn (?string $state) => $state ? Purifier::clean($state, 'head_html') : null),
+                            ])
+                            ->collapsible()
+                            ->collapsed(),
+
                         Group::make()->schema(FilamentFabricator::getSchemaSlot(ResourceSchemaSlot::SIDEBAR_AFTER)),
                     ]),
             ]);
@@ -167,9 +201,11 @@ class PageResource extends BasePageResource
     {
         return array_filter([
             'index' => Pages\ListPages::route('/'),
-            'create' => Pages\CreatePage::route('/create'),
+            'create' => AppPages\CreatePage::route('/create'),
             'view' => config('filament-fabricator.enable-view-page') ? Pages\ViewPage::route('/{record}') : null,
-            'edit' => Pages\EditPage::route('/{record}/edit'),
+            'edit' => AppPages\EditPage::route('/{record}/edit'),
+            'versions' => AppPages\ListPageVersions::route('/{record}/versions'),
+            'view_version' => AppPages\ViewPageVersion::route('/{record}/versions/{version}'),
         ]);
     }
 }

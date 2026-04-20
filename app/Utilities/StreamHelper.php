@@ -45,6 +45,26 @@ class StreamHelper
     }
 
     /**
+     * Fetch the channel's VODs with pagination.
+     *
+     * @return array{data: array, pagination: ?string}
+     */
+    public function getVods(int $limit = 24, ?string $cursor = null, string $type = 'archive'): array
+    {
+        if (! $this->enabled) {
+            return ['data' => [], 'pagination' => null];
+        }
+
+        try {
+            return $this->twitch->getChannelVideos($limit, $cursor, $type);
+        } catch (Throwable $e) {
+            Log::warning("Twitch VOD fetch failed: {$e->getMessage()}");
+
+            return ['data' => [], 'pagination' => null];
+        }
+    }
+
+    /**
      * Check if the user is live.
      */
     public function getStreamStatus($username = null)

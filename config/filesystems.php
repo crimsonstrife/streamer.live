@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default Upload Disk
+    |--------------------------------------------------------------------------
+    |
+    | Disk used by Filament admin file uploads (post images, product images,
+    | hero banners, etc.). Defaults to MEDIA_DISK so a single MEDIA_DISK=s3
+    | flips both Spatie Media Library uploads and direct Filament uploads.
+    | Set UPLOAD_DISK only to override that cascade.
+    |
+    */
+
+    'upload_disk' => env('UPLOAD_DISK', env('MEDIA_DISK', 'public')),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |
@@ -56,6 +70,7 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],
