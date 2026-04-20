@@ -67,5 +67,17 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->append(StartSession::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->report(function (\Throwable $e) {
+            if (! $e instanceof \TypeError && ! $e instanceof \Error) {
+                return;
+            }
+
+            $trace = $e->getTraceAsString();
+            $isFilamentLivewire = str_contains($trace, '/vendor/filament/')
+                && str_contains($trace, '/vendor/livewire/livewire/');
+
+            if ($isFilamentLivewire && ! auth()->check()) {
+                return false;
+            }
+        });
     })->create();

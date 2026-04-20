@@ -8,6 +8,7 @@ use App\Models\StoreObjects\Product;
 use App\Utilities\BlogHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\SitemapGenerator;
 
@@ -54,6 +55,8 @@ class GenerateSitemap extends Command
         $posts = Post::all();
         $sitemap->add($posts);
 
-        $sitemap->writeToFile(public_path('sitemap.xml'));
+        $path = storage_path('app/public/sitemap.xml');
+        File::ensureDirectoryExists(dirname($path));
+        $sitemap->writeToFile($path);
     }
 }

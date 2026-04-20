@@ -201,7 +201,7 @@ class PageResource extends BasePageResource
     {
         return array_filter([
             'index' => Pages\ListPages::route('/'),
-            'create' => Pages\CreatePage::route('/create'),
+            'create' => AppPages\CreatePage::route('/create'),
             'view' => config('filament-fabricator.enable-view-page') ? Pages\ViewPage::route('/{record}') : null,
             'edit' => AppPages\EditPage::route('/{record}/edit'),
             'versions' => AppPages\ListPageVersions::route('/{record}/versions'),

@@ -80,6 +80,7 @@
         "laravel/telescope": "^5.5",
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.5",
+        "league/flysystem-aws-s3-v3": "^3.32",
         "livewire/livewire": "^3.0",
         "mchev/banhammer": "^2.3",
         "mews/purifier": "^3.4",
