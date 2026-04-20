@@ -37,8 +37,8 @@
 @stack('scripts')
 @if (file_exists(public_path('build/vendors/jquery/jquery.min.js')))
     <script src="{{ asset('build/vendors/jquery/jquery.min.js') }}" referrerpolicy="origin"></script>
-    {{-- jQuery 4 removed $.trim; polyfill for legacy plugins (e.g. TinyMCE mention). --}}
-    <script>window.jQuery && !window.jQuery.trim && (window.jQuery.trim = function (s) { return s == null ? '' : String(s).trim(); });</script>
+    {{-- jQuery 4 removed $.trim, $.isArray, $.isFunction, $.proxy; polyfill for legacy plugins (e.g. TinyMCE mention). --}}
+    <script>(function(j){if(!j)return;if(!j.trim)j.trim=function(s){return s==null?'':String(s).trim();};if(!j.isArray)j.isArray=Array.isArray;if(!j.isFunction)j.isFunction=function(x){return typeof x==='function';};if(!j.proxy)j.proxy=function(fn,c){var a=Array.prototype.slice.call(arguments,2);return function(){return fn.apply(c,a.concat(Array.prototype.slice.call(arguments)));};};})(window.jQuery);</script>
 @endif
 @if (file_exists(public_path('vendor/tinymce/tinymce.min.js')))
     <script src="{{ asset('vendor/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
