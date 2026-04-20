@@ -93,6 +93,7 @@ class PostResource extends Resource
                             ]),
 
                         Forms\Components\FileUpload::make('featured_image')
+                        ->disk(config('filesystems.upload_disk', 'public'))
                         ->directory('posts')
                         ->multiple(false),
 
