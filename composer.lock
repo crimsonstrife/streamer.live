@@ -2139,16 +2139,16 @@
         },
         {
             "name": "discord-php/http",
-            "version": "v10.9.3",
+            "version": "v10.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/discord-php/DiscordPHP-Http.git",
-                "reference": "8b2d055b213f3ab83cf25b2ecbc6d467a8cadad2"
+                "reference": "b2c26db8b37fae3b5eb002d7804ca3b29969faee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/discord-php/DiscordPHP-Http/zipball/8b2d055b213f3ab83cf25b2ecbc6d467a8cadad2",
-                "reference": "8b2d055b213f3ab83cf25b2ecbc6d467a8cadad2",
+                "url": "https://api.github.com/repos/discord-php/DiscordPHP-Http/zipball/b2c26db8b37fae3b5eb002d7804ca3b29969faee",
+                "reference": "b2c26db8b37fae3b5eb002d7804ca3b29969faee",
                 "shasum": ""
             },
             "require": {
@@ -2189,9 +2189,9 @@
             "description": "Handles HTTP requests to Discord servers",
             "support": {
                 "issues": "https://github.com/discord-php/DiscordPHP-Http/issues",
-                "source": "https://github.com/discord-php/DiscordPHP-Http/tree/v10.9.3"
+                "source": "https://github.com/discord-php/DiscordPHP-Http/tree/v10.9.4"
             },
-            "time": "2026-04-01T13:22:54+00:00"
+            "time": "2026-04-20T15:37:05+00:00"
         },
         {
             "name": "discord/interactions",
@@ -21779,16 +21779,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.29.0",
+            "version": "v1.29.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "bdec963f53172c5e36330f3a400604c69bf02d39"
+                "reference": "0770e9b7fafd50d4586881d456d6eb41c9247a80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/bdec963f53172c5e36330f3a400604c69bf02d39",
-                "reference": "bdec963f53172c5e36330f3a400604c69bf02d39",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/0770e9b7fafd50d4586881d456d6eb41c9247a80",
+                "reference": "0770e9b7fafd50d4586881d456d6eb41c9247a80",
                 "shasum": ""
             },
             "require": {
@@ -21799,14 +21799,14 @@
                 "php": "^8.2.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.94.2",
-                "illuminate/view": "^12.54.1",
-                "larastan/larastan": "^3.9.3",
-                "laravel-zero/framework": "^12.0.5",
+                "friendsofphp/php-cs-fixer": "^3.95.1",
+                "illuminate/view": "^12.56.0",
+                "larastan/larastan": "^3.9.6",
+                "laravel-zero/framework": "^12.1.0",
                 "mockery/mockery": "^1.6.12",
                 "nunomaduro/termwind": "^2.4.0",
                 "pestphp/pest": "^3.8.6",
-                "shipfastlabs/agent-detector": "^1.1.0"
+                "shipfastlabs/agent-detector": "^1.1.3"
             },
             "bin": [
                 "builds/pint"
@@ -21843,7 +21843,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2026-03-12T15:51:39+00:00"
+            "time": "2026-04-20T15:26:14+00:00"
         },
         {
             "name": "laravel/sail",
