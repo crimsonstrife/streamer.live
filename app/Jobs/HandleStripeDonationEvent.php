@@ -25,7 +25,8 @@ class HandleStripeDonationEvent implements ShouldQueue
     public function __construct(
         public string $eventType,
         public array $payload,
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {
