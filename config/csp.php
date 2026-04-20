@@ -46,6 +46,7 @@ return [
             'https://cdn.discordapp.com',
             'https://cdn.jsdelivr.net',
             'https://static.cloudflareinsights.com',
+            'https://www.googletagmanager.com',
         ]],
         [Directive::SCRIPT_ELEM, [
             Keyword::SELF,
@@ -53,6 +54,7 @@ return [
             Keyword::UNSAFE_INLINE,
             'https://cdn.jsdelivr.net',
             'https://static.cloudflareinsights.com',
+            'https://www.googletagmanager.com',
         ]],
         [Directive::SCRIPT_ATTR, [
             Keyword::SELF,
@@ -84,6 +86,9 @@ return [
             'https://discord.com',
             'https://discordapp.com',
             'https://cloudflareinsights.com',
+            'https://www.google-analytics.com',
+            'https://analytics.google.com',
+            'https://www.googletagmanager.com',
         ]],
         [Directive::FRAME, [
             Keyword::SELF,
@@ -91,6 +96,7 @@ return [
             'https://player.twitch.tv',
             'https://www.twitch.tv',
             'https://discord.com/widget',
+            'https://www.googletagmanager.com',
         ]],
         [Directive::FRAME_ANCESTORS, [
             Keyword::SELF,
@@ -107,6 +113,8 @@ return [
             'https://ui-avatars.com',
             'https://gravatar.com',
             'https://www.gravatar.com',
+            'https://www.google-analytics.com',
+            'https://www.googletagmanager.com',
             env('AWS_URL'),
         ]))],
         [Directive::MEDIA, array_values(array_filter([

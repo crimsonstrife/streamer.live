@@ -46,7 +46,7 @@
                             <a href="{{ route($blogSlug.'.post', ['slug' => $post->slug]) }}"
                                class="icon-link gap-1 icon-link-hover stretched-link">
                                 Read More
-                                <x-fas-chevron-right height="1rem" width="auto" />
+                                <x-fas-chevron-right height="1rem" />
                             </a>
                         </div>
                     </div>

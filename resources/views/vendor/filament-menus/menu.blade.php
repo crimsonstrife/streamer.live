@@ -66,7 +66,7 @@
                                     <x-nav-link href="{{ route($shopSlug.'.cart.show') }}"
                                                 :active="request()->routeIs($shopSlug.'.cart.show')"
                                                 class="nav-link d-flex align-items-center" style="border-bottom: none !important">
-                                        <x-fas-cart-shopping height="1rem" width="auto"/>
+                                        <x-fas-cart-shopping height="1rem"/>
                                         <span class="badge rounded-pill ms-2" style="color: unset">{{ $cartCount }}</span>
                                     </x-nav-link>
                                 </li>

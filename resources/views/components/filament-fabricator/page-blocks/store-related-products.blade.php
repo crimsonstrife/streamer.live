@@ -44,11 +44,11 @@
                                     <div class="mb-2">
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($relatedProduct->average_rating >= $i)
-                                                <x-fas-star class="text-warning" height="1rem" width="auto" />
+                                                <x-fas-star class="text-warning" height="1rem" />
                                             @elseif ($relatedProduct->average_rating >= $i - 0.5)
-                                                <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"  />
+                                                <x-fas-star-half-stroke class="text-warning" height="1rem"  />
                                             @else
-                                                <x-far-star class="text-muted" height="1rem" width="auto"  />
+                                                <x-far-star class="text-muted" height="1rem"  />
                                             @endif
                                         @endfor
                                         <small class="text-muted ms-2">

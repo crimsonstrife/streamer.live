@@ -21,7 +21,6 @@
     "dependencies": {
         "@floating-ui/dom": "^1.7.6",
         "@popperjs/core": "^2.11.8",
-        "@redmine-ui/tributejs": "^6.2.1",
         "bootstrap": "^5.3.8",
         "bootstrap-icons": "^1.13.1",
         "dompurify": "^3.3.3",

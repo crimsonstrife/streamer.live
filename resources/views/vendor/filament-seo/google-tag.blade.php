@@ -1,6 +1,6 @@
 @if(
     setting('seo_use_google_tags_manager') &&
-    !empty(setting('seo_google_tags_manager'))
+    !empty(trim((string) setting('seo_google_tags_manager')))
 )
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

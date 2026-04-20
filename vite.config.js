@@ -28,16 +28,8 @@ export default defineConfig({
         viteStaticCopy({
             targets: [
                 {
-                    src: "node_modules/@redmine-ui/tributejs/dist/*",
-                    dest: "vendors/tributejs",
-                },
-                {
                     src: "node_modules/jquery/dist/*",
                     dest: "vendors/jquery",
-                },
-                {
-                    src: "resources/js/tinymce-tribute.js",
-                    dest: "js",
                 },
                 {
                     src: "resources/icons/",
@@ -49,7 +41,6 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            tribute: "/node_modules/@redmine-ui/tributejs",
             tinymce: "/node_modules/tinymce",
         },
     },

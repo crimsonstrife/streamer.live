@@ -90,17 +90,9 @@
 @endif
 
 {{-- TinyMCE --}}
-@if (file_exists(public_path('build/vendors/tributejs/tribute.js')))
-    <script src="{{ asset('build/vendors/tributejs/tribute.js') }}" referrerpolicy="origin"></script>
+@if (file_exists(public_path('vendor/tinymce/tinymce.min.js')))
+    <script src="{{ asset('vendor/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
 @endif
-
-    {{-- TinyMCE --}}
-    @if (file_exists(public_path('vendor/tinymce/tinymce.min.js')))
-        <script src="{{ asset('vendor/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
-    @endif
-@if (file_exists(public_path('build/js/tinymce-tribute.js')))
-    <script src="{{ asset('build/js/tinymce-tribute.js') }}" referrerpolicy="origin"></script>
-    @endif
 @cookieconsentview
 </body> <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->
 </html>  <!-- Tag match is actually contained in the the page file, which includes this file via LayoutSection::footer() -->

@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const framesPerRandomLetter = 2
     let frame = 0
     let index = 0
-    const endingString = $.trim($('.livebar .text').text())
+    const endingString = $('.livebar .text').text().trim()
 
     let currentString = ''
 

@@ -283,7 +283,7 @@
                                                             role="button"
                                                             data-info-id="info-{{ $loop->index }}"
                                                             onclick="toggleModelInfo(this)">
-                                                <x-fas-circle-info height="1rem" width="auto"/>
+                                                <x-fas-circle-info height="1rem"/>
                                             </span>
                                                         <div id="info-{{ $loop->index }}"
                                                              class="model-info position-absolute bottom-0 start-0 w-100 p-3 bg-dark bg-opacity-75 text-white rounded-top d-none">
@@ -326,11 +326,11 @@
                         <div class="mb-2 d-flex align-items-center">
                             @for ($i = 1; $i <= 5; $i++)
                                 @if ($product->average_rating >= $i)
-                                    <x-fas-star class="text-warning" height="1rem" width="auto"/>
+                                    <x-fas-star class="text-warning" height="1rem"/>
                                 @elseif ($product->average_rating >= $i - 0.5)
-                                    <x-fas-star-half-stroke class="text-warning" height="1rem" width="auto"/>
+                                    <x-fas-star-half-stroke class="text-warning" height="1rem"/>
                                 @else
-                                    <x-far-star class="text-muted" height="1rem" width="auto"/>
+                                    <x-far-star class="text-muted" height="1rem"/>
                                 @endif
                             @endfor
 
@@ -437,12 +437,11 @@
                                     <div>
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($product->average_rating >= $i)
-                                                <x-fas-star class="text-warning" height="1rem" width="auto"/>
+                                                <x-fas-star class="text-warning" height="1rem"/>
                                             @elseif ($product->average_rating >= $i - 0.5)
-                                                <x-fas-star-half-stroke class="text-warning" height="1rem"
-                                                                        width="auto"/>
+                                                <x-fas-star-half-stroke class="text-warning" height="1rem"/>
                                             @else
-                                                <x-far-star class="text-muted" height="1rem" width="auto"/>
+                                                <x-far-star class="text-muted" height="1rem"/>
                                             @endif
                                         @endfor
                                     </div>
