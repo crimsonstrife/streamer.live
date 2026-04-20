@@ -5,6 +5,7 @@ use App\Http\Controllers\EmoteController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Webhook\FourthwallWebhookController;
+use App\Http\Controllers\Webhook\StripeWebhookController;
 use App\Models\Icon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', fn (Request $request) => $request->user());
 
 Route::post('/webhooks/fourthwall', FourthwallWebhookController::class);
+Route::post('/webhooks/stripe', StripeWebhookController::class);
 
 /**
  * Route for fetching icon svg files/code

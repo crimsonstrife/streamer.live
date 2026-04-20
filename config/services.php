@@ -46,6 +46,16 @@ return [
         'verify' => env('FOURTHWALL_VERIFY', true),
     ],
 
+    'stripe' => [
+        'enabled' => env('STRIPE_ENABLE', false),
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'currency' => env('STRIPE_CURRENCY', 'USD'),
+        'min_donation' => env('STRIPE_MIN_DONATION', 1),
+        'max_donation' => env('STRIPE_MAX_DONATION', 10000),
+    ],
+
     'twitch' => [
         'enabled' => env('TWITCH_ENABLED', false),
         'channel_name' => env('TWITCH_CHANNEL'),

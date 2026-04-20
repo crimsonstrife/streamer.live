@@ -138,6 +138,8 @@ class AdminPanelProvider extends PanelProvider
                 Resources\TicketResource::class,
                 Resources\BrandPartnerResource::class,
                 Resources\ContentTypeResource::class,
+                Resources\GoalResource::class,
+                Resources\DonationResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
