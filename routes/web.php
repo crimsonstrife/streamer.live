@@ -102,6 +102,13 @@ if (! file_exists(storage_path('installed'))) {
     });
 }
 
+Route::get('/sitemap.xml', function () {
+    $path = storage_path('app/public/sitemap.xml');
+    abort_unless(file_exists($path), 404);
+
+    return response()->file($path, ['Content-Type' => 'application/xml']);
+})->name('sitemap');
+
 Route::get('/__debug/instance', function () {
     $fp = fn ($v) => $v ? substr(hash('sha256', $v), 0, 12) : null;
 
