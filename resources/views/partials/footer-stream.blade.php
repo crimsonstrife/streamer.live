@@ -37,6 +37,8 @@
 @stack('scripts')
 @if (file_exists(public_path('build/vendors/jquery/jquery.min.js')))
     <script src="{{ asset('build/vendors/jquery/jquery.min.js') }}" referrerpolicy="origin"></script>
+    {{-- jQuery 4 removed $.trim; polyfill for legacy plugins (e.g. TinyMCE mention). --}}
+    <script>window.jQuery && !window.jQuery.trim && (window.jQuery.trim = function (s) { return s == null ? '' : String(s).trim(); });</script>
 @endif
 @if (file_exists(public_path('vendor/tinymce/tinymce.min.js')))
     <script src="{{ asset('vendor/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
