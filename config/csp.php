@@ -3,6 +3,25 @@
 use Spatie\Csp\Directive;
 use Spatie\Csp\Keyword;
 
+$appUrl = rtrim((string) config('app.url'), '/');
+$appHost = parse_url($appUrl, PHP_URL_HOST);
+$appScheme = parse_url($appUrl, PHP_URL_SCHEME) ?: 'https';
+
+$appUrlVariant = null;
+if ($appHost) {
+    $appUrlVariant = str_starts_with($appHost, 'www.')
+        ? $appScheme.'://'.substr($appHost, 4)
+        : $appScheme.'://www.'.$appHost;
+}
+
+$assetUrl = config('app.asset_url') ?: null;
+
+$selfOrigins = array_values(array_unique(array_filter([
+    $appUrl ?: null,
+    $appUrlVariant,
+    $assetUrl,
+])));
+
 return [
 
     /*
@@ -21,64 +40,67 @@ return [
             Keyword::SELF,
             Keyword::UNSAFE_INLINE,
             Keyword::UNSAFE_EVAL,
-            config('app.url'),
+            ...$selfOrigins,
             'https://embed.twitch.tv',
             'https://player.twitch.tv',
             'https://cdn.discordapp.com',
             'https://cdn.jsdelivr.net',
+            'https://static.cloudflareinsights.com',
         ]],
         [Directive::SCRIPT_ELEM, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             Keyword::UNSAFE_INLINE,
             'https://cdn.jsdelivr.net',
+            'https://static.cloudflareinsights.com',
         ]],
         [Directive::SCRIPT_ATTR, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             Keyword::UNSAFE_INLINE,
         ]],
         [Directive::STYLE, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             Keyword::UNSAFE_INLINE,
         ]],
         [Directive::STYLE_ELEM, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             Keyword::UNSAFE_INLINE,
             'https://fonts.bunny.net',
             'https://cdn.jsdelivr.net',
         ]],
         [Directive::STYLE_ATTR, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             Keyword::UNSAFE_INLINE,
         ]],
         [Directive::CONNECT, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             'https://api.twitch.tv',
             'wss://eventsub-beta.twitch.tv',
             'https://discord.com',
             'https://discordapp.com',
+            'https://cloudflareinsights.com',
         ]],
         [Directive::FRAME, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             'https://player.twitch.tv',
             'https://www.twitch.tv',
             'https://discord.com/widget',
         ]],
         [Directive::FRAME_ANCESTORS, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             'https://www.twitch.tv',
             'https://discord.com',
         ]],
         [Directive::IMG, array_values(array_filter([
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             'data:',
             'https://static-cdn.jtvnw.net',
             'https://cdn.discordapp.com',
@@ -89,12 +111,12 @@ return [
         ]))],
         [Directive::MEDIA, array_values(array_filter([
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             env('AWS_URL'),
         ]))],
         [Directive::FONT, [
             Keyword::SELF,
-            config('app.url'),
+            ...$selfOrigins,
             'data:',
             'https://fonts.bunny.net',
         ]],
