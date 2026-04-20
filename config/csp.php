@@ -76,7 +76,7 @@ return [
             'https://www.twitch.tv',
             'https://discord.com',
         ]],
-        [Directive::IMG, [
+        [Directive::IMG, array_values(array_filter([
             Keyword::SELF,
             config('app.url'),
             'data:',
@@ -85,7 +85,13 @@ return [
             'https://ui-avatars.com',
             'https://gravatar.com',
             'https://www.gravatar.com',
-        ]],
+            env('AWS_URL'),
+        ]))],
+        [Directive::MEDIA, array_values(array_filter([
+            Keyword::SELF,
+            config('app.url'),
+            env('AWS_URL'),
+        ]))],
         [Directive::FONT, [
             Keyword::SELF,
             config('app.url'),

@@ -12,17 +12,9 @@ class SecurityHeaders
     {
         $response = $next($request);
 
-        // Content Security Policy
-        $response->headers->set(
-            'Content-Security-Policy',
-            "default-src 'self'; ".
-            "script-src 'self'; ".
-            "style-src 'self'; ".
-            "img-src 'self' data:; ".
-            "object-src 'none'; ".
-            "frame-ancestors 'none'; ".
-            'upgrade-insecure-requests'
-        );
+        // Content-Security-Policy is owned by spatie/laravel-csp (see config/csp.php).
+        // Setting it here would clobber the configured directives — including
+        // env-driven entries like AWS_URL for the S3/CDN host.
 
         // Clickjacking protection
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
