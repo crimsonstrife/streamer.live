@@ -23,6 +23,7 @@ use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Social\XOAuthController;
+use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TicketController;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
@@ -298,6 +299,16 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
             Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])->name('reaction.toggle');
             Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])->name('comment.reaction.toggle');
         });
+    });
+
+    Route::prefix('sponsor')->name('sponsor.')->group(function () {
+        Route::get('/', [SponsorController::class, 'index'])->name('index');
+        Route::get('/success', [SponsorController::class, 'success'])->name('success');
+        Route::get('/cancel', [SponsorController::class, 'cancel'])->name('cancel');
+        Route::get('/{slug}', [SponsorController::class, 'show'])->name('show');
+        Route::post('/{slug}/checkout', [SponsorController::class, 'checkout'])
+            ->middleware(['throttle:10,1'])
+            ->name('checkout');
     });
 
     Route::middleware(['store.enabled'])

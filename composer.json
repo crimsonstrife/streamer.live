@@ -131,6 +131,7 @@
         "stephenjude/filament-debugger": "^4.0",
         "stephenjude/filament-feature-flags": "^3.0",
         "stephenjude/filament-jetstream": "^0.1.0",
+        "stripe/stripe-php": "*",
         "symfony/http-client": "*",
         "symfony/intl": "^7.3",
         "symfony/mailgun-mailer": "*",

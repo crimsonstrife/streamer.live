@@ -53,6 +53,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'install/*',
+            'api/webhooks/stripe',
         ]);
 
         $middleware->alias([
