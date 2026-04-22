@@ -15,10 +15,12 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\Tags\HasTags;
 
 class Goal extends BaseModel implements HasMedia
 {
     use HasSlug;
+    use HasTags;
     use InteractsWithMedia;
     use IsPermissible;
     use SoftDeletes;

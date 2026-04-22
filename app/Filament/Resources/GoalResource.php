@@ -11,6 +11,7 @@ use App\Models\ValueObjects\MoneyValue;
 use App\Traits\HasContentEditor;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -23,6 +24,7 @@ use IbrahimBougaoua\FilaProgress\Tables\Columns\ProgressBar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Spatie\Tags\Tag;
 
 class GoalResource extends Resource
 {
@@ -133,6 +135,10 @@ class GoalResource extends Resource
                             ->numeric()
                             ->default(0)
                             ->helperText('Lower numbers sort first.'),
+
+                        SpatieTagsInput::make('tags')
+                            ->helperText('Tag goals so external sites can filter via the public API (e.g. "one-mans-poison", "gdc").')
+                            ->splitKeys(['Tab', ',']),
                     ])
                     ->columnSpan(1),
             ])
@@ -257,6 +263,19 @@ class GoalResource extends Resource
                         'paused' => 'Paused',
                         'closed' => 'Closed',
                     ]),
+                Tables\Filters\SelectFilter::make('tags')
+                    ->label('Tag')
+                    ->multiple()
+                    ->options(fn () => Tag::query()->pluck('name', 'name'))
+                    ->query(function (Builder $query, array $data): Builder {
+                        $values = $data['values'] ?? [];
+
+                        if (empty($values)) {
+                            return $query;
+                        }
+
+                        return $query->withAnyTags($values);
+                    }),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([

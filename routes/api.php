@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\SponsorController as SponsorApiController;
 use App\Http\Controllers\EmoteController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\UserController;
@@ -49,4 +50,9 @@ Route::prefix('v1')->group(function () {
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{product}', [ProductController::class, 'show']);
     Route::get('collections/{slug}/products', [ProductController::class, 'byCollection']);
+
+    // Public sponsor goal endpoints (filterable by ?tag= or ?tags=foo,bar):
+    Route::get('sponsor/goals', [SponsorApiController::class, 'index']);
+    Route::get('sponsor/goals/{slug}', [SponsorApiController::class, 'show']);
+    Route::get('sponsor/goals/{slug}/donors', [SponsorApiController::class, 'donors']);
 });
