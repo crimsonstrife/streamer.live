@@ -117,7 +117,7 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="card shadow-sm mb-4 sticky-top" style="top:1rem;">
+            <div class="card shadow-sm mb-4 sticky-top z-3" style="top:1rem;">
                 <div class="card-body">
                     @include('sponsor.partials.progress', ['goal' => $goal])
 
