@@ -137,7 +137,7 @@
         "symfony/mailgun-mailer": "*",
         "tapp/filament-auditing": "^3.0",
         "team-reflex/discord-php": "^10.4",
-        "tinymce/tinymce": "^7.9",
+        "tinymce/tinymce": "^8.4",
         "tomatophp/filament-menus": "^2.0",
         "tomatophp/filament-seo": "^1.0.5",
         "treblle/security-headers": "^0.0.3",
