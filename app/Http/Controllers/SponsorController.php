@@ -7,7 +7,10 @@ use App\Models\SponsorObjects\Goal;
 use App\Services\StripeCheckoutService;
 use App\Settings\StripeSettings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use RuntimeException;
+use Throwable;
 
 class SponsorController extends Controller
 {
@@ -26,19 +29,13 @@ class SponsorController extends Controller
         $goal = Goal::where('slug', $slug)->published()->firstOrFail();
 
         $donors = $goal->succeededDonations()
-            ->latest('paid_at')
-            ->paginate(20);
+            ->orderByDesc('amount')
+            ->paginate(5);
 
-        $messages = $goal->succeededDonations()
-            ->withApprovedMessage()
-            ->latest('paid_at')
-            ->take(25)
-            ->get();
-
-        return view('sponsor.show', compact('goal', 'donors', 'messages'));
+        return view('sponsor.show', compact('goal', 'donors'));
     }
 
-    public function checkout(Request $request, string $slug, StripeCheckoutService $stripe)
+    public function checkout(Request $request, string $slug)
     {
         $goal = Goal::where('slug', $slug)->firstOrFail();
 
@@ -48,6 +45,12 @@ class SponsorController extends Controller
 
         $settings = app(StripeSettings::class);
 
+        if (! $settings->enable_integration) {
+            return redirect()
+                ->route('sponsor.show', $goal->slug)
+                ->with('error', 'Sponsorship checkout is temporarily unavailable. Please try again later.');
+        }
+
         $data = $request->validate([
             'amount' => ['required', 'numeric', "min:{$settings->min_donation}", "max:{$settings->max_donation}"],
             'donor_name' => ['nullable', 'string', 'max:120'],
@@ -56,7 +59,24 @@ class SponsorController extends Controller
             'message' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $session = $stripe->createSession($goal, $data, $request->user());
+        try {
+            $stripe = app(StripeCheckoutService::class);
+            $session = $stripe->createSession($goal, $data, $request->user());
+        } catch (RuntimeException $e) {
+            Log::warning('Stripe checkout unavailable', ['message' => $e->getMessage()]);
+
+            return redirect()
+                ->route('sponsor.show', $goal->slug)
+                ->withInput()
+                ->with('error', 'Sponsorship checkout is temporarily unavailable. Please try again later.');
+        } catch (Throwable $e) {
+            Log::error('Stripe checkout failed', ['exception' => $e]);
+
+            return redirect()
+                ->route('sponsor.show', $goal->slug)
+                ->withInput()
+                ->with('error', 'We could not start your checkout. Please try again in a moment.');
+        }
 
         return redirect()->away($session->url);
     }

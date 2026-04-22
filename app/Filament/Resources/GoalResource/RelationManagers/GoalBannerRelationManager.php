@@ -64,7 +64,7 @@ class GoalBannerRelationManager extends RelationManager
                             ->label('Banner Image')
                             ->image()
                             ->required()
-                            ->disk('public')
+                            ->disk(config('filesystems.upload_disk', 'public'))
                             ->directory('tmp'),
                         TextInput::make('image_alt_text')
                             ->label('Alt Text')
@@ -75,7 +75,8 @@ class GoalBannerRelationManager extends RelationManager
                     ->action(function (array $data): void {
                         $this->ownerRecord->clearMediaCollection('banner');
 
-                        $path = Storage::disk('public')->path($data['file']);
+                        $disk = config('filesystems.upload_disk', 'public');
+                        $path = Storage::disk($disk)->path($data['file']);
 
                         $media = $this->ownerRecord
                             ->addMedia($path)
@@ -88,6 +89,8 @@ class GoalBannerRelationManager extends RelationManager
                             ->setCustomProperty('image_alt_text', $data['image_alt_text'])
                             ->setCustomProperty('image_title', $data['image_title'] ?? null)
                             ->save();
+
+                        Storage::disk($disk)->delete($data['file']);
 
                         Notification::make()
                             ->title('Banner uploaded')

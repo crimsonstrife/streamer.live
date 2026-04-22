@@ -66,7 +66,7 @@ class GoalGalleryRelationManager extends RelationManager
                             ->label('Photo')
                             ->image()
                             ->required()
-                            ->disk('public')
+                            ->disk(config('filesystems.upload_disk', 'public'))
                             ->directory('tmp'),
                         TextInput::make('image_alt_text')
                             ->label('Alt Text')
@@ -75,7 +75,8 @@ class GoalGalleryRelationManager extends RelationManager
                             ->label('Caption'),
                     ])
                     ->action(function (array $data): void {
-                        $path = Storage::disk('public')->path($data['file']);
+                        $disk = config('filesystems.upload_disk', 'public');
+                        $path = Storage::disk($disk)->path($data['file']);
 
                         $media = $this->ownerRecord
                             ->addMedia($path)
@@ -88,6 +89,8 @@ class GoalGalleryRelationManager extends RelationManager
                             ->setCustomProperty('image_alt_text', $data['image_alt_text'])
                             ->setCustomProperty('caption', $data['caption'] ?? null)
                             ->save();
+
+                        Storage::disk($disk)->delete($data['file']);
 
                         Notification::make()
                             ->title('Photo uploaded')

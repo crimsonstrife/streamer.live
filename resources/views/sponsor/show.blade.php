@@ -1,16 +1,12 @@
 <x-app-layout>
     @php
         /** @var \App\Models\SponsorObjects\Goal $goal */
-        /** @var \App\Models\SponsorObjects\Donation $donation */
+        /** @var \Illuminate\Pagination\LengthAwarePaginator $donors */
         $bannerUrl = $goal->banner_url;
         $galleryMedia = $goal->getMedia('gallery');
         $carouselId = 'sponsor-gallery-'.$goal->id;
         $settings = app(\App\Settings\StripeSettings::class);
         $presets = [10, 25, 50, 100];
-        $donors = $goal->donations()
-            ->whereNotNull('paid_at')
-            ->orderByDesc('amount')
-            ->paginate(5);
     @endphp
 
     @if($bannerUrl)
