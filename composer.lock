@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "622127ebd71244ad3b689ad247b27ced",
+    "content-hash": "7b48a58ee05200a398e20ef3afaaad8c",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -5328,22 +5328,22 @@
         },
         {
             "name": "kalnoy/nestedset",
-            "version": "v6.0.12",
+            "version": "v7.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazychaser/laravel-nestedset.git",
-                "reference": "4b621a2c107ded87a6adc90b04b3dfbf96ea09ba"
+                "reference": "53c75a1b19b7b1e3b71d1ee18c7f8dd67dd77bb4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazychaser/laravel-nestedset/zipball/4b621a2c107ded87a6adc90b04b3dfbf96ea09ba",
-                "reference": "4b621a2c107ded87a6adc90b04b3dfbf96ea09ba",
+                "url": "https://api.github.com/repos/lazychaser/laravel-nestedset/zipball/53c75a1b19b7b1e3b71d1ee18c7f8dd67dd77bb4",
+                "reference": "53c75a1b19b7b1e3b71d1ee18c7f8dd67dd77bb4",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": ">=8.0",
-                "illuminate/events": ">=8.0",
-                "illuminate/support": ">=8.0",
+                "illuminate/database": ">=7.0",
+                "illuminate/events": ">=7.0",
+                "illuminate/support": ">=7.0",
                 "php": "^8.0"
             },
             "require-dev": {
@@ -5385,9 +5385,9 @@
             ],
             "support": {
                 "issues": "https://github.com/lazychaser/laravel-nestedset/issues",
-                "source": "https://github.com/lazychaser/laravel-nestedset/tree/v6.0.12"
+                "source": "https://github.com/lazychaser/laravel-nestedset/tree/v7.0.1"
             },
-            "time": "2026-04-11T13:12:09+00:00"
+            "time": "2026-04-11T13:11:34+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -6222,16 +6222,16 @@
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.3.16",
+            "version": "v0.3.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "11e7d5f93803a2190b00e145142cb00a33d17ad2"
+                "reference": "6a82ac19a28b916ae0885828795dbd4c59d9a818"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/11e7d5f93803a2190b00e145142cb00a33d17ad2",
-                "reference": "11e7d5f93803a2190b00e145142cb00a33d17ad2",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/6a82ac19a28b916ae0885828795dbd4c59d9a818",
+                "reference": "6a82ac19a28b916ae0885828795dbd4c59d9a818",
                 "shasum": ""
             },
             "require": {
@@ -6275,9 +6275,9 @@
             "description": "Add beautiful and user-friendly forms to your command-line applications.",
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.3.16"
+                "source": "https://github.com/laravel/prompts/tree/v0.3.17"
             },
-            "time": "2026-03-23T14:35:33+00:00"
+            "time": "2026-04-20T16:07:33+00:00"
         },
         {
             "name": "laravel/pulse",
