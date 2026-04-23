@@ -40,6 +40,13 @@ export default defineConfig({
                     dest: "vendors/sceditor/formats",
                 },
                 {
+                    // SVG icon set (monocons). Swaps out the famfamfam.png
+                    // sprite for inline SVGs with `fill:currentColor`, so
+                    // icons inherit the dark theme's colors cleanly.
+                    src: "node_modules/sceditor/minified/icons/monocons.js",
+                    dest: "vendors/sceditor/icons",
+                },
+                {
                     src: "node_modules/sceditor/minified/themes/defaultdark.min.css",
                     dest: "vendors/sceditor/themes",
                 },

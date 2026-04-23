@@ -219,6 +219,7 @@
 
 @push('scripts')
     <script src="{{ asset('build/vendors/sceditor/sceditor.min.js') }}" defer></script>
+    <script src="{{ asset('build/vendors/sceditor/icons/monocons.js') }}" defer></script>
     <script src="{{ asset('build/vendors/sceditor/formats/bbcode.js') }}" defer></script>
     <script defer>
         window.addEventListener('DOMContentLoaded', function () {
@@ -227,6 +228,7 @@
                 if (ta.dataset.sceditorInit) return;
                 sceditor.create(ta, {
                     format: 'bbcode',
+                    icons: 'monocons',
                     toolbar: 'bold,italic,underline,strike|bulletlist,orderedlist|quote,code|link,unlink,image|source',
                     style: @json(asset('build/vendors/sceditor/themes/content/content-dark.css')),
                     emoticonsEnabled: false,
