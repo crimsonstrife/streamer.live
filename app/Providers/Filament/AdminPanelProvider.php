@@ -140,6 +140,8 @@ class AdminPanelProvider extends PanelProvider
                 Resources\ContentTypeResource::class,
                 Resources\GoalResource::class,
                 Resources\DonationResource::class,
+                Resources\ThreadResource::class,
+                Resources\ThreadPostResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -150,6 +152,7 @@ class AdminPanelProvider extends PanelProvider
                 Pages\SiteSettings::class,
                 Pages\SocialSettings::class,
                 Pages\ThemeSettings::class,
+                Pages\CommunitySettings::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([

@@ -178,6 +178,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Comment::observe(CommentObserver::class);
+        // ThreadPost uses the #[ObservedBy(ThreadPostObserver::class)] attribute on the model,
+        // so it registers automatically and survives the runningInConsole() early return above.
 
         View::composer('*', function ($view) {
             $view->with('siteSettings', app(SiteSettings::class))

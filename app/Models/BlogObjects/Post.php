@@ -113,6 +113,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
         'category_id',
         'comments_locked',
         'is_announcement',
+        'pinned_until',
     ];
 
     /**
@@ -125,6 +126,7 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
         'deleted_at' => 'datetime',
         'comments_locked' => 'bool',
         'is_announcement' => 'bool',
+        'pinned_until' => 'datetime',
     ];
 
     /**
@@ -265,7 +267,35 @@ class Post extends BasePost implements CommentableContract, HasMedia, HasRevisor
 
     public function scopeAnnouncements(Builder $query): Builder|_IH_Post_QB
     {
-        return $query->whereNotNull('is_announcement', true);
+        return $query->where('is_announcement', true);
+    }
+
+    /**
+     * Posts currently pinned (pinned_until is in the future).
+     */
+    public function scopePinned(Builder $query): Builder|_IH_Post_QB
+    {
+        return $query->whereNotNull('pinned_until')
+            ->where('pinned_until', '>', now());
+    }
+
+    /**
+     * Published posts ordered for the community hub feed:
+     * currently-pinned posts first, then newest published first.
+     */
+    public function scopeCommunityFeed(Builder $query): Builder|_IH_Post_QB
+    {
+        return $query->published()
+            ->orderByRaw('(pinned_until IS NOT NULL AND pinned_until > NOW()) DESC')
+            ->latest('published_at');
+    }
+
+    /**
+     * True if this post is currently pinned.
+     */
+    public function isPinned(): bool
+    {
+        return $this->pinned_until?->isFuture() ?? false;
     }
 
     public function author(): BelongsTo

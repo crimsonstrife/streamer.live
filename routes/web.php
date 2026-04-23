@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Community\ThreadController as CommunityThreadController;
+use App\Http\Controllers\Community\ThreadPostController as CommunityThreadPostController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Embeds\StreamStatusImageController;
 use App\Http\Controllers\Embeds\StreamStatusSvgController;
@@ -299,6 +301,43 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
             Route::post('/{post}/react/{type}', [ReactionController::class, 'togglePost'])->name('reaction.toggle');
             Route::post('comment/{comment}/react/{type}', [ReactionController::class, 'toggleComment'])->name('comment.reaction.toggle');
         });
+    });
+
+    // Community threads (public read + auth-required write)
+    //
+    // NOTE ON ROUTE ORDER: the auth-required block MUST come before the public
+    // `GET /threads/{thread:slug}` route. Otherwise Laravel route-matching tries
+    // to bind static paths like `/threads/new` as a thread slug and 404s.
+    Route::prefix('community')->name('community.')->group(function () {
+        Route::middleware([
+            'auth:sanctum',
+            config('jetstream.auth_session'),
+            'auth.banned',
+            'ip.banned',
+            'logout.banned',
+        ])->group(function () {
+            Route::get('/threads/new', [CommunityThreadController::class, 'create'])
+                ->name('thread.create');
+            Route::post('/threads', [CommunityThreadController::class, 'store'])
+                ->name('thread.store');
+            Route::get('/threads/{thread:slug}/edit', [CommunityThreadController::class, 'edit'])
+                ->name('thread.edit');
+            Route::put('/threads/{thread:slug}', [CommunityThreadController::class, 'update'])
+                ->name('thread.update');
+            Route::delete('/threads/{thread:slug}', [CommunityThreadController::class, 'destroy'])
+                ->name('thread.destroy');
+
+            Route::post('/threads/{thread:slug}/posts', [CommunityThreadPostController::class, 'store'])
+                ->name('thread.post.store');
+            Route::put('/posts/{post}', [CommunityThreadPostController::class, 'update'])
+                ->name('thread.post.update');
+            Route::delete('/posts/{post}', [CommunityThreadPostController::class, 'destroy'])
+                ->name('thread.post.destroy');
+        });
+
+        // Public read (must come LAST — catch-all parameterized path).
+        Route::get('/threads/{thread:slug}', [CommunityThreadController::class, 'show'])
+            ->name('thread.show');
     });
 
     Route::prefix('sponsor')->name('sponsor.')->group(function () {

@@ -174,6 +174,18 @@ class PostResource extends Resource
                             ->label('Lock Comments')
                             ->helperText('When enabled, no new comments can be added to this post.')
                             ->columnSpan('full'),
+                        Forms\Components\Toggle::make('is_announcement')
+                            ->label('Announcement')
+                            ->helperText('Announcements surface on the Community Hub above regular feed items.')
+                            ->columnSpan('full'),
+                        Forms\Components\DateTimePicker::make('pinned_until')
+                            ->label('Pinned Until')
+                            ->helperText('Leave blank to leave unpinned. Set a future date/time to pin on the Community Hub; the post auto-unpins when the time passes.')
+                            ->native(false)
+                            ->seconds(false)
+                            ->nullable()
+                            ->visible(fn () => auth()->user()?->isModerator() ?? false)
+                            ->columnSpan('full'),
                     ])
                     ->columnSpan(1),
             ])
@@ -201,9 +213,25 @@ class PostResource extends Resource
                     ->label(__('filament-blog::filament-blog.category_name'))
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\IconColumn::make('is_announcement')
+                    ->label('Announcement')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('pinned_until')
+                    ->label('Pinned Until')
+                    ->dateTime()
+                    ->sortable()
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: false),
                 StatusColumn::make('revisor_status'),
             ])->defaultSort(config('filament-blog.sort.column', 'published_at'), config('filament-blog.sort.direction', 'asc'))
-            ->filters([]);
+            ->filters([
+                Tables\Filters\TernaryFilter::make('is_announcement')
+                    ->label('Announcement'),
+                Tables\Filters\Filter::make('pinned')
+                    ->label('Currently pinned')
+                    ->query(fn (Builder $query) => $query->whereNotNull('pinned_until')->where('pinned_until', '>', now())),
+            ]);
     }
 
     public static function getRelations(): array
