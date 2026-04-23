@@ -148,7 +148,7 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
-        "barryvdh/laravel-debugbar": "^3.15",
+        "barryvdh/laravel-debugbar": "^4.2",
         "barryvdh/laravel-ide-helper": "^3.5",
         "larastan/larastan": "^3.0",
         "laravel/pail": "^1.2.2",
