@@ -45,6 +45,78 @@ class StreamHelper
     }
 
     /**
+     * Fetch a bundled profile snapshot for the creator-profile layout.
+     *
+     * Combines Helix user profile (avatar, banner, display name, bio) with
+     * safe stats pulled from cache or local metric snapshots. The whole bundle
+     * is cached 15 minutes so the profile page renders fast and consistently.
+     *
+     * @return array{
+     *     enabled: bool,
+     *     profile: array,
+     *     stats: array{followers: ?int, subscribers: ?int, total_views: ?int},
+     *     is_live: bool
+     * }
+     */
+    public function getProfile(?string $username = null): array
+    {
+        if (! $this->enabled) {
+            return [
+                'enabled' => false,
+                'profile' => [],
+                'stats'   => ['followers' => null, 'subscribers' => null, 'total_views' => null],
+                'is_live' => false,
+            ];
+        }
+
+        $username = $username ?: app(TwitchSettings::class)->channel_name;
+
+        return Cache::remember("stream_profile_{$username}", now()->addMinutes(15), function () use ($username) {
+            $profile = [];
+            $followers = null;
+            $isLive = false;
+
+            try {
+                $profile = $this->twitch->getUserProfile() ?: [];
+            } catch (Throwable $e) {
+                Log::warning("Twitch profile fetch failed for {$username}: {$e->getMessage()}");
+            }
+
+            try {
+                $followers = $this->twitch->getFollowerCount();
+            } catch (Throwable $e) {
+                Log::warning("Follower count fetch failed for {$username}: {$e->getMessage()}");
+            }
+
+            try {
+                $streamData = $this->getStreamInfo($username);
+                $isLive = ($streamData[0]['type'] ?? null) === 'live';
+            } catch (Throwable) {
+                // Silent — live chip just stays offline.
+            }
+
+            // Subscribers and total_views can be slow or require admin tokens.
+            // Read the latest metric snapshot instead — recorded by the background
+            // job / admin dashboard when those stats were last fetched live.
+            $subscribers = \App\Models\TwitchMetric::where('metric', 'subscribers')
+                ->orderByDesc('recorded_at')->value('value');
+            $totalViews = \App\Models\TwitchMetric::where('metric', 'total_views')
+                ->orderByDesc('recorded_at')->value('value');
+
+            return [
+                'enabled' => true,
+                'profile' => $profile,
+                'stats'   => [
+                    'followers'   => is_null($followers) ? null : (int) $followers,
+                    'subscribers' => is_null($subscribers) ? null : (int) $subscribers,
+                    'total_views' => is_null($totalViews) ? null : (int) $totalViews,
+                ],
+                'is_live' => $isLive,
+            ];
+        });
+    }
+
+    /**
      * Fetch the channel's VODs with pagination.
      *
      * @return array{data: array, pagination: ?string}
