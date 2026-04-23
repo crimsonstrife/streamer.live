@@ -7,10 +7,12 @@ use App\Models\AuthObjects\User;
 use App\Models\BaseModel as Model;
 use App\Models\BlogObjects\Reaction;
 use App\Observers\ThreadPostObserver;
+use App\Services\BBCodeService;
 use App\Traits\HasReactions;
 use App\Traits\IsPermissible;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -153,6 +155,22 @@ class ThreadPost extends Model
 
         return $user->id === $this->user_id || $user->isModerator() || $user->isAdmin();
     }
+
+    // -----------------------------------------------------------------
+    // BBCode body accessors
+    // -----------------------------------------------------------------
+
+    protected function bodyHtml(): Attribute
+    {
+        return Attribute::get(fn () => app(BBCodeService::class)->render($this->body));
+    }
+
+    protected function bodySource(): Attribute
+    {
+        return Attribute::get(fn () => app(BBCodeService::class)->unparse($this->body));
+    }
+
+    // -----------------------------------------------------------------
 
     public function getActivitylogOptions(): LogOptions
     {

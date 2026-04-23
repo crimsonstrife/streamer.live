@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\ApprovalStatus;
 use App\Filament\Resources\ThreadPostResource\Pages;
 use App\Models\CommunityObjects\ThreadPost;
+use App\Services\BBCodeService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -56,7 +57,10 @@ class ThreadPostResource extends Resource
             Forms\Components\Textarea::make('body')
                 ->required()
                 ->rows(8)
-                ->columnSpanFull(),
+                ->columnSpanFull()
+                ->helperText('BBCode source. Saved as parsed XML; rendered as HTML on the forum.')
+                ->formatStateUsing(fn (?string $state) => app(BBCodeService::class)->unparse($state))
+                ->dehydrateStateUsing(fn (?string $state) => app(BBCodeService::class)->parse((string) $state)),
             Forms\Components\Select::make('approval_status')
                 ->label('Approval status')
                 ->options(ApprovalStatus::options())

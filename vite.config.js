@@ -32,6 +32,33 @@ export default defineConfig({
                     dest: "vendors/jquery",
                 },
                 {
+                    src: "node_modules/sceditor/minified/sceditor.min.js",
+                    dest: "vendors/sceditor",
+                },
+                {
+                    src: "node_modules/sceditor/minified/formats/bbcode.js",
+                    dest: "vendors/sceditor/formats",
+                },
+                {
+                    src: "node_modules/sceditor/minified/themes/defaultdark.min.css",
+                    dest: "vendors/sceditor/themes",
+                },
+                {
+                    // Icon sprite referenced by the theme CSS via url(famfamfam.png).
+                    // Without this, toolbar buttons render with no glyph.
+                    src: "node_modules/sceditor/minified/themes/famfamfam.png",
+                    dest: "vendors/sceditor/themes",
+                },
+                {
+                    src: "node_modules/sceditor/minified/themes/content/*",
+                    dest: "vendors/sceditor/themes/content",
+                },
+                {
+                    // Custom dark-theme content CSS for the editor iframe.
+                    src: "resources/sceditor/content-dark.css",
+                    dest: "vendors/sceditor/themes/content",
+                },
+                {
                     src: "resources/icons/",
                     // this will drop into public/build/assets/icons/
                     dest: "assets/",

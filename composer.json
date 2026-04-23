@@ -93,6 +93,7 @@
         "predis/predis": "^3.0",
         "pxlrbt/filament-activity-log": "^1.1",
         "ramsey/uuid": "^4.7",
+        "s9e/text-formatter": "^2.19",
         "schmeits/filament-character-counter": "^1.3",
         "shieldon/event-dispatcher": "^1.0",
         "shieldon/messenger": "^1.6",

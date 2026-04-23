@@ -90,7 +90,39 @@
             border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
             color: #f87171;
         }
+
+        .thread-form .help code {
+            padding: 1px 5px; border-radius: 3px;
+            background: var(--stream-surface-2); color: var(--stream-text);
+            font-size: 11px; font-family: ui-monospace, monospace;
+        }
     </style>
+
+    {{-- SCEditor (dark theme) --}}
+    <link rel="stylesheet" href="{{ asset('build/vendors/sceditor/themes/defaultdark.min.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ asset('build/vendors/sceditor/sceditor.min.js') }}" defer></script>
+    <script src="{{ asset('build/vendors/sceditor/formats/bbcode.js') }}" defer></script>
+    <script defer>
+        window.addEventListener('DOMContentLoaded', function () {
+            if (typeof sceditor === 'undefined') return;
+            document.querySelectorAll('textarea.js-bbcode-editor').forEach(function (ta) {
+                if (ta.dataset.sceditorInit) return;
+                sceditor.create(ta, {
+                    format: 'bbcode',
+                    toolbar: 'bold,italic,underline,strike|bulletlist,orderedlist|quote,code|link,unlink,image|source',
+                    style: @json(asset('build/vendors/sceditor/themes/content/content-dark.css')),
+                    emoticonsEnabled: false,
+                    width: '100%',
+                    height: 240,
+                    resizeEnabled: true,
+                });
+                ta.dataset.sceditorInit = '1';
+            });
+        });
+    </script>
 @endpush
 
 {!! App\View\Helpers\LayoutSection::header('stream', $data) !!}
@@ -147,9 +179,13 @@
 
             <div>
                 <label for="body">Body</label>
-                <textarea id="body" name="body" required minlength="10" maxlength="10000"
-                          placeholder="What do you want to talk about?">{{ old('body', $thread?->body) }}</textarea>
-                <div class="help">Supports plain text; line breaks are preserved. Links are not clickable yet.</div>
+                <textarea id="body" name="body" class="js-bbcode-editor"
+                          required minlength="10" maxlength="10000"
+                          placeholder="What do you want to talk about?">{{ old('body', $thread?->body_source) }}</textarea>
+                <div class="help">
+                    Supports BBCode formatting: <code>[b]bold[/b]</code>, <code>[i]italic[/i]</code>,
+                    <code>[quote]</code>, <code>[code]</code>, <code>[url]</code>, <code>[img]</code>, and lists.
+                </div>
                 @error('body')<div class="error">{{ $message }}</div>@enderror
             </div>
 

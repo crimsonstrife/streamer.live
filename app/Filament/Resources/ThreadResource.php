@@ -6,6 +6,7 @@ use App\Enums\ApprovalStatus;
 use App\Filament\Resources\ThreadResource\Pages;
 use App\Models\CommunityObjects\Thread;
 use App\Models\SharedObjects\Category;
+use App\Services\BBCodeService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -63,7 +64,10 @@ class ThreadResource extends Resource
                         ->rows(10)
                         ->minLength(10)
                         ->maxLength(10000)
-                        ->columnSpanFull(),
+                        ->columnSpanFull()
+                        ->helperText('BBCode source. Saved as parsed XML; rendered as HTML on the forum.')
+                        ->formatStateUsing(fn (?string $state) => app(BBCodeService::class)->unparse($state))
+                        ->dehydrateStateUsing(fn (?string $state) => app(BBCodeService::class)->parse((string) $state)),
                     Forms\Components\Select::make('category_id')
                         ->label('Category')
                         ->options(fn () => Category::where('type', 'community')

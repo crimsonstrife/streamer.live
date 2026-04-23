@@ -3,48 +3,54 @@
 namespace App\Services;
 
 use App\Enums\ApprovalStatus;
-use App\Parsers\UserMentionParser;
 use Blaspsoft\Blasp\Facades\Blasp;
 use Illuminate\Database\Eloquent\Model;
-use Mews\Purifier\Facades\Purifier;
 
 /**
- * Shared cleaning + moderation pipeline for community thread content.
+ * Shared content pipeline for community thread bodies and replies.
  *
- * Used by ThreadController and ThreadPostController so both entry points
- * apply the same Purifier rules, profanity handling, and mention parsing.
+ * User input is BBCode (written via SCEditor in the browser). We parse it into
+ * s9e/text-formatter XML for storage, then Blasp-check the extracted plain text
+ * to decide whether the submission should be auto-held for moderation.
+ *
+ * Rendering (XML → HTML) happens at display time via BBCodeService::render().
  */
 class CommunityContentService
 {
     /**
-     * How many profanities in a single submission force "pending" (override) approval.
-     * Mirrors the BlogCommentController threshold so community content matches blog content.
+     * Number of profanities in a submission that force a "pending" hold,
+     * regardless of the site's require_approval toggle. Mirrors the blog
+     * comment threshold for consistency.
      */
     private const PROFANITY_PENDING_THRESHOLD = 3;
 
+    public function __construct(
+        private readonly BBCodeService $bbcode,
+    ) {
+    }
+
     /**
-     * Run the full pipeline on a raw body string.
+     * Process a raw BBCode submission.
      *
      * Returns:
-     *  - clean: the sanitized, profanity-masked string, ready to persist
-     *  - has_profanity: whether any profanity was detected
-     *  - profanity_count: count of profanities detected
-     *  - should_force_pending: true if moderation must hold this regardless of the
-     *    site's require_approval setting
+     *  - clean: the s9e XML to persist (use as the body column value)
+     *  - has_profanity / profanity_count: from Blasp, run against plain text
+     *  - should_force_pending: true if moderation must hold this regardless
+     *    of the site's require_approval setting
      *
      * @return array{clean: string, has_profanity: bool, profanity_count: int, should_force_pending: bool}
      */
-    public function process(string $body): array
+    public function process(string $bbcode): array
     {
-        $purified = Purifier::clean($body, 'default');
-        $blasp = Blasp::check($purified);
+        $xml = $this->bbcode->parse($bbcode);
+        $plain = $this->bbcode->plainText($xml);
 
-        $clean = $blasp->getCleanString();
+        $blasp = Blasp::check($plain);
         $hasProfanity = $blasp->hasProfanity();
         $profanityCount = $blasp->getProfanitiesCount();
 
         return [
-            'clean'                => $clean,
+            'clean'                => $xml,
             'has_profanity'        => $hasProfanity,
             'profanity_count'      => $profanityCount,
             'should_force_pending' => $hasProfanity && $profanityCount >= self::PROFANITY_PENDING_THRESHOLD,
@@ -52,29 +58,7 @@ class CommunityContentService
     }
 
     /**
-     * Parse @username mentions in a model's `body` column, linking them to user profiles.
-     * Must be called AFTER the model has been saved so the parser can attribute mentions
-     * back to the parent record (the Xetaio parser expects a persisted model).
-     */
-    public function parseMentions(Model $model, string $column = 'body'): void
-    {
-        if (empty($model->{$column})) {
-            return;
-        }
-
-        $parser = new UserMentionParser($model);
-        $parsed = $parser->parse($model->{$column});
-
-        if ($parsed !== $model->{$column}) {
-            $model->{$column} = $parsed;
-            $model->save();
-        }
-    }
-
-    /**
-     * Decide the approval status for a freshly-submitted piece of content based on:
-     *  - whether the caller (settings) requires approval for this content type
-     *  - whether the content itself triggered spam/profanity rules
+     * Decide the approval status for a freshly-submitted piece of content.
      */
     public function resolveApprovalStatus(bool $requireApproval, bool $forcePending): ApprovalStatus
     {
@@ -83,5 +67,16 @@ class CommunityContentService
         }
 
         return ApprovalStatus::Approved;
+    }
+
+    /**
+     * Backward-compat stub. Mentions in BBCode content are handled by the
+     * HasMentionsTrait auto-scan on the model's body attribute — no manual
+     * parser pass needed. Kept so older controller code keeps compiling
+     * during the BBCode transition; safe to remove once call sites are gone.
+     */
+    public function parseMentions(Model $model, string $column = 'body'): void
+    {
+        // Intentionally empty. See HasMentionsTrait on Thread / ThreadPost.
     }
 }

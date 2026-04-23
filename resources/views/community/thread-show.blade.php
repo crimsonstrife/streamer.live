@@ -191,7 +191,54 @@
         }
 
         .reply-field-error { color: #f87171; font-size: 12px; margin-top: 4px; }
+
+        /* BBCode-rendered body tweaks so quote/code/lists look at home in the dark theme */
+        .bbcode-rendered blockquote {
+            border-left: 3px solid var(--color-accent);
+            background: var(--stream-surface-2);
+            margin: 8px 0;
+            padding: 8px 14px;
+            border-radius: 6px;
+            color: var(--stream-muted);
+        }
+        .bbcode-rendered code, .bbcode-rendered pre {
+            background: #0f0f13; border: 1px solid var(--stream-border);
+            border-radius: 4px; padding: 2px 6px; font-family: ui-monospace, monospace;
+            font-size: 13px;
+        }
+        .bbcode-rendered pre { padding: 10px 12px; overflow-x: auto; }
+        .bbcode-rendered pre code { border: 0; padding: 0; background: transparent; }
+        .bbcode-rendered a { color: var(--color-accent); }
+        .bbcode-rendered img { max-width: 100%; border-radius: 6px; }
+        .bbcode-rendered ul, .bbcode-rendered ol { padding-left: 20px; }
     </style>
+
+    {{-- SCEditor (dark theme). Loaded on thread-show for the reply form. --}}
+    <link rel="stylesheet" href="{{ asset('build/vendors/sceditor/themes/defaultdark.min.css') }}">
+@endpush
+
+@push('scripts')
+    <script src="{{ asset('build/vendors/sceditor/sceditor.min.js') }}" defer></script>
+    <script src="{{ asset('build/vendors/sceditor/formats/bbcode.js') }}" defer></script>
+    <script defer>
+        window.addEventListener('DOMContentLoaded', function () {
+            if (typeof sceditor === 'undefined') return;
+            document.querySelectorAll('textarea.js-bbcode-editor').forEach(function (ta) {
+                if (ta.dataset.sceditorInit) return;
+                sceditor.create(ta, {
+                    format: 'bbcode',
+                    toolbar: 'bold,italic,underline,strike|bulletlist,orderedlist|quote,code|link,unlink,image|source',
+                    style: @json(asset('build/vendors/sceditor/themes/content/content-dark.css')),
+                    emoticonsEnabled: false,
+                    width: '100%',
+                    height: 160,
+                    resizeEnabled: true,
+                    autofocus: false,
+                });
+                ta.dataset.sceditorInit = '1';
+            });
+        });
+    </script>
 @endpush
 
 {!! App\View\Helpers\LayoutSection::header('stream', $data) !!}
@@ -259,8 +306,8 @@
             </div>
         </header>
 
-        <div class="thread-body">
-            {!! nl2br(e($thread->body)) !!}
+        <div class="thread-body bbcode-rendered">
+            {!! $thread->body_html !!}
         </div>
 
         @if ($canEdit || $isMod)
@@ -305,7 +352,7 @@
                         <span class="thread-badge thread-badge--pending">Pending</span>
                     @endif
                 </div>
-                <div class="reply-body">{!! nl2br(e($reply->body)) !!}</div>
+                <div class="reply-body bbcode-rendered">{!! $reply->body_html !!}</div>
             </article>
         @empty
             <p class="text-muted-stream" style="color: var(--stream-muted); text-align: center; padding: 20px;">
@@ -320,7 +367,8 @@
         @if ($canReply)
             <form class="reply-form" method="POST" action="{{ route('community.thread.post.store', $thread->slug) }}">
                 @csrf
-                <textarea name="body" placeholder="Write a reply…" required minlength="1" maxlength="5000">{{ old('body') }}</textarea>
+                <textarea name="body" class="js-bbcode-editor" placeholder="Write a reply…"
+                          required minlength="1" maxlength="5000">{{ old('body') }}</textarea>
                 @error('body')
                     <div class="reply-field-error">{{ $message }}</div>
                 @enderror

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "622127ebd71244ad3b689ad247b27ced",
+    "content-hash": "f4e16845a075b59f5d6609de01aaac16",
     "packages": [
         {
             "name": "a21ns1g4ts/filament-short-url",
@@ -12186,6 +12186,169 @@
                 }
             ],
             "time": "2026-03-19T10:36:26+00:00"
+        },
+        {
+            "name": "s9e/regexp-builder",
+            "version": "1.4.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/s9e/RegexpBuilder.git",
+                "reference": "3a646bc7c40dba41903b7065f32230721e00df3a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/s9e/RegexpBuilder/zipball/3a646bc7c40dba41903b7065f32230721e00df3a",
+                "reference": "3a646bc7c40dba41903b7065f32230721e00df3a",
+                "shasum": ""
+            },
+            "require": {
+                "lib-pcre": ">=7.2",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=9.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "s9e\\RegexpBuilder\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Single-purpose library that generates regular expressions that match a list of strings.",
+            "homepage": "https://github.com/s9e/RegexpBuilder/",
+            "keywords": [
+                "regexp"
+            ],
+            "support": {
+                "issues": "https://github.com/s9e/RegexpBuilder/issues",
+                "source": "https://github.com/s9e/RegexpBuilder/tree/1.4.6"
+            },
+            "time": "2022-03-05T16:22:35+00:00"
+        },
+        {
+            "name": "s9e/sweetdom",
+            "version": "3.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/s9e/SweetDOM.git",
+                "reference": "ef3a7d2745b30b4ad0d1d3d60be391a3604c69dd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/s9e/SweetDOM/zipball/ef3a7d2745b30b4ad0d1d3d60be391a3604c69dd",
+                "reference": "ef3a7d2745b30b4ad0d1d3d60be391a3604c69dd",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.52",
+                "phpunit/phpunit": "^10.0",
+                "s9e/repdoc": "dev-wip"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "s9e\\SweetDOM\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Syntactic sugar for the DOM API with a focus on XSLT 1.0 template manipulation.",
+            "homepage": "https://github.com/s9e/SweetDOM/",
+            "keywords": [
+                "dom",
+                "xsl",
+                "xslt"
+            ],
+            "support": {
+                "issues": "https://github.com/s9e/SweetDOM/issues",
+                "source": "https://github.com/s9e/SweetDOM/tree/3.4.1"
+            },
+            "time": "2024-03-23T14:03:01+00:00"
+        },
+        {
+            "name": "s9e/text-formatter",
+            "version": "2.19.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/s9e/TextFormatter.git",
+                "reference": "aee579c12d05ca3053f9b9abdb8c479c0f2fbe69"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/aee579c12d05ca3053f9b9abdb8c479c0f2fbe69",
+                "reference": "aee579c12d05ca3053f9b9abdb8c479c0f2fbe69",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-filter": "*",
+                "lib-pcre": ">=8.13",
+                "php": "^8.1",
+                "s9e/regexp-builder": "^1.4",
+                "s9e/sweetdom": "^3.4"
+            },
+            "require-dev": {
+                "code-lts/doctum": "*",
+                "friendsofphp/php-cs-fixer": "^3.52",
+                "matthiasmullie/minify": "*",
+                "phpunit/phpunit": "^9.5"
+            },
+            "suggest": {
+                "ext-curl": "Improves the performance of the MediaEmbed plugin and some JavaScript minifiers",
+                "ext-intl": "Allows international URLs to be accepted by the URL filter",
+                "ext-json": "Enables the generation of a JavaScript parser",
+                "ext-mbstring": "Improves the performance of the PHP renderer",
+                "ext-tokenizer": "Improves the performance of the PHP renderer",
+                "ext-xsl": "Enables the XSLT renderer",
+                "ext-zlib": "Enables gzip compression when scraping content via the MediaEmbed plugin"
+            },
+            "type": "library",
+            "extra": {
+                "version": "2.19.3"
+            },
+            "autoload": {
+                "psr-4": {
+                    "s9e\\TextFormatter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Multi-purpose text formatting and markup library. Plugins offer support for BBCodes, Markdown, emoticons, HTML, embedding third-party media (YouTube, etc...), enhanced typography and more.",
+            "homepage": "https://github.com/s9e/TextFormatter/",
+            "keywords": [
+                "bbcode",
+                "bbcodes",
+                "blog",
+                "censor",
+                "embed",
+                "emoji",
+                "emoticons",
+                "engine",
+                "forum",
+                "html",
+                "markdown",
+                "markup",
+                "media",
+                "parser",
+                "shortcodes"
+            ],
+            "support": {
+                "issues": "https://github.com/s9e/TextFormatter/issues",
+                "source": "https://github.com/s9e/TextFormatter/tree/2.19.3"
+            },
+            "time": "2025-11-14T21:26:59+00:00"
         },
         {
             "name": "schmeits/filament-character-counter",
@@ -25474,5 +25637,5 @@
         "ext-pdo": "*"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
