@@ -60,7 +60,7 @@
     {{-- Calendar Table --}}
     <table class="table table-bordered text-center">
         <thead>
-        <tr class="bg-light">
+        <tr class="bg-body-tertiary">
             <th>Mon</th><th>Tue</th><th>Wed</th>
             <th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
         </tr>

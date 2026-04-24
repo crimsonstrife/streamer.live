@@ -1,4 +1,4 @@
-<div class="p-4 p-lg-5 bg-light border-bottom border-secondary-subtle rounded">
+<div class="p-4 p-lg-5 bg-body-tertiary border-bottom border-secondary-subtle rounded">
     <x-application-logo class="d-block h-50 w-auto" />
 
     <h1 class="mt-4 fs-4 fw-semibold text-dark">

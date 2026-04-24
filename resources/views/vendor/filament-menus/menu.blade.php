@@ -7,12 +7,11 @@
     $cartCount    = $shopEnabled
         ? app(\App\Utilities\CartHelper::class)->getCartItemCount()
         : 0;
-    $display_mode = app(\App\Settings\LookFeelSettings::class)->mode ?? $display ?? 'light';
 @endphp
 @if($location === 'footer')
-    <nav class="py-2 {{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }}">
+    <nav class="py-2">
 @else
-            <nav class="py-2 border-bottom {{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }}">
+            <nav class="py-2 border-bottom">
 @endif
     <div class="container d-flex flex-wrap">
         @if($location === 'footer')

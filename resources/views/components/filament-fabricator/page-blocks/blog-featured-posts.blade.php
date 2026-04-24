@@ -6,7 +6,7 @@
 @endphp
 
 @if ($featured->isNotEmpty())
-    <div class="container py-5 bg-light rounded">
+    <div class="container py-5 bg-body-tertiary rounded">
         <h2 class="mb-4">Featured Posts</h2>
 
         <div class="fabricator-card-grid">

@@ -1,12 +1,9 @@
 @php
     use Illuminate\Support\Facades\Auth;
     use Illuminate\Support\Facades\Route;
-
-    $style = app(\App\Settings\LookFeelSettings::class);
-    $display_mode = $style->mode;
 @endphp
 
-<nav class="{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }} navbar-expand-lg navbar-{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }} border-bottom">
+<nav class="navbar-expand-lg border-bottom">
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
             <x-application-mark class="w-auto h-9" />

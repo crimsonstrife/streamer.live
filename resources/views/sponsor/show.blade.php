@@ -87,7 +87,7 @@
 
             @if($donors->isNotEmpty())
                 <div class="card shadow-sm">
-                    <div class="card-header bg-white">
+                    <div class="card-header bg-body-tertiary">
                         <h5 class="mb-0">Supporters</h5>
                     </div>
                     <ul class="list-group list-group-flush">
@@ -108,7 +108,7 @@
                         @endforeach
                     </ul>
                     @if($donors->hasPages())
-                        <div class="card-footer bg-white d-flex justify-content-center">
+                        <div class="card-footer bg-body-tertiary d-flex justify-content-center">
                             {{ $donors->links() }}
                         </div>
                     @endif

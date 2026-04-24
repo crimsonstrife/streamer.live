@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="modal-footer bg-light">
+    <div class="modal-footer bg-body-tertiary">
         {{ $footer }}
     </div>
 </x-modal>

@@ -1,7 +1,7 @@
 @php use App\Settings\SiteSettings; @endphp
 @php use App\Settings\LookFeelSettings; @endphp
 @php use App\Settings\TwitchSettings; @endphp
-{{-- header-stream.blade.php — dark creator-site "live stream" variant --}}
+{{-- header-stream.blade.php — creator-site "live stream" variant --}}
 @props([
     'page'        => null,
     'post'        => null,
@@ -48,26 +48,27 @@
     <link rel="stylesheet" href="{{ route('assets.fonts.css') }}"/>
     <title>{{ $siteName }}</title>
 
+    <x-layout.theme-init :default="$style->mode ?? 'light'" />
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-layout.theme-vars />
     @cookieconsentscripts
     @livewireStyles
     @stack('styles')
 
     <style>
+        [data-bs-theme='light'], [data-bs-theme='dark'] {
+            --stream-bg:         var(--bs-body-bg);
+            --stream-surface:    var(--bs-tertiary-bg);
+            --stream-surface-2:  var(--bs-secondary-bg);
+            --stream-border:     var(--bs-border-color);
+            --stream-text:       var(--bs-body-color);
+            --stream-muted:      var(--bs-secondary-color);
+            --stream-live:       var(--bs-danger);
+            --stream-topbar-bg:  rgba(var(--bs-body-bg-rgb), 0.88);
+        }
         :root {
-            --font-primary: {!! $style->font_family === 'system' ? 'system-ui, sans-serif' : '"' . $style->font_family . '", system-ui, sans-serif' !!};
-            --font-secondary: {!! $style->font_family_alt === 'system' ? 'system-ui, sans-serif' : '"' . $style->font_family_alt . '", system-ui, sans-serif' !!};
-            --color-accent: {{ $style->accent_color }};
-            --color-link:   {{ $style->link_color }};
-
-            --stream-bg:         #0b0b0e;
-            --stream-surface:    #16161b;
-            --stream-surface-2:  #1f1f26;
-            --stream-border:     #26262d;
-            --stream-text:       #e7e7eb;
-            --stream-muted:      #8a8a93;
-            --stream-live:       #ef4444;
-            --stream-nav-h:      56px;
+            --stream-nav-h: 56px;
         }
 
         body.stream-body {
@@ -98,7 +99,7 @@
             height: var(--stream-nav-h);
             display: flex; align-items: center; gap: 18px;
             padding: 0 20px;
-            background: rgba(11, 11, 14, 0.92);
+            background: var(--stream-topbar-bg);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--stream-border);
@@ -248,6 +249,7 @@
                 <span class="dot"></span>{{ $isLive ? 'Live' : 'Offline' }}
             </a>
         @endif
+        <x-layout.theme-toggle />
     </nav>
 
     @if ($page?->custom_css)

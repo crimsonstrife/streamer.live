@@ -1,7 +1,5 @@
 @php
-    use App\Settings\LookFeelSettings;use App\Settings\TwitchSettings;use App\Utilities\StreamHelper;$settings = app(TwitchSettings::class);
-    $style = app(LookFeelSettings::class);
-    $display_mode = $style->mode;
+    use App\Settings\TwitchSettings;use App\Utilities\StreamHelper;$settings = app(TwitchSettings::class);
 @endphp
 @if (! $settings->enable_integration)
     <div class="filament-alert filament-alert-warning">
@@ -24,7 +22,7 @@
         <link rel="stylesheet" href="{{ asset('css/live-bar.css') }}">
     @endonce
 
-    <div class="{{ $display_mode === 'auto' ? 'bg-auto' : 'bg-'.$display_mode }} livebar active"
+    <div class="bg-body-tertiary livebar active"
          data-live="{{ $isLive ? '1' : '0'}}">
         <div class="livebar content">
             <div class="text">{{ strtoupper($streamer_username) }} IS LIVE NOW</div>

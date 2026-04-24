@@ -61,7 +61,7 @@
                     </p>
                 </div>
 
-                <div class="p-3 rounded bg-light text-monospace">
+                <div class="p-3 rounded bg-body-tertiary text-monospace">
                     @foreach (json_decode(decrypt($this->user->two_factor_recovery_codes), true) as $code)
                         <div>{{ $code }}</div>
                     @endforeach

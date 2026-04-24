@@ -53,7 +53,7 @@
         @can('note', $ticket)
             <h5>Internal Notes</h5>
             @foreach($ticket->privateNotes as $note)
-                <div class="border rounded bg-light p-3 mb-3">
+                <div class="border rounded bg-body-tertiary p-3 mb-3">
                     <div class="d-flex justify-content-between">
                         <strong>{{ $note->commentedBy->name }}</strong>
                         <small class="text-muted">{{ $note->created_at->diffForHumans() }}</small>
