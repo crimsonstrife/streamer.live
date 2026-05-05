@@ -27,7 +27,7 @@
         "jquery": "^4.0.0",
         "jquery-ui": "^1.14.2",
         "sceditor": "^3.2.1",
-        "swiper": "^12.1.2",
+        "swiper": "^12.1.4",
         "tinymce": "^8.0.2"
     }
 }
