@@ -12,8 +12,8 @@
 @endphp
 <style>
     [data-bs-theme='light'], [data-bs-theme='dark'] {
-        --font-primary: {{ $fontPrimary }};
-        --font-secondary: {{ $fontSecondary }};
+        --font-primary: {!! $fontPrimary !!};
+        --font-secondary: {!! $fontSecondary !!};
         --color-primary: {{ $style->primary_color }};
         --color-secondary: {{ $style->secondary_color }};
         --color-accent: {{ $style->accent_color }};
