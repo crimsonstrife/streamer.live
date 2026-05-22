@@ -48,15 +48,14 @@
 
     <title>{{ $siteName }}</title>
 
+    <!-- Styles -->
+    <x-layout.theme-vars />
+    @livewireStyles
     <x-layout.theme-init :default="$style->mode ?? 'light'" />
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @cookieconsentscripts
-
-    <!-- Styles -->
-    <x-layout.theme-vars />
-    @livewireStyles
+    @cookieconsentscript
 
     <!-- Conditional Styles -->
     @stack('styles')

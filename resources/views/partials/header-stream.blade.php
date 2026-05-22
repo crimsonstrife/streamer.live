@@ -48,12 +48,13 @@
     <link rel="stylesheet" href="{{ route('assets.fonts.css') }}"/>
     <title>{{ $siteName }}</title>
 
+    <x-layout.theme-vars />
+    @livewireStyles
     <x-layout.theme-init :default="$style->mode ?? 'light'" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <x-layout.theme-vars />
+
     @cookieconsentscripts
-    @livewireStyles
     @stack('styles')
 
     <style>
