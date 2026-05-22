@@ -55,7 +55,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @cookieconsentscript
+    @cookieconsentscripts
 
     <!-- Conditional Styles -->
     @stack('styles')
