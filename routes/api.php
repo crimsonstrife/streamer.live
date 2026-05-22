@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SponsorController as SponsorApiController;
+use App\Http\Controllers\Api\TwitchController;
 use App\Http\Controllers\EmoteController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\UserController;
@@ -55,4 +56,7 @@ Route::prefix('v1')->group(function () {
     Route::get('sponsor/goals', [SponsorApiController::class, 'index']);
     Route::get('sponsor/goals/{slug}', [SponsorApiController::class, 'show']);
     Route::get('sponsor/goals/{slug}/donors', [SponsorApiController::class, 'donors']);
+
+    // Public current-stream status for the configured channel (live indicator):
+    Route::get('twitch/stream', [TwitchController::class, 'current']);
 });
