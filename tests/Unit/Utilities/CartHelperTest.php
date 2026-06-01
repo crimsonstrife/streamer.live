@@ -94,4 +94,27 @@ class CartHelperTest extends TestCase
             ['variant_id' => 'variant-789', 'quantity' => 4],
         ]));
     }
+
+    public function test_update_cart_allows_unlimited_stock_response(): void
+    {
+        Session::put('fourthwall_cart_id', 'cart-123');
+
+        $fourthwall = Mockery::mock(FourthwallService::class);
+        $fourthwall->shouldReceive('validateProductStock')
+            ->once()
+            ->with('variant-unlimited')
+            ->andReturn(true);
+        $fourthwall->shouldReceive('updateCart')
+            ->once()
+            ->with('cart-123', [
+                ['variantId' => 'variant-unlimited', 'quantity' => 5],
+            ])
+            ->andReturn(['id' => 'cart-123', 'items' => []]);
+
+        $helper = new CartHelper($fourthwall);
+
+        $this->assertTrue($helper->updateCart([
+            ['variant_id' => 'variant-unlimited', 'quantity' => 5],
+        ]));
+    }
 }

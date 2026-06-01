@@ -987,6 +987,8 @@ class FourthwallService
                 } finally {
                     optional($lock)->release();
                 }
+            } else {
+                $remoteProduct = $stockStatus;
             }
 
             if (! $remoteProduct || array_key_exists('error', $remoteProduct)) {

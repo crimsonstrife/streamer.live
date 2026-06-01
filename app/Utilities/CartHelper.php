@@ -209,17 +209,22 @@ class CartHelper
         // check the variants to ensure the new quantity doesn't exceed available stock
         foreach ($formattedItems as $item) {
             $productAvailability = $this->fourthwall->validateProductStock($item['variantId']);
+
+            if ($productAvailability === true) {
+                continue;
+            }
+
             if (is_bool($productAvailability) && ! $productAvailability) {
                 Log::error('Product stock not found/ or out of stock');
 
                 return false;
             }
 
-            if ($productAvailability['type'] === 'UNLIMITED') {
+            if (($productAvailability['type'] ?? null) === 'UNLIMITED') {
                 continue;
             }
 
-            if ($productAvailability['amount'] < $item['quantity']) {
+            if (($productAvailability['amount'] ?? 0) < $item['quantity']) {
                 Log::error('Not enough stock.');
 
                 return false;
