@@ -99,6 +99,7 @@ class CartHelper
         }
 
         Log::error('Cart could not be created or retrieved.');
+
         return null;
     }
 
@@ -111,18 +112,16 @@ class CartHelper
      */
     public function addToCart(string $variant_id, int $quantity = 1): bool
     {
+        $cartId = $this->getCartId();
+
+        if (! $cartId) {
+            return (bool) $this->getOrCreateCart($variant_id, $quantity);
+        }
+
         $productAvailability = $this->fourthwall->validateProductStock($variant_id);
 
         if (is_bool($productAvailability) && ! $productAvailability) {
             Log::error('Product stock not found/ or out of stock, failed to add to cart');
-
-            return false;
-        }
-
-        $cartId = $this->getOrCreateCart($variant_id, $quantity);
-
-        if (! $cartId) {
-            Log::error('Cart could not be retrieved or created, nothing can be added to cart.');
 
             return false;
         }

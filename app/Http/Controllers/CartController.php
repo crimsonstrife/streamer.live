@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\StoreObjects\ProductVariant;
-use App\Services\FourthwallService;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Http\RedirectResponse;
@@ -13,13 +12,10 @@ use Throwable;
 
 class CartController extends Controller
 {
-    protected FourthwallService $fourthwallService;
-
     protected CartHelper $cartHelper;
 
-    public function __construct(FourthwallService $fourthwallService, CartHelper $cartHelper)
+    public function __construct(CartHelper $cartHelper)
     {
-        $this->fourthwallService = $fourthwallService;
         $this->cartHelper = $cartHelper;
     }
 
@@ -60,16 +56,9 @@ class CartController extends Controller
                 return redirect()->back()->with('error', 'Variant not found.');
             }
 
-            $cartID = $this->cartHelper->getCartId();
-            $created = false;
-            $added = false;
-            if (! $cartID) {
-                $created = $this->fourthwallService->createCart($variant->provider_id, $quantity);
-            } else {
-                $added = $this->fourthwallService->addToCart($cartID, $variant->provider_id, $quantity);
-            }
+            $added = $this->cartHelper->addToCart($variant->provider_id, $quantity);
 
-            if (! $added && ! $created) {
+            if (! $added) {
                 return redirect()->back()->with('error', 'Failed to add product to cart.');
             }
 
