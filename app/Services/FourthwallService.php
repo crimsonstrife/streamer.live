@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Jobs\ProcessProductImage;
 use App\Models\StoreObjects\Collection;
+use App\Models\StoreObjects\FourthwallGiveawayLink;
+use App\Models\StoreObjects\FourthwallGiveawayPackage;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
 use App\Models\StoreObjects\Promotion;
@@ -53,6 +55,8 @@ class FourthwallService
     protected const STOCK_TTL_SECONDS = 30;
 
     protected const MAX_PAGINATION_PAGES = 100;
+
+    protected const GIVEAWAY_PACKAGES_ENDPOINT = 'giveaway-links/packages';
 
     /**
      * FourthwallService constructor.
@@ -246,6 +250,148 @@ class FourthwallService
 
             Log::info('All promotions synced successfully.');
         });
+    }
+
+    /**
+     * Sync Fourthwall giveaway packages and links created in Fourthwall.
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function syncGiveawayPackages(): void
+    {
+        if (! $this->enabled) {
+            Log::error('The Fourthwall integration is not enabled.');
+
+            return;
+        }
+
+        $cursor = null;
+
+        do {
+            $params = ['limit' => 50];
+
+            if ($cursor) {
+                $params['cursor'] = $cursor;
+            }
+
+            $response = $this->listGiveawayPackages($params);
+            $packages = data_get($response, 'results', data_get($response, 'packages', data_get($response, 'data', [])));
+
+            foreach ($packages as $packageData) {
+                $packageId = data_get($packageData, 'id', data_get($packageData, 'packageId'));
+
+                if (! $packageId) {
+                    Log::warning('Skipping Fourthwall giveaway package without an id.', ['payload' => $packageData]);
+
+                    continue;
+                }
+
+                $details = $this->getGiveawayPackage($packageId);
+                $details = data_get($details, 'package', $details);
+
+                $this->upsertGiveawayPackage(array_replace_recursive($packageData, $details));
+            }
+
+            $cursor = data_get($response, 'cursor', data_get($response, 'paging.nextCursor'));
+        } while ($cursor);
+
+        $this->logInfo('All Fourthwall giveaway packages synced.');
+    }
+
+    /**
+     * List giveaway packages from the Fourthwall Platform API.
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function listGiveawayPackages(array $queryParams = []): array
+    {
+        return $this->openApiGetRequest(self::GIVEAWAY_PACKAGES_ENDPOINT, $queryParams);
+    }
+
+    /**
+     * Retrieve one giveaway package and its links from the Fourthwall Platform API.
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getGiveawayPackage(string $packageId): array
+    {
+        return $this->openApiGetRequest(self::GIVEAWAY_PACKAGES_ENDPOINT.'/'.urlencode($packageId));
+    }
+
+    protected function upsertGiveawayPackage(array $packageData): FourthwallGiveawayPackage
+    {
+        $packageId = data_get($packageData, 'id', data_get($packageData, 'packageId'));
+        $productProviderId = data_get($packageData, 'product.id', data_get($packageData, 'productId'));
+        $product = $productProviderId
+            ? Product::withDraftContext()->where('provider_id', $productProviderId)->first()
+            : null;
+
+        $links = collect(data_get($packageData, 'giveawayLinks', data_get($packageData, 'links', [])))
+            ->filter(fn ($linkData) => is_array($linkData));
+
+        $package = FourthwallGiveawayPackage::updateOrCreate(
+            ['provider_id' => $packageId],
+            [
+                'provider' => 'fourthwall',
+                'product_provider_id' => $productProviderId,
+                'product_id' => $product?->id,
+                'link_count' => $links->count(),
+                'raw_payload' => $packageData,
+                'synced_at' => now(),
+            ]
+        );
+
+        $links->each(function (array $linkData) use ($package, $productProviderId, $product) {
+            $this->upsertGiveawayLink($package, $linkData, $productProviderId, $product);
+        });
+
+        return $package;
+    }
+
+    protected function upsertGiveawayLink(
+        FourthwallGiveawayPackage $package,
+        array $linkData,
+        ?string $packageProductProviderId,
+        ?Product $packageProduct
+    ): ?FourthwallGiveawayLink {
+        $link = data_get($linkData, 'link', data_get($linkData, 'url'));
+        $giftId = $link ? $this->extractGiftIdFromUrl($link) : null;
+        $giftId ??= data_get($linkData, 'giftId', data_get($linkData, 'id'));
+
+        if (! $giftId || ! $link) {
+            Log::warning('Skipping Fourthwall giveaway link without an id or URL.', ['payload' => $linkData]);
+
+            return null;
+        }
+
+        $productProviderId = data_get($linkData, 'product.id', data_get($linkData, 'productId', $packageProductProviderId));
+        $product = $packageProduct;
+
+        if ($productProviderId && (! $product || $product->provider_id !== $productProviderId)) {
+            $product = Product::withDraftContext()->where('provider_id', $productProviderId)->first();
+        }
+
+        return FourthwallGiveawayLink::updateOrCreate(
+            ['provider_id' => $giftId],
+            [
+                'provider' => 'fourthwall',
+                'package_id' => $package->id,
+                'product_provider_id' => $productProviderId,
+                'product_id' => $product?->id,
+                'link' => $link,
+                'status' => data_get($linkData, 'status'),
+                'redeemed_at' => data_get($linkData, 'redeemedAt'),
+                'raw_payload' => $linkData,
+                'synced_at' => now(),
+            ]
+        );
+    }
+
+    public function extractGiftIdFromUrl(string $url): ?string
+    {
+        preg_match('/gft_[A-Za-z0-9_-]+/', $url, $matches);
+
+        return $matches[0] ?? null;
     }
 
     /**
@@ -839,6 +985,16 @@ class FourthwallService
      */
     private function openApiGetRequest(string $endpoint, array $queryParams = []): array
     {
+        if (! $this->enabled) {
+            Log::error('The Fourthwall integration is not enabled.');
+
+            return [];
+        }
+
+        if (! $this->openApiKey || ! $this->openApiSecret) {
+            throw new RuntimeException('Fourthwall Open API credentials are required for this request.');
+        }
+
         $authToken = base64_encode("{$this->openApiKey}:{$this->openApiSecret}");
 
         return Http::withOptions([
@@ -846,7 +1002,7 @@ class FourthwallService
         ])
             ->withHeaders([
                 'Authorization' => "Basic {$authToken}",
-                'Content-Accept' => 'application/json',
+                'Accept' => 'application/json',
             ])
             ->get("https://api.fourthwall.com/open-api/v1.0/{$endpoint}", $queryParams)
             ->throw()

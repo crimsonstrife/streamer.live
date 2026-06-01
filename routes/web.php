@@ -20,6 +20,7 @@ use App\Http\Controllers\Installer\RequirementsController;
 use App\Http\Controllers\Installer\WelcomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\OnboardingController;
+use App\Http\Controllers\OpeningGiftController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductReviewController;
 use App\Http\Controllers\ReactionController;
@@ -355,6 +356,22 @@ Route::middleware([PreventRequestsDuringMaintenance::class])->group(function () 
             $shopSlug = ShopHelper::getShopSlug();               // 'shop'
             $productSlug = ShopHelper::getProductSlug();         // 'product'
             $collectionSlug = ShopHelper::getCollectionSlug();   // 'collection'
+
+            Route::get('gifts/{giftId}', OpeningGiftController::class)
+                ->where('giftId', 'gft_[A-Za-z0-9_-]+')
+                ->name('gifts.open');
+
+            Route::get('gift/{giftId}', OpeningGiftController::class)
+                ->where('giftId', 'gft_[A-Za-z0-9_-]+')
+                ->name('gift.open');
+
+            Route::get("$shopSlug/gifts/{giftId}", OpeningGiftController::class)
+                ->where('giftId', 'gft_[A-Za-z0-9_-]+')
+                ->name($shopSlug.'.gifts.open');
+
+            Route::get("$shopSlug/gift/{giftId}", OpeningGiftController::class)
+                ->where('giftId', 'gft_[A-Za-z0-9_-]+')
+                ->name($shopSlug.'.gift.open');
 
             // === Cart Routes ===
             Route::prefix("$shopSlug/cart")->name($shopSlug.'.cart.')->group(function () {

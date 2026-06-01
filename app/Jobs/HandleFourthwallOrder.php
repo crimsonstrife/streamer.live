@@ -38,7 +38,7 @@ class HandleFourthwallOrder implements ShouldQueue
         public string $eventType,
         public array $payload
     ) {
-        $this->enabled = app(FourthwallSettings::class)->enabled;
+        $this->enabled = app(FourthwallSettings::class)->enable_integration;
     }
 
     /**

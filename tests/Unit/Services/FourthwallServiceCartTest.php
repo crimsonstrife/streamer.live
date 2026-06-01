@@ -47,6 +47,31 @@ class FourthwallServiceCartTest extends TestCase
             ]);
     }
 
+    public function test_list_giveaway_packages_uses_fourthwall_open_api_credentials(): void
+    {
+        Http::fake([
+            'https://api.fourthwall.com/open-api/v1.0/giveaway-links/packages*' => Http::response([
+                'results' => [
+                    ['id' => 'pkg-123'],
+                ],
+            ], 200),
+        ]);
+
+        $service = $this->fourthwallService();
+
+        $this->assertSame(['results' => [['id' => 'pkg-123']]], $service->listGiveawayPackages(['limit' => 50]));
+
+        Http::assertSent(fn ($request) => $request->url() === 'https://api.fourthwall.com/open-api/v1.0/giveaway-links/packages?limit=50'
+            && $request->hasHeader('Authorization', 'Basic '.base64_encode('open-key:open-secret')));
+    }
+
+    public function test_extract_gift_id_from_fourthwall_gift_url(): void
+    {
+        $service = $this->fourthwallService();
+
+        $this->assertSame('gft_abc-123_XYZ', $service->extractGiftIdFromUrl('https://example.test/gifts/gft_abc-123_XYZ?utm_source=test'));
+    }
+
     private function fourthwallService(): FourthwallService
     {
         $reflection = new ReflectionClass(FourthwallService::class);
@@ -56,6 +81,8 @@ class FourthwallServiceCartTest extends TestCase
             'enabled' => true,
             'baseUrl' => 'https://fourthwall.test',
             'storefrontToken' => 'test-token',
+            'openApiKey' => 'open-key',
+            'openApiSecret' => 'open-secret',
             'verify_ssl' => true,
         ] as $property => $value) {
             $reflection->getProperty($property)->setValue($service, $value);

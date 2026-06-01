@@ -48,6 +48,16 @@ class SyncFourthwallData extends Command
         }
 
         try {
+            $fourthwallService->syncGiveawayPackages();
+            $this->info('Giveaway links sync completed successfully.');
+        } catch (\Exception $e) {
+            Log::error('Error during sync: '.$e->getMessage());
+            $this->error('An error occurred during sync. Check logs for details.');
+
+            return;
+        }
+
+        try {
             $fourthwallService->syncOrders(app(OrderSyncService::class));
             $this->info('Orders sync completed successfully.');
         } catch (\Exception $e) {
