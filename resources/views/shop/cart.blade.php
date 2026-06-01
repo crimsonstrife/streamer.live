@@ -65,7 +65,7 @@
                                     @endphp
                                     @foreach ($cart['items'] as $item)
                                         @php
-                                            $variantId = $item->variant->id;
+                                            $variantId = $item->variant->provider_id;
                                             $mediaItem = $item->variant->product->getMedia('images')->first();
                                         @endphp
                                         @php

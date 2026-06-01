@@ -103,6 +103,7 @@ class FourthwallService
     {
         if (! $this->enabled) {
             Log::error('Fourthwall integration is disabled.');
+
             return;
         }
 
@@ -120,8 +121,8 @@ class FourthwallService
                     $collection = Collection::updateOrCreate(
                         ['provider_id' => data_get($collectionData, 'id')],
                         [
-                            'name'        => data_get($collectionData, 'name'),
-                            'slug'        => data_get($collectionData, 'slug'),
+                            'name' => data_get($collectionData, 'name'),
+                            'slug' => data_get($collectionData, 'slug'),
                             'description' => data_get($collectionData, 'description'),
                         ]
                     );
@@ -135,7 +136,7 @@ class FourthwallService
                 $page++;
 
                 if ($page >= self::MAX_PAGINATION_PAGES) {
-                    Log::warning("Fourthwall collections sync hit max pagination limit of " . self::MAX_PAGINATION_PAGES . " pages.");
+                    Log::warning('Fourthwall collections sync hit max pagination limit of '.self::MAX_PAGINATION_PAGES.' pages.');
                     break;
                 }
             } while ($hasNextPage);
@@ -302,7 +303,7 @@ class FourthwallService
             $page++;
 
             if ($page >= self::MAX_PAGINATION_PAGES) {
-                Log::warning("Fourthwall products sync for collection {$collection->name} hit max pagination limit of " . self::MAX_PAGINATION_PAGES . " pages.");
+                Log::warning("Fourthwall products sync for collection {$collection->name} hit max pagination limit of ".self::MAX_PAGINATION_PAGES.' pages.');
                 break;
             }
         } while ($hasNextPage);
@@ -420,6 +421,7 @@ class FourthwallService
 
             if ($existing) {
                 $this->logInfo("Image {$imageData['id']} already synced for product {$product->name}");
+
                 return;
             }
 
@@ -429,6 +431,7 @@ class FourthwallService
 
             if (! $response->successful()) {
                 Log::error('Failed to download image: '.data_get($imageData, 'url'));
+
                 return;
             }
 
@@ -553,7 +556,7 @@ class FourthwallService
         if ($this->enabled) {
             $body = [
                 'items' => [
-                    ['variant_id' => $variant_id],
+                    ['variantId' => $variant_id],
                 ],
             ];
 

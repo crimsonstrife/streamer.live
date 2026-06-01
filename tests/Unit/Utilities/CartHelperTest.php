@@ -56,4 +56,42 @@ class CartHelperTest extends TestCase
         $this->assertTrue($helper->addToCart('variant-456', 3));
         $this->assertSame('cart-123', Session::get('fourthwall_cart_id'));
     }
+
+    public function test_remove_from_cart_uses_current_cart_id(): void
+    {
+        Session::put('fourthwall_cart_id', 'cart-123');
+
+        $fourthwall = Mockery::mock(FourthwallService::class);
+        $fourthwall->shouldReceive('removeFromCart')
+            ->once()
+            ->with('cart-123', 'variant-789')
+            ->andReturn(['id' => 'cart-123', 'items' => []]);
+
+        $helper = new CartHelper($fourthwall);
+
+        $this->assertTrue($helper->removeFromCart('variant-789'));
+    }
+
+    public function test_update_cart_formats_items_for_fourthwall(): void
+    {
+        Session::put('fourthwall_cart_id', 'cart-123');
+
+        $fourthwall = Mockery::mock(FourthwallService::class);
+        $fourthwall->shouldReceive('validateProductStock')
+            ->once()
+            ->with('variant-789')
+            ->andReturn(['type' => 'UNLIMITED']);
+        $fourthwall->shouldReceive('updateCart')
+            ->once()
+            ->with('cart-123', [
+                ['variantId' => 'variant-789', 'quantity' => 4],
+            ])
+            ->andReturn(['id' => 'cart-123', 'items' => []]);
+
+        $helper = new CartHelper($fourthwall);
+
+        $this->assertTrue($helper->updateCart([
+            ['variant_id' => 'variant-789', 'quantity' => 4],
+        ]));
+    }
 }

@@ -201,14 +201,14 @@ class CartHelper
 
         $formattedItems = collect($items)->map(function ($item) {
             return [
-                'variant_id' => $item['variant_id'],
+                'variantId' => $item['variant_id'],
                 'quantity' => max(1, (int) $item['quantity']),
             ];
         })->toArray();
 
         // check the variants to ensure the new quantity doesn't exceed available stock
         foreach ($formattedItems as $item) {
-            $productAvailability = $this->fourthwall->validateProductStock($item['variant_id']);
+            $productAvailability = $this->fourthwall->validateProductStock($item['variantId']);
             if (is_bool($productAvailability) && ! $productAvailability) {
                 Log::error('Product stock not found/ or out of stock');
 
