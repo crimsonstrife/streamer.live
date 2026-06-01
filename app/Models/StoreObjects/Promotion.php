@@ -27,12 +27,14 @@ class Promotion extends Model
         'max_uses',
         'one_use_per_customer',
         'status',
+        'show_on_storefront',
         'type',
     ];
 
     protected $casts = [
         'once_per_order'         => 'boolean',
         'one_use_per_customer'   => 'boolean',
+        'show_on_storefront'     => 'boolean',
         'percentage'             => 'integer',
         'amount_value'           => 'integer',
         'min_order_value'        => 'integer',
@@ -58,6 +60,18 @@ class Promotion extends Model
         return $query->where('applies_to', 'SELECTED_PRODUCTS');
     }
 
+    public function scopeVisibleOnStorefront($query)
+    {
+        return $query
+            ->where('show_on_storefront', true)
+            ->where('discount_type', '!=', 'FREE_PRODUCTS');
+    }
+
+    public function isVisibleOnStorefront(): bool
+    {
+        return $this->show_on_storefront && $this->discount_type !== 'FREE_PRODUCTS';
+    }
+
     /**
      * A customer-facing message for this promo.
      */
@@ -67,13 +81,9 @@ class Promotion extends Model
             return $this->description;
         }
 
-        if (strtoupper($this->title) === 'TWITCHSUB') {
+        if (strtoupper((string) $this->title) === 'TWITCHSUB') {
             if ($this->type === 'SHOP_AUTO_APPLYING') {
-                return "Twitch subscribers get ".(
-                    $this->discount_type === 'PERCENTAGE'
-                        ? "{$this->percentage}% off"
-                        : number_format($this->amount_value / 100, 2)." {$this->amount_currency}"
-                ). " on " . ($this->applies_to === 'ENTIRE_ORDER' ? "their entire order" : "select products") .(
+                return "Twitch subscribers get {$this->discountDescription()} on ".($this->applies_to === 'ENTIRE_ORDER' ? "their entire order" : "select products").(
                     $this->min_order_value > 0
                         ? " on orders of ".number_format($this->min_order_value, 2)." {$this->min_order_currency}". " or more."
                         : ""
@@ -87,10 +97,16 @@ class Promotion extends Model
         }
 
         return "Use code {$this->code} at checkout to get "
-            .(
-                $this->discount_type === 'PERCENTAGE'
-                ? "{$this->percentage}% off"
-                : number_format($this->amount_value / 100, 2)." {$this->amount_currency}"
-            ).".";
+            .$this->discountDescription().".";
+    }
+
+    private function discountDescription(): string
+    {
+        return match ($this->discount_type) {
+            'PERCENTAGE' => "{$this->percentage}% off",
+            'FREE_SHIPPING' => 'free shipping',
+            'FREE_PRODUCTS' => 'free products',
+            default => number_format(($this->amount_value ?? 0) / 100, 2)." {$this->amount_currency}",
+        };
     }
 }

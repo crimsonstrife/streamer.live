@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,9 @@ class PromotionResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->label('Customer Message')
                     ->helperText('Optional: overrides the default messaging shown on the storefront.'),
+                Forms\Components\Toggle::make('show_on_storefront')
+                    ->label('Show on storefront')
+                    ->helperText('Disable this for private codes that should only be shared directly. Free product discounts are always hidden.'),
             ]);
     }
 
@@ -56,6 +60,10 @@ class PromotionResource extends Resource
                     ->label('Products'),
                 TextColumn::make('status')
                     ->sortable(),
+                IconColumn::make('is_visible_on_storefront')
+                    ->label('Storefront')
+                    ->boolean()
+                    ->state(fn (Promotion $record): bool => $record->isVisibleOnStorefront()),
                 TextColumn::make('updated_at')
                     ->label('Last Updated')
                     ->dateTime(),

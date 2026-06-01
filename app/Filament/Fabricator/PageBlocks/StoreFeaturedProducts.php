@@ -23,13 +23,15 @@ class StoreFeaturedProducts extends PageBlock
     public static function mutateData(array $data): array
     {
         // all live, entire-order promos
-        $orderPromotions = Promotion::where('status', 'Live')
-            ->where('applies_to', 'ENTIRE_ORDER')
+        $orderPromotions = Promotion::live()
+            ->visibleOnStorefront()
+            ->entireOrder()
             ->get();
 
         // all live, item-specific promos (with their products)
-        $productPromotions = Promotion::where('status', 'Live')
-            ->where('applies_to', 'SELECTED_PRODUCTS')
+        $productPromotions = Promotion::live()
+            ->visibleOnStorefront()
+            ->selectedProducts()
             ->with('products')
             ->get();
 

@@ -30,8 +30,9 @@ class PromotionBanners extends PageBlock
 
     public static function mutateData(array $data): array
     {
-        $orderPromotions = Promotion::where('status', 'Live')
-            ->where('applies_to', 'ENTIRE_ORDER')
+        $orderPromotions = Promotion::live()
+            ->visibleOnStorefront()
+            ->entireOrder()
             ->get();
 
         return array_merge($data, [

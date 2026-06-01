@@ -6,8 +6,8 @@
     </x-slot>
     @php
         $settings = app(\App\Settings\FourthwallSettings::class);
-        $orderPromotions = \App\Models\StoreObjects\Promotion::live()->entireOrder()->get();
-        $productPromotions = \App\Models\StoreObjects\Promotion::live()->selectedProducts()->with('products')->get();
+        $orderPromotions = \App\Models\StoreObjects\Promotion::live()->visibleOnStorefront()->entireOrder()->get();
+        $productPromotions = \App\Models\StoreObjects\Promotion::live()->visibleOnStorefront()->selectedProducts()->with('products')->get();
     @endphp
     @if (! $settings->enable_integration)
         <div class="alert alert-warning text-center">

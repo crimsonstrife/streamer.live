@@ -56,12 +56,14 @@ class StoreRelatedProducts extends PageBlock
         }
 
         // pull LIVE promotions from database
-        $orderPromotions = Promotion::where('status', 'Live')
-            ->where('applies_to', 'ENTIRE_ORDER')
+        $orderPromotions = Promotion::live()
+            ->visibleOnStorefront()
+            ->entireOrder()
             ->get();
 
-        $productPromotions = Promotion::where('status', 'Live')
-            ->where('applies_to', 'SELECTED_PRODUCTS')
+        $productPromotions = Promotion::live()
+            ->visibleOnStorefront()
+            ->selectedProducts()
             ->with('products')   // eager-load the pivot
             ->get();
 

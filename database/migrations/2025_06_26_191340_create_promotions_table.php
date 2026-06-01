@@ -16,7 +16,7 @@ return new class () extends Migration {
             $table->string('provider')->default('fourthwall');
             $table->string('title');
             $table->string('code')->nullable();        // coupon code
-            $table->enum('discount_type', ['PERCENTAGE','FIXED','FREE_SHIPPING']);
+            $table->enum('discount_type', ['PERCENTAGE','FIXED','FREE_SHIPPING','FREE_PRODUCTS']);
             $table->unsignedInteger('percentage')->nullable();      // when discount_type = PERCENTAGE
             $table->unsignedInteger('amount_value')->nullable();    // for FIXED
             $table->string('amount_currency', 3)->nullable();
@@ -30,6 +30,7 @@ return new class () extends Migration {
             $table->unsignedInteger('max_uses')->nullable();
             $table->boolean('one_use_per_customer')->default(false);
             $table->enum('status', ['Live','Draft','Archived'])->default('Draft');
+            $table->boolean('show_on_storefront')->default(true);
             $table->string('type')->nullable(); // e.g. “SHOP_SINGLE” vs “SHOP_AUTO_APPLYING”
             $table->timestamps();
         });
