@@ -9,6 +9,13 @@ use Tests\TestCase;
 
 class FourthwallGiftRouteTest extends TestCase
 {
+    public function test_root_gift_link_routes_to_opening_gift_controller(): void
+    {
+        $route = Route::getRoutes()->match(Request::create('/gifts/gft_test123', 'GET'));
+
+        $this->assertSame(OpeningGiftController::class, $route->getActionName());
+    }
+
     public function test_shop_gift_link_routes_to_opening_gift_controller_before_shop_fallback(): void
     {
         $route = Route::getRoutes()->match(Request::create('/shop/gifts/gft_test123', 'GET'));
