@@ -17,7 +17,7 @@ class OrderController extends Controller
             ->orderByDesc('created_at')
             ->paginate(10);
 
-        return view($shopSlug.'.orders.index', compact('orders'));
+        return view($shopSlug.'.orders.index', compact('orders', 'shopSlug'));
     }
 
     public function show(Order $order)
@@ -27,8 +27,8 @@ class OrderController extends Controller
         abort_unless($order->user_id === auth()->id(), 403);
 
         // eager‐load the nested relations:
-        $order->load('items.variant.product');
+        $order->load(['items.variant.product', 'thankYous']);
 
-        return view($shopSlug.'.orders.show', compact('order'));
+        return view($shopSlug.'.orders.show', compact('order', 'shopSlug'));
     }
 }

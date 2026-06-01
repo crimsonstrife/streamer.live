@@ -1,11 +1,7 @@
-@php use App\Utilities\ShopHelper; @endphp
 <x-app-layout>
     <x-slot name="header">
         <h2 class="h4">Order #{{ $order->friendly_id }}</h2>
     </x-slot>
-    @php
-        $shopSlug = ShopHelper::getShopSlug();
-    @endphp
     <div class="container py-5">
         <div class="row mb-4">
             <div class="col-md-6">
@@ -18,6 +14,37 @@
                 <span class="badge bg-info">{{ ucfirst($order->status) }}</span>
             </div>
         </div>
+
+        @if($order->thankYous->isNotEmpty())
+            <div class="mb-4">
+                <h5>Thank You</h5>
+                @foreach($order->thankYous as $thankYou)
+                    <div class="border rounded p-3 mb-3">
+                        @if($thankYou->supporter_message)
+                            <p class="mb-3">{{ $thankYou->supporter_message }}</p>
+                        @endif
+
+                        @if($thankYou->media_url)
+                            <video class="w-100 rounded bg-dark mb-3"
+                                   style="max-height: 420px;"
+                                   controls
+                                   playsinline
+                                   preload="metadata"
+                                   src="{{ $thankYou->media_url }}">
+                                Your browser does not support embedded video playback.
+                            </video>
+
+                            <a href="{{ $thankYou->media_url }}"
+                               class="btn btn-sm btn-outline-primary"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                Open on Fourthwall
+                            </a>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
 
         <h5>Items</h5>
         <table class="table">
@@ -83,4 +110,3 @@
         </div>
     </div>
 </x-app-layout>
-

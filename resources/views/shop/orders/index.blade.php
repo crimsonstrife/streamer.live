@@ -2,9 +2,6 @@
     <x-slot name="header">
         <h2 class="h4">My Orders</h2>
     </x-slot>
-    @php
-        use App\Utilities\ShopHelper;$shopSlug = ShopHelper::getShopSlug();
-    @endphp
     <div class="container py-5">
         @if($orders->count())
             <table class="table table-striped">

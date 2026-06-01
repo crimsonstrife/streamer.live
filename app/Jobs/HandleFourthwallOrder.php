@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\FourthwallService;
 use App\Services\OrderSyncService;
 use App\Settings\FourthwallSettings;
 use Illuminate\Bus\Queueable;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * Class HandleFourthwallOrder
  *
- * Job to handle incoming Fourthwall order events and process them accordingly.
+ * Job to handle incoming Fourthwall store events and process them accordingly.
  */
 class HandleFourthwallOrder implements ShouldQueue
 {
@@ -44,16 +45,17 @@ class HandleFourthwallOrder implements ShouldQueue
     /**
      * Handle the job to process the Fourthwall order event.
      *
-     * Depending on the event type, it will either upsert the order data or log an unhandled event.
+     * Depending on the event type, it will either upsert local data or log an unhandled event.
      *
      * @param  OrderSyncService  $service  The service used to sync order data.
      */
-    public function handle(OrderSyncService $service): void
+    public function handle(OrderSyncService $service, FourthwallService $fourthwallService): void
     {
         if ($this->enabled) {
             match ($this->eventType) {
                 'ORDER_PLACED' => $service->upsert($this->payload['data']),
                 'ORDER_UPDATED' => $service->upsert($this->payload['data']['order']),
+                'THANK_YOU_SENT' => $fourthwallService->syncThankYouFromPayload($this->payload),
                 default => Log::info("Unhandled Fourthwall webhook event: {$this->eventType}"),
             };
         } else {

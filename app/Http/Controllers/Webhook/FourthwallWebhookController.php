@@ -97,13 +97,15 @@ class FourthwallWebhookController extends Controller
         // Dispatch a job to handle the webhook event.
         dispatch(new HandleFourthwallOrder($data['type'] ?? 'unknown', $data));
 
-        $orderService = new OrderSyncService();
-        $fourthwallService = new FourthwallService();
-        // Trigger an order sync
-        try {
-            $fourthwallService->syncOrders($orderService);
-        } catch (ConnectionException|RequestException $e) {
-            Log::error('Error with order sync: '. $e->getMessage());
+        if (in_array($data['type'] ?? null, ['ORDER_PLACED', 'ORDER_UPDATED'], true)) {
+            $orderService = new OrderSyncService;
+            $fourthwallService = new FourthwallService;
+            // Trigger an order sync
+            try {
+                $fourthwallService->syncOrders($orderService);
+            } catch (ConnectionException|RequestException $e) {
+                Log::error('Error with order sync: '.$e->getMessage());
+            }
         }
 
         return response('Accepted', 200);

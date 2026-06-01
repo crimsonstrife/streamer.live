@@ -6,6 +6,7 @@ use App\Jobs\ProcessProductImage;
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\FourthwallGiveawayLink;
 use App\Models\StoreObjects\FourthwallGiveawayPackage;
+use App\Models\StoreObjects\FourthwallThankYou;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
 use App\Models\StoreObjects\Promotion;
@@ -57,6 +58,8 @@ class FourthwallService
     protected const MAX_PAGINATION_PAGES = 100;
 
     protected const GIVEAWAY_PACKAGES_ENDPOINT = 'giveaway-links/packages';
+
+    protected const THANK_YOUS_ENDPOINT = 'thank-yous';
 
     /**
      * FourthwallService constructor.
@@ -316,6 +319,67 @@ class FourthwallService
     public function getGiveawayPackage(string $packageId): array
     {
         return $this->openApiGetRequest(self::GIVEAWAY_PACKAGES_ENDPOINT.'/'.urlencode($packageId));
+    }
+
+    /**
+     * Retrieve one Thank You from the Fourthwall Platform API.
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function getThankYou(string $thankYouId): array
+    {
+        return $this->openApiGetRequest(self::THANK_YOUS_ENDPOINT.'/'.rawurlencode($thankYouId));
+    }
+
+    /**
+     * Store a Thank You payload received directly from a webhook, fetching
+     * full details from Fourthwall when the event only contains an id.
+     *
+     * @throws ConnectionException|RequestException
+     */
+    public function syncThankYouFromPayload(array $payload): ?FourthwallThankYou
+    {
+        $thankYouData = data_get($payload, 'data.thankYou', data_get($payload, 'data', $payload));
+        $thankYouId = data_get($thankYouData, 'id', data_get($payload, 'data.thankYouId', data_get($payload, 'thankYouId')));
+
+        if (! $thankYouId) {
+            Log::warning('Skipping Fourthwall Thank You webhook without an id.', ['payload' => $payload]);
+
+            return null;
+        }
+
+        if (! data_get($thankYouData, 'mediaUrl') || ! data_get($thankYouData, 'contribution')) {
+            $thankYouData = array_replace_recursive($thankYouData, $this->getThankYou($thankYouId));
+        }
+
+        return $this->upsertThankYou($thankYouData);
+    }
+
+    protected function upsertThankYou(array $thankYouData): ?FourthwallThankYou
+    {
+        $thankYouId = data_get($thankYouData, 'id');
+
+        if (! $thankYouId) {
+            Log::warning('Skipping Fourthwall Thank You without an id.', ['payload' => $thankYouData]);
+
+            return null;
+        }
+
+        return FourthwallThankYou::updateOrCreate(
+            ['provider_id' => $thankYouId],
+            [
+                'provider' => 'fourthwall',
+                'media_url' => data_get($thankYouData, 'mediaUrl'),
+                'contribution_id' => data_get($thankYouData, 'contribution.id'),
+                'contribution_type' => data_get($thankYouData, 'contribution.type'),
+                'shop_id' => data_get($thankYouData, 'contribution.shopId'),
+                'supporter_email' => data_get($thankYouData, 'contribution.supporter.email'),
+                'supporter_username' => data_get($thankYouData, 'contribution.supporter.username'),
+                'supporter_message' => data_get($thankYouData, 'contribution.supporter.message'),
+                'raw_payload' => $thankYouData,
+                'synced_at' => now(),
+            ]
+        );
     }
 
     protected function upsertGiveawayPackage(array $packageData): FourthwallGiveawayPackage

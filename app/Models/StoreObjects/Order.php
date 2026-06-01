@@ -57,6 +57,12 @@ class Order extends Model
         return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
+    public function thankYous(): HasMany
+    {
+        return $this->hasMany(FourthwallThankYou::class, 'contribution_id', 'provider_id')
+            ->latest('synced_at');
+    }
+
     public function getFormattedTotalAttribute(): string
     {
         return $this->total ? $this->total->symbolFormatted() : 'N/A';

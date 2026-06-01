@@ -65,6 +65,35 @@ class FourthwallServiceCartTest extends TestCase
             && $request->hasHeader('Authorization', 'Basic '.base64_encode('open-key:open-secret')));
     }
 
+    public function test_get_thank_you_uses_fourthwall_open_api_credentials(): void
+    {
+        Http::fake([
+            'https://api.fourthwall.com/open-api/v1.0/thank-yous/ty_123' => Http::response([
+                'id' => 'ty_123',
+                'mediaUrl' => 'https://fourthwall.com/thankyou/ty_123',
+                'contribution' => [
+                    'id' => 'don_123',
+                    'type' => 'DONATION',
+                ],
+            ], 200),
+        ]);
+
+        $service = $this->fourthwallService();
+
+        $this->assertSame([
+            'id' => 'ty_123',
+            'mediaUrl' => 'https://fourthwall.com/thankyou/ty_123',
+            'contribution' => [
+                'id' => 'don_123',
+                'type' => 'DONATION',
+            ],
+        ], $service->getThankYou('ty_123'));
+
+        Http::assertSent(fn ($request) => $request->url() === 'https://api.fourthwall.com/open-api/v1.0/thank-yous/ty_123'
+            && $request->hasHeader('Authorization', 'Basic '.base64_encode('open-key:open-secret'))
+            && $request->hasHeader('Accept', 'application/json'));
+    }
+
     public function test_extract_gift_id_from_fourthwall_gift_url(): void
     {
         $service = $this->fourthwallService();
