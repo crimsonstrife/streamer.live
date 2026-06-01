@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\StoreObjects\Collection;
 use App\Models\StoreObjects\Product;
-use App\Services\FourthwallService;
-use App\Traits\HasCacheSupport;
 use App\Utilities\CartHelper;
 use App\Utilities\ShopHelper;
 use Illuminate\Http\Request;
@@ -18,15 +16,10 @@ use Z3d0X\FilamentFabricator\Services\PageRoutesService;
 
 class StoreController extends Controller
 {
-    use HasCacheSupport;
-
-    protected FourthwallService $fourthwallService;
-
     protected CartHelper $cartHelper;
 
-    public function __construct(FourthwallService $fourthwallService, CartHelper $cartHelper)
+    public function __construct(CartHelper $cartHelper)
     {
-        $this->fourthwallService = $fourthwallService;
         $this->cartHelper = $cartHelper;
     }
 
@@ -74,11 +67,7 @@ class StoreController extends Controller
      */
     public function index(): string
     {
-        return $this->rememberTagged(
-            ['shop', 'shop:index'],
-            'shop:index',
-            fn () => $this->renderIndex()
-        );
+        return $this->renderIndex();
     }
 
     /**
@@ -96,11 +85,7 @@ class StoreController extends Controller
 
     public function product(Request $request, string $slug): string
     {
-        return $this->rememberTagged(
-            ['shop', "product:$slug"],
-            "product:$slug",
-            fn () => $this->renderProduct($slug)
-        );
+        return $this->renderProduct($slug);
     }
 
     private function renderProduct(string $slug): string
@@ -130,11 +115,7 @@ BLADE,
 
     public function collection(Request $request, string $slug): string
     {
-        return $this->rememberTagged(
-            ['shop', "collection:$slug"],
-            "collection:$slug",
-            fn () => $this->renderCollection($slug)
-        );
+        return $this->renderCollection($slug);
     }
 
     private function renderCollection(string $slug): string

@@ -20,6 +20,14 @@ class EnsureStoreEnabled
             abort(404);
         }
 
-        return $next($request);
+        $response = $next($request);
+
+        if ($request->isMethodCacheable()) {
+            $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, private, max-age=0, s-maxage=0');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+        }
+
+        return $response;
     }
 }
