@@ -231,7 +231,7 @@ class FourthwallService
 
                             if ($promotion->applies_to === 'SELECTED_PRODUCTS' && ! empty(data_get($promotionData, 'appliesTo.products'))) {
                                 foreach (data_get($promotionData, 'appliesTo.products') as $productId) {
-                                    $product = Product::withDraftContext()->where('provider_id', $productId)->first();
+                                    $product = Product::withPublishedContext()->where('provider_id', $productId)->first();
 
                                     if ($product) {
                                         $promotion->products()->syncWithoutDetaching([$product->id]);
@@ -387,7 +387,7 @@ class FourthwallService
         $packageId = data_get($packageData, 'id', data_get($packageData, 'packageId'));
         $productProviderId = data_get($packageData, 'product.id', data_get($packageData, 'productId'));
         $product = $productProviderId
-            ? Product::withDraftContext()->where('provider_id', $productProviderId)->first()
+            ? Product::withPublishedContext()->where('provider_id', $productProviderId)->first()
             : null;
 
         $links = collect(data_get($packageData, 'giveawayLinks', data_get($packageData, 'links', [])))
@@ -432,7 +432,7 @@ class FourthwallService
         $product = $packageProduct;
 
         if ($productProviderId && (! $product || $product->provider_id !== $productProviderId)) {
-            $product = Product::withDraftContext()->where('provider_id', $productProviderId)->first();
+            $product = Product::withPublishedContext()->where('provider_id', $productProviderId)->first();
         }
 
         return FourthwallGiveawayLink::updateOrCreate(
@@ -480,10 +480,9 @@ class FourthwallService
             $products = data_get($productsResponse, 'results', []);
             foreach ($products as $productData) {
                 $this->logInfo('Syncing product: '.data_get($productData, 'name')." for collection: {$collection->name}");
-                $product = Product::withDraftContext()->updateOrCreate(
+                $draftProduct = Product::withDraftContext()->updateOrCreate(
                     ['provider_id' => data_get($productData, 'id')],
                     [
-                        'collection_id' => $collection->id,
                         'name' => data_get($productData, 'name'),
                         'slug' => data_get($productData, 'slug'),
                         'description' => data_get($productData, 'description') ?? '',
@@ -491,6 +490,14 @@ class FourthwallService
                         'access' => data_get($productData, 'access.type') ?? 'PUBLIC',
                     ]
                 );
+
+                $product = Product::withPublishedContext()->find($draftProduct->getKey());
+
+                if (! $product) {
+                    Log::warning("Published product was not found after syncing draft product: {$draftProduct->name}");
+
+                    continue;
+                }
 
                 // There is additional product data that can only be obtained via the Open API, so make a request and update it.
                 // $openAPIProductData = $this->openApiGetRequest("products/{$product->provider_id}");
@@ -960,7 +967,7 @@ class FourthwallService
             }
 
             // Get the product object
-            $productObject = Product::withDraftContext()->select('provider_id', 'slug')->find($productVariantObject->product_id);
+            $productObject = Product::withPublishedContext()->select('provider_id', 'slug')->find($productVariantObject->product_id);
 
             if (! $productObject) {
                 Log::error("ProductVariant's Parent Product Object not found. The Variant may be orphaned.");
