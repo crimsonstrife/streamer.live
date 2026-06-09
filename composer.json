@@ -147,7 +147,6 @@
         "z3d0x/filament-fabricator": "^2.4"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-latest",
         "barryvdh/laravel-debugbar": "^3.15",
         "barryvdh/laravel-ide-helper": "^3.5",
         "larastan/larastan": "^3.0",
@@ -230,6 +229,15 @@
             "php-http/discovery": true,
             "phpstan/extension-installer": true,
             "wikimedia/composer-merge-plugin": true
+        },
+        "audit": {
+            "ignore": {
+                "PKSA-mdq4-51ck-6kdq": "CVE-2026-48019 CRLF injection in email validation rule; no Laravel 11 fix, only 12.60+. Mitigation: avoid passing user-controlled emails directly into mail headers. Remove on Filament 4 / Laravel 12 migration.",
+                "PKSA-8qx3-n5y5-vvnd": "CVE-2025-27515 file validation bypass; already patched in 11.44.1, we run 11.53.1+. Roave blocks the constraint range, not the installed version.",
+                "PKSA-q46n-4fdk-zjr4": "CVE-2024-13919 debug-mode XSS via route param; already patched in 11.36.0, we run 11.53.1+. Constraint-range block only.",
+                "PKSA-qzrn-rnz3-85w1": "CVE-2024-13918 debug-mode XSS via request param; already patched in 11.36.0, we run 11.53.1+. Constraint-range block only.",
+                "PKSA-w7xr-vk7n-rstm": "CVE-2024-52301 env manipulation via query string; already patched in 11.31.0, we run 11.53.1+. Constraint-range block only."
+            }
         }
     },
     "minimum-stability": "stable",
