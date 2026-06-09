@@ -4,17 +4,17 @@ namespace App\Filament\Fabricator\PageBlocks;
 
 use App\Models\ContentObjects\ContentEntry;
 use App\Models\ContentObjects\ContentType;
+use App\Utilities\SchemaCache;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Facades\Schema;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 
 class ContentTypeListBlock extends PageBlock
 {
     public static function getBlockSchema(): Block
     {
-        $options = Schema::hasTable('content_types')
+        $options = SchemaCache::hasTable('content_types')
             ? ContentType::active()->pluck('name', 'slug')->toArray()
             : [];
 

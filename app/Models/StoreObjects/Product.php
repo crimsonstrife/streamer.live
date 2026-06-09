@@ -90,9 +90,15 @@ class Product extends BaseModel implements HasMedia, HasRevisorContract, Searcha
         return true;
     }
 
+    /**
+     * Only re-publish on update if the draft is currently in a published
+     * state. If a store admin has intentionally unpublished the product,
+     * a sync update must not silently put it back on the storefront —
+     * unpublishing exists for a reason (legal, branding, takedown, etc).
+     */
     public function shouldPublishOnUpdated(): bool
     {
-        return true;
+        return (bool) $this->is_published;
     }
 
     protected $fillable = [
@@ -105,6 +111,8 @@ class Product extends BaseModel implements HasMedia, HasRevisorContract, Searcha
         'access',
         'price',
         'is_featured',
+        'is_locally_discontinued',
+        'locally_discontinued_note',
         'compare_at_price',
         'external_url',
     ];
@@ -113,6 +121,7 @@ class Product extends BaseModel implements HasMedia, HasRevisorContract, Searcha
         'price' => MoneyValueCast::class,
         'compare_at_price' => MoneyValueCast::class,
         'is_featured' => 'boolean',
+        'is_locally_discontinued' => 'boolean',
     ];
 
     protected $appends = [
@@ -218,7 +227,37 @@ class Product extends BaseModel implements HasMedia, HasRevisorContract, Searcha
 
     public function scopeAvailable(Builder $query): Builder|_IH_Product_QB
     {
-        return $query->where('state', '=', 'AVAILABLE');
+        return $query
+            ->where('state', '=', 'AVAILABLE')
+            ->where('is_locally_discontinued', '=', false);
+    }
+
+    /**
+     * Whether the customer can currently buy this product. Locally
+     * discontinued products are kept visible on the storefront for SEO
+     * and brand continuity, but cannot be priced or added to cart.
+     */
+    public function isPurchasable(): bool
+    {
+        return ! $this->is_locally_discontinued && $this->state === 'AVAILABLE';
+    }
+
+    /**
+     * Customer-facing badge label, if any. Locally discontinued takes
+     * priority over Fourthwall's SOLDOUT state because it's the
+     * stronger, manually-asserted signal from the store admin.
+     */
+    public function getStorefrontStateLabelAttribute(): ?string
+    {
+        if ($this->is_locally_discontinued) {
+            return 'Discontinued';
+        }
+
+        if ($this->state === 'SOLDOUT') {
+            return 'Sold Out';
+        }
+
+        return null;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Utilities\SchemaCache;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
@@ -37,6 +38,10 @@ class RunMigrations extends Command
 
             return CommandAlias::FAILURE;
         }
+
+        // Schema may have changed — drop the in-process hasTable() cache so
+        // long-lived workers don't keep serving stale answers.
+        SchemaCache::flush();
 
         $this->info('Migrations completed.');
 

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Utilities\SchemaCache;
 use Exception;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 use InvalidArgumentException;
 use Spatie\LaravelSettings\Events\LoadingSettings;
 use Spatie\LaravelSettings\Exceptions\MissingSettings;
@@ -112,12 +112,7 @@ class SettingsMapper extends SpatieSettingsMapper
 
     private function settingsTableIsAvailable(): bool
     {
-        try {
-            // Re-check every call so long-lived workers see schema changes after migrations.
-            return Schema::hasTable('settings');
-        } catch (Exception) {
-            return false;
-        }
+        return SchemaCache::hasTable('settings');
     }
 
     private function fillMissingSettingsWithDefaultValues(SettingsConfig $config, Collection $properties): Collection

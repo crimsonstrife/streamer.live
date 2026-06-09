@@ -22,19 +22,18 @@ use App\Settings\SEOSettings;
 use App\Settings\SiteSettings;
 use App\Utilities\CartHelper;
 use App\Utilities\Installer\Helpers\EnvironmentManager as CustomEnvManager;
+use App\Utilities\SchemaCache;
 use App\Utilities\ShopHelper;
 use App\Utilities\StreamHelper;
 use App\View\Helpers\ViewHelpers;
 use Codedge\Updater\Contracts\UpdaterContract;
 use Codedge\Updater\UpdaterManager;
-use Exception;
 use Filament\FilamentManager;
 use Froiden\LaravelInstaller\Helpers\EnvironmentManager as BaseEnvManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -152,12 +151,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Double-check that the table exists
-        try {
-            if (! Schema::hasTable('settings')) {
-                return;
-            }
-        } catch (Exception $e) {
-            // DB isn’t ready—just skip.
+        if (! SchemaCache::hasTable('settings')) {
             return;
         }
 
@@ -203,13 +197,8 @@ class AppServiceProvider extends ServiceProvider
             PostResource::class,
         ]);
 
-        try {
-            if (Schema::hasTable('pages')) {
-                view()->share('shopSlug', ShopHelper::getShopSlug());
-            }
-        } catch (Exception $e) {
-            // DB isn’t ready—just skip.
-            return;
+        if (SchemaCache::hasTable('pages')) {
+            view()->share('shopSlug', ShopHelper::getShopSlug());
         }
 
         // this will override the alias Jetstream registered

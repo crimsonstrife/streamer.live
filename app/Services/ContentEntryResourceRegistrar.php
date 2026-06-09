@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Filament\Resources\ContentEntries\ContentEntryResource;
 use App\Models\ContentObjects\ContentType;
-use Illuminate\Support\Facades\Schema;
+use App\Utilities\SchemaCache;
 
 class ContentEntryResourceRegistrar
 {
@@ -22,7 +22,7 @@ class ContentEntryResourceRegistrar
             return array_values(self::$resourceClasses);
         }
 
-        if (! Schema::hasTable('content_types')) {
+        if (! SchemaCache::hasTable('content_types')) {
             return [];
         }
 

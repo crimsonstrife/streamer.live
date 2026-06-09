@@ -8,7 +8,6 @@ use Exception;
 use Throwable;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
 
 /**
  * Class BlogHelper
@@ -77,12 +76,12 @@ class BlogHelper
      */
     private static function fetchSlug(): string
     {
-        try {
-            if (Schema::hasTable('pages')) {
+        if (SchemaCache::hasTable('pages')) {
+            try {
                 return Page::where('type', 'blog')->value('slug') ?? self::DEFAULT_BLOG_SLUG;
+            } catch (Exception $e) {
+                // DB transient error — fall through to default.
             }
-        } catch (Exception $e) {
-            // DB isn’t ready—just skip.
         }
 
         return self::DEFAULT_BLOG_SLUG;

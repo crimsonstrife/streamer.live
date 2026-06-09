@@ -62,7 +62,7 @@
                                         <small class="text-muted">No ratings yet</small>
                                     </div>
                                 @endif
-                                <p class="text-muted">{{ $relatedProduct->symbol_price }} USD</p>
+                                @include('shop.partials.product-price', ['product' => $relatedProduct])
                                 @include('shop.partials.promo-badge', ['product' => $relatedProduct])
                                 <a href="{{ url('shop/product/' . $relatedProduct->slug) }}"
                                    class="btn btn-sm btn-outline-primary">

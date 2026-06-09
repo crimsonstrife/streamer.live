@@ -59,6 +59,18 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                // Persistent connections let php-fpm workers reuse sockets across
+                // requests instead of opening a new one each time. On managed MySQL
+                // (e.g. DigitalOcean) the connection cap is small, so reuse matters.
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+                // Fail fast on connect rather than queue up TCP handshakes when the
+                // server is at its connection limit.
+                PDO::ATTR_TIMEOUT => (int) env('DB_TIMEOUT', 5),
+                // Force MySQL to drop idle sessions belonging to this app sooner than
+                // the server default so a leaked/long-held connection can't hold a
+                // slot for hours.
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SESSION wait_timeout='.(int) env('DB_WAIT_TIMEOUT', 60)
+                    .', SESSION interactive_timeout='.(int) env('DB_WAIT_TIMEOUT', 60),
             ]) : [],
         ],
 
@@ -79,6 +91,10 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
+                PDO::ATTR_TIMEOUT => (int) env('DB_TIMEOUT', 5),
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET SESSION wait_timeout='.(int) env('DB_WAIT_TIMEOUT', 60)
+                    .', SESSION interactive_timeout='.(int) env('DB_WAIT_TIMEOUT', 60),
             ]) : [],
         ],
 

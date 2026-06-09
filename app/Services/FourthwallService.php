@@ -494,7 +494,20 @@ class FourthwallService
                 $product = Product::withPublishedContext()->find($draftProduct->getKey());
 
                 if (! $product) {
-                    Log::warning("Published product was not found after syncing draft product: {$draftProduct->name}");
+                    // A missing published row after a draft sync has two causes:
+                    //   1. Intentional: a store admin unpublished this product.
+                    //      Draft data is still kept fresh by the updateOrCreate
+                    //      above; variants/images/pricing all FK to the published
+                    //      row, so they cannot be wired up until the admin
+                    //      republishes. Skip silently — this is the documented
+                    //      "leave unpublished" behavior.
+                    //   2. Unexpected: publish failed or was never attempted.
+                    //      Still worth a warning so we can investigate.
+                    if ($draftProduct->is_published === false) {
+                        $this->logInfo("Skipping post-publish wiring for unpublished product: {$draftProduct->name}");
+                    } else {
+                        Log::warning("Published product was not found after syncing draft product: {$draftProduct->name}");
+                    }
 
                     continue;
                 }

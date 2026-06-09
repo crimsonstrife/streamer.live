@@ -3,9 +3,9 @@
 namespace App\Filament\Fabricator\PageBlocks;
 
 use App\Models\Hero;
+use App\Utilities\SchemaCache;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Schema;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 
 class HeroBlock extends PageBlock
@@ -27,7 +27,7 @@ class HeroBlock extends PageBlock
                     ->multiple()
                     ->options(function () {
                         // if the table isn't there yet, return an empty list
-                        if (! Schema::hasTable('heroes')) {
+                        if (! SchemaCache::hasTable('heroes')) {
                             return [];
                         }
 

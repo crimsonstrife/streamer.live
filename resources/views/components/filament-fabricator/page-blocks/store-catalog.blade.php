@@ -208,7 +208,7 @@
                                             <small class="text-muted">No ratings yet</small>
                                         </div>
                                     @endif
-                                    <p class="card-text mb-2">{{ $product->symbol_price }} USD</p>
+                                    @include('shop.partials.product-price', ['product' => $product])
                                     @include('shop.partials.promo-badge', ['product' => $product])
                                     <a href="{{ route('shop.product', ['slug' => $product->slug]) }}"
                                        class="btn btn-primary mt-auto">View Product</a>

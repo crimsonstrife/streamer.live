@@ -42,9 +42,7 @@
                                 @endif
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $product->name }}</h5>
-                                    <p class="card-text text-muted">
-                                        {{ $product->symbol_price }} USD
-                                    </p>
+                                    @include('shop.partials.product-price', ['product' => $product])
                                     <a href="{{ route('store.product', ['slug' => $product->slug]) }}"
                                        class="btn btn-primary">
                                         View Product

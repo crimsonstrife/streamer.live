@@ -5,10 +5,10 @@ namespace App\Filament\Fabricator\PageBlocks;
 use App\Models\SharedObjects\Category;
 use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\Promotion;
+use App\Utilities\SchemaCache;
 use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Facades\Schema;
 use Z3d0X\FilamentFabricator\PageBlocks\PageBlock;
 
 class StoreProductGrid extends PageBlock
@@ -21,7 +21,7 @@ class StoreProductGrid extends PageBlock
                 Select::make('category_id')->label('Filter by Category')->searchable()->nullable()
                     ->options(function () {
                         // if the table isn't there yet, return an empty list
-                        if (! Schema::hasTable('categories')) {
+                        if (! SchemaCache::hasTable('categories')) {
                             return [];
                         }
 

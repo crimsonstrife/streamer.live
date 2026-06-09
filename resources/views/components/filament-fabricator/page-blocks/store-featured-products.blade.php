@@ -52,7 +52,7 @@
                                 </div>
                             @endif
 
-                            <p class="card-text text-muted">{{ $product->symbol_price }} USD</p>
+                            @include('shop.partials.product-price', ['product' => $product])
 
                             @include('shop.partials.promo-badge', ['product' => $product])
 

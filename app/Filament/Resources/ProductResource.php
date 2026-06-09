@@ -85,6 +85,18 @@ class ProductResource extends Resource
                     ->inline(false)
                     ->default(false)
                     ->helperText('Mark this product as featured'),
+                Toggle::make('is_locally_discontinued')
+                    ->label('Locally Discontinued')
+                    ->inline(false)
+                    ->default(false)
+                    ->helperText('Keep the product visible on the storefront but hide price and disable add-to-cart. Survives Fourthwall syncs.')
+                    ->live(),
+                Forms\Components\Textarea::make('locally_discontinued_note')
+                    ->label('Discontinued Note')
+                    ->rows(2)
+                    ->maxLength(500)
+                    ->helperText('Optional message shown to customers beneath the Discontinued badge.')
+                    ->visible(fn (Get $get) => (bool) $get('is_locally_discontinued')),
                 Forms\Components\Select::make('categories')
                     ->multiple()
                     ->relationship(
@@ -128,9 +140,17 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('price')->money('usd')->sortable(),
                 Tables\Columns\TextColumn::make('state')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('access')->searchable()->sortable(),
+                Tables\Columns\IconColumn::make('is_locally_discontinued')
+                    ->label('Discontinued')
+                    ->boolean()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('is_locally_discontinued')
+                    ->label('Locally discontinued')
+                    ->placeholder('All')
+                    ->trueLabel('Discontinued only')
+                    ->falseLabel('Active only'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

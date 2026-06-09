@@ -2,6 +2,7 @@
 
 namespace App\Utilities;
 
+use App\Models\StoreObjects\Product;
 use App\Models\StoreObjects\ProductVariant;
 use App\Services\FourthwallService;
 use Illuminate\Support\Facades\Log;
@@ -76,6 +77,12 @@ class CartHelper
      */
     public function getOrCreateCart(string $variant_id, int $quantity = 1): ?string
     {
+        if ($this->variantBelongsToDiscontinuedProduct($variant_id)) {
+            Log::warning("Variant {$variant_id} belongs to a locally discontinued product; cart will not be changed.");
+
+            return null;
+        }
+
         $productAvailability = $this->fourthwall->validateProductStock($variant_id);
 
         if (is_bool($productAvailability) && ! $productAvailability) {
@@ -116,6 +123,12 @@ class CartHelper
 
         if (! $cartId) {
             return (bool) $this->getOrCreateCart($variant_id, $quantity);
+        }
+
+        if ($this->variantBelongsToDiscontinuedProduct($variant_id)) {
+            Log::warning("Variant {$variant_id} belongs to a locally discontinued product; failed to add to cart.");
+
+            return false;
         }
 
         $productAvailability = $this->fourthwall->validateProductStock($variant_id);
@@ -208,6 +221,12 @@ class CartHelper
 
         // check the variants to ensure the new quantity doesn't exceed available stock
         foreach ($formattedItems as $item) {
+            if ($this->variantBelongsToDiscontinuedProduct($item['variantId'])) {
+                Log::warning("Variant {$item['variantId']} belongs to a locally discontinued product; cart update rejected.");
+
+                return false;
+            }
+
             $productAvailability = $this->fourthwall->validateProductStock($item['variantId']);
 
             if ($productAvailability === true) {
@@ -280,5 +299,26 @@ class CartHelper
         }
 
         return collect($cart['items'])->sum('quantity');
+    }
+
+    /**
+     * True when the variant resolves to a Product flagged
+     * is_locally_discontinued. Unknown variants return false here so the
+     * normal Fourthwall stock validation downstream can raise the right
+     * "variant not found locally" error.
+     */
+    private function variantBelongsToDiscontinuedProduct(string $variant_id): bool
+    {
+        $variant = ProductVariant::select('id', 'product_id')
+            ->where('provider_id', $variant_id)
+            ->first();
+
+        if (! $variant) {
+            return false;
+        }
+
+        return (bool) Product::withPublishedContext()
+            ->where('id', $variant->product_id)
+            ->value('is_locally_discontinued');
     }
 }

@@ -165,7 +165,9 @@
 
             <p class="mt-4">{{ htmlspecialchars_decode($product->description) }}</p>
 
-            @if ($product->variants->isNotEmpty())
+            @include('shop.partials.product-price', ['product' => $product])
+
+            @if ($product->isPurchasable() && $product->variants->isNotEmpty())
                 <form method="POST" action="{{ route('store.cart.add') }}">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -185,6 +187,14 @@
 
                     <button type="submit" class="mt-4 btn btn-primary">Add to Cart</button>
                 </form>
+            @elseif (! $product->isPurchasable())
+                <div class="alert alert-secondary mt-4" role="alert">
+                    @if ($product->is_locally_discontinued)
+                        This product has been discontinued and is no longer available for purchase.
+                    @else
+                        This product is currently sold out.
+                    @endif
+                </div>
             @else
                 <p class="mt-2 text-lg text-gray-500">No available variants.</p>
             @endif

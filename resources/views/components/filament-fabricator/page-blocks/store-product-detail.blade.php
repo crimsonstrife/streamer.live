@@ -345,7 +345,7 @@
                         </div>
                     @endif
 
-                    <p class="text-muted">{{ $product->symbol_price }} USD</p>
+                    @include('shop.partials.product-price', ['product' => $product])
 
                     @include('shop.partials.promo-badge', ['product' => $product])
 
@@ -355,33 +355,43 @@
                     @php
                         $shopPrefix =  App\Utilities\ShopHelper::getShopSlug();
                     @endphp
-                    <form method="POST" action="{{ route($shopPrefix . '.cart.add') }}">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    @if ($product->isPurchasable())
+                        <form method="POST" action="{{ route($shopPrefix . '.cart.add') }}">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                        {{-- Variant Selector --}}
-                        @if ($product->variants->count() > 1)
-                            <div class="mb-3">
-                                <label for="variant_id" class="form-label">Select Variant</label>
-                                <select name="variant_id" class="form-select" required>
-                                    @foreach ($product->variants as $variant)
-                                        <option value="{{ $variant->provider_id }}">
-                                            {{ $variant->name }} - {{ $variant->symbol_price }} USD
-                                        </option>
-                                    @endforeach
-                                </select>
+                            {{-- Variant Selector --}}
+                            @if ($product->variants->count() > 1)
+                                <div class="mb-3">
+                                    <label for="variant_id" class="form-label">Select Variant</label>
+                                    <select name="variant_id" class="form-select" required>
+                                        @foreach ($product->variants as $variant)
+                                            <option value="{{ $variant->provider_id }}">
+                                                {{ $variant->name }} - {{ $variant->symbol_price }} USD
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @else
+                                <input type="hidden" name="variant_id"
+                                       value="{{ $product->variants->first()?->provider_id }}">
+                            @endif
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    Add to Cart
+                                </button>
                             </div>
-                        @else
-                            <input type="hidden" name="variant_id"
-                                   value="{{ $product->variants->first()?->provider_id }}">
-                        @endif
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                Add to Cart
-                            </button>
+                        </form>
+                    @else
+                        <div class="alert alert-secondary" role="alert">
+                            @if ($product->is_locally_discontinued)
+                                This product has been discontinued and is no longer available for purchase.
+                            @else
+                                This product is currently sold out.
+                            @endif
                         </div>
-                    </form>
+                    @endif
                     @if ($product->more_details || $product->product_information)
                         <div class="accordion mt-5" id="productDetailsAccordion">
                             @if ($product->more_details)
